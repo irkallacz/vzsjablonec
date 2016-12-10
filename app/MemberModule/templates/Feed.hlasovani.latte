@@ -1,0 +1,27 @@
+{contentType application/rss+xml; charset=utf-8}
+{block #content}
+<title>VZS Jablonec Member Hlasování představenstva</title>
+<link>{link //Hlasovani:default}</link>
+<description>Hlasování představenstva MS VZS Jablonec</description>
+<item n:foreach="$items as $item">
+	<title>{$item->title}</title>	
+	{var $member = $item->member}
+	{* <dc:creator>{$member->surname} {$member->name}</dc:creator> *}
+	<author>{$member->mail} ({$member->surname} {$member->name})</author>
+	<link>{link //Hlasovani:view,$item->id}</link>
+	<guid isPermaLink="false">{$item->id}@{link Hlasovani:view}</guid>
+	<description>
+	{$item->text|texy}
+	{block|escape}
+	{foreach $item->related('hlasovani_odpoved')->order('text') as $odpoved}
+	<p><i>{$odpoved->text}</i></p>
+		<ol id="members" n:inner-foreach="$odpoved->related('hlasovani_member')->select('member.surname, member.name') as $member">
+			<li>{$member->surname} {$member->name}</li>	
+		</ol>
+	{/foreach}
+	<p>Hlasování bylo ukončeno {$item->date_deatline|date:'%d. %B %Y'}<p>
+	{/block}
+	</description>
+	<pubDate>{$item->date_add|date:DATE_RSS}</pubDate>
+</item>
+{/block}

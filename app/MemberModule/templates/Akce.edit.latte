@@ -1,0 +1,81 @@
+{block #head}
+<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+#frm-akceForm textarea {width: 100%;}
+#frm-akceForm p {line-height: 1.5em; margin: 1ex 0px;}
+#frm-akceForm label {font-weight: bold; margin-right: 1ex; font-size: 0.9em}
+#frm-akceForm .date, #frm-akceForm .time {text-align: center;}
+
+#ui-datepicker-div {font-size: 0.9em;}
+</style>
+
+<script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
+
+{control texylaJs}
+
+<script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+<script type="text/javascript" src="{$basePath}/js/akce.js"></script>
+
+<script type="text/javascript">
+	$.texyla.setDefaults({
+		baseDir: {$basePath}+'/texyla',
+		previewPath: {link texyPreview, TRUE}
+	});
+</script>
+
+{/block}
+
+<h1 n:block="#title">{if isset($nova)}Nová{else}Editace{/if} akce</h1>
+
+{block #content}
+
+<h2>{if isset($title)}{$title}{/if}</h2>
+
+<p n:if="isset($nova)">
+Předtím, než přidáte novou akci, ujistěte se prosím, že je tato akce oznámena vedení skupiny. Dokud vedení akci neschválí, 
+uvidí ji na webu pouze její organizatoři. Dokončením tohoto formuláře se automaticky odešle mail se žádostí o schválení akce.
+</p>
+
+{form akceForm}
+
+<ul class="error" n:if="$form->hasErrors()">
+  <li n:foreach="$form->errors as $error">{$error}</li>
+</ul>
+
+<p>{label name /}{input name} <span class="no-wrap">{label place /}{input place}</span></p>
+
+<p>{label date_start /}{input date_start} {input time_start}  
+<span class="no-wrap">{label date_end /}{input date_end} {input time_end}</span></p>
+
+<p id="deatline">{label date_deatline class => "hint", title => "Použije se pouze v případě, že bude povoleno přihlašování" /}
+{input date_deatline}</p>
+
+<p>{input login_mem} {label login_mem /} <span class="no-wrap">{input login_org} {label login_org /}</span></p>
+
+<p>{label akce_for_id /}{input akce_for_id} <span class="no-wrap">{input visible} {label visible /}</span></p>
+
+<p>{label member_id /}{input member_id}
+<span class="no-wrap" n:if="isset($form['organizator'])">{label organizator /}{input organizator}</span></p>
+
+<p>{label forum_topic_id /}{input forum_topic_id} <span class="no-wrap">{label anketa_id /}{input anketa_id}</span>
+<p>{label album_id /}{input album_id}</p>
+
+<p>{label file class => 'hint', title => 'Nahraje nový soubor a přepíše starý' /}{input file} 
+ <span class="no-wrap">{label price class => 'hint', title => 'Pokud nevíte přesně, nechte prázné' /}{input price}</span></p>
+
+<p>{label perex class => 'hint', title => 'Tento text bude viditelný pro veřejnost'/}</p>
+<p>{input perex}</p>
+
+<p>{label description class => 'hint', title => 'Tento text uvidí pouze naši členové'/}</p>
+<p>{input description}</p>
+
+<p>{input save}</p>
+
+{/form akceForm}
+
+{*control akceForm*}
+
+{/block}

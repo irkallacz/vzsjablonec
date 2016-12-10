@@ -1,0 +1,8 @@
+#albumList {margin: 0px; padding: 0px; list-style-type: none;}
+#albumList li.row {display: block; list-style-type: none;}
+#albumList li.row a.round {display: block; text-decoration: none;}
+#albumList li.row a:hover h3 {text-decoration: underline;}
+.photoList {display: block; overflow: hidden; white-space: nowrap;}
+.photoList li {float: none; display: inline;}
+.popis span b {color: #ea9419;}
+.popis span.member {font-size: 1.1em;}

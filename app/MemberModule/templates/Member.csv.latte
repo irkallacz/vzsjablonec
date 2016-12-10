@@ -1,0 +1,5 @@
+{contentType text/csv}
+ID,Příjmení,Jméno,Datum narození,Město,Ulice,E-mail
+{foreach $members as $member}
+{$member->id},{$member->surname},{$member->name},{$member->date_born|date:'d. m. Y'},{$member->mesto},{$member->ulice},{$member->mail}
+{/foreach}

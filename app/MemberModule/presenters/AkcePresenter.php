@@ -1,0 +1,510 @@
+<?php
+namespace MemberModule;
+
+use Nette\Application\UI\Form;
+use Nette\Application\UI\Multiplier;
+use Nette\Utils\Strings;
+use Nette\DateTime;
+
+class AkcePresenter extends LayerPresenter{
+	const FORUM_AKCE_ID = 2;
+
+	/** @var \AkceService @inject */
+	public $akceService;
+
+	/** @var \ForumService @inject */
+	public $forumService;
+
+	/** @var \AnketyService @inject */
+	public $anketyService;
+
+	/** @var \GalleryService @inject */
+	public $galleryService;
+
+	/** @var \MemberService @inject */
+	public $memberService;
+
+	/** @var \Nette\Mail\IMailer @inject */
+	public $mailer;
+
+	/** @var \Nette\Database\Table\ActiveRow */
+	private $akce;
+
+	public function actionSendAkceMail($id){
+		$akce = $this->akceService->getAkceById($id);
+		$this->sendConfirmMail($akce);
+		$this->redirect('view',$id);
+	}
+
+	public function renderExport($year = null){
+		$akce = $this->akceService->getAkce()->where('enable',1)->where('confirm',1)->order('date_start ASC');
+
+		if ($year) $akce->where('YEAR(date_start) = ?', $year);
+
+		$this->template->akceList = $akce;
+	}
+
+	public function renderDefault($all = false){
+		$this->template->all = $all;
+
+		$akce[0] = $this->akceService->getAkceByFuture(TRUE);
+		$akce[1] = $this->akceService->getAkceByFuture();
+
+		if (false) $akce[0]->where('enable',1);
+
+		if (!$all) $akce[1]->where('YEAR(date_start) = YEAR(NOW())');
+
+		$this->template->akceAllList = $akce;
+		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());
+		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(),TRUE);
+
+		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+	}
+
+	public function actionView($id){
+		if (!$id) $this->redirect('default');
+
+		$this->akce = $this->akceService->getAkceById($id);
+
+		if ((!$this->akce)or(!$this->akce->enable)) {
+		  $this->flashMessage('Akce nenalezena!','error');
+		  $this->redirect('default');
+		}
+	}
+
+	public function renderView($id){
+		$this->template->delka = $this->akce->date_start->diff($this->akce->date_end);
+		$this->template->akce = $this->akce;
+		$this->template->title = $this->akce->name;
+		$this->template->akceIsOld = $this->akce->date_start < date_create();
+		$this->template->moreOneDay = $this->akce->date_start->format('Y-m-d') != $this->akce->date_end->format('Y-m-d');
+
+		$this->template->prev = $this->akceService->getAkcePrev($id,$this->akce->date_start);
+		$this->template->next = $this->akceService->getAkceNext($id,$this->akce->date_start);
+
+		$this->template->orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
+		$this->template->memberList = $this->akceService->getMembersByAkceId($id,FALSE)->fetchPairs('id','id');
+
+		if ($this->akce->anketa_id){
+		  $anketa = $this->anketyService->getAnketaById($this->akce->anketa_id);
+		  $this->template->anketa = $anketa;
+		}
+
+		if ($this->akce->forum_topic_id){
+		  $this->template->topic = $this->forumService->getTopicById($this->akce->forum_topic_id);
+		}
+
+		$this->registerTexy();
+		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+	}
+
+	public function renderFeedback($id){
+		if (!$id) $this->redirect('default');
+
+		$orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
+
+		if (!$this->getUser()->isInArray($orgList)) {
+			  $this->flashMessage('Nemáte právo prohlížet hodnocení této akce','error');
+			  $this->redirect('Akce:view',$id);
+		}
+
+		$this->template->akce = $this->akceService->getAkceById($id);
+
+		$this->template->ratings = $this->akceService->getRatingByAkceId($id)->order('date_add');
+		$this->template->grade = $this->akceService->getRatingGradeByAkceId($id);
+		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->registerTexy();
+	}
+
+	public function renderEdit($id){
+		if (!$id) $this->redirect('default');
+
+		$form = $this['akceForm'];
+		if (!$form->isSubmitted()) {
+			$akce = $this->akceService->getAkceById($id);
+			if ((!$akce)or(!$akce->enable)) {
+				$this->flashMessage('Akce nenalezena!','error');
+				$this->redirect('default');
+			}
+
+			$orgList = $akce->related('akce_member')->where('organizator',TRUE)->fetchPairs('member_id','member_id');
+
+			if ((!$this->getUser()->isInArray($orgList))and(!$this->getUser()->isInRole($this->name))) {
+				$this->flashMessage('Nemáte právo tuto akci editovat','error');
+				$this->redirect('Akce:view',$id);
+			}
+
+			$form['organizator']->getLabelPrototype()->class('hide');
+			$form['organizator']->getControlPrototype()->class('hide');
+
+			$form->setDefaults($akce);
+
+			$form['time_start']->setDefaultValue($akce->date_start->format('H:i'));
+			$form['time_end']->setDefaultValue($akce->date_end->format('H:i'));
+
+			$form['date_start']->setDefaultValue($akce->date_start->format('Y-m-d'));
+			$form['date_end']->setDefaultValue($akce->date_end->format('Y-m-d'));
+			$form['date_deatline']->setDefaultValue($akce->date_deatline->format('Y-m-d'));
+
+
+			$this->template->title = $akce->name;
+		}
+	}
+
+	public function renderAdd(){
+		$this->template->nova = TRUE;
+		$this->setView('edit');
+	}
+
+	public function actionDelete($id){
+		$orgList = $this->akceService->getMemberListByAkceId($id,TRUE);
+
+		if ((!$this->getUser()->isInArray($orgList))and(!$this->getUser()->isInRole($this->name))) {
+			$this->flashMessage('Nemáte právo tuto akci smazat','error');
+			$this->redirect('Akce:view',$id);
+		}
+
+		$this->akceService->getAkceById($id)->update(array('enable'=>0));
+		$this->flashMessage('Akce byla smazána');
+		$this->redirect('Akce:default');
+	}
+
+	public function actionAllow($id,$allow){
+		if (!$this->getUser()->isInRole('Confirm')) {
+			$this->flashMessage('Nemáte právo tuto akci povolit ani zakázat','error');
+		}else {
+			$values = array('confirm' => $allow);
+
+			if ($allow) {
+			  $this->flashMessage('Akce byla povolena');
+			  $values['date_update'] = new Datetime();
+			}
+			else $this->flashMessage('Akce byla zakázána');
+
+			$this->akceService->getAkceById($id)->update($values);
+		}
+		$this->redirect('view',$id);
+	}
+
+	public function createComponentPostsList(){
+		return new \PostsListControl(5, 0, $this->forumService, TRUE);
+	}
+
+    protected function createComponentAlbum(){
+        return new \AlbumPreviewControl($this->galleryService);
+    }
+
+    public function renderVcal($id = 0,$future = false){
+	  if ($id) {
+	  $akce = $this->akceService->getAkceById($id);
+	  $this->template->akce = array($akce);
+	}
+	else $this->template->akce = $this->akceService->getAkceByFuture($future)->where('confirm',1);
+
+	  $httpResponse = $this->context->getByType('Nette\Http\Response');
+
+	  if ($id) $slug = Strings::truncate(Strings::webalize($akce->name),20,''); else $slug = 'akce';
+
+	  $httpResponse->setHeader('Content-Disposition','attachment; filename="'.$slug.'.ics"');
+
+	}
+
+	public function sendConfirmMail($akce){
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . '/../templates/Mail/akceConfirm.latte');
+		$template->akce = $akce;
+
+		$mail = $this->getNewMail();
+
+		$member = $akce->member;
+
+		$mail->addReplyTo($member->mail,$member->surname.' '.$member->name);
+
+		foreach($this->memberService->getMembersByRole('Confirm') as $member)
+		  $mail->addTo($member->mail,$member->surname.' '.$member->name);
+
+		$mail->setBody($template);
+		$this->mailer->send($mail);
+	}
+
+	protected function createComponentMembers(){
+		return new \MembersListControl($this->akceService,$this->akce);
+	}
+
+	protected function createComponentOrganizators(){
+		return new \MembersListControl($this->akceService,$this->akce,TRUE);
+	}
+
+	public function createComponentTexylaJs(){
+		$files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
+		$files->addFiles(['texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js']);
+		$files->addFiles(['../plugins/table/table.js']);
+		$files->addFiles(['../plugins/color/color.js']);
+		$files->addFiles(['../plugins/symbol/symbol.js']);
+		$files->addFiles(['../plugins/textTransform/textTransform.js']);
+		$files->addFiles([WWW_DIR . '/js/texyla_akce.js']);
+		$files->addFiles([WWW_DIR . '/js/texyla_public.js']);
+
+		$compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
+		$compiler->addFileFilter(new \Webloader\Filter\jsShrink);
+
+		return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+	}
+
+	protected function createComponentAkceForm(){
+		$datum = new Datetime();
+		$form = new Form;
+
+		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
+
+		$form->addText('name', 'Název', 30)
+		  ->setRequired('Vyplňte %label akce');
+
+		$form->addText('place', 'Místo', 50)
+		  ->setRequired('Vyplňte %label akce');
+
+		$form->addText('date_start', 'Začátek', 10)
+		  ->setRequired('Vyplňte datum začátku akce')
+		  ->setType('date')
+		  ->setDefaultValue($datum->format('Y-m-d'))
+		  ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
+		  ->setAttribute('onchange','copyDate()')
+		  //->setAttribute('onkeyup','copyDate()')
+		  ->setAttribute('class','date');
+
+		$form->addText('time_start',null,5)
+		  ->setRequired('Vyplňte čas začátku akce')
+		  ->addRule(Form::LENGTH, 'Čas musí mít právě %d znaků',5)
+		  ->addRule(Form::PATTERN, 'Čas musí být ve formátu HH:MM', '[0-2]{1}\d{1}:[0-5]{1}\d{1}')
+		  ->setRequired('Vyplňte čas začátku akce')
+		  ->setType('time')
+		  ->setAttribute('onchange','copyTime()')
+		  ->setAttribute('class','time')
+		  ->setDefaultValue($datum->format('H:i'));
+
+			$form->addText('date_end', 'Konec', 10)
+		  ->setRequired('Vyplňte datum konce akce')
+		  ->setType('date')
+		  ->setDefaultValue($datum->format('Y-m-d'))
+		  ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
+		  ->addRule(function ($item, $arg) {
+			  return date_create($item->value) >= date_create($arg);
+			  }, 'Datum konce akce nesmí být menší než datum začátku akce', $form['date_start'])
+		  ->setAttribute('class','date');
+
+			$form->addText('time_end',null,5)
+		  ->setRequired('Vyplňte čas konce akce')
+		  ->addRule(Form::LENGTH, 'Čas musí mít právě %d znaků',5)
+		  ->addRule(Form::PATTERN, 'Čas musí být ve formátu HH:MM', '[0-2]{1}\d{1}:[0-5]{1}\d{1}')
+		  ->setRequired('Vyplňte čas konce akce')
+		  ->setType('time')
+		  ->setAttribute('class','time')
+		  ->setDefaultValue($datum->format('H:i'));
+
+		$form->addCheckbox('login_mem', 'Povoleno přihlašování účastníků')
+		  ->setDefaultValue(TRUE)
+		  ->setAttribute('onclick','doTheTrick()');
+
+		$form->addCheckbox('login_org', 'Povoleno přihlašování organizátorů')
+		  ->setDefaultValue(FALSE)
+		  ->setAttribute('onclick','doTheTrick()');
+
+		$form->addText('date_deatline', 'Přihlášení do', 10)
+		  ->setType('date')
+		  ->setDefaultValue($datum->format('Y-m-d'))
+		  ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
+		  ->setAttribute('class','date')
+		  ->addRule(function ($item, $arg) {
+			  return date_create($item->value) <= date_create($arg);
+			  }, 'Datum přihlášení musí být menší než datum začátku akce', $form['date_start'])
+		  ->addConditionOn($form['login_mem'],Form::EQUAL,TRUE)
+			->addRule(Form::FILLED,'Vyplňte datum konce přihlašování');
+
+		$form['date_deatline']
+		  ->addConditionOn($form['login_org'],Form::EQUAL,TRUE)
+			->addRule(Form::FILLED,'Vyplňte datum konce přihlašování');
+
+		$form->addSelect('forum_topic_id','Fórum',
+		  $this->forumService->getTopicsByForumId(self::FORUM_AKCE_ID)->fetchPairs('id','title')
+		)->setPrompt('');
+
+		$form->addSelect('anketa_id','Anketa',
+		  $this->anketyService->getAnkety()->fetchPairs('id','title')
+		)->setPrompt('');
+
+		$form->addSelect('album_id','Album',
+		  $this->galleryService->getAlbums()->order('date_add DESC')->fetchPairs('id','name')
+		)->setPrompt('');
+
+		$form->addSelect('akce_for_id', 'Určeno',
+		  $this->akceService->getAkceForInArray()
+		)->setDefaultValue(1);
+
+		$form->addCheckbox('visible', 'Viditelná veřejnosti')->setDefaultValue(TRUE);
+
+			$form->addSelect('member_id', 'Zodpovědná osoba',
+		  $this->akceService->getMembers()->fetchPairs('id','jmeno'))
+		->setDefaultValue($this->getUser()->getId());
+
+		$form->addSelect('organizator', 'Organizátor',
+			$this->akceService->getMembers()->fetchPairs('id','jmeno'))
+		  ->setDefaultValue($this->getUser()->getId())
+		  ->setPrompt('není')
+		  ->addConditionOn($form['login_org'],Form::EQUAL, FALSE)
+			->addRule(FORM::FILLED,'Musíte vybrat organizátora');
+
+		$form->addUpload('file','Soubor')
+		  ->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 10 MB.', 10 * 1024 * 1024);
+
+		$form->addText('price', 'Cena', 7)
+		  ->setType('number')
+		  ->setOption('description', 'Kč')
+		  ->addCondition(Form::FILLED)
+			->addRule(Form::INTEGER, '%label musí být číslo');
+
+		$form->addTextArea('perex', 'Stručný popis')
+		->setAttribute('class','texyla');
+
+
+		$form->addTextArea('description', 'Podrobný popis')
+		  ->setAttribute('class','texyla')
+		  ->setRequired('Vyplňte %label akce');
+
+		$form->addSubmit('save', 'Ulož')->setAttribute('class', 'default');
+			$form->onSuccess[] = callback($this, 'akceFormSubmitted');
+
+		return $form;
+	}
+
+	public function akceFormSubmitted(Form $form){
+		$id = (int) $this->getParameter('id');
+
+		$data = $form->getValues();
+		$datum = new Datetime();
+
+		$data->name = ucfirst($data->name);
+
+		$data->date_update = $datum;
+		$data->date_start = new Datetime($data->date_start.' '.$data->time_start);
+		$data->date_end = new Datetime($data->date_end.' '.$data->time_end);
+		unset($data->time_start);
+		unset($data->time_end);
+
+		$data->date_deatline = new Datetime($data->date_deatline);
+
+		if (!$data->price) unset($data->price);
+
+		$org = $data->organizator;
+		unset($data->organizator);
+
+
+		if (($form['file']->isFilled()) and ($data->file->isOK())){
+		  $data->file->move(WWW_DIR.'/doc/akce/'.$data->file->getSanitizedName());
+		  $data->file = $data->file->getSanitizedName();
+		}else unset($data->file);
+
+		if ($id) {
+		  $this->akceService->getAkceById($id)->update($data);
+		  $this->flashMessage('Akce byla změněna');
+		}else {
+		  $data->date_add = $datum;
+
+		  $row = $this->akceService->addAkce($data);
+
+		  if ($org) $this->akceService->addMemberToAction($org,$row->id,TRUE);
+
+		  $this->sendConfirmMail($row);
+
+		  $this->flashMessage('Akce byla přidána');
+
+		  $id = $row->id;
+		}
+
+		$this->redirect('Akce:view',$id);
+	  }
+
+	protected function createComponentUploadBillForm(){
+		$form = new Form;
+
+		$form->addUpload('file');
+		  // ->addRule(Form::MIME_TYPE,'Uploadovaný soubor můsí být ve formátu .xls',
+		  //   'application/vnd.ms-office,application/vnd.ms-excel,application/msexcel,application/x-msexcel,application/x-ms-excel,application/vnd.ms-excel,application/x-excel,application/x-dos_ms_excel,application/xls'
+		  // );
+
+		$form->addSubmit('ok', '')
+		  ->setAttribute('class','myfont')
+		  ->getControlPrototype()->title='Nahrát soubor s vyúčtovaním';
+
+		$form->onSuccess[] = callback($this, 'uploadBillFormSubmitted');
+
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['controls']['container'] = NULL;
+		$renderer->wrappers['pair']['container'] = NULL;
+		$renderer->wrappers['label']['container'] = NULL;
+		$renderer->wrappers['control']['container'] = NULL;
+
+		return $form;
+	}
+
+	public function uploadBillFormSubmitted(Form $form){
+		$id = (int) $this->getParameter('id');
+		$data = $form->getValues();
+
+		$akce = $this->akceService->getAkceById($id);
+
+		if (($form['file']->isFilled()) and ($data->file->isOK())){
+		  $data->file->move(WWW_DIR.'/doc/vyuctovani/'.$id.'-'.Strings::webalize($akce->name).'.xls');
+
+		  $akce->update(array('bill' => 1));
+		  $this->redirect('Akce:view',$id);
+		}
+	}
+
+	public function handleAddRating() {
+		$this->template->showRatingForm = true;
+		$akce_id = (int) $this->getParameter('id');
+		$form = $this['ratingForm'];
+
+		if (!$form->isSubmitted()) {
+		$values = $this->akceService->getRatingByAkceAndMemberId($akce_id,$this->getUser()->getId());
+		if ($values) $form->setDefaults($values);
+		}
+
+		$this->redrawControl('ratingForm');
+	}
+
+	protected function createComponentRatingForm(){
+		$form = new Form;
+
+		$form->getElementPrototype()->name = 'ratingForm';
+
+		$form->addCheckbox('anonymous','Anonymní')->setDefaultValue(FALSE);
+
+		$form->addRadioList('rating', 'Známka', array(0=>'neznámkovat',1=>1,2=>2,3=>3,4=>4,5=>5))
+		  ->setDefaultValue(0)->getSeparatorPrototype()->setName(NULL);
+
+		$form->addTextArea('message','Slovní hodnocení');
+
+		$form->addSubmit('ok', 'Uložit');
+
+		$form->onSuccess[] = callback($this, 'ratingFormSubmitted');
+
+		return $form;
+	}
+
+	public function ratingFormSubmitted(Form $form){
+		$akce_id = (int) $this->getParameter('id');
+		$member_id = $this->getUser()->getId();
+		$values = $form->getValues();
+
+		$rating = $this->akceService->getRatingByAkceAndMemberId($akce_id,$member_id);
+
+		if ($rating) $this->akceService->updateRatingByAkceAndMemberId($akce_id,$member_id,$values);
+		else $this->akceService->addRatingByAkceAndMemberId($akce_id,$member_id,$values);
+
+		$this->flashMessage('Hodnocení bylo změněno');
+
+		$this->redirect('Akce:view',$akce_id);
+	}
+
+}

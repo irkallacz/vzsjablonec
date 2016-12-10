@@ -1,0 +1,48 @@
+{block #head}
+<link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
+
+<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+.inline-nav {list-style-type: none; padding: 0px; margin-bottom: 1ex;}
+.inline-nav li {display: inline;}
+
+#frm-addPostForm table, #frm-addTopicForm table {width: 90%}
+#frm-addPostForm table td textarea, #frm-addTopicForm table td textarea {width: 100%}
+#frm-addTopicForm table #frm-addTopicForm-title {width: 100%}
+</style>
+
+{control texylaJs}
+
+<script type="text/javascript">
+//<![CDATA[
+$.texyla.setDefaults({
+	baseDir: {$basePath}+'/texyla',
+	previewPath: {link texyPreview}
+});
+
+$(function () {
+	$('.texyla').texyla(forum);
+});
+//]]>
+</script>
+
+{/block}
+
+<h1 n:block="title">Fórum</h1>
+
+{block #content}
+
+<ul class="inline-nav">
+<li><a n:href="Forum:">Fórum</a></li>
+<li>» <a n:href="Forum:topic,$topic->forum->id">{$topic->forum->title}</a></li>
+<li>» <a n:href="Forum:view,$topic->id">{$topic->title}</a></li>
+</ul>
+
+<h2>{if isset($isEdit)}Upravit{else}Přidat{/if} {if isset($isTopic)}téma{else}příspěvek{/if}</h2>
+
+{if isset($isTopic)}{control addTopicForm}{else}{control addPostForm}{/if}
+
+{/block}

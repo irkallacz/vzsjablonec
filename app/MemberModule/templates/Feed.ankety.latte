@@ -1,0 +1,24 @@
+{contentType application/rss+xml; charset=utf-8}
+{block #content}
+<title>VZS Jablonec Member Ankety</title>
+<link>{link //Ankety:default}</link>
+<description>Ankety členů VZS Jablonec</description>
+<item n:foreach="$items as $item">
+	<title>{$item->title}</title>	
+	{var $member = $item->member}
+	{* <dc:creator>{$member->surname} {$member->name}</dc:creator> *}
+	<author>{$member->mail} ({$member->surname} {$member->name})</author>
+	<link>{link //Ankety:view,$item->id}</link>
+	<guid isPermaLink="false">{$item->id}@{link Ankety:view}</guid>
+	<description>
+	{$item->text|texy}
+
+	{block|escape}
+	<ul n:inner-foreach="$item->related('anketa_odpoved')->order('text') as $odpoved">
+		<li>{$odpoved->text}</li>
+	</ul>
+	{/block}
+	</description>
+	<pubDate>{$item->date_add|date:DATE_RSS}</pubDate>
+</item>
+{/block}

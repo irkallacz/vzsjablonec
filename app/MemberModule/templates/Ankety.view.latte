@@ -1,0 +1,61 @@
+{block #head}
+<link rel="stylesheet" href="{$basePath}/css/anketa.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+	h2 {margin-top: 1ex;}
+	#otazka {clear: right;}
+	#members .logged {color: #c22;}
+	ul#members {list-style-type: none; }
+	ol#members {margin-bottom: 1em;}
+</style>
+<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
+{/block}
+
+<h1 n:block="title">Anketa</h1>
+
+{block #content}
+
+<ul class="buttonMenu" n:if="($user->id == $anketa->member_id) or ($user->isInRole($presenter->name))">
+	<li><a n:href="edit,$anketa->id" class="buttonLike"><span class="icon-pencil"></span> editovat</a></li>
+	<li><a n:href="delete,$anketa->id" class="buttonLike confirm" data-query="Opravdu chcete tuto anketu smazat?">
+		<span class="icon-trash"></span> smazat</a></li>
+	<li>
+	{if $anketa->locked}<a n:href="lock,$anketa->id,0" class="buttonLike"><span class="icon-lock-open"></span> odemknout</a>
+	{else}<a n:href="lock,$anketa->id,1" class="buttonLike"><span class="icon-lock"></span> zamknout</a>
+	{/if}
+	</li>
+</ul>
+
+<h2>{$anketa->title|firstUpper}</h2>
+
+{control anketa $anketa->id}
+
+{if}
+<h3>Hlasovali</h3>
+
+{if $anketa->locked}
+<ul n:inner-foreach="$odpovedi as $odpoved" id="members">
+{if}
+	<li>{$odpoved->text|firstUpper}
+	<ol id="members" n:inner-foreach="$odpoved->related('anketa_member','anketa_odpoved_id') as $item">
+		<li>
+			<a n:class="$item->member_id == $user->getId() ? logged" n:href="Member:view,$item->member_id">
+				{$item->ref('member')->surname} {$item->ref('member')->name}
+			</a>
+		</li>
+	</ol>
+</li>
+{/if isset($item)}
+</ul>
+{else}
+<ol id="members" n:inner-foreach="$members as $item">
+	<li>
+		<a n:class="$item->member_id == $user->getId() ? logged" n:href="Member:view,$item->member_id">
+			{$item->ref('member','member_id')->surname} {$item->ref('member','member_id')->name}
+		</a>
+	</li>
+</ol>
+{/if}
+{/if isset($item)}
+
+{/block}

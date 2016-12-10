@@ -1,0 +1,63 @@
+{block #head}
+<link rel="stylesheet" type="text/css" href="{$baseUri}/css/photolist.css">
+<style type="text/css" n:syntax="off">
+	.slides_container {list-style-type: none; width: 570px; display: none; padding: 0px; margin: 1em auto;}
+	.slides_container li {width: 570px; height: 300px; display:block; text-align: center; overflow: hidden;}
+	.slides_container li img { vertical-align: middle; max-height: 270px; max-width: 570px; border: 10px solid white; 
+		border-radius: 5px; box-shadow: 7px 7px 0px #161b1c;}
+	#slides #controls {text-align: center;}
+	#slides #controls .prev {margin-right: 10em;}
+	#slides {position: relative;}
+	#slides .photoList {position: absolute; top: 25%; min-width: 22em; width: 99%; max-width: 76em; text-align: center;}
+</style>
+
+<script src="{$baseUri}/js/slides.min.jquery.js"></script>	
+<script>
+	$(function(){
+		$('#slides').slides({
+			preload: false,
+			preloadImage: '{!$baseUri}/img/fancybox_loading.gif',
+			generatePagination: false,
+			play: 5000,
+			pause: 2500,
+			hoverPause: true
+		});
+	});
+</script>
+{/block}
+
+<h2 n:block="title">Novinky</h2>
+
+{block #content}
+
+<div id="slides">
+	<ul class="photoList">
+		<li n:foreach="$photos as $image">{include #image image => $image}</li>
+	</ul>
+
+	<ul class="slides_container" n:inner-foreach="$photos as $image">
+	<li><div class="slide">
+		{var $album = $image->ref('album')}
+		<a n:href="Album:view#$image->filename,$album->id.'-'.$album->slug" title="{$album->name}">
+		<img src="{$baseUri}/{$photoDir.'/'.$image->album_id.'/'.$image->filename}" alt="{$image->filename}">
+		</a>
+	</div></li>
+	</ul>
+<div id="controls">
+	<a href="#" class="prev">Předchozí</a>
+	<a href="#" class="next">Další</a>
+</div>
+</div>
+
+
+<h2>Nejnovější alba</h2>
+
+<ul id="albumList" n:inner-foreach="$albums as $album">
+<li class="row">
+{include #photoList, album => $album}
+</li>
+</ul>
+
+<p><a n:href="Album:default">Všechna alba →</a></p>
+
+{/block}

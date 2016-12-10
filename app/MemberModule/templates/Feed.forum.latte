@@ -1,0 +1,17 @@
+{contentType application/rss+xml; charset=utf-8}
+{block #content}
+<title>VZS Jablonec Member Forum{if isset($forum)} : {$forum->title|firstUpper}{/if}{if isset($topic)} : {$topic->title|firstUpper}{/if}</title>
+<link>{link //Forum:default}</link>
+<description>Forum členů VZS Jablonec</description>
+<item n:foreach="$items as $item">
+	{var $topic = $item->ref('forum_post','forum_topic_id')}
+	<title>{$topic->title|firstUpper} ({$item->forum->title|firstUpper})</title>	
+	{var $member = $item->member}
+	{* <dc:creator>{$member->surname} {$member->name}</dc:creator> *}
+	<author>{$member->mail} ({$member->surname} {$member->name})</author>
+	<link>{link //Forum:viewPost,$item->id}</link>
+	<guid isPermaLink="false">{$item->id}@{link Forum:default}</guid>
+	<description>{$item->text|texy}</description>
+	<pubDate>{$item->date_add|date:DATE_RSS}</pubDate>
+</item>
+{/block}

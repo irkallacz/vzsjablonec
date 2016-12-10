@@ -1,0 +1,62 @@
+{block #head}
+<link rel="alternate" title="VZS Jablonec Member Forum" n:href="//Feed:forum" type="application/rss+xml">
+
+<link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+h3.headerLike {margin: 0px; padding: 0px 1em 0.5ex 1em;} 
+
+table#items td, table th {vertical-align: top;}
+table#items th {padding: 10px 5px 20px 5px;}
+table#items {border-collapse: collapse; width: 98%; }
+.col {padding: 0px;}
+
+.borderLike {border-left: none; border-right: none; border-bottom: none;}
+
+table#items .right .headerLike {font-style: italic; text-align: center;}
+table#items .right div {margin-right: 1ex;} 
+table#items .first {font-size: 1.1em;}
+</style>
+{/block}
+
+<h1 n:block="title">Forum</h1>
+
+{block #content}
+
+<table id="items">
+<tr class="first"><th>Forum</th><th>Témata</th><th>Příspěvky</th><th>Poslední příspěk</th></tr>
+{foreach $forum as $f}
+	{var $post = $f->related('forum_post')->order('date_add DESC')->fetch()}
+
+	<tr n:class="borderLike,hoverLike,(($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',
+	 (($post)and($post->member_id == $user->getId())) ? logged">
+	<td class="col"><a class="noLink" title="{$f->title|firstUpper}" n:href="Forum:topic,$f->id"><div>
+		<h3 class="headerLike">{$f->title|firstUpper}</h3> <p>{$f->text|truncate:50}</p></div>
+	</a></td>
+
+	<td class="center">{$f->related('forum_post')->where('row_number = ?',1)->count('id')}</td>
+	<td class="center">{$f->related('forum_post')->where('row_number > ?',1)->count('id')}</td>
+	<td class="col">
+	
+	{if $post} <a class="noLink" title="{$post->date_add|timeAgoInWords}" n:href="Forum:viewPost,$post->id">
+	<div class="right">
+	  <h3 class="headerLike">{$post->date_add|date:'%H:%M %d.%m.%Y'}</h3>
+	  <div><span class="char">⇨</span> od <b>{$post->member->surname} {$post->member->name}</b></div>
+	</div>
+	</a>
+	{/if}	
+	</td>
+	
+	</tr>
+{/foreach}
+</table>
+
+<p class="float_right">
+<a n:href="Feed:forum" class="buttonLike"><span class="icon-rss"></span> RSS celého fóra</a>
+</p>
+
+<p>
+<a n:href="search" class="buttonLike"><span class="icon-search"></span> Hledat ve fóru</a>
+</p>
+
+{/block}

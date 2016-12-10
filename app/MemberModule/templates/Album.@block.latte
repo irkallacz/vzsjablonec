@@ -1,0 +1,41 @@
+{define albumCss}
+<style type="text/css" n:syntax="off">
+#albumList {margin: 0px; padding: 0px; list-style-type: none;}
+#albumList li.row {display: block; list-style-type: none;}
+#albumList li.row a.round {display: block; text-decoration: none;}
+#albumList li.row a:hover h3 {text-decoration: underline;}
+.photoList {display: block; overflow: hidden; white-space: nowrap; list-style-type: none; padding: 0;}
+.photoList li {margin: 3px 3px 3px 0; padding: 1px; float: left; width: 150px; height: 100px; font-size: 4em; 
+  text-align: center; font-size: 1em; float: none; display: inline;}
+.photoList li a {display: block;}
+.photoList li img {border: 1px solid gray; width: 150px; height: 100px;}
+.photoList li a:hover img, .photoList li a:active img, .photoList li a:focus img {border-color: #ea9419;}
+</style>
+{/define}
+
+{define albumPopis}
+<div class="popis">
+  <span class="no-wrap"><b>Počet fotografií:</b> {$pocet}</span>
+  <span class="no-wrap" title="{$album->date|date:'%d. %B %Y'}"><b>Datum:</b> {$album->date|timeAgoInWords}</span>
+  <span class="no-wrap" title="{$album->date_add|date:'%d. %B %Y %H:%M'}"><b>Přidáno:</b> {$album->date_add|timeAgoInWords}</span>
+  <span class="no-wrap" title="{$album->date_update|date:'%d. %B %Y %H:%M'}" n:if="$album->date_update != $album->date_add"><b>Upraveno:</b> {$album->date_update|timeAgoInWords}</span>
+  <span class="no-wrap"><b>{if $album->visible}Viditelné veřejnosti{else}Neviditelné pro veřejnost{/if}</b></span>
+</div>
+{/define}
+
+{define image}
+<img src="{$photoUri}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" width="150" height="100" alt="{$image->filename}">
+{/define}
+
+{define photoList}
+<a href="{$photoUri}/album/{$album->id}-{$album->slug}/">{$album->name}</a>
+  
+  {var $photos = $album->related('photo')->order('order, date_add')->limit(8)}
+  
+  <a href="{$photoUri}/album/{$album->id}-{$album->slug}/" title="{$album->text|truncate:70}" class="round">
+  <ul n:inner-foreach="$photos as $image" class="photoList">
+    <li>{include #image}</li>
+  </ul></a>
+  
+  {include #albumPopis, album => $album, pocet => $pocet}
+{/define}

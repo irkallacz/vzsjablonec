@@ -1,0 +1,55 @@
+{block #head}
+<style type="text/css" n:syntax="off">
+<!--
+#text {padding-top: 1ex}
+#members li, #members {list-style-type: none;}
+#members {margin-left: 2em; padding-left: 0px;}
+
+#frm-memberSearchForm {margin-left: 2em;}
+#frm-memberSearchForm-search {font-size: 2ex; padding: 0.5ex 1ex; vertical-align: middle;}
+#frm-memberSearchForm-ok {height: 5ex;}
+#frm-memberSearchForm div {display: inline;}
+
+#frm-uploadMembersForm input {font-size: 2.3ex;}
+
+#menu_top {margin-top: 0em; text-align: right; float: right;}
+#menu_top li {list-style-type: none; display: inline;}
+#menu_top .buttonLike {margin-top: 1ex;}
+//-->
+</style>
+{/block}
+
+<h1 n:block="#title">Adresář</h1>
+
+{block #content}
+
+<ul class="buttonMenu">
+<li><a n:href="vcfArchive" class="buttonLike"><span class="icon-users"></span> stáhnout vizitky</a></li>
+<li n:if="$user->isInRole($presenter->name)"><a n:href="csv" class="buttonLike"><span class="icon-table"></span> stáhnout exel</a></li>
+<li n:if="$user->isInRole($presenter->name)"><a n:href="add" class="buttonLike"><span class="icon-plus"></span> nový člen</a></li>
+</ul>
+
+{form memberSearchForm}
+<ul class="error" n:if="$form->hasErrors()">
+  <li n:foreach="$form->errors as $error">{$error}</li>
+</ul>
+<span class="no-wrap">{input search autofocus => TRUE} {input ok}</span>
+{/form}
+
+<ol id="members">
+{foreach $members as $member}
+<li><a n:href="Member:view, $member->id">{$member->surname} {$member->name}</a></li>
+{/foreach}
+</ol>
+
+{* <div n:if="$user->isInRole($presenter->name)">
+<h3>Aktualizovat pomocí souboru</h3>
+{form uploadMembersForm}
+<ul class="error" n:if="$form->hasErrors()">
+  <li n:foreach="$form->errors as $error">{$error}</li>
+</ul>
+<div class="no-wrap">{input file} {input ok}</div>
+{/form}
+</div>
+ *}
+{/block}

@@ -1,0 +1,22 @@
+{block #head}
+<link rel="stylesheet" href="{$baseUri}/css/photolist.css" type="text/css">
+{/block}
+
+
+{block #content}
+
+<ul class="menu float_right" n:if="$user->isLoggedIn()">
+	<li><a n:href="default" class="buttonLike white">podle data</a></li>
+	<li><a n:href="users" class="buttonLike">podle uživatele</a></li>
+</ul>
+
+<h2 n:block="title">Alba</h2>
+
+<ul id="albumList" n:inner-foreach="$albums as $album">
+<li class="row">
+{include #photoList, album => $album}
+</li>
+
+</ul>
+
+{/block}

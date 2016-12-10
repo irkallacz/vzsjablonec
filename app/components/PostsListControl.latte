@@ -1,0 +1,49 @@
+<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+
+<h3 n:if="$topic->locked" class="center"><span class="icon-lock"></span> Toto téma bylo uzavřeno.</h3>
+
+<table id="posts" n:inner-foreach="$posts as $post">
+    <tr id="p{$post->id}" n:class="top,borderLike,$post->date_add > $user->getIdentity()->date_last ? 'new', $post->member_id == $user->getId() ? logged">
+        <td>
+            <a href="{plink Forum:viewPost, $post->id}" title="{$post->date_add|timeAgoInWords}" class="noLink">
+                <div class="headerLike">{$post->date_add|date:'%d.%m.%Y %H:%M'}</div>
+            </a>
+        </td>
+        <td class="right">
+            <span class="headerLike">#{$post->row_number}</span>
+
+            {if !$topic->locked}
+                <a class="buttonLike" href="{plink Forum:citePost,$post->id}"><span class="icon-quote-left"></span> citace</a>
+                {if $user->id == $post->member_id or $user->isInRole('Member:Forum')}
+                    <a class="buttonLike" href="{plink Forum:edit,$post->id}"><span class="icon-pencil"></span> editovat</a>
+                    <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete,$post->id}"><span class="icon-trash"></span> smazat</a>
+                {/if}
+            {/if}
+
+            {if $post->id == $topic->id and ($user->id == $post->member_id or $user->isInRole('Member:Forum'))}
+                {if $topic->locked}
+                    <a class="buttonLike" href="{plink Forum:lockTopic,$post->id,0}">
+                        <span class="icon-lock-open"></span> odemknout
+                    </a>
+                {else}
+                    <a class="buttonLike" href="{plink Forum:lockTopic,$post->id,1}">
+                        <span class="icon-lock"></span> zamknout
+                    </a>
+                {/if}
+            {/if}
+        </td>
+    </tr>
+    <tr class="bottom">
+        <td class="right">
+            <span class="char">⇨</span> od <a href="{plink Member:view,$post->member_id}" class="noLink" title="profil uživatele">
+                {$post->member->surname} {$post->member->name}</a>
+        </td>
+        <td class="forum_post">
+            {$post->text|texy|noescape}
+
+            <p n:if="$post->date_add != $post->date_update" class="update" title="{$post->date_update|timeAgoInWords}">
+                Upraveno ({$post->date_update|date:'%d.%m.%Y %H:%M'})
+            </p>
+        </td>
+    </tr>
+</table>

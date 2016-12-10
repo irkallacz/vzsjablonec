@@ -1,0 +1,24 @@
+table#posts td, table th {vertical-align: top; padding: 1ex 1ex; padding: 0px;}
+table#posts {border-collapse: collapse; width: 98%;}
+table#posts .headerLike {text-align: center;}
+table#posts .borderLike {border-width: 3px 0px 0px 0px;}
+table#posts .top .right {direction: rtl;}
+table#posts .bottom .right {padding-right: 1em;}
+table#posts .bottom .right .noLink {font-weight: bold;}
+
+table#posts .buttonLike { border-radius: 0px 0px 10px 10px;  padding-top: 2px; vertical-align: top;
+    background-image: none; background-color: white; color: #0089D2; direction: ltr;}
+
+table#posts .logged .buttonLike {color: #CC2222}
+table#posts .new .buttonLike {color: #12397e}
+
+table#posts .new .buttonLike:hover, table#posts .new .buttonLike:active,
+table#posts .new .buttonLike:focus, table#posts .logged .buttonLike:hover,
+table#posts .logged .buttonLike:active, table#posts .logged .buttonLike:focus {color: white}
+
+.quote {font-family: serif;}
+
+a.buttonLike:hover .lock {visibility: hidden;}
+
+table#posts .forum_post {max-width: 45em; padding-left: 1ex}
+.inline-nav li {font-size: inherit;}

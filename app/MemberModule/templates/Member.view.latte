@@ -1,0 +1,46 @@
+{block #head}
+<style type="text/css" n:syntax="off">
+#photo {margin-right: 1em; margin-bottom: 1em;}
+.out {margin-left: 1em;}
+#member {width: 75%;}
+</style>
+{/block}
+
+<h1 n:block="#title">Osobní profil</h1>
+
+{block #content}
+<ul class="buttonMenu">
+<li><a n:if="$user->isInRole($presenter->name) or $member->id==$user->getId()" class="buttonLike" n:href="edit,$member->id"><span class="icon-pencil"></span> editovat</a></li>
+<li><a n:if="$user->isInRole($presenter->name)" class="buttonLike" n:href="delete,$member->id"><span class="icon-trash"></span> smazat</a></li>
+</ul>
+
+<div n:if="$fileExists" class="float_left" id="photo"><img src="{$basePath}/img/portrets/{$member->id}.jpg" alt="fotografie"></div>
+
+
+<a class="buttonLike head" n:href="vcf, $member->id" title="stáhnout vizitku ve formátu .vfc">
+	<span class="icon-user"></span> {$member->name} {$member->surname}
+</a>
+
+<div id="member" class="float_left">
+
+<p><b>Osobní číslo:</b> {$member->id}</p>
+<p><b>Věk:</b> {$narozeni->format('%y')}</p>
+<p><b>Zaměstnání/Škola:</b> {$member->zamestnani}</p>
+
+<h3>Adresa:</h3>
+<address class="out">
+{$member->ulice}<br>
+{$member->mesto}
+</address>
+
+<h3>Kontakty:</h3>
+
+<p class="out"><b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a></p>
+<p class="out"><b>Telefon:</b> {$member->telefon}</p>
+
+<div id="poznamka">
+{!$member->text|texy}
+</div>
+
+</div>
+{/block}

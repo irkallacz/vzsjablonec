@@ -1,0 +1,39 @@
+{block #head}
+<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+h2 {margin-top: 1em;}
+#ui-datepicker-div {font-size: 0.9em;}
+</style>
+
+<script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+
+<script type="text/javascript">
+	$(function() {		
+		var elem = document.createElement('input');
+      	elem.setAttribute('type', 'date');
+
+      	if ( elem.type === 'text' ) {    
+			$("#frm-addZapisForm-datum").datepicker();
+		}
+	});
+</script>
+{/block}
+
+<h1 n:block="title">Nový dokument</h1>
+
+{block #content}
+<h2>Nový zápis ze schůze</h2>
+
+{control addZapisForm}
+
+<h2>Aktualizovat soubor s hlasováním</h2>
+
+{control addHlasovaniForm}
+
+<h2>Nahrání nového dokumentu</h2>
+
+{control addDokumentForm}
+
+{/block}

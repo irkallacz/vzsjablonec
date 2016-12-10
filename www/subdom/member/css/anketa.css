@@ -1,0 +1,6 @@
+#odpovedi {border-collapse: collapse; margin: 1em auto; width: 98%}
+#odpovedi td {padding: 0.5ex 1ex;}
+#odpovedi th {padding: 0.5ex 2ex; font-weight: normal;}
+#odpovedi th.min {text-align: left}
+#odpovedi .headerLike {border-radius: 1em; height: 1em; padding: 0px}
+.bar {min-width: 20em;}

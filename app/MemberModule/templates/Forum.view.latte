@@ -1,0 +1,61 @@
+{block #head}
+<link rel="alternate" title="VZS Jablonec Member Forum : {$topic->title}" n:href="//Feed:forum, tid => $topic->id" type="application/rss+xml">
+
+<link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
+
+<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+
+{control texylaJs}
+
+<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$.texyla.setDefaults({
+	baseDir: {$basePath}+'/texyla',
+	previewPath: {link forumTexyPreview}
+});
+
+$(function () {
+	$('.texyla').texyla(forum);
+});
+//]]>
+</script>
+
+<link rel="stylesheet" href="{$basePath}/css/forum.posts.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+#frm-addPostForm table {width: 90%; margin: 0px auto;}
+#frm-addPostForm table td textarea {width: 100%}
+</style>
+{/block}
+
+<h1 n:block="title">Fórum</h1>
+
+{block #content}
+
+<ul class="inline-nav">
+<li><a n:href="Forum:">Fórum</a></li>
+<li>» <a n:href="Forum:topic,$topic->forum->id">{$topic->forum->title|firstUpper}</a></li>
+<li>» {$topic->title|firstUpper}</li>
+</ul>
+
+<div class="float_right">{control vp}</div>
+
+<h2>{$topic->title|firstUpper}</h2>
+
+{control postsList $topic->id}
+
+<div class="right">{control vp}</div>
+
+<p class="right">
+<a n:href="Feed:forum, tid => $topic->id" class="buttonLike"><span class="icon-rss"></span> RSS tohoto tématu</a>
+</p>
+
+{if !$topic->locked}
+<h2>Rychlá odpověď</h2>
+{control addPostForm}
+{/if}
+
+{/block}

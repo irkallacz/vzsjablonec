@@ -1,0 +1,126 @@
+body {margin: 0px; padding: 0px; background-color: black;} 
+body, body table {font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-size: 90%; color: white;}
+#main {min-width: 22em; width: 90%; max-width: 89em; margin: 0px auto; padding: 0px 2em 2em 2em;}
+
+#top #header {margin-top: 5em; position: relative;}
+
+#top h1 {text-transform: uppercase; color: #ea9419; display: inline; vertical-align: top; left: 0.5em; top: 0em; position: relative;}
+
+#top h1 span {
+  position: absolute; display: block; left: 0px; top: 0px; width: 100%; height: 31px;
+  background: -webkit-gradient(linear, left top, left center, from(black), to(rgba(0,0,0,0)));
+  background: -moz-linear-gradient(black, rgba(0,0,0,0));
+  background: linear-gradient(black,rgba(0,0,0,0)); 
+}
+
+#top h1:before, #top h1:after {display: block; position: absolute; z-index: 3; bottom: -1em; left: 0; right: 0;}
+#top h1:before {content: 'VZS JABLONEC FOTOGALERIE'; opacity: .3; 
+	-webkit-transform: scaleY(-1);
+    -moz-transform: scaleY(-1);
+    -o-transform: scaleY(-1);
+    transform: scaleY(-1);
+}
+
+#top h1:after { content: ' '; height: 1em; z-index: 3;
+    background: -webkit-gradient(linear, left top, left center, from(rgba(0,0,0,0.1)), to(black));
+    background: -moz-linear-gradient(rgba(0,0,0,0.5), black);
+    background: linear-gradient(rgba(0,0,0,0.5), black); 
+}
+
+#mainMenu {padding: 0px; margin: 0px auto; display: block; text-align: center; line-height: 3em;
+width: 100%; position: fixed; top: 0px; left: 0px; overflow: hidden; z-index: 10;
+border-bottom: 1px solid #89520c; border-bottom: 1px solid black;  background-color: black; background-color: rgba(0,0,0,0.9);  }
+#mainMenu li {display: inline; text-transform: uppercase; list-style-type: none; padding: 1em; }
+#mainMenu li a {color: white;}
+
+#mainMenu li.current {background-color: #ea9419;}  
+
+#mainMenu a:hover, #mainMenu ul a:active, #mainMenu a:focus {}
+#mainMenu li.current a {color: black;}
+
+#content {margin-left: 0px; padding-top: 1em; float: none;}
+
+#ajax-spinner{margin:15px 0 0 15px; padding:13px; background:transparent url('../img/fancybox_loading.gif') no-repeat 50% 50%;
+font-size: 0px; z-index: 10; display:none;}
+
+.photoList { list-style-type: none; padding: 0; }
+.photoList li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 150px; height: 100px; font-size: 4em; text-align: center; font-size: 1em;}
+.photoList li a {display: block;}
+.photoList li img {border: 1px solid gray; width: 150px; height: 100px;}
+.photoList li a:hover img, .photoList li a:active img, .photoList li a:focus img {border-color: #ea9419;}
+.photoList li a.visible0:before, .photoList li a.visible1:before {background-repeat: no-repeat; bottom: 0; content: " "; 
+    display: block; height: 12px; position: absolute; width: 14px;}
+.visible0:before {background-image: url('../img/nonvisible.png');}
+.visible1:before {background-image: url('../img/visible.png');}
+
+.left {text-align: left;}
+.right {text-align: right;}
+.float_right {float: right;}
+.float_left {float: left;}
+.center {text-align: center;}
+.no-wrap {white-space: nowrap;}
+
+.show {display: block;}
+.hide {display: none;}
+
+.hint {border-bottom: 1px black dashed; cursor: help;}
+
+.red {color: red;}
+.green {color: green;}
+.white {color: white;}
+
+#content h2 {margin-top: 0px;}
+label acronym {cursor: help;}
+
+#ui-datepicker-div {font-size: 0.9em;}
+
+.update {font-size: 0.9em; font-style: italic; text-align: right; color: gray;}
+
+.char, div.flash:before {font-size: 150%; line-height: 50%; speak: none;}
+
+.menu {list-style-type: none; padding: 0px; margin: 0px;}
+.menu li {display: inline;}
+
+dl dt {font-weight: bold;}
+
+body a {color: #ea9419; text-decoration: none;}
+body a:hover, body a:focus, body a:active {text-decoration: underline;}
+
+input[type='text'], input[type='password'], input[type='date'], input[type='datetime'], input[type='email'], input[type='number'],
+input[type='time'], input[type='search'], select { 
+background-color: #161b1c; border: 1px solid silver; border-radius: 2px; color: white;}
+
+textarea { border: 1px solid silver; background-color: #161b1c; color: white;}
+
+input[type='text']:hover, input[type='password']:hover, input[type='date']:hover, input[type='datetime']:hover, 
+input[type='email']:hover, input[type='number']:hover, input[type='time']:hover, textarea:hover, select:hover, 
+input[type='text']:focus, input[type='password']:focus, input[type='date']:focus, input[type='datetime']:focus, 
+input[type='email']:focus, input[type='number']:focus, input[type='time']:focus, textarea:focus, select:hover 
+{border-color: darkorange;}
+
+a img {border: none;}  
+
+div.flash{color: black; border: 1px solid black; padding: 1ex 1em; margin: 1em 0px;}
+
+div.flash.info{color: #ea9419; border: 1px solid #ea9419; }
+div.flash.info:before {content: '✔'; margin-right: 1ex;}
+
+div.flash.error{color: red; border: 1px solid firebrick; }
+div.flash.error:before {content: '✘'; margin-right: 1ex;}
+
+ul.error li {color: red;}
+
+.buttonLike {color: black; padding: 0.5ex 1ex; color: #ea9419; border-top: 1px solid #ea9419;
+white-space: nowrap; display: inline; display: inline-block; }
+
+input.buttonLike {background-color: transparent; border-width: 1px 0px 0px 0px; cursor: pointer; font-size: 1em;
+font-family: Verdana,Arial,Helvetica,Calibri,sans-serif;}
+
+#content a.buttonLike {text-decoration: none;}
+#content a.buttonLike.white {color: white; border-color: white;}
+
+#content a.buttonLike:hover, #content a.buttonLike:active, #content a.buttonLike:focus, 
+#content input.buttonLike:hover, #content input.buttonLike:active, #content input.buttonLike:focus 
+{color: white; border-color: white; }
+
+#content a.noLink {text-decoration: none; color: inherit;}

@@ -1,0 +1,39 @@
+{block #head}
+<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+<!--
+	fieldset {border: none;}
+	fieldset table {margin-left: 1em}
+	legend {font-weight: bold; margin-bottom: 1ex; }
+	label {margin-right: 1em; white-space: nowrap;}
+	form table, form table textarea {width: 100%}
+	form table th {width: 7em; text-align: left; vertical-align: top;}
+
+	#ui-datepicker-div {font-size: 1em;}
+-->
+</style>
+
+<script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+
+<script type="text/javascript">
+	$(function() {		
+		var elem = document.createElement('input');
+      	elem.setAttribute('type', 'date');
+
+      	if ( elem.type === 'text' ) {
+			$("#frm-memberForm-date_born").datepicker();
+		}
+	});
+</script>
+{/block}
+
+<h1 n:block="title">Osobní profil</h1>
+
+{block #content}
+
+
+{control memberForm}
+
+{/block}

@@ -1,0 +1,97 @@
+{**
+ * @package    MyApplication
+ *
+ * @param string   $robots   tell robots how to index the content of a page (optional)
+ * @param string   $baseUri web base path
+ * @param array    $flashes  flash messages
+ * @param Nette\Web\User $user  current user
+ *}
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, width=device-width">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="shortcut icon" href="{$baseUri}/img/fav.ico" type="image/x-icon">
+  <link rel="stylesheet" href="{$baseUri}/css/main.css" type="text/css">
+
+  <link rel="stylesheet" href="{$baseUri}/css/mobile.css" type="text/css" media="screen and (max-width: 750px)">
+  <link rel="stylesheet" href="{$baseUri}/css/mobile.css" type="text/css" media="screen and (orientation: portrait)">
+  
+  <!--[if IE]>
+  <link rel="stylesheet" href="{$baseUri}/css/ie.css" type="text/css">
+  <![endif]-->
+
+  <link rel="alternate" title="VZS Jablonec Member Fotogalerie" n:href="//Feed:albums" type="application/rss+xml" n:if="$user->isLoggedIn()">
+
+  <script src="{$baseUri}/js/jquery.min.js" type="text/javascript"></script>
+
+  <title>{block #title|striptags|trim}{/block} | VZS Jablonec Fotogalerie</title>
+  
+  {block #head}{/block}
+</head>
+<body>
+<div id="main">
+<div id="top">
+  <ul id="mainMenu" n:inner-foreach="$mainMenu as $menuLink => $menuTitle">
+    <li {ifCurrent $menuLink.'*'}class="current"{/ifCurrent}><a n:href="{$menuLink}">{$menuTitle}</a></li>
+  </ul>
+
+  <div id="header">
+    <a n:href="News:" title="Vzs Jablonec Fotogalerie"><img src="{$baseUri}/img/vzs_ils_logo.png" alt="logo" width="169" height="80"></a>
+    <h1><span></span>VZS Jablonec Fotogalerie</h1>
+  </div>
+</div>
+
+<div id="content">
+	<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+	{include #content}
+</div>
+
+</div>
+</body>
+</html>
+
+{define albumMenu}
+  <li><a class="buttonLike" n:href="Album:add,$album->id.'-'.$album->slug">přidat fotky</a></li>
+  <li n:if="($album->member_id==$user->getId())or($user->isInRole($presenter->name))"><a class="buttonLike confirm" n:href="Album:deleteAlbum,$album->id" data-query="Opravdu chcete vymazat toto album?">odebrat album</a></li>
+  <li n:if="$user->isInRole($presenter->name)"><a class="buttonLike" n:href="Album:setAlbumVisibility,$album->id.'-'.$album->slug,!$album->visible">{if $album->visible}zneviditelnit{else}zviditelnit{/if}</a></li>
+  <li n:if="($album->member_id==$user->getId())or($user->isInRole($presenter->name))"><a class="buttonLike" n:href="Album:edit,$album->id.'-'.$album->slug">upravit</a></li>
+{/define}
+
+{define albumPopis}
+<div class="popis">
+  <span class="no-wrap"><b>Počet fotografií:</b> {$pocet}</span>
+  <span class="no-wrap" title="{$album->date|date:'%d. %B %Y'}"><b>Datum:</b> {$album->date|timeAgoInWords}</span>
+  <span class="no-wrap" title="{$album->date_add|date:'%d. %B %Y %H:%M'}"><b>Přidáno:</b> {$album->date_add|timeAgoInWords}</span>
+  <span class="no-wrap" title="{$album->date_update|date:'%d. %B %Y %H:%M'}" n:if="$album->date_update != $album->date_add"><b>Upraveno:</b> {$album->date_update|timeAgoInWords}</span>
+  {if $user->isLoggedIn()}
+  <span class="no-wrap"><b>{if $album->visible}Viditelné veřejnosti{else}Neviditelné pro veřejnost{/if}</b></span>
+    {if isset($member)}
+    {var $name = is_array($member) ? $member[$album->member_id] : $member->surname.' '.$member->name}
+    {var $fragment = $template->webalize($name)}
+    <span class="no-wrap float_right member" n:if="$user->isLoggedIn()"><a n:href="Album:users#$fragment">{$name}</a></span>
+    {/if}
+  {/if}
+</div>
+{/define}
+
+{define image}
+<img src="{$baseUri}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" width="150" height="100" alt="{$image->filename}">
+{/define}
+
+{define photoList}
+<a n:href="Album:view,$album->id.'-'.$album->slug"><h3>{$album->name}</h3></a>
+  
+  {var $photos = $album->related('photo')->order('order, date_add')->limit(8)}
+  
+  {if ($album->visible) and (!$user->isLoggedIn())}{? $photos->where('visible',TRUE)}{/if}
+  
+  <a n:href="Album:view,$album->id.'-'.$album->slug" title="{$album->text|truncate:70}" class="round">
+  <ul n:inner-foreach="$photos as $image" class="photoList">
+    <li>{include #image}</li>
+  </ul></a>
+  
+  {include #albumPopis, album => $album, pocet => Nette\Utils\Arrays::get($pocet,$album->id,0)}
+{/define}

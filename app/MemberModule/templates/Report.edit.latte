@@ -1,0 +1,122 @@
+{block #head}
+<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+input.buttonLike {border: none; cursor: pointer; font-size: 1.1em; font-family: inherit;}
+input.buttonLike:hover, input.buttonLike:focus, 
+input.buttonLike:active {background-color: #da251c; color: white; background-image: none;}
+
+#frm-reportForm {margin-top: 1ex;}
+
+#frm-reportForm-type_text:-moz-placeholder {color: silver;}
+#frm-reportForm-type_text::-webkit-placeholder {color: silver;}
+
+form p.high {margin: 0px; line-height: 2em;}
+label {font-weight: bold;}
+.clear {clear: both; margin-bottom: 0px;}
+form textarea {width: 100%}
+#pocasi textarea {height: 5em;}
+.tabulka {margin-bottom: 1em; }
+.tabulka input {text-align: center;}
+.tabulka label {font-weight: normal;}
+.tabulka caption {font-weight: bold; white-space: nowrap;}
+
+#members {list-style-type: none; padding-left: 0px; margin-top: 0px;}
+#members li {line-height: 1.5em; margin-bottom: 0.5ex;}
+#members input.buttonLike {font-size: 0.9em}
+#members input {text-align: center;}
+.date, .time {text-align: center;}
+#ui-datepicker-div {font-size: 0.9em;}
+</style>
+
+<script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+
+{control texylaJs}
+
+<script type="text/javascript">
+function removeRow(elem){
+  p = elem.parentNode;
+  p.parentNode.removeChild(p);
+}
+
+$.texyla.setDefaults({
+    baseDir: {$basePath}+'/texyla',
+    previewPath: {link texyPreview, TRUE}
+});
+
+$(function() {		
+    var elem = document.createElement('input');
+    elem.setAttribute('type', 'date');
+
+    if (elem.type === 'text') $(".date").datepicker();
+
+    $('.texyla').texyla(akce_public);
+	});	
+</script>
+{/block}
+
+<h1 n:block="title">{if isset($novy)}Nový záznam{else} Editace záznamu{/if} z akce</h1>
+
+{block #content}
+
+{form reportForm}
+
+<p class="high"> 
+<span class="no-wrap">{label name /} {input name}</span> 
+<span class="no-wrap">{label report_type_id /} {input report_type_id} {input type_text}</span>
+</p>
+
+<p class="high">
+<span class="no-wrap">{label place /} {input place}</span> 
+<span class="no-wrap">{label zos_id /} {input zos_id}</span>
+</p>
+
+<p class="high">
+<span class="no-wrap">{label date_start /} {input date_start} {input time_start}</span> 
+<span class="no-wrap">{label date_end /} {input date_end} {input time_end}</span>
+</p>
+
+<h3>{label popis /}</h3>
+<p>{input popis}</p>
+
+{*<h3>{label public /}</h3>*}
+{*<p>{input public class => texyla}</p>*}
+
+<h3>{label pocasi /}</h3>
+<p id="pocasi">{input pocasi}</p>
+
+<table class="float_left tabulka">
+  <caption>Ošetření</caption>
+  <tr n:foreach="$form['osetreni']->getControls() as $control"><th>{$control->label}</th><td>{$control->control}</td></tr>
+</table>
+
+<table class="float_left tabulka">
+  <caption>Akce na záchranu života</caption>
+  <tr n:foreach="$form['akce']->getControls() as $control"><th>{$control->label}</th><td>{$control->control}</td></tr>
+</table>
+
+<h3 class="clear">{input users-add title => 'Přidat dalšího člena', class => 'buttonLike'}</h3>
+
+<ul id="members" n:inner-foreach="$form['users']->containers as $id => $user">
+    <li id="member-{$id}" class="high">
+      {input users-$id-member_id} 
+      <span class="no-wrap">{label users-$id-date_start /} {input users-$id-date_start} {input users-$id-time_start}</span>
+      <span class="no-wrap">{label users-$id-date_end /} {input users-$id-date_end} {input users-$id-time_end}</span> 
+      <span class="no-wrap">{label users-$id-hodiny class => 'hint', title => 'Počet hodin ve službe a počet placených hodin' /} 
+      {input users-$id-hodiny title => 'Počet hodin ve službe'} {input users-$id-placeno title => 'Počet placených hodin ve službe'}</span> 
+      {input users-$id-remove}
+    </li>
+</ul>
+
+{foreach $form['texts']->getControls() as $control}
+  <h3>{$control->label}</h3>
+  {$control->control}
+{/foreach}
+
+{input save}
+{/form}
+
+{/block}

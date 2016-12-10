@@ -1,0 +1,57 @@
+{block #head}
+<style type="text/css" n:syntax="off">
+.headerLike {margin: 0px; padding: 0px 1em 0.5ex 1em; display: inline-block;} 
+.borderLike {border-left: none; border-right: none; border-bottom: none;}
+.buttonMenu li {float: none;}
+table#items td, table th {vertical-align: top; padding: 1ex 1ex;}
+table#items {border-collapse: collapse; width: 98%; }
+table#items td.col {padding: 0px;}
+table#items .right .headerLike {font-style: italic; text-align: center;}
+table#items .first {font-size: 1.1em;}
+</style>
+
+{/block}
+
+<h1 n:block="title">Ankety</h1>
+
+{block #content}
+
+<ul class="buttonMenu"><li><a class="buttonLike" n:href="add"><span class="icon-plus"></span> nová anketa</a></li></ul>
+
+<table id="items">
+<tr class="first"><th>Anketa</th><th>Počet hlasů</th><th>Poslední hlas</th></tr>
+{foreach $ankety as $item}
+	{var $post = $item->related('anketa_member','anketa_id')->order('date_add DESC')->fetch()}
+	
+	{if $post}{var $member = $post->ref('member')}{else}{var $member = 0}{/if}
+	
+	<tr n:class="borderLike,hoverLike,$item->date_add > $user->getIdentity()->date_last ? 'new', 
+	$item->member_id == $user->getId() ? logged">
+	{*(($post)and($post->member_id == $user->getId())) ? logged*}
+	<td class="col"><a class="noLink" title="{$item->title}{if $item->locked} (uzamčeno){/if}" n:href="Ankety:view,$item->id"><div>
+	<span class="headerLike">{if $item->locked}<span class="icon-lock"></span>{/if} 
+	{$item->title|firstUpper}
+	</span>
+	<span class="no-wrap"><span class="char">⇨</span> od <b>{$item->member->surname} {$item->member->name}</b></span>
+	</div></a></td>
+	<td class="center">{$item->related('anketa_member','anketa_id')->count('member_id')}</td>
+	<td class="col">
+	 
+	<div class="right" n:if="$post">
+	<span class="headerLike" title="{$post->date_add|timeAgoInWords}">{$post->date_add|date:'%H:%M %d.%m.%Y'}</span>	
+	
+	<span n:if="$member" class="no-wrap"><span class="char">⇨</span> od <b>
+	{$member->surname} {$member->name}	
+	</b></span>
+
+	</div>
+	</td>
+	</tr>
+{/foreach}
+</table>
+
+<p class="right">
+<a n:href="Feed:ankety" class="buttonLike"><span class="icon-rss"></span> RSS Ankety</a>
+</p>
+
+{/block}

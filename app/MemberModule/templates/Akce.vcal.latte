@@ -1,0 +1,38 @@
+{contentType text/calendar; charset=utf-8}
+{* {contentType text/plain; charset=utf-8} *}
+BEGIN:VCALENDAR
+PRODID:-//member.vzs-jablonec.cz//NONSGML akce//cs-CZ
+VERSION:2.0
+BEGIN:VTIMEZONE
+TZID:Europe/Prague
+X-LIC-LOCATION:Europe/Prague
+BEGIN:DAYLIGHT
+TZOFFSETFROM:+0100
+TZOFFSETTO:+0200
+TZNAME:CEST
+DTSTART:19700329T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:+0200
+TZOFFSETTO:+0100
+TZNAME:CET
+DTSTART:19701025T030000
+RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU
+END:STANDARD
+END:VTIMEZONE
+{foreach $akce as $data}
+BEGIN:VEVENT
+UID:akce{$data->id}@member.vzs-jablonec.cz
+DTSTART;TZID=Europe/Prague:{$data->date_start|date:'Ymd\THis'} 
+DTEND;TZID=Europe/Prague:{$data->date_end|date:'Ymd\THis'}
+DTSTAMP;TZID=Europe/Prague:{$data->date_add|date:'Ymd\THis'}
+LAST-MODIFIED;TZID=Europe/Prague:{$data->date_update|date:'Ymd\THis'}
+ORGANIZER;CN={$data->member->name} {$data->member->surname}:MAILTO:{$data->member->mail}
+LOCATION:{!$data->place}
+URL:{link //Akce:view, $data->id}
+SUMMARY:{!$data->name}
+DESCRIPTION:{!$data->perex}
+END:VEVENT
+{/foreach}
+END:VCALENDAR

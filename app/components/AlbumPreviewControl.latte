@@ -1,0 +1,15 @@
+<a href="{plink :Photo:Album:view,$album->id.'-'.$album->slug}">{$album->name}</a>
+
+<a href="{plink :Photo:Album:view,$album->id.'-'.$album->slug}" title="{$album->text|truncate:70}" class="round">
+    <ul n:inner-foreach="$photos as $image" class="photoList">
+        <li><img src="{$photoUri}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" width="150" height="100" alt="{$image->filename}"></li>
+    </ul>
+</a>
+
+<div class="popis">
+    <span class="no-wrap"><b>Počet fotografií:</b> {$pocet}</span>
+    <span class="no-wrap" title="{$album->date|date:'%d. %B %Y'}"><b>Datum:</b> {$album->date|timeAgoInWords}</span>
+    <span class="no-wrap" title="{$album->date_add|date:'%d. %B %Y %H:%M'}"><b>Přidáno:</b> {$album->date_add|timeAgoInWords}</span>
+    <span class="no-wrap" title="{$album->date_update|date:'%d. %B %Y %H:%M'}" n:if="$album->date_update != $album->date_add"><b>Upraveno:</b> {$album->date_update|timeAgoInWords}</span>
+    <span class="no-wrap"><b>{if $album->visible}Viditelné veřejnosti{else}Neviditelné pro veřejnost{/if}</b></span>
+</div>

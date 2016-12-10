@@ -1,0 +1,7 @@
+# disable directory listing
+Options -Indexes
+
+# enable cool URL
+RewriteEngine On
+
+RewriteRule (.*) subdom/$1 [L]

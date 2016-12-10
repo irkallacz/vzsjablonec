@@ -1,0 +1,40 @@
+<div class="list_component">
+<h3>{if $isOrg} Organizátoři{else}Účastníci{/if}</h3>
+{snippet memberList}
+
+<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+
+{if $akce->date_start > date_create()}
+{if $isAllowLogin}
+	{if !$isLogged}
+	<a n:href="logSelf!" class="buttonLike ajax"><span class="icon-ok"></span> Přihlásit se</a>
+	{else}
+	<a n:href="unlogSelf!" class="buttonLike ajax"><span class="icon-cancel"></span> Odhlásit se</a>
+	{/if}
+{else}	
+	{if !$isLogged}
+	<span class="buttonLike gray"><span class="icon-ok"></span> Přihlásit se</span>
+	{else}
+	<span class="buttonLike gray"><span class="icon-cancel"></span> Odhlásit se</span>
+	{/if}
+{/if}
+{/if}
+
+<ol n:if="$members" class="member_list">
+{foreach $members as $id => $jmeno}
+    <li>        
+        <a n:if="$isAllow" class="icon-cancel char red ajax" n:href="unlog!, $id" title="Odhlásit člena"></a>      
+        {$iterator->getCounter()}.        
+        <a n:class="$id == $user->getId() ? logged" href="{plink Member:view, $id}">{$jmeno}</a>
+    </li>    
+{/foreach}
+</ol>
+
+{if $isAllow}
+{form logginForm}
+<p>{label member /} {input member} {input send}</p>
+{/form}
+{/if}
+
+{/snippet}
+</div>

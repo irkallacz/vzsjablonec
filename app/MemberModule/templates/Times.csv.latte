@@ -1,0 +1,5 @@
+{contentType text/csv}
+"Příjmení a jméno",Disciplína,Čas,Datum,Poznámka
+{foreach $items as $item}
+{$item->jmeno},"{$item->disciplina}",{$item->time|date:'i:s'},{$item->date|date:'d. m. Y'},"{$item->text}"
+{/foreach}

@@ -1,0 +1,34 @@
+{block #head}
+<link rel="stylesheet" href="{$baseUri}/css/photolist.css" type="text/css">
+<style type="text/css" n:syntax="off">
+#albumList h2 {margin-top: 1em;}
+</style>
+{/block}
+
+{block #content}
+
+{var $actualMember = 0}
+
+<ul class="menu float_right">
+	<li><a n:href="default" class="buttonLike">podle data</a></li>
+	<li><a n:href="users" class="buttonLike  white">podle uživatele</a></li>
+</ul>
+
+<h2 n:block="title">Alba uživatelů</h2>
+
+<ul class="obsah" n:inner-foreach="$membersAlbums as $name">
+	<li><a href="#{$name|webalize}">{$name}</a></li>
+</ul>
+
+
+<ul id="albumList" n:inner-foreach="$albums as $album">
+	<li class="row">
+		{if $actualMember != $album->member_id} 
+		<h2 class="users" id="{$member[$album->member_id]|webalize}">{$member[$album->member_id]}</h2> 
+		{var $actualMember = $album->member_id}
+		{/if}
+		{include #photoList, album => $album}
+	</li>
+</ul>
+
+{/block}

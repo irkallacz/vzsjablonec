@@ -1,0 +1,33 @@
+{block #head}
+<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+#ui-datepicker-div {font-size: 0.9em;}
+h2 {margin-top: 1ex;}
+</style>
+
+<script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+
+<script type="text/javascript">	
+	$(function() {		
+		var elem = document.createElement('input');
+      	elem.setAttribute('type', 'date');
+
+      	if ( elem.type === 'text' ) {
+			$("#frm-timeForm-date").datepicker();
+		}
+	});
+</script>
+
+{/block}
+
+<h1 n:block="#title">Výsledky</h1>
+
+{block #content}
+
+<h2>{if isset($nova)}Nový výsledek{else}Editace výsledku{/if}</h2>
+
+{control timeForm}
+
+{/block}

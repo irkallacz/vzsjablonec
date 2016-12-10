@@ -1,0 +1,110 @@
+#
+# SECURITY WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
+#
+# If you don't protect this directory from direct web access, anybody will be able to see your passwords.
+# http://nette.org/security-warning
+#
+common:
+    parameters:
+        database:
+            driver: mysql
+            host: localhost
+            dbname: vzsjablonec
+            user: root
+            password:
+        photo:
+            driver: mysql
+            host: localhost
+            dbname: photo
+            user: root
+            password:
+        wordpress:
+            driver: mysql
+            host: localhost
+            dbname: wordpress
+            user: root
+            password:
+        google:
+            application_name: 'VZS Jablonec'
+            client_id: 432022277214.apps.googleusercontent.com
+            client_secret: zmLGsBKelZuVsk1HsZo7iSUM
+            developer_key: AIzaSyCBTFWZdN6hCDZAK37vc_R7fw5EDGpsaNc
+            private_calendar_id: vzs-jablonec.cz_i8von9ml9om2rbam3mv5v3efs0@group.calendar.google.com
+            public_calendar_id: vzs-jablonec.cz_n60ur3k3jf2mp02oilih2ghnro@group.calendar.google.com
+
+    nette:
+        database:  
+            default:  
+                dsn: '%database.driver%:host=%database.host%;dbname=%database.dbname%'
+                user: %database.user%        
+                password: %database.password%
+                debugger: true
+                explain: true
+                reflection: conventional #discovered 
+
+            wordpress:  
+                dsn: '%wordpress.driver%:host=%wordpress.host%;dbname=%wordpress.dbname%'
+                user: %wordpress.user%        
+                password: %wordpress.password%
+                debugger: true
+                explain: false
+                reflection: conventional
+            
+            photogalery:  
+                dsn: '%photo.driver%:host=%photo.host%;dbname=%photo.dbname%'
+                user: %photo.user%        
+                password: %photo.password%
+                debugger: true
+                explain: false
+                reflection: conventional
+    
+        session:
+            expiration: '+ 14 days'
+    
+    php:
+        date.timezone: Europe/Prague        
+        session.save_path: "%tempDir%/sessions"
+        zlib.output_compression: yes
+
+    services:
+        database: @nette.database.default
+        wordpress: @nette.database.wordpress
+        photogalery: @nette.database.photogalery
+        
+        authenticator: Authenticator
+
+        router: RouterFactory::createRouter
+
+        - AkceService
+        - ForumService
+        - MemberService
+        - DokumentyService
+        - AnketyService
+        - TimesService
+        - HlasovaniService
+        - GalleryService(Nette\Database\Context(@photogalery))
+        - WordpressService(Nette\Database\Context(@wordpress))
+
+
+#        nette.userStorage < nette.userStorage:
+#            setup:
+#                - setNamespace('member')
+
+factories:
+
+production < common:
+    nette:
+        debugger:
+            email: mottl@vzs-jablonec.cz
+
+development < common:
+   services:
+        nette.mailer:
+#            class: Nextras\MailPanel\FileMailer(%tempDir%/mails)
+            class: Nextras\MailPanel\SessionMailer
+
+    nette:
+        debugger:
+            bar:
+                - Nextras\MailPanel\MailPanel()
+

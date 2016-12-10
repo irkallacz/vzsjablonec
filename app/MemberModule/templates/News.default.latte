@@ -1,0 +1,84 @@
+{block #head}
+<style type="text/css" n:syntax="off">
+.news {margin-top: 0px; list-style-type: disc;}
+h3 {margin-bottom: 1ex;}
+.logged {color: #C22;}
+</style>
+
+{* <script type="text/javascript" n:if="$user->id == 75">
+alert('Vítej Týňulinko!');
+</script>
+ *}
+ 
+{/block}
+
+<h1 n:block="title">Novinky</h1>
+
+{block #content}
+
+<p>Dnes je: <b>{$nowDate|date:'%A %d.%m.%Y %H:%M'}</b>. 
+Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p>
+
+<h2>Aktuálně</h2>
+<p n:if="isset($novinky)">{!$novinky->post_content}</p>
+
+<h2>Novinky</h2>
+
+
+{if}<h3>Akce</h3>
+<ol class="news" n:inner-foreach="$akceList as $akce">
+	<li><a n:class="$akce->member_id == $user->getId() ? logged" n:href="Akce:view,$akce->id" 
+	title="{$akce->date_update|timeAgoInWords}">{$akce->name}</a></li>
+</ol>
+{/if isset($akce)}
+
+{if}<h3>Příspěvky ve fóru</h3>
+<ol class="news" n:inner-foreach="$forumList as $topic">
+	<li><a n:class="$topic->member_id == $user->getId() ? logged" n:href="Forum:viewLast,$topic->forum_topic_id" 
+	title="{$topic->date_add|timeAgoInWords}">{$topic->ref('forum_post','forum_topic_id')->title} ({$topic->forum->title})</a></li>
+</ol>
+{/if isset($topic)}
+
+{if}<h3>Dokumenty</h3>
+<ol class="news" n:inner-foreach="$dokumentyList as $file">
+	<li><a n:class="$file->member_id == $user->getId() ? logged" n:href="Dokumenty:default#d$file->id" 
+	title="{$file->date_add|timeAgoInWords}">{$file->title}</a></li>
+</ol>
+{/if isset($file)}
+
+{if}<h3>Ankety</h3>
+<ol class="news" n:inner-foreach="$anketyList as $anketa">
+	<li><a n:class="$anketa->member_id == $user->getId() ? logged" n:href="Ankety:view,$anketa->id" 
+	title="{$anketa->date_add|timeAgoInWords}">{$anketa->title}</a></li>
+</ol>
+{/if isset($anketa)}
+
+{if}<h3>Hlasováni</h3>
+<ol class="news" n:inner-foreach="$hlasovaniList as $hlasovani">
+	<li><a n:class="$hlasovani->member_id == $user->getId() ? logged" n:href="Hlasovani:view,$hlasovani->id" 
+	title="{$hlasovani->date_update|timeAgoInWords}">{$hlasovani->title}</a></li>
+</ol>
+{/if isset($hlasovani)}
+
+{if}<h3>Hodnocení akce</h3>
+<ol class="news" n:inner-foreach="$ratingList as $rating">
+	<li><a n:class="$rating->rating_member_id == $user->getId() ? logged" n:href="Akce:feedback $rating->id"
+	title="{$rating->rating_date_add|timeAgoInWords}">{$rating->name}</a></li>
+</ol>
+{/if isset($rating)}
+
+{if}<h3>Požádováno hodnocení akce</h3>
+<ol class="news" n:inner-foreach="$feedbackList as $feedback">
+	<li><a class="logged" n:href="Akce:view $feedback->id, do => addRating" 
+	title="{$feedback->date_end|timeAgoInWords}">{$feedback->name}</a></li>
+</ol>
+{/if isset($feedback)}
+
+{if}<h3>Požádován zápis z akce</h3>
+<ol class="news" n:inner-foreach="$reportList as $report">
+	<li><a class="logged" n:href="Report:add $report->id" 
+	title="{$report->date_end|timeAgoInWords}">{$report->name}</a></li>
+</ol>
+{/if isset($report)}
+
+{/block}

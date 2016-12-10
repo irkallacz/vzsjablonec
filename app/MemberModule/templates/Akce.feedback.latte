@@ -1,0 +1,55 @@
+{block #head}
+<link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+h2 {margin-top: 1ex;}
+
+table#items td, table th {vertical-align: top; padding: 1ex 1ex; padding: 0px;}
+table#items {border-collapse: collapse; width: 98%;}
+table#items .headerLike {text-align: center;}
+table#items .borderLike {border-width: 3px 0px 0px 0px;}
+table#items .top .right {direction: rtl;}
+table#items .bottom .right {padding-right: 1em;}
+table#items .bottom .right .noLink {font-weight: bold;}
+
+.quote {font-family: serif;}
+
+a.buttonLike:hover .lock {visibility: hidden;}
+
+table#items .forum_post {max-width: 45em; padding-left: 1ex}
+</style>
+{/block} 
+
+<h1 n:block="title">Hodnocení akce</h1>
+
+{block #content}
+<h2>{$akce->name}</h2>
+
+<p><b>Průmerná známka:</b> {$grade|number:2} <b>Počet hodnocení:</b> {$ratings->count()}</p>
+
+<table id="items">
+{foreach $ratings as $item}
+    <tr n:class="top,borderLike,$item->date_add > $user->getIdentity()->date_last ? 'new', $item->member_id == $user->getId() ? logged" 
+        id="p{$iterator->getCounter()}">
+    <td>
+    <a href="#p{$iterator->getCounter()}" title="{$item->date_add|timeAgoInWords}" class="noLink">
+        <div class="headerLike">{$item->date_add|date:'%d.%m.%Y %H:%M'}</div>
+    </a>
+    </td>
+    <td class="right">
+        <span class="headerLike">#{$iterator->getCounter()}</span>
+        <span n:if="$item->rating > 0" class="headerLike">Známka: {$item->rating}</span>
+    </td></tr>
+    <tr class="bottom">
+    <td class="right">
+        <span class="char">⇨</span> 
+        {if !$item->anonymous} od <a n:href="Member:view,$item->member_id" class="noLink" title="profil uživatele">
+        {$item->member->surname} {$item->member->name}</a> {else}<b>Anonymní</b>{/if}
+    </td>   
+    <td class="forum_post">
+    {!$item->message|texy} 
+    </td></tr>
+{/foreach}
+</table>
+
+{/block}

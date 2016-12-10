@@ -1,0 +1,100 @@
+{block #head}
+<link rel="alternate" title="VZS Jablonec Member Forum" n:href="//Feed:forum" type="application/rss+xml">
+
+<link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
+
+<script type="text/javascript">
+</script>
+
+<style type="text/css" n:syntax="off">
+h2 {margin-top: 1ex;}
+table#items td, table th {vertical-align: top; padding: 1ex 1ex; padding: 0px;}
+table#items {border-collapse: collapse; width: 98%;}
+table#items .headerLike {text-align: center;}
+table#items .headerLike a:hover {text-decoration: underline;}
+table#items .headerLike.head {padding: 0ex 2ex 0.5ex 2ex; display: inline-block;}
+table#items .top td {padding-bottom: 0.5ex}
+table#items .borderLike {border-width: 3px 0px 0px 0px;}
+table#items .bottom .right {padding-right: 1em;}
+table#items .bottom .right .noLink {font-weight: bold;}
+
+table#items .buttonLike { border-radius: 0px 0px 10px 10px;  padding-top: 2px; vertical-align: top;
+	background-image: none; background-color: white; color: #0089D2; direction: ltr;} 
+
+table#items .logged .buttonLike {color: #CC2222}
+table#items .new .buttonLike {color: #12397e}
+
+table#items .new .buttonLike:hover, table#items .new .buttonLike:active, 
+table#items .new .buttonLike:focus, table#items .logged .buttonLike:hover,
+table#items .logged .buttonLike:active, table#items .logged .buttonLike:focus {color: white}
+
+.float_right {margin-bottom: 1ex;}
+
+.quote {font-family: serif;}
+table#items .highlight {background-color: lightcoral;}
+
+a.buttonLike:hover .lock {visibility: hidden;}
+
+table#items .forum_post {max-width: 45em; padding-left: 1ex}
+
+#frm-searchForm label {font-weight: bold; white-space: nowrap;}
+#frm-searchForm .search {font-size: 2ex; padding: 0.5ex 1ex; width: 80%; vertical-align: middle;}
+#frm-searchForm p.right {margin-right: 1em;}
+#frm-searchForm .iconic {font-size: 3ex; height: 3ex; width: 3ex; vertical-align: middle;}
+#frm-searchForm-q:-moz-placeholder { color: silver; }
+#frm-searchForm-q::-webkit-placeholder { color: silver; }
+</style>
+{/block}
+
+<h1 n:block="title">Fórum</h1>
+
+{block #content}
+
+<h2>Hledání ve fóru</h2>
+
+{form searchForm}
+<p class="center">{input q autofocus => TRUE} {input ok}</p>
+<p class="right">{label forum_id /} {input forum_id} {label search_in /} {input search_in}</p>
+{/form}
+
+<div class="float_right">{control vp}</div>
+
+<table id="items">
+{foreach $items as $item}
+	<tr n:class="top,borderLike,$item->date_add > $user->getIdentity()->date_last ? 'new', $item->member_id == $user->getId() ? logged" 
+		id="p{$item->id}">
+	<td colspan="2">
+	<span class="headerLike head">
+	<a n:href="topic,$item->forum_id" class="noLink">
+		{$item->forum->title}
+	</a>
+	<span class="char">»</span>
+	<a n:href="view,$item->forum_topic_id" class="noLink">
+		{$item->ref('forum_post','forum_topic_id')->title}
+	</a>
+	<span class="char">»</span>
+	<a n:href="viewPost,$item->id" title="{$item->date_add|timeAgoInWords}" class="noLink">
+		{$item->date_add|date:'%d.%m.%Y %H:%M'}
+	</a>
+	</span>
+	</td>
+	<td class="right">
+		<span class="headerLike">#{$paginator->getOffset() + $iterator->getCounter()}</span>
+	</td></tr>
+	<tr class="bottom">
+	<td class="right">
+		<span class="char">⇨</span> od <a n:href="Member:view,$item->member_id" class="noLink" title="profil uživatele">
+		{$item->member->surname} {$item->member->name}</a>
+	</td>	
+	<td class="forum_post">
+	{!$item->text|replace:$q:'<span class="highlight">'.$q.'</span>'|texy}
+	
+	<p n:if="$item->date_add != $item->date_update" class="update"
+	title="{$item->date_update|timeAgoInWords}">Upraveno ({$item->date_update|date:'%d.%m.%Y %H:%M'})</p>
+	</td></tr>
+{/foreach}
+</table>
+
+<div class="right">{control vp}</div>
+
+{/block}

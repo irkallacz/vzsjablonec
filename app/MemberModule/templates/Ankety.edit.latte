@@ -1,0 +1,59 @@
+{block #head}
+<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+input.buttonLike {border: none; cursor: pointer; font-size: 1.1em; font-family: inherit;}
+input.buttonLike:hover, input.buttonLike:focus, 
+input.buttonLike:active {background-color: #da251c; color: white; background-image: none;}
+
+#frm-anketaForm-title, #frm-anketaForm-text {width: 98%;}
+
+div.texyla div.textarea-container {clear: right;}
+</style>
+
+<script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
+
+{control texylaJs}
+
+<script type="text/javascript">	
+	function removeRow(elem){
+  		p = elem.parentNode.parentNode;
+  		p.parentNode.removeChild(p);
+	}
+	
+	$.texyla.setDefaults({
+		baseDir: {$basePath}+'/texyla',
+		previewPath: {link texyPreview, TRUE}
+		
+	});
+
+	$(function () {
+		$('.texyla').texyla(anketa);
+	});
+</script>
+{/block}
+
+<h1 n:block="title">{if $nova}Nová anketa{else}Editace ankety{/if}</h1>
+
+{block #content}
+
+<p n:if="!$nova">Pokud upravíte anketu tak, že přidáte nebo odeberete alespoň jednu odpověď, 
+bude to mít za následek vymazání dosavadních hlasů a resetování ankety.</p>
+
+{form anketaForm}
+<h3>{label title /}</h3>
+<p>{input title}</p>
+<h3>{label text /}</h3>
+{input text class => texyla}
+<h3>{input users-add, title => 'Přidat další odpověď'}</h3>
+<table>
+{foreach $form['users']->containers as $id => $user}
+    <tr><td>{label users-$id-text /} {input users-$id-text} {input users-$id-remove}</td></tr>
+{/foreach}
+</table>
+<p>{input save}</p>
+{/form}
+
+{/block}
