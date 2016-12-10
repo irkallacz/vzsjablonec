@@ -88,17 +88,14 @@ common:
 factories:
 
 production < common:
-	services:
-		router: LocalRouterFactory::createRouter
-
 	nette:
 		debugger:
 			email: mottl@vzs-jablonec.cz
 
 development < common:
 	services:
+		router: LocalRouterFactory::createRouter
 		nette.mailer:
-	#            class: Nextras\MailPanel\FileMailer(%tempDir%/mails)
 			class: Nextras\MailPanel\SessionMailer
 
 	nette:
