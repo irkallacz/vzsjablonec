@@ -10,6 +10,8 @@ class RouterFactory{
 	 * @return Nette\Application\IRouter
 	 */
 	public static function createRouter(){
+		//Route::$defaultFlags = Route::SECURED;
+
 		$router = new RouteList;
 
 		$member = new RouteList('Member');
@@ -26,5 +28,4 @@ class RouterFactory{
 		$router[] = new Route('<presenter>/<action>[/<id>]', 'News:default');
 		return $router;
 	}
-
 }

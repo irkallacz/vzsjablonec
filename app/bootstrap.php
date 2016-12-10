@@ -3,8 +3,7 @@
 /**
  * My Application bootstrap file.
  */
-use Nette\Application\Routers\Route,
-    Nette\Diagnostics\Debugger;
+use Nette\Diagnostics\Debugger;
 
 define('LIBS_DIR', __DIR__ . '/../libs');
 define('TEMP_DIR', __DIR__ . '/../tmp');
@@ -33,8 +32,6 @@ $configurator->createRobotLoader()
 $configurator->addConfig(__DIR__ . '/config.neon');
 if (file_exists(__DIR__ . '/config.local.neon')) $configurator->addConfig(__DIR__ . '/config.local.neon');
 $container = $configurator->createContainer();
-
-//if (!$container->parameters['debugMode']) Route::$defaultFlags = Route::SECURED;
 
 //$container->application->errorPresenter = 'Error';
 
