@@ -14,6 +14,9 @@ class MemberPresenter extends LayerPresenter{
 	/** @var \MemberService @inject */
 	public $memberService;
 
+	/** @var \Nette\Mail\iMailer @inject*/
+	public $mailer;
+
 	public function actionUpdateCsv(){
 		if (($handle = fopen('members_update.csv', 'r')) !== FALSE) {
 			while (($data = fgetcsv($handle, 0, ",",'"')) !== FALSE) {
@@ -184,11 +187,10 @@ class MemberPresenter extends LayerPresenter{
 	    $template->member = $member;
 
 	    $mail = $this->getNewMail();
-
 	    $mail->addTo($member->mail,$member->surname.' '.$member->name);
-
 	    $mail->setBody($template);
-	    $mail->send();
+
+		$this->mailer->send($mail);
   	}
 
 	protected function createComponentUploadMembersForm(){

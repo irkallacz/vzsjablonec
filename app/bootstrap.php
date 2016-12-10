@@ -9,6 +9,8 @@ use Nette\Application\Routers\Route,
 define('LIBS_DIR', __DIR__ . '/../libs');
 define('TEMP_DIR', __DIR__ . '/../tmp');
 
+setlocale(LC_ALL,'cs_CZ.utf8');
+
 // Load Nette Framework
 require LIBS_DIR . '/Nette/loader.php';
 
@@ -32,7 +34,7 @@ $configurator->addConfig(__DIR__ . '/config.neon');
 if (file_exists(__DIR__ . '/config.local.neon')) $configurator->addConfig(__DIR__ . '/config.local.neon');
 $container = $configurator->createContainer();
 
-if (!$container->parameters['debugMode']) Route::$defaultFlags = Route::SECURED;
+//if (!$container->parameters['debugMode']) Route::$defaultFlags = Route::SECURED;
 
 //$container->application->errorPresenter = 'Error';
 
