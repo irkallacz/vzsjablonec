@@ -44,6 +44,7 @@ Temporary Items
 
 # Nette files
 tmp/
+session/
 log/
 config.local.neon
 .idea
