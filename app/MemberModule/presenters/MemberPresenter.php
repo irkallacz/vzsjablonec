@@ -4,6 +4,7 @@ namespace MemberModule;
 
 use Nette\Application\UI\Form;
 use Nette\Diagnostics\Debugger;
+use Nette\Security\Passwords;
 use Nette\Utils\Strings;
 use Nette\Image;
 use Nette\Templating\FileTemplate;
@@ -240,7 +241,7 @@ class MemberPresenter extends LayerPresenter{
 	}
 	
 	public function currentPassValidator($item,$arg){
-		return $arg != md5($item->value);
+		return Passwords::verify($item->value,$arg);
 	}
 
 	protected function createComponentMemberForm(){		

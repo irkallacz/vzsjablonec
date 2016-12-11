@@ -17,20 +17,6 @@ class SignPresenter extends BasePresenter{
 
 	/** @persistent */
 	public $backlink = '';
-	
-	public function sendLogginMail($member, $password){
-	    $template = $this->createTemplate();
-	    $template->setFile(__DIR__ . '/../templates/Mail/forgotPassword.latte');
-	    $template->member = $member;
-		$template->password = $password;
-
-		$mail = $this->getNewMail();
-
-	    $mail->addTo($member->mail,$member->surname.' '.$member->name);
-	    $mail->setBody($template);
-	    $this->mailer->send($mail);
-
-  	}
 
 	/**
 	 * Sign in form component factory.
@@ -76,7 +62,7 @@ class SignPresenter extends BasePresenter{
 		$form->addText('mail', 'email:')
 			->setRequired('Vyplňte váš email')
 			->setType('email')
-			->addRule(FORM::EMAIL,'Vyplňte správnou e-mailovou adresu');
+			->addRule(FORM::EMAIL, 'Vyplňte správnou e-mailovou adresu');
                     
 		$form->addSubmit('send', 'poslat');
 
@@ -84,23 +70,112 @@ class SignPresenter extends BasePresenter{
 		return $form;
 	}
 
-	public function ForgotPassFormSubmitted(Form $form){
-		
+	public function forgotPassFormSubmitted(Form $form){
         $values = $form->getValues();
         $values->mail = Strings::lower($values->mail);
 
         $member = $this->memberService->getMemberByEmail($values->mail);
         
-        if(!$member) $form->addError('E-mail nenalezen');
+        if (!$member) $form->addError('E-mail nenalezen');
         else {
-        	$password = Strings::random(8);
-        	$member->update(['hash' => NS\Passwords::hash($password)]);
-
-        	$this->sendLogginMail($member, $password);
-        	$this->flashMessage('Na Váši e-mailovou adresu byly odeslány nové přihlašovací údaje');
+			$session = $this->memberService->addPasswordSession($member->id);
+        	$this->sendRestoreMail($member,$session);
+        	$this->flashMessage('Na Váši e-mailovou adresu byly odeslány údaje pro změnu hesla');
         	
         	$this->redirect('Sign:in');
         }
+	}
+
+	public function renderRestorePassword($pubkey){
+		$session = $this->memberService->getPasswordSession($pubkey);
+
+		if (!$session) {
+			$this->flashMessage('Neplatný identifikator session','error');
+			$this->redirect('in');
+		}
+
+		$member = $this->memberService->getMemberById($session->member_id);
+
+		if (!$member) {
+			$this->flashMessage('Uživatel nenalezen','error');
+			$this->redirect('in');
+		}
+
+		if (!$member->active) {
+			$this->flashMessage('Uživatel nenalezen','error');
+			$this->redirect('in');
+		}
+
+		$date_end = $session->date_end;
+		$this->template->date_end = $date_end;
+		$this->template->time_remain = date_create()->diff($date_end);
+
+		$this['restorePasswordForm']->setDefaults($member);
+	}
+
+	protected function createComponentRestorePasswordForm(){
+		$form = new Form;
+		$form->addText('login','Přihlašovací jméno: ')
+			//->setAttribute('readonly','readonly');
+			->setDisabled();
+
+		$form->addPassword('password', 'Nové heslo:', 20)
+			->addCondition(Form::FILLED)
+			->addRule(Form::PATTERN,'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena','^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$');
+
+		$form->addPassword('confirm', 'Potvrzení hesla:', 20)
+			->addRule(Form::EQUAL,'Zadaná hesla se neschodují',$form['password'])
+			->addCondition(Form::FILLED)
+			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);
+
+		$form->addSubmit('ok', 'Uložit');
+
+		$form->addProtection('Vypšela ochrana formuláře');
+
+		$form->onSuccess[] = callback($this, 'restorePasswordFormSubmitted');
+		return $form;
+	}
+
+	public function restorePasswordFormSubmitted(Form $form){
+		$values = $form->getValues();
+		$pubkey = $this->getParameter('pubkey');
+
+		if (!$pubkey) {
+			$this->flashMessage('Neplatný identifikator session','error');
+		}else {
+			$session = $this->memberService->getPasswordSession($pubkey);
+			if (!$session) {
+				$this->flashMessage('Neplatný identifikator session','error');
+			}else{
+				$member = $this->memberService->getMemberById($session->member_id);
+				if ((!$member)or(!$member->active)) {
+					$this->flashMessage('Uživatel nenalezen','error');
+				}else {
+					$hash = NS\Passwords::hash($values->password);
+					$member->update(['hash' => $hash]);
+					$session->delete();
+					$this->flashMessage('Vaše heslo bylo změněno');
+				}
+			}
+		}
+
+		$this->redirect('in');
+	}
+
+	public function sendRestoreMail($member, $session){
+		$this->backlink = '';
+
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . '/../templates/Mail/restorePassword.latte');
+		$template->member = $member;
+		$template->pubkey = $session->pubkey;
+		$template->date_end = $session->date_end;
+
+		$mail = $this->getNewMail();
+
+		$mail->addTo($member->mail,$member->surname.' '.$member->name);
+		$mail->setBody($template);
+		$this->mailer->send($mail);
 	}
 
 	public function actionOut(){

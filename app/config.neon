@@ -99,6 +99,7 @@ production < common:
 
 development < common:
    services:
+        router: LocalRouterFactory::createRouter
         nette.mailer:
 #            class: Nextras\MailPanel\FileMailer(%tempDir%/mails)
             class: Nextras\MailPanel\SessionMailer

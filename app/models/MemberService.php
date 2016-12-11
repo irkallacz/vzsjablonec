@@ -1,5 +1,6 @@
 <?php
 
+use Nette\Database\SqlLiteral;
 /**
  * MemberService base class.
  */
@@ -102,4 +103,21 @@ class MemberService extends DatabaseService{
         $this->database->query('INSERT INTO member_log VALUES(?, ?) ON DUPLICATE KEY UPDATE date_add = ?', $user_id, $datetime, $datetime);
     }
 
+	/**
+     * @param $member_id
+     * @return bool|int|\Nette\Database\Table\IRow
+     */
+    public function addPasswordSession($member_id){
+        $this->database->query('DELETE FROM `password_session` WHERE `member_id` = ?', $member_id);
+        return $this->database->table('password_session')->insert(['member_id' => $member_id, 'date_end' => new SqlLiteral('NOW() + INTERVAL 20 MINUTE')]);
+    }
+
+	/**
+     * @param $pubkey
+     * @return bool|mixed|\Nette\Database\Table\IRow
+     */
+    public function getPasswordSession($pubkey){
+        $this->database->query('DELETE FROM `password_session` WHERE `date_end` < ?', new SqlLiteral('NOW()'));
+        return $this->database->table('password_session')->where('pubkey', $pubkey)->fetch();
+    }
 }
