@@ -91,7 +91,7 @@ class SignPresenter extends BasePresenter{
 
         $member = $this->memberService->getMemberByEmail($values->mail);
         
-        if(!$member) $form->addError('Email nenalezen');
+        if(!$member) $form->addError('E-mail nenalezen');
         else {
         	$password = Strings::random(8);
         	$member->update(['hash' => NS\Passwords::hash($password)]);
