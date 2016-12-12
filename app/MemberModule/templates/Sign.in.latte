@@ -6,8 +6,8 @@
   
   <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
   
-  <p>Pokud jsi zapomněl/a své přihlašovací jméno a heslo, tak zadej svůj mail, 
-  a na něj ti přijdou instrukce k obnovení hesla.</p>
+  <p>Pokud jsi zapomněl/a své přihlašovací jméno a heslo, tak zadej svůj e-mail,
+  a na něj ti přijdou instrukce k jeho obnovení.</p>
   
   {form forgotPassForm}
     <ul class="error" n:if="$form->hasErrors()">
