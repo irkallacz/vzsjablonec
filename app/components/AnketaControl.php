@@ -13,18 +13,14 @@ class AnketaControl extends Nette\Application\UI\Control{
     /** @var AnketyService  */
     private $anketyService;
 
-    /** @var Texy */
-    private $texy;
-
     /**
      * AnketaControl constructor.
      * @param AnketyService $anketyService
      * @param Texy $texy
      */
-    public function __construct(AnketyService $anketyService, Texy $texy){
+    public function __construct(AnketyService $anketyService){
         parent::__construct();
         $this->anketyService = $anketyService;
-        $this->texy = $texy;
     }
 
     public function render($id){
@@ -42,7 +38,8 @@ class AnketaControl extends Nette\Application\UI\Control{
             $this->template->mojeOdpoved = Arrays::get($memberList, $user_id, 0);
             $this->template->celkem = count($memberList);
 
-            $this->template->registerHelper('texy', callback($this->texy, 'process'));
+	        $texy = \TexyFactory::createTexy();
+            $this->template->registerHelper('texy', callback($texy, 'process'));
             $this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
 
             $this->template->render();

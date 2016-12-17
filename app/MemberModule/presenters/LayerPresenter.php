@@ -37,8 +37,7 @@ abstract class LayerPresenter extends BasePresenter{
     }
 
     public function createComponentAnketa(){
-        $texy = $this->getTexy();
-        return new \AnketaControl($this->anketyService,$texy);
+        return new \AnketaControl($this->anketyService);
 }
 
 }

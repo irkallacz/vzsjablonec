@@ -5,6 +5,7 @@ namespace MemberModule;
 use Nette\Application\UI\Form;
 use Nette\Diagnostics\Debugger;
 use Nette\DateTime;
+use Nette\Utils\Arrays;
 
 class HlasovaniPresenter extends LayerPresenter{
 
@@ -50,7 +51,7 @@ class HlasovaniPresenter extends LayerPresenter{
 
 		$memberList = $members->fetchPairs('id','hlasovani_odpoved_id');
 		$this->template->memberList = $memberList;
-		$this->template->isLogged = Nette\Utils\Arrays::get($memberList, $this->getUser()->getId(),0);
+		$this->template->isLogged = Arrays::get($memberList, $this->getUser()->getId(),0);
 		
 
 		$this->registerTexy();
@@ -274,8 +275,7 @@ class HlasovaniPresenter extends LayerPresenter{
         $template->hlasovani = $hlasovani;
         $template->odpovedi = $odpovedi;
 
-        $texy = $this->getTexy();
-    	$template->registerHelper('texy', callback($texy, 'process'));
+		$this->registerTexy();
 
         $mail = $this->getNewMail();
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
