@@ -42,8 +42,11 @@ Naposledy jste byl přihlášen: <b>{$date_last|date:'%A %d.%m.%Y %H:%M'}</b>.</
 {if}<h3>Fotografie</h3>
 <ul n:inner-foreach="$newPhotos as $album">
   <li><a n:href="Album:view,$album->id.'-'.$album->slug">{$album->name}</a>
-    <ul n:inner-foreach="$album->related('photo.album_id')->where('date_add > ?',$date_last) as $image">
+    <ul n:inner-foreach="$album->related('photo.album_id')->where('date_add > ?',$date_last)->limit(15) as $image">
       <li><a n:href="Album:view#$image->filename,$album->id.'-'.$album->slug">{$image->filename}</a></li>
+      {if $iterator->counter == 15}
+        <li><a n:href="Album:view $album->id.'-'.$album->slug">Další ...</a></li>
+      {/if}
     </ul>  
   </li>
 </ul>
