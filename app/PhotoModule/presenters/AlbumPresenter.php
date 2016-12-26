@@ -213,7 +213,7 @@ class AlbumPresenter extends BasePresenter{
 				$exif = exif_read_data($filepath);
 				if (array_key_exists('DateTime', $exif)) {
 					$datetime = new Datetime($exif['DateTime']);
-					if ($datetime == FALSE) $values['date_taken'] = $datetime;
+					if ($datetime != FALSE) $values['date_taken'] = $datetime;
 				}
 
 				$this->gallery->addPhoto($values);
