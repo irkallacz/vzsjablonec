@@ -64,7 +64,7 @@ class MailPresenter extends LayerPresenter{
       		->setAttribute('class', 'max')
       		->setRequired('Musíte vybrat alespoň jednoho příjemce');
 		
-		$form->addButton('open', '  ')
+		$form->addButton('open', '  ')
     		->setAttribute('class', 'buttonLike myfont')
     		->setAttribute('onclick', 'adresy()');
 

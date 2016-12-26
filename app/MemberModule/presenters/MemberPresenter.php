@@ -221,7 +221,7 @@ class MemberPresenter extends LayerPresenter{
       		->getControlPrototype()
       			->title = 'Vyhledá v seznamu hledanou frázi';
 
-        $form->addSubmit('ok', '')
+        $form->addSubmit('ok', '')
         	->setAttribute('class','myfont');
 
 		$form->onSuccess[] = callback($this, 'memberSearchFormSubmitted');
