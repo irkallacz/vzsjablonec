@@ -253,7 +253,7 @@ class AlbumPresenter extends BasePresenter{
 
 		$photos = $form->addDynamic('photos', function (\Nette\Forms\Container $photo) {
 			$photo->addText('text', 'Popis', 30, 50);
-			$photo->addCheckBox('selected');
+			$photo->addCheckBox('selected')->setAttribute('class','select');
 		}, 0);
 
 		$form->addSubmit('save', 'uložit změny')
