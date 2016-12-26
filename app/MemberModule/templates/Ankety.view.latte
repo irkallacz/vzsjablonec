@@ -20,7 +20,7 @@
 	<li><a n:href="delete,$anketa->id" class="buttonLike confirm" data-query="Opravdu chcete tuto anketu smazat?">
 		<span class="icon-trash"></span> smazat</a></li>
 	<li>
-	{if $anketa->locked}<a n:href="lock,$anketa->id,0" class="buttonLike"><span class="icon-lock-open"></span> odemknout</a>
+	{if $anketa->locked}<a n:href="lock,$anketa->id,0" class="buttonLike"><span class="icon-lock-open-alt"></span> odemknout</a>
 	{else}<a n:href="lock,$anketa->id,1" class="buttonLike"><span class="icon-lock"></span> zamknout</a>
 	{/if}
 	</li>
