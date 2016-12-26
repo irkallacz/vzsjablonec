@@ -14,17 +14,18 @@ abstract class LayerPresenter extends BasePresenter{
     protected function beforeRender(){
 
         $mainMenu = [
-        	['title' => 'novinky',      'link' => 'News:',          'current' => 'News:*',          'icon' => 'home'],
-	        ['title' => 'akce',         'link' => 'Akce:',          'current' => 'Akce:*',          'icon' => 'calendar'],
-	        ['title' => 'forum',        'link' => 'Forum:',         'current' => 'Forum:*',         'icon' => 'chat-empty'],
-	        ['title' => 'adresář',      'link' => 'Member:',        'current' => 'Member:*',        'icon' => 'address-book-o'],
-	        ['title' => 'dokumenty',    'link' => 'Dokumenty:',     'current' => 'Dokumenty:*',     'icon' => 'doc-text'],
-	        ['title' => 'ankety',       'link' => 'Ankety:',        'current' => 'Ankety:*',        'icon' => 'list-bullet'],
-	        ['title' => 'výsledky',     'link' => 'Times:',         'current' => 'Times:*',         'icon' => 'clock'],
-	        ['title' => 'hlasovani',    'link' => 'Hlasovani:',     'current' => 'Hlasovani:*',     'icon' => 'balance-scale']
+        	[   'title' => 'novinky',      'link' => 'News:',      'current' => 'News:*',      'icon' => 'home'            ],
+	        [   'title' => 'akce',         'link' => 'Akce:',      'current' => 'Akce:*',      'icon' => 'calendar'        ],
+	        [   'title' => 'forum',        'link' => 'Forum:',     'current' => 'Forum:*',     'icon' => 'chat-empty'      ],
+	        [   'title' => 'adresář',      'link' => 'Member:',    'current' => 'Member:*',    'icon' => 'address-book-o'  ],
+	        [   'title' => 'dokumenty',    'link' => 'Dokumenty:', 'current' => 'Dokumenty:*', 'icon' => 'doc-text'        ],
+	        [   'title' => 'ankety',       'link' => 'Ankety:',    'current' => 'Ankety:*',    'icon' => 'list-bullet'     ],
+	        [   'title' => 'výsledky',     'link' => 'Times:',     'current' => 'Times:*',     'icon' => 'clock'           ],
+	        [   'title' => 'hlasovani',    'link' => 'Hlasovani:', 'current' => 'Hlasovani:*', 'icon' => 'balance-scale'   ]
         ];
 
-	    if ($this->getUser()->isInRole('Member:Mail')) $mainMenu[] = ['title' => 'email', 'link' => 'Mail:', 'current' => 'Mail:*', 'icon' => 'mail'];
+	    if ($this->getUser()->isInRole('Member:Mail'))
+	    	$mainMenu[] = ['title' => 'email', 'link' => 'Mail:', 'current' => 'Mail:*', 'icon' => 'mail'];
 
 	    $mainMenu[] = ['title' => 'galerie', 'link' => ':Photo:Myself:', 'current' => ':Photo:Myself:*', 'icon' => 'picture'];
 
@@ -47,6 +48,6 @@ abstract class LayerPresenter extends BasePresenter{
 
     public function createComponentAnketa(){
         return new \AnketaControl($this->anketyService);
-}
+	}
 
 }
