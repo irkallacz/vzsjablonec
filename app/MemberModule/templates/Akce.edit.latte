@@ -72,7 +72,7 @@ uvidí ji na webu pouze její organizatoři. Dokončením tohoto formuláře se 
 <p>{label description class => 'hint', title => 'Tento text uvidí pouze naši členové'/}</p>
 <p>{input description}</p>
 
-{if !isset($akce)}
+{if !isset($nova)}
 {if $akce->date_start < date_create()}
 	<p>{label message class => 'hint', title => 'Podrobná zpráva z akce'/}</p>
 	<p>{input message}</p>
