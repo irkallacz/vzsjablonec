@@ -41,12 +41,8 @@
 </div>
 
 <ul id="menu">
-{*{foreach $mainMenu as $menuLink => $menuTitle }*}
-  {*<li {ifCurrent $menuLink.'*'}class="current"{/ifCurrent}><a n:href="{$menuLink}">{$menuTitle}</a></li>*}
-{*{/foreach}*}
-
 {foreach $mainMenu as $item}
-  <li {ifCurrent $item['current']}class="current"{/ifCurrent}><a n:href="$item['link']"><span class="icon icon-{$item['icon']}" ></span> {$item['title']}</a></li>
+  <li {ifCurrent $item['current']}class="current"{/ifCurrent}><a n:href="$item['link']" {if $iterator->last}target="_blank"{/if}><span class="icon icon-{$item['icon']}" ></span> {$item['title']}</a></li>
 {/foreach}
 </ul>
 
