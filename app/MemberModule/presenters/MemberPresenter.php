@@ -76,10 +76,10 @@ class MemberPresenter extends LayerPresenter{
 
 	public function actionVcfArchive(){
 		$zip = new \ZipArchive;
-		$zip->open(WWW_DIR.'/member.zip', \ZIPARCHIVE::OVERWRITE);
+		$zip->open(WWW_DIR.'/archive.zip', \ZIPARCHIVE::CREATE | \ZIPARCHIVE::OVERWRITE);
 
 		$template = $this->createTemplate();
-		$template->setFile(APP_DIR .'/../templates/Member.vcf.latte');
+		$template->setFile(APP_DIR .'/MemberModule/templates/Member.vcf.latte');
 		$template->archive = TRUE;
 
 		foreach ($this->memberService->getMembers()->order('surname, name') as $member) {
@@ -92,7 +92,7 @@ class MemberPresenter extends LayerPresenter{
 		$zip->close();
 
 		$response = new \Nette\Application\Responses\FileResponse(
-            WWW_DIR.'/temp/webtemp/member.zip',
+            WWW_DIR.'/archive.zip',
             'member-archive.zip',
             'application/zip'
         );
