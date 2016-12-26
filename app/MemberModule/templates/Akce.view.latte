@@ -160,7 +160,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
         {control rating}
 
         <h3>Vyúčtování <span class="icon-dollar"></span></h3>
-        {if $user->isInArray($orgList)}
+
         {form uploadBillForm}
             <ul class="error" n:if="$form->hasErrors()">
                 <li n:foreach="$form->errors as $error">{$error}</li>
@@ -168,10 +168,9 @@ class="hint">Čas na přihlášení vypršel</span></p>
 
             <p>
                 {if $akce->bill} <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->id}-{$akce->name|webalize}.xls"><span class="icon-download"></span> stáhnout</a>{/if}
-                {input file} {input ok}
+                {if $user->isInArray($orgList)} {input file} {input ok} {/if}
             </p>
         {/form}
-        {/if}
     {/if}
 
 {if $akce->album_id}
