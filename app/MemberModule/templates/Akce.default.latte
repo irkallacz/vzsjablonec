@@ -22,10 +22,10 @@ table .first td {padding-top: 0.5ex;}
 
 {foreach $akceAllList as $old => $akceList}
 
-<p><a n:href="vcal, null, $iterator->isOdd()" class="buttonLike head" title="stáhnout akce ve formátu vcal">
+<h2>
     <span class="icon-calendar"></span>
-    {if $iterator->isOdd()}nastávající akce{else}proběhlé akce{/if}</a>
-</p>
+    {if $iterator->isOdd()}Nastávající akce{else}Proběhlé akce{/if}</a>
+</h2>
 
 {foreach $akceList as $akce}
 

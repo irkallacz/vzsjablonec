@@ -12,14 +12,23 @@ namespace MemberModule;
 abstract class LayerPresenter extends BasePresenter{
 
     protected function beforeRender(){
-        $mainMenu = ['News:'=>'novinky','Akce:'=>'akce','Forum:'=>'fórum','Member:'=>'adresář',
-            'Dokumenty:'=>'dokumenty', 'Ankety:'=>'ankety', 'Times:'=>'výsledky','Hlasovani:'=>'hlasování'];
 
-        if ($this->getUser()->isInRole('Member:Mail')) $mainMenu['Mail:'] = 'email';
+        $mainMenu = [
+        	['title' => 'novinky',      'link' => 'News:',          'current' => 'News:*',          'icon' => 'home'],
+	        ['title' => 'akce',         'link' => 'Akce:',          'current' => 'Akce:*',          'icon' => 'calendar'],
+	        ['title' => 'forum',        'link' => 'Forum:',         'current' => 'Forum:*',         'icon' => 'chat-empty'],
+	        ['title' => 'adresář',      'link' => 'Member:',        'current' => 'Member:*',        'icon' => 'address-book-o'],
+	        ['title' => 'dokumenty',    'link' => 'Dokumenty:',     'current' => 'Dokumenty:*',     'icon' => 'doc-text'],
+	        ['title' => 'ankety',       'link' => 'Ankety:',        'current' => 'Ankety:*',        'icon' => 'list-bullet'],
+	        ['title' => 'výsledky',     'link' => 'Times:',         'current' => 'Times:*',         'icon' => 'clock'],
+	        ['title' => 'hlasovani',    'link' => 'Hlasovani:',     'current' => 'Hlasovani:*',     'icon' => 'balance-scale']
+        ];
 
-        $mainMenu[':Photo:Myself:default'] = 'galerie';
+	    if ($this->getUser()->isInRole('Member:Mail')) $mainMenu[] = ['title' => 'email', 'link' => 'Mail:', 'current' => 'Mail:*', 'icon' => 'mail'];
 
-        $this->template->mainMenu = $mainMenu;
+	    $mainMenu[] = ['title' => 'galerie', 'link' => ':Photo:Myself:', 'current' => ':Photo:Myself:*', 'icon' => 'picture'];
+
+	    $this->template->mainMenu = $mainMenu;
     }
 
     protected function startup(){

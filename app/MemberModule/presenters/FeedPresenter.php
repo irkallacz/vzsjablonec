@@ -7,7 +7,7 @@ use	Nette\Diagnostics\Debugger;
 
 class FeedPresenter extends BasePresenter {
 
-	/** @var \HttpResponse @inject*/
+	/** @var \Nette\Http\Response @inject*/
 	public $httpResponse;
 
 	/** @var \AkceService @inject */
@@ -59,8 +59,6 @@ class FeedPresenter extends BasePresenter {
 	
 	protected function beforeRender(){
 		$this->registerTexy();
-		
-		$this->template->link = (string) $this->httpRequest->getUrl();
 	}
 	
 	public function renderAnkety(){

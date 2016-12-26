@@ -15,41 +15,46 @@
 {/if}
 
 <style type="text/css" n:syntax="off">
-    .member_list a.char {text-decoration: none; vertical-align: top; }
-    .member_list {list-style-type: none; padding-left: 1em; font-size: 1em;}
-    .member_list .logged {color: #C22;}
-    .head {margin-bottom: 1em;}
-    #mail .buttonLike {margin-top: 1em;}
-    #list td {vertical-align: top; padding-right: 1ex}
-    #desc {text-align: left;}
-    #desc th {padding-right: 1em;}
+    .member_list a.char { text-decoration: none; vertical-align: top; }
+    .member_list { list-style-type: none; padding-left: 1em; font-size: 1em;}
+    .member_list .logged { color: #C22;}
+    .head { margin-bottom: 1em;}
+    #mail .buttonLike { margin-top: 1em;}
+    #list td { vertical-align: top; padding-right: 1ex}
+    #desc { text-align: left; }
+    #desc th { padding-right: 1em; }
 
-    .list_component {width: 250px;}
-    a.head {display: inline-block;}
-    .inline-nav {margin-bottom: 2em;}
-    .prev-next {margin-bottom: 1em;}
-    hr {border: none; border-top: 1px solid #ccc; }
+    .list_component { width: 250px; }
+    a.head { display: inline-block;}
+    .inline-nav { margin-bottom: 2em;}
+    .prev-next { margin-bottom: 1em;}
+    hr { border: none; border-top: 1px solid #ccc; }
+
+    #frm-rating-ratingForm-message { width: 100%; min-height: auto;}
+    #ratings { font-size: 90%; }
+    .stars { color: #885500; font-size: larger; }
 </style>
 
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 <script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
-<script type="text/javascript">
-$(function () {
-//    $.nette.init();
+{*<script type="text/javascript">*}
+    {*$(function () {*}
 
-        // odeslání na formulářích
-        $("form.ajax").submit(function () {
-                $(this).ajaxSubmit();
-                return false;
-        });
+    {*//    $.nette.init();*}
 
-        // odeslání pomocí tlačítek
-        $("form.ajax :submit").click(function () {
-                $(this).ajaxSubmit();
-                return false;
-        });
-});
-</script>
+        {*// odeslání na formulářích*}
+        {*$("form.ajax").submit(function () {*}
+                {*$(this).ajaxSubmit();*}
+                {*return false;*}
+        {*});*}
+
+        {*// odeslání pomocí tlačítek*}
+        {*$("form.ajax :submit").click(function () {*}
+                {*$(this).ajaxSubmit();*}
+                {*return false;*}
+        {*});*}
+{*});*}
+{*</script>*}
 {/block} 
 
 <h1 n:block="title">Detail akce</h1>
@@ -72,82 +77,55 @@ $(function () {
     {/if}
 </ul>
 
-<a class="buttonLike head" n:href="Akce:vcal, $akce->id" title="stáhnout událost ve formátu vcal">
-<span class="icon-calendar"></span> {$akce->name|firstUpper}</a>
+    <h2>{$akce->name|firstUpper}</h2>
 
-<div class="prev-next">
-    <a n:tag-if="$prev" class="buttonLike float_right" n:href="Akce:view, $prev->id">
-        <span n:tag-if="!$prev" class="buttonLike gray float_right">Předchozí <span class="char">»</span></span>
-    </a>
-    <a n:tag-if="$next" class="buttonLike" n:href="Akce:view, $next->id">
-        <span n:tag-if="!$next" class="buttonLike gray"><span class="char">«</span> Další</span>
-    </a>
-</div>
+    <p n:if="!$akce->confirm" class="red"><span class="icon-cancel"></span> Tato akce není schválena!</p>
 
-<p n:if="!$akce->confirm" class="red"><span class="icon-cancel"></span> Tato akce není schválena!</p>
+    <div class="prev-next">
+        <a n:tag-if="$prev" class="buttonLike float_right" n:href="Akce:view, $prev->id">
+            <span n:tag-if="!$prev" class="buttonLike gray float_right">Předchozí <span class="char">»</span></span>
+        </a>
+        <a n:tag-if="$next" class="buttonLike" n:href="Akce:view, $next->id">
+            <span n:tag-if="!$next" class="buttonLike gray"><span class="char">«</span> Další</span>
+        </a>
+    </div>
 
-<table id="desc">
-<tr><th>datum akce:</th>
-<td title="{$akce->date_start|timeAgoInWords}">{$akce->date_start|date:'%A %d.%m.%Y %H:%M'} -
-{if $moreOneDay}{$akce->date_end|date:'%A %d.%m.%Y %H:%M'} {else}{$akce->date_end|date:'%H:%M'}{/if}</td></tr>
-<tr><th>délka:</th><td>
-{if $delka->d} {$delka->d} dny{/if}
-{if $delka->h} {$delka->h} hodin{/if}
-</td></tr>
+    <h3 title="{$akce->date_start|timeAgoInWords}">
+        <span class="icon-calendar" title="Datum akce"></span> {$akce->date_start|date:'%A %d.%m.%Y %H:%M'} -
+        {if $moreOneDay}{$akce->date_end|date:'%A %d.%m.%Y %H:%M'} {else}{$akce->date_end|date:'%H:%M'}{/if}
+        {if $delka->d}
+            ({$delka->d} dny {$delka->h} hodin)
+        {else}
+            ({$delka->h} hodin)
+        {/if}
+    </h3>
 
-<tr n:if="(($akce->login_mem)or($akce->login_org))and($akce->date_deatline > date_create()) and (!$akceIsOld)">
-<th>konec přihlášení / odhlášení:</th>
-<td title="do {$akce->date_deatline|date:'%A %d.%m.%Y'}">
-{$akce->date_deatline|timeAgoInWords}
-</td></tr>
+    <div n:if="(($akce->login_mem)or($akce->login_org))and($akce->date_deatline > date_create()) and (!$akceIsOld)">
+        <span class="icon-calendar-times-o" title="Přihlášení do"></span> přihlášení do: {$akce->date_deatline|date:'%A %d.%m.%Y'} ({$akce->date_deatline|timeAgoInWords})
+    </div>
 
-<tr><th>místo konání:</th><td>{$akce->place}</td></tr>
-<tr n:if='$akce->price'><th>cena:</th><td>{$akce->price} Kč</td></tr>
+    <p><span class="icon-location" title="Místo"></span> {$akce->place}</p>
 
-{var $member = $akce->ref('member')}
+    <p n:if="$akce->member_id"><span class="icon-user-o" title="Zodpovědná osoba"></span> <a n:href="Member:view $akce->member_id">{$akce->member->surname} {$akce->member->name}</a></p>
 
-<tr n:if="$member"><th>zodpovědná osoba: </th><td><a n:href="Member:view $akce->member_id">{$member->surname} {$member->name}</a></td></tr>
+    <p><span class="icon-tag"></span> {$akce->akce_for->text}{if $akce->visible}, viditelná veřejnosti{else}, viditelná pouze členům{/if}</p>
 
-<tr><th>určeno pro: </th><td>{$akce->akce_for->text}</td></tr>
-
-<tr><th>viditelnost:</th><td>{if $akce->visible}viditelná veřejnosti{else}viditelná pouze členům{/if}</td></tr>
-<tr n:if="$akce->file"><th>informační leták:</th><td><a href="{$basePath}/doc/akce/{$akce->file}">{$akce->file}</a></td></tr>
-
-<tr n:if="$akceIsOld"><th>záznam o akci:</th><td>
-{if !$akce->report} <a n:href="Report:add $akce->id">vytvořit</a> {else} <a n:href="Report:view $akce->id">náhled</a>
-    {if $user->isInRole($presenter->name) or $user->isInArray($orgList)} <a n:href="Report:edit $akce->id">editovat</a>{/if}
-{/if}</td>
-</tr>
-
-<tr n:if="$akceIsOld"><th>vyúčtování:</th><td>
-{if !$akce->bill} {control uploadBillForm} {else} <a href="{$basePath}/doc/vyuctovani/{$akce->id}-{$akce->name|webalize}.xls">stáhnout</a>{/if}</td>
-</tr>
-
-<tr n:if="($akceIsOld)and(($user->isInArray($memberList))or($user->isInArray($orgList)))"><th>hodnocení:</th><td><a class="ajax" n:href="addRating!">hodnotit</a>
-<a n:if="($user->isInArray($orgList))" n:href="feedback $akce->id">přehled</a>
-</td></tr>
-</table>
+    <p n:if="$akce->file"><span class="icon-doc-text"></span> <a href="{$basePath}/doc/akce/{$akce->file}">{$akce->file}</a></p>
 
 <p n:if="(!$akceIsOld) and ($akce->date_add != $akce->date_update)" 
 class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->date_update|date:'%d.%m.%Y %H:%M'})</p>
 
-
 {if $akce->perex}
-<h3>stručný popis akce:</h3>
-<div class="texy">
-{!$akce->perex|texy}
-</div>
+    <h3>Stručný popis akce</h3>
+    <div class="texy">
+        {$akce->perex|texy|noescape}
+    </div>
 {/if}
 
-<h3>podrobný popis akce:</h3>
+<h3>Podrobný popis akce</h3>
 <div class="texy">
-{!$akce->description|texy}
+    {$akce->description|texy|noescape}
 </div>
-
-<p n:if="$user->isInRole('Member:Mail') or $user->isInArray($orgList)" id="mail">
-<a class="buttonLike" n:href="Mail:akce $akce->id"><span class="icon-mail"></span> poslat mail účastníkům</a>
-<a class="buttonLike" n:href="Mail:akce $akce->id, TRUE"><span class="icon-mail"></span> poslat mail organizátorům</a>
-</p>
 
 <p n:if="($akce->date_deatline < date_create()) and (!$akceIsOld)">
 <span title="Přihlášení/odhlášení do: {$akce->date_deatline|date:'%A %d.%m.%Y'}" 
@@ -157,27 +135,54 @@ class="hint">Čas na přihlášení vypršel</span></p>
 
 <div class="clearfix"></div>
 
-{snippet ratingForm}
-{if isset($showRatingForm) or $presenter['ratingForm']->hasErrors()}
-<script type="text/javascript">
-$(function(){     
-    $("#snippet--ratingForm").dialog({ modal: true, width: 500, title: "Přidat hodnocení" });
-    Nette.initForm(document.ratingForm);    
-});                        
-</script>
-{control ratingForm}
-{/if}
-{/snippet}
+    <div n:if="$user->isInRole('Member:Mail') or $user->isInArray($orgList)" id="mail">
+        <a class="buttonLike" n:href="Mail:akce $akce->id"><span class="icon-mail"></span> poslat mail účastníkům</a>
+        <a class="buttonLike" n:href="Mail:akce $akce->id, TRUE"><span class="icon-mail"></span> poslat mail organizátorům</a>
+    </div>
+
+    {if $akceIsOld}
+        {if $akce->report}
+            <h3>Záznam o akci</h3>
+            <p>
+                <a class="buttonLike" n:href="Report:view $akce->id"> <span class="icon-table"></span> náhled</a>
+                {if $user->isInRole($presenter->name) or $user->isInArray($orgList)} <a class="buttonLike" n:href="Report:edit $akce->id"><span class="icon-pencil"></span> editovat</a>{/if}
+            </p>
+        {/if}
+
+        {if $akce->message}
+            <h3>Zpráva z akce</h3>
+            <div class="texy">
+                {$akce->message|texy|noescape}
+            </div>
+            {*<p><a class="buttonLike" n:href="Akce:editReport $akce->id"><span class="icon-pencil"></span> editovat</a></p>*}
+        {/if}
+
+        {control rating}
+
+        <h3>Vyúčtování <span class="icon-dollar"></span></h3>
+        {if $user->isInArray($orgList)}
+        {form uploadBillForm}
+            <ul class="error" n:if="$form->hasErrors()">
+                <li n:foreach="$form->errors as $error">{$error}</li>
+            </ul>
+
+            <p>
+                {if $akce->bill} <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->id}-{$akce->name|webalize}.xls"><span class="icon-download"></span> stáhnout</a>{/if}
+                {input file} {input ok}
+            </p>
+        {/form}
+        {/if}
+    {/if}
 
 {if $akce->album_id}
 <hr>
-<h3>Fotografie</h3>
+<h3>Fotografie <span class="icon-picture"></span></h3>
 {control album $akce->album_id}
 {/if}
 
 {if $akce->anketa_id}
 <hr>
-<h3>Anketa</h3>
+<h3>Anketa <span class="icon-list-bullet"></span></h3>
 
 <p><a n:href="Ankety:view $akce->anketa_id">{$anketa->title|firstUpper}</a><p>
 
@@ -186,7 +191,7 @@ $(function(){
 
 {if $akce->forum_topic_id}
 <hr>
-<h3>Poslední příspěvky</h3>
+<h3>Poslední příspěvky <span class="icon-chat-empty"></h3>
 
 <a n:if="!$topic->locked" class="buttonLike float_right" n:href="Forum:add $topic->id"><span class="icon-plus"></span> nový příspěvěk</a>
 

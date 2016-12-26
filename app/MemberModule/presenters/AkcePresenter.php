@@ -3,6 +3,7 @@ namespace MemberModule;
 
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Multiplier;
+use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
 use Nette\DateTime;
 
@@ -18,6 +19,9 @@ class AkcePresenter extends LayerPresenter{
 	/** @var \AnketyService @inject */
 	public $anketyService;
 
+	/** @var \RatingService @inject */
+	public $ratingService;
+
 	/** @var \GalleryService @inject */
 	public $galleryService;
 
@@ -29,6 +33,12 @@ class AkcePresenter extends LayerPresenter{
 
 	/** @var \Nette\Database\Table\ActiveRow */
 	private $akce;
+
+	/** @var array */
+	private $orgList;
+
+	/** @var array */
+	private $memberList;
 
 	public function actionSendAkceMail($id){
 		$akce = $this->akceService->getAkceById($id);
@@ -70,6 +80,10 @@ class AkcePresenter extends LayerPresenter{
 		  $this->flashMessage('Akce nenalezena!','error');
 		  $this->redirect('default');
 		}
+
+		$this->orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
+		$this->memberList = $this->akceService->getMembersByAkceId($id,FALSE)->fetchPairs('id','id');
+
 	}
 
 	public function renderView($id){
@@ -82,8 +96,8 @@ class AkcePresenter extends LayerPresenter{
 		$this->template->prev = $this->akceService->getAkcePrev($id,$this->akce->date_start);
 		$this->template->next = $this->akceService->getAkceNext($id,$this->akce->date_start);
 
-		$this->template->orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
-		$this->template->memberList = $this->akceService->getMembersByAkceId($id,FALSE)->fetchPairs('id','id');
+		$this->template->orgList = $this->orgList;
+		$this->template->memberList = $this->memberList;
 
 		if ($this->akce->anketa_id){
 		  $anketa = $this->anketyService->getAnketaById($this->akce->anketa_id);
@@ -98,23 +112,23 @@ class AkcePresenter extends LayerPresenter{
 		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
-	public function renderFeedback($id){
-		if (!$id) $this->redirect('default');
-
-		$orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
-
-		if (!$this->getUser()->isInArray($orgList)) {
-			  $this->flashMessage('Nemáte právo prohlížet hodnocení této akce','error');
-			  $this->redirect('Akce:view',$id);
-		}
-
-		$this->template->akce = $this->akceService->getAkceById($id);
-
-		$this->template->ratings = $this->akceService->getRatingByAkceId($id)->order('date_add');
-		$this->template->grade = $this->akceService->getRatingGradeByAkceId($id);
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
-		$this->registerTexy();
-	}
+//	public function renderFeedback($id){
+//		if (!$id) $this->redirect('default');
+//
+//		$orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
+//
+//		if (!$this->getUser()->isInArray($orgList)) {
+//			  $this->flashMessage('Nemáte právo prohlížet hodnocení této akce','error');
+//			  $this->redirect('Akce:view',$id);
+//		}
+//
+//		$this->template->akce = $this->akceService->getAkceById($id);
+//
+//		$this->template->ratings = $this->akceService->getRatingByAkceId($id)->order('date_add');
+//		$this->template->grade = $this->akceService->getRatingGradeByAkceId($id);
+//		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+//		$this->registerTexy();
+//	}
 
 	public function renderEdit($id){
 		if (!$id) $this->redirect('default');
@@ -137,6 +151,8 @@ class AkcePresenter extends LayerPresenter{
 			$form['organizator']->getLabelPrototype()->class('hide');
 			$form['organizator']->getControlPrototype()->class('hide');
 
+//			if ($akce->date_start < date_create()) unset($form['message']);
+
 			$form->setDefaults($akce);
 
 			$form['time_start']->setDefaultValue($akce->date_start->format('H:i'));
@@ -147,7 +163,9 @@ class AkcePresenter extends LayerPresenter{
 			$form['date_deatline']->setDefaultValue($akce->date_deatline->format('Y-m-d'));
 
 
+			$this->template->akce = $akce;
 			$this->template->title = $akce->name;
+
 		}
 	}
 
@@ -194,20 +212,27 @@ class AkcePresenter extends LayerPresenter{
         return new \AlbumPreviewControl($this->galleryService);
     }
 
-    public function renderVcal($id = 0,$future = false){
-	  if ($id) {
-	  $akce = $this->akceService->getAkceById($id);
-	  $this->template->akce = array($akce);
+
+	protected function createComponentRating(){
+    	$userId = $this->getUser()->getId();
+    	$isOrg = in_array($userId,$this->orgList);
+		return new \RatingControl($userId,$this->akce->id,$this->ratingService,$isOrg);
 	}
-	else $this->template->akce = $this->akceService->getAkceByFuture($future)->where('confirm',1);
 
-	  $httpResponse = $this->context->getByType('Nette\Http\Response');
-
-	  if ($id) $slug = Strings::truncate(Strings::webalize($akce->name),20,''); else $slug = 'akce';
-
-	  $httpResponse->setHeader('Content-Disposition','attachment; filename="'.$slug.'.ics"');
-
-	}
+//    public function renderVcal($id = 0,$future = false){
+//	  if ($id) {
+//	  $akce = $this->akceService->getAkceById($id);
+//	  $this->template->akce = array($akce);
+//	}
+//	else $this->template->akce = $this->akceService->getAkceByFuture($future)->where('confirm',1);
+//
+//	  $httpResponse = $this->context->getByType('Nette\Http\Response');
+//
+//	  if ($id) $slug = Strings::truncate(Strings::webalize($akce->name),20,''); else $slug = 'akce';
+//
+//	  $httpResponse->setHeader('Content-Disposition','attachment; filename="'.$slug.'.ics"');
+//
+//	}
 
 	public function sendConfirmMail($akce){
 		$template = $this->createTemplate();
@@ -243,7 +268,7 @@ class AkcePresenter extends LayerPresenter{
 		$files->addFiles(['../plugins/symbol/symbol.js']);
 		$files->addFiles(['../plugins/textTransform/textTransform.js']);
 		$files->addFiles([WWW_DIR . '/js/texyla_akce.js']);
-		$files->addFiles([WWW_DIR . '/js/texyla_public.js']);
+//		$files->addFiles([WWW_DIR . '/js/texyla_public.js']);
 
 		$compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
 		$compiler->addFileFilter(new \Webloader\Filter\jsShrink);
@@ -365,10 +390,15 @@ class AkcePresenter extends LayerPresenter{
 		$form->addTextArea('perex', 'Stručný popis')
 		->setAttribute('class','texyla');
 
-
 		$form->addTextArea('description', 'Podrobný popis')
 		  ->setAttribute('class','texyla')
 		  ->setRequired('Vyplňte %label akce');
+
+		$text = "Co se stalo:\n\nPočasí:\n\nZásahy (na břehu, ve vodě, na záchranu majetku):\n\nOšetření (drobné, větší, s odvozem):\n\nPoužitý materiál na akce v majetku místní skupiny:\n\nDalší použitý materiál:\n\nZtráty a poškození materiálu:\n\nDoprava na akci a způsob její úhrady:";
+
+		$form->addTextArea('message','Zpráva z akce')
+			->setDefaultValue($text)
+			->setAttribute('class','texyla');
 
 		$form->addSubmit('save', 'Ulož')->setAttribute('class', 'default');
 			$form->onSuccess[] = callback($this, 'akceFormSubmitted');
@@ -431,17 +461,10 @@ class AkcePresenter extends LayerPresenter{
 		  //   'application/vnd.ms-office,application/vnd.ms-excel,application/msexcel,application/x-msexcel,application/x-ms-excel,application/vnd.ms-excel,application/x-excel,application/x-dos_ms_excel,application/xls'
 		  // );
 
-		$form->addSubmit('ok', '')
-		  ->setAttribute('class','myfont')
-		  ->getControlPrototype()->title='Nahrát soubor s vyúčtovaním';
+		$form->addSubmit('ok', '')
+		  ->setAttribute('class','myfont');
 
 		$form->onSuccess[] = callback($this, 'uploadBillFormSubmitted');
-
-		$renderer = $form->getRenderer();
-		$renderer->wrappers['controls']['container'] = NULL;
-		$renderer->wrappers['pair']['container'] = NULL;
-		$renderer->wrappers['label']['container'] = NULL;
-		$renderer->wrappers['control']['container'] = NULL;
 
 		return $form;
 	}
@@ -453,58 +476,11 @@ class AkcePresenter extends LayerPresenter{
 		$akce = $this->akceService->getAkceById($id);
 
 		if (($form['file']->isFilled()) and ($data->file->isOK())){
-		  $data->file->move(WWW_DIR.'/doc/vyuctovani/'.$id.'-'.Strings::webalize($akce->name).'.xls');
+			$data->file->move(WWW_DIR.'/doc/vyuctovani/'.$id.'-'.Strings::webalize($akce->name).'.xls');
 
-		  $akce->update(array('bill' => 1));
-		  $this->redirect('Akce:view',$id);
+			$akce->update(array('bill' => 1));
+			$this->flashMessage('Vyúčtování nahráno');
+			$this->redirect('Akce:view',$id);
 		}
 	}
-
-	public function handleAddRating() {
-		$this->template->showRatingForm = true;
-		$akce_id = (int) $this->getParameter('id');
-		$form = $this['ratingForm'];
-
-		if (!$form->isSubmitted()) {
-		$values = $this->akceService->getRatingByAkceAndMemberId($akce_id,$this->getUser()->getId());
-		if ($values) $form->setDefaults($values);
-		}
-
-		$this->redrawControl('ratingForm');
-	}
-
-	protected function createComponentRatingForm(){
-		$form = new Form;
-
-		$form->getElementPrototype()->name = 'ratingForm';
-
-		$form->addCheckbox('anonymous','Anonymní')->setDefaultValue(FALSE);
-
-		$form->addRadioList('rating', 'Známka', array(0=>'neznámkovat',1=>1,2=>2,3=>3,4=>4,5=>5))
-		  ->setDefaultValue(0)->getSeparatorPrototype()->setName(NULL);
-
-		$form->addTextArea('message','Slovní hodnocení');
-
-		$form->addSubmit('ok', 'Uložit');
-
-		$form->onSuccess[] = callback($this, 'ratingFormSubmitted');
-
-		return $form;
-	}
-
-	public function ratingFormSubmitted(Form $form){
-		$akce_id = (int) $this->getParameter('id');
-		$member_id = $this->getUser()->getId();
-		$values = $form->getValues();
-
-		$rating = $this->akceService->getRatingByAkceAndMemberId($akce_id,$member_id);
-
-		if ($rating) $this->akceService->updateRatingByAkceAndMemberId($akce_id,$member_id,$values);
-		else $this->akceService->addRatingByAkceAndMemberId($akce_id,$member_id,$values);
-
-		$this->flashMessage('Hodnocení bylo změněno');
-
-		$this->redirect('Akce:view',$akce_id);
-	}
-
 }

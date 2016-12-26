@@ -45,7 +45,7 @@ class ReportPresenter extends LayerPresenter{
 			$form['time_end']->setDefaultValue($akce->date_end->format('H:i'));
 			$form['zos_id']->setDefaultValue($akce->member_id);
 
-			$members = $this->akceService->getMembersByAkceId($id,array(0,1))
+			$members = $this->akceService->getMembersByAkceId($id,[0,1])
 				->order(':akce_member.organizator DESC, :akce_member.date_add DESC');
 
 			$diff = round((intval($akce->date_end->format('U')) - intval($akce->date_start->format('U')))/3600,1);
@@ -82,7 +82,10 @@ class ReportPresenter extends LayerPresenter{
 			$members = $akce->related('report_member');
 
 			foreach ($members as $member) {
-				$form['users'][$member->member_id]->setDefaults($member);
+				$form['users'][$member->member_id]['member_id']->setDefaultValue($member->member_id);
+				$form['users'][$member->member_id]['hodiny']->setDefaultValue($member->hodiny);
+				$form['users'][$member->member_id]['placeno']->setDefaultValue($member->hodiny);
+
 				$form['users'][$member->member_id]['date_start']->setDefaultValue($member->date_start->format('Y-m-d'));
 				$form['users'][$member->member_id]['time_start']->setDefaultValue($member->date_start->format('H:i'));
 				$form['users'][$member->member_id]['date_end']->setDefaultValue($member->date_end->format('Y-m-d'));
@@ -115,7 +118,7 @@ class ReportPresenter extends LayerPresenter{
 
 	    $reportTypes = $this->akceService->getReportTypes();
 		
-		$lidi = $this->akceService->getMembers()->fetchPairs('id','jmeno');
+		$lidi = $this->akceService->getMembers(FALSE)->fetchPairs('id','jmeno');
 
 	    $form->addText('name','Název',30)
 	   		->setRequired('Vyplňte %label akce');
@@ -204,7 +207,7 @@ class ReportPresenter extends LayerPresenter{
 		      	->setDefaultValue(0);
 		}
 
-	    $users = $form->addDynamic('users', function (Nette\Forms\Container $user) use ($lidi) {
+	    $users = $form->addDynamic('users', function (\Nette\Forms\Container $user) use ($lidi) {
 		    
 			$user->addSelect('member_id')
 			  ->setItems($lidi)

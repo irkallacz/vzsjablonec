@@ -80,6 +80,7 @@ common:
         - MemberService
         - DokumentyService
         - AnketyService
+        - RatingService
         - TimesService
         - HlasovaniService
         - GalleryService(Nette\Database\Context(@photogalery))

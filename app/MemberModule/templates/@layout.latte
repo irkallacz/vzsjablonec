@@ -35,14 +35,18 @@
   <b>{$user->identity->login}</b></a> (id: {$user->getId()}) | </span>
   <a n:href="Sign:out">odhlásit</a></div>
     <table>
-    <tr><td><img src="{$basePath}/img/vzs_jbc_logo.png" alt="VZS JBC logo" height="100" width="200"></td>
+    <tr><td><img src="{$basePath}/img/vzs_jbc_logo.png" alt="VZS JBC logo" height="85" width="170"></td>
     <td>{include #title}</td></tr>
     </table>
 </div>
 
 <ul id="menu">
-{foreach $mainMenu as $menuLink => $menuTitle }
-  <li {ifCurrent $menuLink.'*'}class="current"{/ifCurrent}><a n:href="{$menuLink}">{$menuTitle}</a></li>
+{*{foreach $mainMenu as $menuLink => $menuTitle }*}
+  {*<li {ifCurrent $menuLink.'*'}class="current"{/ifCurrent}><a n:href="{$menuLink}">{$menuTitle}</a></li>*}
+{*{/foreach}*}
+
+{foreach $mainMenu as $item}
+  <li {ifCurrent $item['current']}class="current"{/ifCurrent}><a n:href="$item['link']"><span class="icon icon-{$item['icon']}" ></span> {$item['title']}</a></li>
 {/foreach}
 </ul>
 

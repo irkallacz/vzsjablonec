@@ -26,7 +26,7 @@
 <ul class="buttonMenu">
 <li><a n:href="vcfArchive" class="buttonLike"><span class="icon-users"></span> stáhnout vizitky</a></li>
 <li n:if="$user->isInRole($presenter->name)"><a n:href="csv" class="buttonLike"><span class="icon-table"></span> stáhnout exel</a></li>
-<li n:if="$user->isInRole($presenter->name)"><a n:href="add" class="buttonLike"><span class="icon-plus"></span> nový člen</a></li>
+<li n:if="$user->isInRole($presenter->name)"><a n:href="add" class="buttonLike"><span class="icon-user-plus"></span> nový člen</a></li>
 </ul>
 
 {form memberSearchForm}

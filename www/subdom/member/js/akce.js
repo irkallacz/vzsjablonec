@@ -19,8 +19,8 @@ function copyDate() {
 }
 
 $(function() {		
-	$('#frm-akceForm-perex').texyla(akce_public);
-	$('#frm-akceForm-description').texyla(akce);
+	//$('#frm-akceForm-perex').texyla(akce_public);
+	$('.texyla').texyla(akce);
 
 	var elem = document.createElement('input');
   elem.setAttribute('type', 'date');

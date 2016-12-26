@@ -1,5 +1,5 @@
 <div class="list_component">
-<h3>{if $isOrg} Organizátoři{else}Účastníci{/if}</h3>
+<h3>{if $isOrg} Organizátoři <span class="icon icon-user-o"></span>{else}Účastníci <span class="icon icon-user"></span>{/if}</h3>
 {snippet memberList}
 
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>

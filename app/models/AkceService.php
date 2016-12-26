@@ -179,6 +179,21 @@ class AkceService extends DatabaseService
             ->where('date_end > ?',$date);
     }
 
+
+	/**
+	 * @param \Nette\DateTime $date
+	 * @param $user_id
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getRatingNews(\Nette\DateTime $date, $user_id){
+		return $this->getAkceByFuture(FALSE)
+			->select('id, name, :akce_rating_member.member_id AS rating_member_id, :akce_rating_member.date_add AS rating_date_add')
+			->where(':akce_member.member_id',$user_id)
+			->where(':akce_member.organizator',TRUE)
+			->where(':akce_rating_member.date_add > ?',$date);
+
+	}
+
     /**
      * @param \Nette\DateTime $date
      * @param $user_id
@@ -231,71 +246,4 @@ class AkceService extends DatabaseService
         return $this->database->table('report_type')->order('id')->fetchPairs('id','title');
     }
 
-    /**
-     * @return \Nette\Database\Table\Selection
-     */
-    public function getRating(){
-        return $this->database->table('akce_rating_member');
-    }
-
-
-    /**
-     * @param \Nette\DateTime $date
-     * @param $user_id
-     * @return \Nette\Database\Table\Selection
-     */
-    public function getRatingNews(\Nette\DateTime $date, $user_id){
-        return $this->getAkceByFuture(FALSE)
-            ->select('id, name, :akce_rating_member.member_id AS rating_member_id, :akce_rating_member.date_add AS rating_date_add')
-            ->where(':akce_member.member_id',$user_id)
-            ->where(':akce_member.organizator',TRUE)
-            ->where(':akce_rating_member.date_add > ?',$date);
-
-    }
-
-    /**
-     * @param $akce_id
-     * @return \Nette\Database\Table\Selection
-     */
-    public function getRatingByAkceId($akce_id){
-        return $this->getRating()->where('akce_id',$akce_id);
-    }
-
-    /**
-     * @param $akce_id
-     * @return float
-     */
-    public function getRatingGradeByAkceId($akce_id){
-        return (float) $this->getRating()->where('akce_id',$akce_id)->where('rating != ?',0)->aggregation("AVG(rating)");
-    }
-
-    /**
-     * @param $akce_id
-     * @param $member_id
-     * @return bool|mixed|\Nette\Database\Table\IRow
-     */
-    public function getRatingByAkceAndMemberId($akce_id, $member_id){
-        return $this->getRating()->where('akce_id',$akce_id)->where('member_id',$member_id)->fetch();//get(array($akce_id,$member_id));
-    }
-
-    /**
-     * @param $akce_id
-     * @param $member_id
-     * @param $values
-     */
-    public function addRatingByAkceAndMemberId($akce_id, $member_id, $values){
-        $values['member_id'] = $member_id;
-        $values['akce_id'] = $akce_id;               
-        $this->database->query('INSERT INTO `akce_rating_member`',$values);
-    }
-
-    /**
-     * @param $akce_id
-     * @param $member_id
-     * @param $values
-     */
-    public function updateRatingByAkceAndMemberId($akce_id, $member_id, $values){
-        //$this->database->table('akce_rating_member')->get(array($akce_id,$member_id))->update($values);
-        $this->database->query('UPDATE `akce_rating_member` SET ? WHERE akce_id = ? AND member_id = ?',$values,$akce_id,$member_id);
-    }
 }

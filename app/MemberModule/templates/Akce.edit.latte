@@ -4,12 +4,12 @@
 <link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
 
 <style type="text/css" n:syntax="off">
-#frm-akceForm textarea {width: 100%;}
-#frm-akceForm p {line-height: 1.5em; margin: 1ex 0px;}
-#frm-akceForm label {font-weight: bold; margin-right: 1ex; font-size: 0.9em}
-#frm-akceForm .date, #frm-akceForm .time {text-align: center;}
-
-#ui-datepicker-div {font-size: 0.9em;}
+#frm-akceForm textarea { width: 100%;}
+#frm-akceForm p { line-height: 1.5em; margin: 1ex 0px; }
+#frm-akceForm label { font-weight: bold; margin-right: 1ex; font-size: 0.9em }
+#frm-akceForm .date, #frm-akceForm .time { text-align: center; }
+h2 { margin-top: 1ex }
+#ui-datepicker-div { font-size: 0.9em; }
 </style>
 
 <script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
@@ -71,6 +71,12 @@ uvidí ji na webu pouze její organizatoři. Dokončením tohoto formuláře se 
 
 <p>{label description class => 'hint', title => 'Tento text uvidí pouze naši členové'/}</p>
 <p>{input description}</p>
+
+{if $akce->date_start < date_create()}
+	<p>{label message class => 'hint', title => 'Podrobná zpráva z akce'/}</p>
+	<p>{input message}</p>
+{/if}
+
 
 <p>{input save}</p>
 
