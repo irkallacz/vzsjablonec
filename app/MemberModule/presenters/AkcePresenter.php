@@ -162,6 +162,7 @@ class AkcePresenter extends LayerPresenter{
 			$form['date_end']->setDefaultValue($akce->date_end->format('Y-m-d'));
 			$form['date_deatline']->setDefaultValue($akce->date_deatline->format('Y-m-d'));
 
+			if (!$akce->message) $form['message']->setDefaultValue($this->akceService->getAkceMessageDefault());
 
 			$this->template->akce = $akce;
 			$this->template->title = $akce->name;
@@ -394,7 +395,7 @@ class AkcePresenter extends LayerPresenter{
 		  ->setAttribute('class','texyla')
 		  ->setRequired('Vyplňte %label akce');
 
-		$text = "Co se stalo:\n\nPočasí:\n\nZásahy (na břehu, ve vodě, na záchranu majetku):\n\nOšetření (drobné, větší, s odvozem):\n\nPoužitý materiál na akce v majetku místní skupiny:\n\nDalší použitý materiál:\n\nZtráty a poškození materiálu:\n\nDoprava na akci a způsob její úhrady:";
+		$text = $this->akceService->getAkceMessageDefault();
 
 		$form->addTextArea('message','Zpráva z akce')
 			->setDefaultValue($text)

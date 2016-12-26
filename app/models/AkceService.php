@@ -107,6 +107,10 @@ class AkceService extends DatabaseService
         return $this->database->table('akce_member')->where('akce_id',$id)->where('organizator',$org)->fetchPairs('member_id','member_id');
     }
 
+    public function getAkceMessageDefault(){
+		return "Co se stalo:\n\nPočasí:\n\nZásahy (na břehu, ve vodě, na záchranu majetku):\n\nOšetření (drobné, větší, s odvozem):\n\nPoužitý materiál na akce v majetku místní skupiny:\n\nDalší použitý materiál:\n\nZtráty a poškození materiálu:\n\nDoprava na akci a způsob její úhrady:";
+    }
+
     /**
      * @param $id
      * @param $org
