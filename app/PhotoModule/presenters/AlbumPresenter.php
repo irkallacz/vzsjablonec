@@ -20,6 +20,12 @@ class AlbumPresenter extends BasePresenter{
 	/** @var \MemberService @inject*/
 	public $members;
 
+    protected function startup(){
+        parent::startup();
+	    \Kdyby\Extension\Forms\Replicator\Replicator::register();
+    }
+
+
 	public function getAlbumById($slug){
 		$id = $this->getIdFromSlug($slug);
 
