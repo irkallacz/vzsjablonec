@@ -14,15 +14,15 @@ abstract class BasePresenter extends Presenter{
 //        $this->getUser()->getStorage()->setNamespace('photo');
 //    }
 //
-//    protected function afterRender(){
-//        parent::afterRender();
-//
-//        if (!$this->context->parameters['productionMode']) {
-//            $this->template->basePath .= '/photo/';
-//            $this->template->baseUri .= '/photo';
-//        }
-//
-//    }
+    protected function afterRender(){
+        parent::afterRender();
+
+        if (!$this->context->parameters['productionMode']) {
+            $this->template->basePath .= '/photo/';
+            $this->template->baseUri .= '/photo';
+        }
+
+    }
 
     protected function beforeRender(){
         parent::beforeRender();
