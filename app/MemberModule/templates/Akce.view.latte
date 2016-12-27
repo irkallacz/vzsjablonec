@@ -160,6 +160,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
 
         {control rating}
 
+        {if ($akce->bill)or($user->isInArray($orgList))}
         <h3>Vyúčtování <span class="icon-dollar"></span></h3>
 
         {form uploadBillForm}
@@ -172,6 +173,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
                 {if $user->isInArray($orgList)} {input file} {input ok} {/if}
             </p>
         {/form}
+        {/if}
     {/if}
 
 {if $akce->album_id}
