@@ -2,10 +2,10 @@
   font-family: 'myfont';
   src: url('../font/myfont.eot?8368321');
   src: url('../font/myfont.eot?8368321#iefix') format('embedded-opentype'),
+       url('../font/myfont.svg?8368321#myfont') format('svg'),
        url('../font/myfont.woff2?8368321') format('woff2'),
        url('../font/myfont.woff?8368321') format('woff'),
-       url('../font/myfont.ttf?8368321') format('truetype'),
-       url('../font/myfont.svg?8368321#myfont') format('svg');
+       url('../font/myfont.ttf?8368321') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
