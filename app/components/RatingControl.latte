@@ -15,7 +15,7 @@
     <div id="ratings">
         {var $limit = 100}
         {foreach $ratings as $memberId => $rating}
-            <p n:if="($rating->public)or($isOrg)">
+            <p n:if="($rating->public)or($isOrg)or($memberId === $user->getId())">
                 <strong>
                     {if !$rating->anonymous}
                         <a href="{plink Member:view $memberId}">{$rating->member->surname} {$rating->member->name}</a>
@@ -40,7 +40,7 @@
 
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
-<div id="rating-edit-area" class="hide">
+<div id="rating-edit-area" {if $myrating}class="hide"{/if}>
     <h3>Editace hodnocení <span class="icon icon-star-empty"></span></h3>
     {form ratingForm}
         <ul class="error" n:if="$form->hasErrors()">
