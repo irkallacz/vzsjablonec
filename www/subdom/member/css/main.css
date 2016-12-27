@@ -33,6 +33,8 @@ width: 100%; display: block; color: white; font-weight: bold; text-decoration: n
 #menu a:hover, #menu ul a:active, #menu a:focus {color: #e83431;}
 #menu li.current a {color: black;}
 
+#menu li a .icon {font-size: 90%}
+
 #text {padding-top: 0px; float: none; margin-left: 13.5em; min-width: 15em;}
 
 .myfont {font-family: myfont;}

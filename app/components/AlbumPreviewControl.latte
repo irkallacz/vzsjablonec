@@ -2,7 +2,7 @@
 
 <a href="{plink :Photo:Album:view,$album->id.'-'.$album->slug}" title="{$album->text|truncate:70}" class="round">
     <ul n:inner-foreach="$photos as $image" class="photoList">
-        <li><img src="{$photoUri}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" width="150" height="100" alt="{$image->filename}"></li>
+        <li><img src="{$photoUri}{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" width="150" height="100" alt="{$image->filename}"></li>
     </ul>
 </a>
 

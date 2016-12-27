@@ -13,15 +13,15 @@ abstract class BasePresenter extends Presenter{
 //        $this->getUser()->getStorage()->setNamespace('member');
 //    }
 //
-//    protected function afterRender(){
-//        parent::afterRender();
-//        if (!$this->context->parameters['productionMode']) {
-//            parent::afterRender();
-//            $this->template->basePath .= '/member';
-//            $this->template->baseUri .= '/member';
-//
-//        }
-//    }
+    protected function afterRender(){
+        parent::afterRender();
+        if (!$this->context->parameters['productionMode']) {
+            parent::afterRender();
+            $this->template->basePath .= '/member';
+            $this->template->baseUri .= '/member';
+
+        }
+    }
 
     public function registerTexy(){
         $texy = \TexyFactory::createTexy();

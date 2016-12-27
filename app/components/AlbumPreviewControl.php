@@ -35,7 +35,7 @@ class AlbumPreviewControl extends Control{
         $this->template->pocet = count($photos);
 
         $photoDir = 'albums';
-        $photoUri = $this->presenter->link(':Photo:');
+        $photoUri = $this->presenter->link('//:Photo:News:');
 
         LayoutHelpers::$thumbDirUri = 'albums/thumbs';
 
