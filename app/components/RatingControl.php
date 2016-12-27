@@ -45,23 +45,22 @@ class RatingControl extends \Nette\Application\UI\Control {
 
 	    $rating = $this->ratingService->getRatingArrayByAkceId($this->akceId);
 	    if ($rating) {
-
 		    $this->template->rating_stars = round(array_sum($rating)/count($rating));
 		    $this->template->rating_count = count($rating);
-
-		    $ratings = $this->ratingService->getRatingByAkceId($this->akceId)->order('date_add')->fetchPairs('member_id');
-		    $rating = Arrays::get($ratings, $this->userId, []);
-		    unset($ratings[$this->userId]);
-
-		    $this['ratingForm']->setDefaults($rating);
-		    $this->template->ratings = $ratings;
-
-		    $this->template->registerHelper('stars', function($s){
-			    $s = intval($s);
-			    return str_repeat('★', $s).str_repeat('☆', 5-$s);
-		    });
-
 	    }
+
+	    $ratings = $this->ratingService->getRatingByAkceId($this->akceId)->order('date_add')->fetchPairs('member_id');
+	    $rating = Arrays::get($ratings, $this->userId, []);
+	    unset($ratings[$this->userId]);
+
+	    $this['ratingForm']->setDefaults($rating);
+	    $this->template->ratings = $ratings;
+
+	    $this->template->registerHelper('stars', function($s){
+		    $s = intval($s);
+		    return str_repeat('★', $s).str_repeat('☆', 5-$s);
+	    });
+
 	    $this->template->render();
     }
 

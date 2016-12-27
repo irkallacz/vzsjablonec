@@ -7,7 +7,7 @@
 
 {if isset($ratings)}
     <h3 id="rating">Hodnocení <span class="icon icon-star"></span></h3>
-    <div><span class="stars">{$rating_stars|stars}</span> ({$rating_count})</div>
+    <div n:if="isset($rating_stars)"><span class="stars">{$rating_stars|stars}</span> ({$rating_count})</div>
     <div id="ratings">
         {var $limit = 100}
         {foreach $ratings as $memberId => $rating}
