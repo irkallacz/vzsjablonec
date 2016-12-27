@@ -40,10 +40,8 @@
     </table>
 </div>
 
-<ul id="menu">
-{foreach $mainMenu as $item}
+<ul id="menu" n:inner-foreach="$mainMenu as $item">
   <li {ifCurrent $item['current']}class="current"{/ifCurrent}><a n:href="$item['link']" {if $iterator->last}target="_blank"{/if}><span class="icon icon-{$item['icon']}" ></span> {$item['title']}</a></li>
-{/foreach}
 </ul>
 
 <div id="text">
