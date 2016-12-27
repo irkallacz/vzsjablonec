@@ -14,17 +14,19 @@
             <p n:if="($rating->public)or($isOrg)">
                 <strong>
                     {if !$rating->anonymous}
-                        <a href="{plink Member:view $memberId}">{$rating->member->surname} {$rating->member->name}:</a>
+                        <a href="{plink Member:view $memberId}">{$rating->member->surname} {$rating->member->name}</a>
                     {else}
                         Anonymní:
                     {/if}
                 </strong>
+                <span n:if="$rating->rating" class="stars">({$rating->rating|stars})</span>
+                <br>
                 {if $rating->message}
                     <span id="rating-preview-{$memberId}" class="preview">{$rating->message|nl2br|noescape|truncate:$limit}
                         <a n:if="mb_strlen($rating->message) > $limit" href="javascript:more({$memberId})">Další</a></span>
                     <span n:if="mb_strlen($rating->message) > $limit" id="rating-message-{$memberId}" class="hide message">{$rating->message|nl2br|noescape}</span>
                 {/if}
-                <span n:if="$rating->rating" class="stars">{$rating->rating|stars}</span>
+
             </p>
         {/foreach}
     </div>
