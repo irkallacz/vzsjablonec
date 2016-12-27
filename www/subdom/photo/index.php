@@ -7,7 +7,7 @@ define('WWW_DIR', __DIR__);
 define('APP_DIR', __DIR__ . '/../../../app');
 
 // uncomment this line if you must temporarily take down your site for maintenance
-// require APP_DIR . '/templates/maintenance.phtml';
+//require __DIR__ . '/.maintenance.php';
 
 // load bootstrap file
 require APP_DIR . '/bootstrap.php';
