@@ -34,8 +34,8 @@
 <body>
 <div id="main">
 <div id="top">
-  <ul id="mainMenu" n:inner-foreach="$mainMenu as $menuLink => $menuTitle">
-    <li {ifCurrent $menuLink.'*'}class="current"{/ifCurrent}><a n:href="{$menuLink}">{$menuTitle}</a></li>
+  <ul id="mainMenu" n:inner-foreach="$mainMenu as $item">
+    <li {ifCurrent $item['current']}class="current"{/ifCurrent}><a n:href="$item['link']">{$item['title']}</a></li>
   </ul>
 
   <div id="header">

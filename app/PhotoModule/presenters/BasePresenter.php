@@ -33,16 +33,19 @@ abstract class BasePresenter extends Presenter{
 
         $this->template->photoDir = self::photoDir;
 
-        $mainMenu = ['News:'=>'novinky','Album:'=>'alba'];
+	    $mainMenu = [
+		    ['title' => 'novinky', 'link' => 'News:',  'current' => 'News:*'],
+		    ['title' => 'alba',    'link' => 'Album:', 'current' => 'Album:*']
+	    ];
 
-        if ($this->getUser()->isLoggedIn()) {
-            $mainMenu['Myself:'] = 'můj účet';
-            $mainMenu[':Member:Feed:albums'] = 'rss';
-            $mainMenu[':Member:News:'] = 'member';
-            $mainMenu['Sign:out'] = 'odhlášení';
-        } else {
-          $mainMenu['Sign:in'] = 'přihlášení';
-        }
+	    if ($this->getUser()->isLoggedIn()) {
+		    $mainMenu[] = ['title' => 'můj účet', 'link' => 'Myself:', 'current' => 'Myself:*'];
+		    $mainMenu[] = ['title' => 'rss', 'link' => ':Member:Feed:albums', 'current' => ':Member:Feed:albums'];
+		    $mainMenu[] = ['title' => 'member', 'link' => ':Member:News:', 'current' => ':Member:News:'];
+		    $mainMenu[] = ['title' => 'odhlášení', 'link' => 'Sign:out', 'current' => 'Sign:out'];
+	    }else{
+		    $mainMenu[] = ['title' => 'přihlášení', 'link' => 'Sign:in', 'current' => 'Sign:in'];
+	    }
 
         $this->template->mainMenu = $mainMenu;
     }
