@@ -76,7 +76,9 @@ class RatingControl extends \Nette\Application\UI\Control {
 		$form->addCheckbox('public','Veřejné')->setDefaultValue(TRUE);
 		$form->addCheckbox('anonymous','Anonymní')->setDefaultValue(FALSE);
 
-		$form->addTextArea('message','Slovní hodnocení');
+		$form->addTextArea('message','Slovní hodnocení')
+			->addConditionOn($form['rating'], ~Form::FILLED)
+			->setRequired('Vyplňte hodnocení nebo hvězdy');
 
 		$form->addSubmit('ok', 'Uložit');
 
