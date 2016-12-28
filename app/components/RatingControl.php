@@ -24,39 +24,46 @@ class RatingControl extends \Nette\Application\UI\Control {
 	/** @var bool */
 	private $isOrg;
 
+	/** @var bool */
+	private $canComment;
+
 	/**
 	 * RatingControl constructor.
-	 * @param $userId
-	 * @param $akceId
+	 * @param int $userId
+	 * @param int $akceId
 	 * @param RatingService $ratingService
+	 * @param bool $isOrg
+	 * @param bool $canComment
 	 */
-	public function __construct($userId, $akceId, RatingService $ratingService, $isOrg){
+	public function __construct($akceId, RatingService $ratingService, $userId, $isOrg, $canComment){
 		parent::__construct();
 		$this->userId = $userId;
 		$this->akceId = $akceId;
 		$this->ratingService = $ratingService;
 		$this->isOrg = $isOrg;
+		$this->canComment = $canComment;
 	}
-
 
 	public function render(){
 	    $this->template->setFile(__DIR__ . '/RatingControl.latte');
 		$this->template->isOrg = $this->isOrg;
+		$this->template->canComment = $this->canComment;
 
-	    $rating = $this->ratingService->getRatingArrayByAkceId($this->akceId);
+		$rating = $this->ratingService->getRatingArrayByAkceId($this->akceId);
 	    if ($rating) {
 		    $this->template->rating_stars = round(array_sum($rating)/count($rating));
 		    $this->template->rating_count = count($rating);
  	    }
 
 	    $ratings = $this->ratingService->getRatingByAkceId($this->akceId)->order('date_add')->fetchPairs('member_id');
-	    $rating = Arrays::get($ratings, $this->userId, []);
-//	    unset($ratings[$this->userId]);
+	    $myrating = Arrays::get($ratings, $this->userId, []);
 
-	    $this['ratingForm']->setDefaults($rating);
+	    $this['ratingForm']->setDefaults($myrating);
 	    $this->template->ratings = $ratings;
-	    $this->template->myrating = $rating;
+	    $this->template->myrating = $myrating;
 
+	    $texy = \TexyFactory::createTexy();
+	    $this->template->registerHelper('texy', callback($texy,'process'));
 	    $this->template->registerHelper('stars', function($s){
 		    $s = intval($s);
 		    return str_repeat('★', $s).str_repeat('☆', 5-$s);
@@ -67,8 +74,6 @@ class RatingControl extends \Nette\Application\UI\Control {
 
 	protected function createComponentRatingForm(){
 		$form = new Form;
-
-		$form->getElementPrototype()->name = 'ratingForm';
 
 		$form->addRadioList('rating', 'Hvězdy:', array_combine(range(1,5),range(1,5)))
 			->getSeparatorPrototype()->setName(NULL);
@@ -98,6 +103,7 @@ class RatingControl extends \Nette\Application\UI\Control {
 		$this->flashMessage('Hodnocení bylo změněno');
 
 		$this->redrawControl();
+		$this->redirect('this#rating');
 	}
 
 

@@ -3,9 +3,11 @@
         document.getElementById('rating-preview-'+id).classList.add('hide');
         document.getElementById('rating-message-'+id).classList.remove('hide');
     }
-    function editRating() {
+    function editRating(id) {
         document.getElementById('rating-edit-sign').classList.add('hide');
         document.getElementById('rating-edit-area').classList.remove('hide');
+
+        document.getElementById('rating-'+id).classList.add('hide');
     }
 </script>
 
@@ -15,43 +17,51 @@
     <div id="ratings">
         {var $limit = 100}
         {foreach $ratings as $memberId => $rating}
-            <p n:if="($rating->public)or($isOrg)or($memberId === $user->getId())">
-                <strong>
-                    {if !$rating->anonymous}
-                        <a href="{plink Member:view $memberId}">{$rating->member->surname} {$rating->member->name}</a>
-                    {else}
-                        Anonymní:
+            <div id="rating-{$memberId}" n:if="($rating->public)or($isOrg)or($memberId == $user->id)">
+                {if ($rating->rating)or($rating->message)}
+                    <h4>
+                        {if !$rating->anonymous}
+                            <a href="{plink Member:view $memberId}">{$rating->member->surname} {$rating->member->name}</a>
+                        {else}
+                            Anonymní:
+                        {/if}
+                        <span n:if="$rating->rating" class="stars">{$rating->rating|stars}</span>
+                    </h4>
+
+                    {if $rating->message}
+                        <div id="rating-preview-{$memberId}" class="preview">
+                            <a n:tag-if="mb_strlen($rating->message) > $limit" href="javascript:more({$memberId})" class="noLink">
+                                {$rating->message|nl2br|noescape|truncate:$limit}
+                            </a>
+                            <a n:if="mb_strlen($rating->message) > $limit" class="more" href="javascript:more({$memberId})">Více</a>
+                        </div>
+                        <div n:if="mb_strlen($rating->message) > $limit" id="rating-message-{$memberId}" class="hide message">{$rating->message|texy|noescape}</div>
                     {/if}
-                </strong>
-                <span n:if="$rating->rating" class="stars">({$rating->rating|stars})</span>
-                <br>
-                {if $rating->message}
-                    <span id="rating-preview-{$memberId}" class="preview">{$rating->message|nl2br|noescape|truncate:$limit}
-                        <a n:if="mb_strlen($rating->message) > $limit" href="javascript:more({$memberId})">Více</a></span>
-                    <span n:if="mb_strlen($rating->message) > $limit" id="rating-message-{$memberId}" class="hide message">{$rating->message|nl2br|noescape}</span>
                 {/if}
-                {if $memberId === $user->getId()}
-                    <a id="rating-edit-sign" href="javascript:editRating()">Editovat</a>
-                {/if}
-            </p>
+            </div>
         {/foreach}
     </div>
 {/if}
 
-<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+{if $canComment}
+    <p id="rating-edit-sign" n:if="$myrating"><a class="buttonLike" href="javascript:editRating({$user->id})"><span class="icon-pencil"></span> editovat</a></p>
 
-<div id="rating-edit-area" {if $myrating}class="hide"{/if}>
-    <h3>Editace hodnocení <span class="icon icon-star-empty"></span></h3>
-    {form ratingForm}
-        <ul class="error" n:if="$form->hasErrors()">
-            <li n:foreach="$form->errors as $error">{$error}</li>
-        </ul>
+    <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
-        <div class="float_right">{input ok}</div>
-        <p><span id="stars">{label rating /} {input rating}</span> <span
-                    class="no-wrap">{label public /}{input public} {label anonymous /}{input anonymous}</span></p>
-        <p>{input message}</p>
+    <div id="rating-edit-area" n:class="$myrating ? hide">
+        <h3>Moje hodnocení <span class="icon icon-star-empty"></span></h3>
 
+        {form ratingForm}
+            <ul class="error" n:if="$form->hasErrors()">
+                <li n:foreach="$form->errors as $error">{$error}</li>
+            </ul>
 
-    {/form}
-</div>
+            <div class="float_right">{input ok}</div>
+            <p>
+                <span id="stars">{label rating /} {input rating}</span>
+                <span class="no-wrap">{label public /}{input public} {label anonymous /}{input anonymous}</span>
+            </p>
+            <p>{input message}</p>
+        {/form}
+    </div>
+{/if}

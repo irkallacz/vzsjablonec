@@ -1,0 +1,8 @@
+#frm-rating-ratingForm-message { width: 100%; min-height: auto; background: none; font-family: sans-serif;
+    font-size: 90%; border-color: #ccc; }
+#ratings { font-size: 90%; }
+.stars { color: #885500; font-size: larger; }
+
+#ratings .message p { margin-top: 0; }
+#ratings h4 { margin-bottom: 0; margin-top: 1ex; }
+#rating { margin-bottom: 0; }

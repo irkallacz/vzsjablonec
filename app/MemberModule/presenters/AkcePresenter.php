@@ -217,7 +217,8 @@ class AkcePresenter extends LayerPresenter{
 	protected function createComponentRating(){
     	$userId = $this->getUser()->getId();
     	$isOrg = in_array($userId,$this->orgList);
-		return new \RatingControl($userId,$this->akce->id,$this->ratingService,$isOrg);
+    	$canComment = (in_array($userId,$this->memberList)or($isOrg));
+		return new \RatingControl($this->akce->id,$this->ratingService,$userId,$isOrg,$canComment);
 	}
 
 //    public function renderVcal($id = 0,$future = false){
