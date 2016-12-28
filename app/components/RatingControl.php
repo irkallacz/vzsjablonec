@@ -47,7 +47,7 @@ class RatingControl extends \Nette\Application\UI\Control {
 	    if ($rating) {
 		    $this->template->rating_stars = round(array_sum($rating)/count($rating));
 		    $this->template->rating_count = count($rating);
-	    }
+ 	    }
 
 	    $ratings = $this->ratingService->getRatingByAkceId($this->akceId)->order('date_add')->fetchPairs('member_id');
 	    $rating = Arrays::get($ratings, $this->userId, []);
