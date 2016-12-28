@@ -71,7 +71,7 @@ Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p
 
 {if}<h3>Požádován zápis z akce</h3>
 <ol class="news" n:inner-foreach="$reportList as $report">
-	<li><a class="logged" n:href="Report:add $report->id" 
+	<li><a class="logged" n:href="Akce:view $report->id"
 	title="{$report->date_end|timeAgoInWords}">{$report->name}</a></li>
 </ol>
 {/if isset($report)}
