@@ -51,10 +51,11 @@ class RatingControl extends \Nette\Application\UI\Control {
 
 	    $ratings = $this->ratingService->getRatingByAkceId($this->akceId)->order('date_add')->fetchPairs('member_id');
 	    $rating = Arrays::get($ratings, $this->userId, []);
-	    unset($ratings[$this->userId]);
+//	    unset($ratings[$this->userId]);
 
 	    $this['ratingForm']->setDefaults($rating);
 	    $this->template->ratings = $ratings;
+	    $this->template->myrating = $rating;
 
 	    $this->template->registerHelper('stars', function($s){
 		    $s = intval($s);
