@@ -1,8 +1,8 @@
   #menu {float: none;  line-height: 2.5em; margin-top: 1em}
   #menu li a {display: inline; display: inline-block; line-height: 1.2em; margin-right: 1ex; width: auto;}
   #menu li {display: inline; display: inline-block; line-height: 1.2em; width: auto; margin-top: 1ex;}
-  #text {margin-left: 0px;}
-  #text h1 {top: 0px; left: 1ex;}
+  #text {margin-left: 0;}
+  #text h1 {top: 0; left: 1ex;}
   #top img {display: none;}
   #top h1 {margin-top: 1ex;}
   #top #visible {display: none;}

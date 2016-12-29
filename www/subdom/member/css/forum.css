@@ -1,4 +1,4 @@
-.inline-nav {list-style-type: none; padding: 0px; margin-bottom: 1ex;}
+.inline-nav {list-style-type: none; padding: 0; margin-bottom: 1ex;}
 .inline-nav li {display: inline; font-size: 2ex;}
 
 .paginator {line-height: 2em;}
@@ -8,4 +8,4 @@
 .forum_post h2 {font-size: 14px;} 
 .forum_post h3 {font-size: 12px;} 
 
-.forum_post blockquote {margin: 0px 1em 0em 1em; border-left: 2px solid #0089d2; background-color: #e6f3f7; padding-left: 15px;}
+.forum_post blockquote {margin: 0 1em 0 1em; border-left: 2px solid #0089d2; background-color: #e6f3f7; padding-left: 15px;}

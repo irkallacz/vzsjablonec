@@ -1,12 +1,12 @@
-table#posts td, table th {vertical-align: top; padding: 1ex 1ex; padding: 0px;}
+table#posts td, table th {vertical-align: top; padding: 0;}
 table#posts {border-collapse: collapse; width: 98%;}
 table#posts .headerLike {text-align: center;}
-table#posts .borderLike {border-width: 3px 0px 0px 0px;}
+table#posts .borderLike {border-width: 3px 0 0 0;}
 table#posts .top .right {direction: rtl;}
 table#posts .bottom .right {padding-right: 1em;}
 table#posts .bottom .right .noLink {font-weight: bold;}
 
-table#posts .buttonLike { border-radius: 0px 0px 10px 10px;  padding-top: 2px; vertical-align: top;
+table#posts .buttonLike { border-radius: 0 0 10px 10px;  padding-top: 2px; vertical-align: top;
     background-image: none; background-color: white; color: #0089D2; direction: ltr;}
 
 table#posts .logged .buttonLike {color: #CC2222}

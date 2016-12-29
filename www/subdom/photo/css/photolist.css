@@ -1,4 +1,4 @@
-#albumList {margin: 0px; padding: 0px; list-style-type: none;}
+#albumList {margin: 0; padding: 0; list-style-type: none;}
 #albumList li.row {display: block; list-style-type: none;}
 #albumList li.row a.round {display: block; text-decoration: none;}
 #albumList li.row a:hover h3 {text-decoration: underline;}
