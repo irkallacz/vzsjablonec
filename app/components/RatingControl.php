@@ -60,7 +60,7 @@ class RatingControl extends \Nette\Application\UI\Control {
 
 	    $this['ratingForm']->setDefaults($myrating);
 	    $this->template->ratings = $ratings;
-	    $this->template->myrating = $myrating;
+	    $this->template->myrating = (bool) $myrating;
 
 	    $texy = \TexyFactory::createTexy();
 	    $this->template->registerHelper('texy', callback($texy,'process'));
