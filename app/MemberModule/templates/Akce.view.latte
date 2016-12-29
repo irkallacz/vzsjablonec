@@ -1,18 +1,10 @@
 {block #head}
 <link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
-
-{if $akce->album_id}
-    <link rel="stylesheet" href="{$basePath}/css/album.preview.css" type="text/css">
-{/if}
-
-{if $akce->anketa_id}
-    <link rel="stylesheet" href="{$basePath}/css/anketa.css" type="text/css">
-{/if}
-
-{if $akce->forum_topic_id}
-    <link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
-    <link rel="stylesheet" href="{$basePath}/css/forum.posts.css" type="text/css">
-{/if}
+<link rel="stylesheet" href="{$basePath}/css/rating.css" type="text/css" n:if="$akceIsOld">
+<link rel="stylesheet" href="{$basePath}/css/album.preview.css" type="text/css" n:if="$akce->album_id">
+<link rel="stylesheet" href="{$basePath}/css/anketa.css" type="text/css" n:if="$akce->anketa_id">
+<link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css" n:if="$akce->forum_topic_id">
+<link rel="stylesheet" href="{$basePath}/css/forum.posts.css" type="text/css" n:if="$akce->forum_topic_id">
 
 <style type="text/css" n:syntax="off">
     .member_list a.char { text-decoration: none; vertical-align: top; }
@@ -29,33 +21,29 @@
     .inline-nav { margin-bottom: 2em;}
     .prev-next { margin-bottom: 1em;}
     hr { border: none; border-top: 1px solid #ccc; }
-
-    #frm-rating-ratingForm-message { width: 100%; min-height: auto; background: none; font-family: sans-serif;
-    font-size: 90%; border-color: #ccc; }
-    #ratings { font-size: 90%; }
-    .stars { color: #885500; font-size: larger; }
 </style>
 
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 <script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
-{*<script type="text/javascript">*}
-    {*$(function () {*}
+{*<script type="text/javascript">
+TODO odelílání na fomrulářích
+    $(function () {
 
-    {*//    $.nette.init();*}
+    //    $.nette.init();
 
-        {*// odeslání na formulářích*}
-        {*$("form.ajax").submit(function () {*}
-                {*$(this).ajaxSubmit();*}
-                {*return false;*}
-        {*});*}
+        // odeslání na formulářích
+        $("form.ajax").submit(function () {
+                $(this).ajaxSubmit();
+                return false;
+        });
 
-        {*// odeslání pomocí tlačítek*}
-        {*$("form.ajax :submit").click(function () {*}
-                {*$(this).ajaxSubmit();*}
-                {*return false;*}
-        {*});*}
-{*});*}
-{*</script>*}
+        // odeslání pomocí tlačítek
+        $("form.ajax :submit").click(function () {
+                $(this).ajaxSubmit();
+                return false;
+        });
+});
+</script>*}
 {/block} 
 
 <h1 n:block="title">Detail akce</h1>

@@ -1,15 +1,10 @@
 {block #head}
 <style type="text/css" n:syntax="off">
-.news {margin-top: 0px; list-style-type: disc;}
-h3 {margin-bottom: 1ex;}
-.logged {color: #C22;}
+.news { margin-top: 0; list-style-type: disc; }
+h3 { margin-bottom: 1ex; }
+.logged { color: #C22; }
 </style>
 
-{* <script type="text/javascript" n:if="$user->id == 75">
-alert('Vítej Týňulinko!');
-</script>
- *}
- 
 {/block}
 
 <h1 n:block="title">Novinky</h1>
@@ -69,14 +64,14 @@ Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p
 
 {if}<h3>Požádováno hodnocení akce</h3>
 <ol class="news" n:inner-foreach="$feedbackList as $feedback">
-	<li><a class="logged" n:href="Akce:view $feedback->id, do => addRating" 
+	<li><a class="logged" n:href="Akce:view#rating $feedback->id"
 	title="{$feedback->date_end|timeAgoInWords}">{$feedback->name}</a></li>
 </ol>
 {/if isset($feedback)}
 
 {if}<h3>Požádován zápis z akce</h3>
 <ol class="news" n:inner-foreach="$reportList as $report">
-	<li><a class="logged" n:href="Report:add $report->id" 
+	<li><a class="logged" n:href="Akce:view $report->id"
 	title="{$report->date_end|timeAgoInWords}">{$report->name}</a></li>
 </ol>
 {/if isset($report)}

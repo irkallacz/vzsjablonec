@@ -1,24 +1,24 @@
-body {margin: 0px; padding: 0px;} 
+body {margin: 0; padding: 0;} 
 body, body table {font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-size: 90%;}
-#main {min-width: 22em; width: 90%; max-width: 70em; margin: 0px auto; position: relative; padding-bottom: 2em;}
+#main {min-width: 22em; width: 90%; max-width: 70em; margin: 0 auto; position: relative; padding-bottom: 2em;}
 
-#top {border-radius: 0px 0px 25px 25px; background-color: white;
-	-moz-box-shadow: inset 0px -15px 10px -10px #da251c;
-	-webkit-box-shadow: inset 0px -15px 10px -10px #da251c;
-	box-shadow: inset 0px -15px 10px -10px #da251c;
+#top {border-radius: 0 0 25px 25px; background-color: white;
+	-moz-box-shadow: inset 0 -15px 10px -10px #da251c;
+	-webkit-box-shadow: inset 0 -15px 10px -10px #da251c;
+	box-shadow: inset 0 -15px 10px -10px #da251c;
 }
 
 #top #top_right {border: solid #da251c 4px; padding: 1ex; position: relative; top: -1ex;
-border-radius: 0px 0px 15px 15px; float: right; color: #12397e; font-weight: bold; font-size: 1.2em;}
+border-radius: 0 0 15px 15px; float: right; color: #12397e; font-weight: bold; font-size: 1.2em;}
 
 #top #top_right a {color: #da251c}
 #top table td {vertical-align: top;}
     
-#menu { float: left; list-style-type: none; margin: 0px; padding: 0px; margin-top: 0em; }
+#menu { float: left; list-style-type: none; margin: 0; padding: 0; }
 #menu li a {display: block; text-decoration: none; color: inherit;}
 #menu li {background-color: #60afe4; text-decoration: none; border: 1px solid black; 
 font-size: 1.5em;  font-family: Arial, sans-serif; margin-top: 10%; border-radius: 1ex; 
-width: 100%; display: block; color: white; font-weight: bold; text-decoration: none; padding: 0.1ex 0.1ex 0.1ex 0.5ex;
+width: 100%; display: block; color: white; font-weight: bold; padding: 0.1ex 0.1ex 0.1ex 0.5ex;
 	background-image: -moz-linear-gradient(#60afe4,#0089d2); 
 	background-image: -webkit-linear-gradient(#60afe4,#0089d2); 
 	background-image: linear-gradient(#60afe4,#0089d2); 
@@ -35,7 +35,7 @@ width: 100%; display: block; color: white; font-weight: bold; text-decoration: n
 
 #menu li a .icon {font-size: 90%}
 
-#text {padding-top: 0px; float: none; margin-left: 13.5em; min-width: 15em;}
+#text {padding-top: 0; float: none; margin-left: 13.5em; min-width: 15em;}
 
 .myfont {font-family: myfont;}
 
@@ -60,17 +60,17 @@ width: 100%; display: block; color: white; font-weight: bold; text-decoration: n
 .char, div.flash:before {font-size: 120%; line-height: 50%; speak: none;}
 
 #text .texy {font-family: Cambria, 'Times New Roman', Times, Garamond, serif; color: #222; border: 1px solid #ccc; 
-padding: 0ex 1em; background-color: #fffff6; }
+padding: 0 1em; background-color: #fffff6; }
 .texy table {border-collapse: collapse;}
 .texy table th {background-color: silver; }
 .texy table table, .texy table td, .texy table th {border: 1px solid gray; padding: 1ex;}
 
-div#texyPreview.texy {border: none; padding: 0px;}
+div#texyPreview.texy {border: none; padding: 0;}
 
 #text .texy h1 {font-size: 1.5em; text-transform: uppercase;}
-#text .texy h1, #text .texy h2, #text .texy h3, #text .texy h4 {margin-bottom: 0px;}
+#text .texy h1, #text .texy h2, #text .texy h3, #text .texy h4 {margin-bottom: 0;}
 
-.buttonMenu {padding: 0px; text-align: right;}
+.buttonMenu {padding: 0; text-align: right;}
 .buttonMenu li {float: right; display: inline; list-style-type: none; margin-left: 1ex; margin-bottom: 1ex;}
 
 #top h1 {font-size: 1.9em; color: #d90424; margin-top: 1em; margin-left: 1ex;}
@@ -105,7 +105,7 @@ input[type='email']:focus, input[type='number']:focus, input[type='time']:focus,
 
 a img {border: none;}  
 
-div.flash{color: black; background:#fff9d7; border: 1px solid #e2c822; padding: 1ex 1em; margin: 1em 0px;}
+div.flash{color: black; background: #fff9d7; border: 1px solid #e2c822; padding: 1ex 1em; margin: 1em 0;}
 
 div.flash.info{color: green; border: 1px solid greenyellow; }
 div.flash.info:before {content: '✔'; margin-right: 1ex;}

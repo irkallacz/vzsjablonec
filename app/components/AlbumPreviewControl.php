@@ -27,7 +27,7 @@ class AlbumPreviewControl extends Control{
 
     public function render($id){
         $album = $this->galleryService->getAlbumById($id);
-        $photos = $album->related('photo')->order('order, date_add')->limit(8);
+        $photos = $album ? $album->related('photo')->order('order, date_add')->limit(5) : NULL;
 
         $this->template->setFile(__DIR__.'/AlbumPreviewControl.latte');
         $this->template->album = $album;

@@ -2,5 +2,5 @@
 #odpovedi td {padding: 0.5ex 1ex;}
 #odpovedi th {padding: 0.5ex 2ex; font-weight: normal;}
 #odpovedi th.min {text-align: left}
-#odpovedi .headerLike {border-radius: 1em; height: 1em; padding: 0px}
+#odpovedi .headerLike {border-radius: 1em; height: 1em; padding: 0;}
 .bar {min-width: 20em;}
