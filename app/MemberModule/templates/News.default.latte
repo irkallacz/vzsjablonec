@@ -64,7 +64,7 @@ Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p
 
 {if}<h3>Požádováno hodnocení akce</h3>
 <ol class="news" n:inner-foreach="$feedbackList as $feedback">
-	<li><a class="logged" n:href="Akce:view $feedback->id, do => addRating" 
+	<li><a class="logged" n:href="Akce:view#rating $feedback->id"
 	title="{$feedback->date_end|timeAgoInWords}">{$feedback->name}</a></li>
 </ol>
 {/if isset($feedback)}
