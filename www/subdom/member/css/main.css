@@ -55,7 +55,7 @@ width: 100%; display: block; color: white; font-weight: bold; padding: 0.1ex 0.1
 .red {color: red;}
 .green {color: green;}
 
-.update {font-size: 0.9em; font-style: italic; text-align: right; color: gray;}
+.update {font-size: 0.9em; text-align: right; color: gray;}
 
 .char, div.flash:before {font-size: 120%; line-height: 50%; speak: none;}
 
