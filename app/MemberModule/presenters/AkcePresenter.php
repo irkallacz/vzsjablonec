@@ -57,10 +57,8 @@ class AkcePresenter extends LayerPresenter{
 	public function renderDefault($all = false){
 		$this->template->all = $all;
 
-		$akce[0] = $this->akceService->getAkceByFuture(TRUE);
-		$akce[1] = $this->akceService->getAkceByFuture();
-
-		if (false) $akce[0]->where('enable',1);
+		$akce[] = $this->akceService->getAkceByFuture(TRUE);
+		$akce[] = $this->akceService->getAkceByFuture();
 
 		if (!$all) $akce[1]->where('YEAR(date_start) = YEAR(NOW())');
 
