@@ -110,24 +110,6 @@ class AkcePresenter extends LayerPresenter{
 		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
-//	public function renderFeedback($id){
-//		if (!$id) $this->redirect('default');
-//
-//		$orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
-//
-//		if (!$this->getUser()->isInArray($orgList)) {
-//			  $this->flashMessage('Nemáte právo prohlížet hodnocení této akce','error');
-//			  $this->redirect('Akce:view',$id);
-//		}
-//
-//		$this->template->akce = $this->akceService->getAkceById($id);
-//
-//		$this->template->ratings = $this->akceService->getRatingByAkceId($id)->order('date_add');
-//		$this->template->grade = $this->akceService->getRatingGradeByAkceId($id);
-//		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
-//		$this->registerTexy();
-//	}
-
 	public function renderEdit($id){
 		if (!$id) $this->redirect('default');
 
