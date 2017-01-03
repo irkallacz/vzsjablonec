@@ -1,5 +1,5 @@
 <div id="album" n:if=$album>
-<a href="{plink :Photo:Album:view,$album->id.'-'.$album->slug}">{$album->name}</a>
+<a href="{plink :Photo:Album:view,$album->id.'-'.$album->slug}" target="_blank">{$album->name}</a>
 
 <a href="{plink :Photo:Album:view,$album->id.'-'.$album->slug}" title="{$album->text|truncate:70}" class="round">
     <ul n:inner-foreach="$photos as $image" class="photoList">
