@@ -81,7 +81,7 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozý hodnot
 
         $album = $this->gallery->addAlbum($values);
         $this->flashMessage('Album bylo přidáno'); 
-        mkdir(WWW_DIR .'/'. self::photoDir .'/'. $album->id);
+        mkdir(WWW_DIR .'/'. self::photoDir .'/'. $album->id, 0755);
 
         $this->redirect('Album:view',$album->id.'-'.$values->slug);
     } 

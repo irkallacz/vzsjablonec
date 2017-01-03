@@ -11,7 +11,7 @@
     }
 </script>
 
-{if isset($ratings)}
+{if isset($ratings)and($ratings)}
     <h3 id="rating">Hodnocení <span class="icon icon-star"></span></h3>
     <div n:if="isset($rating_stars)"><span class="stars">{$rating_stars|stars}</span> ({$rating_count})</div>
     <div id="ratings">
@@ -44,14 +44,14 @@
 {/if}
 
 {if $canComment}
-    <p id="rating-edit-sign" n:if="$myrating"><a class="buttonLike" href="javascript:editRating({$user->id})"><span class="icon-pencil"></span> editovat</a></p>
-
     <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
-    <div id="rating-edit-area" n:class="$myrating ? hide">
-        <h3>Moje hodnocení <span class="icon icon-star-empty"></span></h3>
+    <h3>Moje hodnocení <span class="icon icon-star-empty"></span></h3>
 
-        {form ratingForm}
+    <p id="rating-edit-sign" n:if="$myrating"><a class="buttonLike" href="javascript:editRating({$user->id})"><span class="icon-pencil"></span> editovat</a></p>
+
+    <div id="rating-edit-area" n:class="$myrating ? hide">
+    {form ratingForm}
             <ul class="error" n:if="$form->hasErrors()">
                 <li n:foreach="$form->errors as $error">{$error}</li>
             </ul>

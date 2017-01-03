@@ -116,7 +116,7 @@ class MailPresenter extends LayerPresenter{
 		$template->setFile(__DIR__ . '/../templates/Mail/newMail.latte');
 		$template->text = $values->text;
 
-		$mail->setSubject('[VZS_info] '.$values->subject)
+		$mail->setSubject('[VZS Jablonec] '.$values->subject)
 			->setBody($template);
 
 		foreach ($members as $member)

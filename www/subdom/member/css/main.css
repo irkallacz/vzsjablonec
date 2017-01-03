@@ -55,7 +55,7 @@ width: 100%; display: block; color: white; font-weight: bold; padding: 0.1ex 0.1
 .red {color: red;}
 .green {color: green;}
 
-.update {font-size: 0.9em; font-style: italic; text-align: right; color: gray;}
+.update {font-size: 0.9em; text-align: right; color: gray;}
 
 .char, div.flash:before {font-size: 120%; line-height: 50%; speak: none;}
 
@@ -141,8 +141,10 @@ a.head {background-color: #12397e; font-size: 2ex; border: 1px solid black;
 
 #text a.noLink {text-decoration: none; color: inherit;}
 
-.headerLike { background-color: #0089d2; color: white; text-align: left; border-radius: 0 0 15px 15px; 
-	padding: 0.1em 0.5em; font-size: 1.1em; font-weight: bold;
+#text hr {border-color: gray}
+
+.headerLike {background-color: #0089d2; color: white; border-radius: 0 0 15px 15px;
+	padding: 0.1em 0.5em; font-size: 1.1em;
 	background-image: -moz-linear-gradient(#0089d2,#60afe4);  
 	background-image: -webkit-linear-gradient(#0089d2,#60afe4); 
 	background-image: linear-gradient(#0089d2,#60afe4); 
@@ -168,4 +170,4 @@ a.head {background-color: #12397e; font-size: 2ex; border: 1px solid black;
 	background-image: linear-gradient(#12397e,#60afe4);
 }
 
-#text .headerLike a {color: inherit; text-decoration: none;}
+#text .headerLike a {color: inherit; }

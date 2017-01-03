@@ -57,10 +57,8 @@ class AkcePresenter extends LayerPresenter{
 	public function renderDefault($all = false){
 		$this->template->all = $all;
 
-		$akce[0] = $this->akceService->getAkceByFuture(TRUE);
-		$akce[1] = $this->akceService->getAkceByFuture();
-
-		if (false) $akce[0]->where('enable',1);
+		$akce[] = $this->akceService->getAkceByFuture(TRUE);
+		$akce[] = $this->akceService->getAkceByFuture();
 
 		if (!$all) $akce[1]->where('YEAR(date_start) = YEAR(NOW())');
 
@@ -111,24 +109,6 @@ class AkcePresenter extends LayerPresenter{
 		$this->registerTexy();
 		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
-
-//	public function renderFeedback($id){
-//		if (!$id) $this->redirect('default');
-//
-//		$orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
-//
-//		if (!$this->getUser()->isInArray($orgList)) {
-//			  $this->flashMessage('Nemáte právo prohlížet hodnocení této akce','error');
-//			  $this->redirect('Akce:view',$id);
-//		}
-//
-//		$this->template->akce = $this->akceService->getAkceById($id);
-//
-//		$this->template->ratings = $this->akceService->getRatingByAkceId($id)->order('date_add');
-//		$this->template->grade = $this->akceService->getRatingGradeByAkceId($id);
-//		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
-//		$this->registerTexy();
-//	}
 
 	public function renderEdit($id){
 		if (!$id) $this->redirect('default');

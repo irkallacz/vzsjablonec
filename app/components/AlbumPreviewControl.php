@@ -27,12 +27,15 @@ class AlbumPreviewControl extends Control{
 
     public function render($id){
         $album = $this->galleryService->getAlbumById($id);
-        $photos = $album ? $album->related('photo')->order('order, date_add')->limit(5) : NULL;
+        $photos = $album ? $album->related('photo')->order('order, date_add') : NULL;
 
         $this->template->setFile(__DIR__.'/AlbumPreviewControl.latte');
         $this->template->album = $album;
-        $this->template->photos = $photos;
-        $this->template->pocet = count($photos);
+        
+        if ($photos){
+        	$this->template->pocet = $photos->count();
+        	$this->template->photos = $photos->limit(5);
+        }
 
         $photoDir = 'albums';
         $photoUri = $this->presenter->link('//:Photo:News:');
