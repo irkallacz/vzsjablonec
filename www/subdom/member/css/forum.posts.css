@@ -16,3 +16,6 @@
 .message h1 {font-size: 16px;}
 .message h2 {font-size: 14px;}
 .message h3 {font-size: 12px;}
+
+.inline-nav {list-style-type: none; padding: 0; margin-bottom: 1ex;}
+.inline-nav li {display: inline;}
