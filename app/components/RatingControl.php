@@ -64,9 +64,9 @@ class RatingControl extends \Nette\Application\UI\Control {
 
 	    $texy = \TexyFactory::createTexy();
 	    $this->template->registerHelper('texy', callback($texy,'process'));
-	    $this->template->registerHelper('stars', function($s){
-		    $s = intval($s);
-		    return str_repeat('★', $s).str_repeat('☆', 5-$s);
+	    $this->template->registerHelper('stars', function($count){
+		    $s = intval($count);
+		    return str_repeat('★', $count).str_repeat('☆', 5-$count);
 	    });
 
 	    $this->template->render();
@@ -75,7 +75,7 @@ class RatingControl extends \Nette\Application\UI\Control {
 	protected function createComponentRatingForm(){
 		$form = new Form;
 
-		$form->addRadioList('rating', 'Hvězdy:', array_combine(range(1,5),range(1,5)))
+		$form->addRadioList('rating', 'Hvězdy:', array_combine(range(5,1),range(5,1)))
 			->getSeparatorPrototype()->setName(NULL);
 
 		$form->addCheckbox('public','Veřejné')->setDefaultValue(TRUE);
@@ -83,7 +83,7 @@ class RatingControl extends \Nette\Application\UI\Control {
 
 		$form->addTextArea('message','Slovní hodnocení')
 			->addConditionOn($form['rating'], ~Form::FILLED)
-			->setRequired('Vyplňte hodnocení nebo hvězdy');
+			->setRequired('Vyplňte slovní hodnocení nebo hvězdy');
 
 		$form->addSubmit('ok', 'Uložit');
 
