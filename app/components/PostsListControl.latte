@@ -6,7 +6,7 @@
     <tr id="p{$post->id}" n:class="top,borderLike,$post->date_add > $user->getIdentity()->date_last ? 'new', $post->member_id == $user->getId() ? logged">
         <td>
             <a href="{plink Forum:viewPost, $post->id}" title="{$post->date_add|timeAgoInWords}" class="noLink">
-                <div class="headerLike">{$post->date_add|date:'%d.%m.%Y %H:%M'}</div>
+                <div class="headerLike"><strong>{$post->date_add|date:'%d.%m.%Y %H:%M'}</strong></div>
             </a>
         </td>
         <td class="right">

@@ -29,16 +29,19 @@ table#items .first { font-size: 1.1em;}
 	$item->member_id == $user->getId() ? logged">
 	{*(($post)and($post->member_id == $user->getId())) ? logged*}
 	<td class="col"><a class="noLink" title="{$item->title}{if $item->locked} (uzamčeno){/if}" n:href="Ankety:view,$item->id"><div>
-	<span class="headerLike">{if $item->locked}<span class="icon-lock"></span>{/if} 
-	{$item->title|firstUpper}
-	</span>
+	<strong class="headerLike">
+		{if $item->locked}<span class="icon-lock"></span>{/if}
+		{$item->title|firstUpper}
+	</strong>
 	<span class="no-wrap"><span class="char">⇨</span> od <b>{$item->member->surname} {$item->member->name}</b></span>
 	</div></a></td>
 	<td class="center">{$item->related('anketa_member','anketa_id')->count('member_id')}</td>
 	<td class="col">
 	 
 	<div class="right" n:if="$post">
-	<span class="headerLike" title="{$post->date_add|timeAgoInWords}">{$post->date_add|date:'%H:%M %d.%m.%Y'}</span>	
+	<strong class="headerLike" title="{$post->date_add|timeAgoInWords}">
+		{$post->date_add|date:'%H:%M %d.%m.%Y'}
+	</strong>
 	
 	<span n:if="$member" class="no-wrap"><span class="char">⇨</span> od <b>
 	{$member->surname} {$member->name}	

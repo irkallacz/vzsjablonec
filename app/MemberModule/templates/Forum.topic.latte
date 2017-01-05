@@ -62,12 +62,13 @@ $(function () {
 	 (($post)and($post->member_id == $user->getId())) ? logged, $topic->member_id == $user->getId() ? logged">
 	 
 	<td class="col"><a class="noLink" title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" n:href="Forum:view,$topic->id">
-	<span class="headerLike">{if $topic->locked}<span class="icon-lock"></span>{/if} 
-	{$topic->title|firstUpper}
-	</span>
+	<strong class="headerLike">
+		{if $topic->locked}<span class="icon-lock"></span>{/if}
+		{$topic->title|firstUpper}
+	</strong>
 
 	<span class="no-wrap"><span class="char">⇨</span> od <b>{$topic->member->surname} {$topic->member->name}</b></span></a>
-	
+
 	<span n:if="($postCount > $postPerPage) and ($postCount/$postPerPage < 6)" class="no-wrap" >
 		[ {for $i = 1; $i <= ceil($postCount/$postPerPage); $i++} <a n:href="view,$topic->id, vp-page => $i">{$i}</a>{/for} ]
 	</span>
@@ -80,7 +81,9 @@ $(function () {
 		
 	{if $post} 
 	<a class="noLink" title="{$post->date_add|timeAgoInWords}" n:href="Forum:viewPost,$post->id">
-	<span class="headerLike">{$post->date_add|date:'%H:%M %d.%m.%Y'}</span>	
+		<strong class="headerLike">
+			{$post->date_add|date:'%H:%M %d.%m.%Y'}
+		</strong>
 	<span class="no-wrap"><span class="char">⇨</span> od <b>
 	
 	{$post->member->surname} {$post->member->name}
