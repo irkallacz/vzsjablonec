@@ -22,3 +22,6 @@ a.buttonLike:hover .lock {visibility: hidden;}
 
 table#posts .forum_post {max-width: 45em; padding-left: 1ex}
 .inline-nav li {font-size: inherit;}
+
+.inline-nav {list-style-type: none; padding: 0; margin-bottom: 1ex;}
+.inline-nav li {display: inline; font-size: 2ex;}
