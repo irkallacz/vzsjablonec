@@ -56,7 +56,7 @@ class Helpers{
     }
 
     public static function durationInWords(DateTime $start, DateTime $end){
-		$duration = $end->date_diff($start);
+		$duration = $end->diff($start);
 
 		$string = '';
 

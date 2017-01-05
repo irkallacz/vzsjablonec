@@ -82,7 +82,7 @@ TODO odelílání na fomrulářích
     <h3 title="{$akce->date_start|timeAgoInWords}">
         <span class="icon-calendar" title="Datum akce"></span> {$akce->date_start|date:'%A %d.%m.%Y %H:%M'} -
         {if $moreOneDay}{$akce->date_end|date:'%A %d.%m.%Y %H:%M'} {else}{$akce->date_end|date:'%H:%M'}{/if}
-        ({$akce->date_start|durationInWords:$date_end})
+        ({$akce->date_start|durationInWords:$akce->date_end})
     </h3>
 
     <div n:if="(($akce->login_mem)or($akce->login_org))and($akce->date_deatline > date_create()) and (!$akceIsOld)">
