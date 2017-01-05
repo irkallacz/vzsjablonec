@@ -2,7 +2,6 @@
 <link rel="alternate" title="VZS Jablonec Member Forum : {$topic->title}" n:href="//Feed:forum, tid => $topic->id" type="application/rss+xml">
 
 <link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/css/forum.posts.css" type="text/css">
 
 <link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
 <link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
@@ -24,6 +23,12 @@ $(function () {
 //]]>
 </script>
 
+<link rel="stylesheet" href="{$basePath}/css/forum.posts.css" type="text/css">
+
+<style type="text/css" n:syntax="off">
+#frm-addPostForm table {width: 90%; margin: 0px auto;}
+#frm-addPostForm table td textarea {width: 100%}
+</style>
 {/block}
 
 <h1 n:block="title">Fórum</h1>
@@ -38,7 +43,7 @@ $(function () {
 
 <div class="float_right">{control vp}</div>
 
-<h2><span class="icon-lock" title="Toto téma bylo uzavřeno" n:if="$topic->locked"></span> {$topic->title|firstUpper}</h2>
+<h2>{$topic->title|firstUpper}</h2>
 
 {control postsList $topic->id}
 

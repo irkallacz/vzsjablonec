@@ -10,16 +10,21 @@
 {control texylaJs}
 
 <style type="text/css" n:syntax="off">
-{*.headerLike {margin: 0px; padding: 0px 1em 0.5ex 1em; display: inline-block;} *}
-{*.borderLike {border-left: none; border-right: none; border-bottom: none;}*}
+.headerLike {margin: 0px; padding: 0px 1em 0.5ex 1em; display: inline-block;} 
+.borderLike {border-left: none; border-right: none; border-bottom: none;}
 
-{*table#items td, table th {vertical-align: top; padding: 1ex 1ex;}*}
-{*table#items td.col {padding: 0px;}*}
-{*table#items .right .headerLike {font-style: italic; text-align: center;}*}
-{*table#items .first {font-size: 1.1em;}*}
+table#items td, table th {vertical-align: top; padding: 1ex 1ex;}
+table#items {border-collapse: collapse; width: 98%; }
+table#items td.col {padding: 0px;}
+table#items .right .headerLike {font-style: italic; text-align: center;}
+table#items .first {font-size: 1.1em;}
 
-{*#frm-addTopicForm-title:-moz-placeholder { color: silver; }*}
-{*#frm-addTopicForm-title::-webkit-placeholder { color: silver; }*}
+#frm-addTopicForm table {width: 90%; margin: 0px auto;}
+#frm-addTopicForm-title {width: 90%}
+#frm-addTopicForm table td textarea {width: 91%}
+
+#frm-addTopicForm-title:-moz-placeholder { color: silver; }
+#frm-addTopicForm-title::-webkit-placeholder { color: silver; }
 </style>
 
 <script type="text/javascript">
@@ -48,55 +53,44 @@ $(function () {
 </ul>
 
 <table id="items">
-<tr class="first"><th>{*Téma*}</th><th class="post">Poslední příspěvek</th><th>Autor</th><th class="count"></th></tr>
+<tr class="first"><th>Téma</th><th>Odpovědi</th><th>Poslední příspěvek</th></tr>
 {foreach $topics as $topic}
-	{var $post = $topic->related('forum_post','forum_topic_id')->where('row_number > ?',1)->order('row_number DESC')->fetch()}
-	{var $postCount = $post ? ($post->row_number - 1) : 0}
+	{var $post = $topic->related('forum_post','forum_topic_id')->where('row_number > ?',0)->order('row_number DESC')->fetch()}
+	{var $postCount = $post->row_number}
 
-	<tr n:class="topic, (($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',
+	<tr n:class="hoverLike,borderLike,(($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',
 	 (($post)and($post->member_id == $user->getId())) ? logged, $topic->member_id == $user->getId() ? logged">
 	 
-		<td class="col title">
-			<div class="headerLike">
-			<a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" n:href="Forum:view,$topic->id">
-				<strong>{if $topic->locked}<span class="icon-lock"></span>{/if}
-					{$topic->title|firstUpper}
-				</strong>
-			</a>
+	<td class="col"><a class="noLink" title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" n:href="Forum:view,$topic->id">
+	<span class="headerLike">{if $topic->locked}<span class="icon-lock"></span>{/if} 
+	{$topic->title|firstUpper}
+	</span>
 
-			<span n:if="($postCount > $postPerPage) and ($postCount/$postPerPage < 6)" class="no-wrap" >
-				[ {for $i = 1; $i <= ceil($postCount/$postPerPage); $i++} <a n:href="view,$topic->id, vp-page => $i">{$i}</a>{/for} ]
-			</span>
-			</div>
-		</td>
+	<span class="no-wrap"><span class="char">⇨</span> od <b>{$topic->member->surname} {$topic->member->name}</b></span></a>
+	
+	<span n:if="($postCount > $postPerPage) and ($postCount/$postPerPage < 6)" class="no-wrap" >
+		[ {for $i = 1; $i <= ceil($postCount/$postPerPage); $i++} <a n:href="view,$topic->id, vp-page => $i">{$i}</a>{/for} ]
+	</span>
 
-		<td class="col post right">
-		{if $post}
-			<div class="no-wrap">
-				{*<a title="profil uživatele" n:href="Nember:view $post->member_id">*}
-					{*<span class="icon-user"><span>*} {$post->member->surname} {$post->member->name}
-				{*<a>*}
-			</div>
-			<div class="no-wrap">
-				<a title="{$post->date_add|timeAgoInWords}" n:href="Forum:viewPost,$post->id">
-					<span class="icon-chat-empty"><span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
-				<a>
-			</div>
-		{/if}
-		</td>
-
-		<td class="col author right">
-			<div class="no-wrap">
-                <a title="profil uživatele" n:href="Nember:view $topic->member_id">
-					<span class="icon-user-o"><span> {$topic->member->surname} {$topic->member->name}
-				</a>
-			</div>
-			<div class="no-wrap">
-				{*<span class="icon-chat"><span>*} {$topic->date_add|date:'%d.%m.%Y %H:%M'}
-			</div>
-		</td>
-
-		<td class="count center">{$postCount}</td>
+	</td>
+	
+	<td class="center">{$postCount-1}</td>
+	<td class="col right">
+	{*var $post = $posts->fetch()*}	
+		
+	{if $post} 
+	<a class="noLink" title="{$post->date_add|timeAgoInWords}" n:href="Forum:viewPost,$post->id">
+	<span class="headerLike">{$post->date_add|date:'%H:%M %d.%m.%Y'}</span>	
+	<span class="no-wrap"><span class="char">⇨</span> od <b>
+	
+	{$post->member->surname} {$post->member->name}
+	
+	{*$post->member_id*}
+	
+	</b></span>
+	</a>
+	{/if}
+	</td>
 	</tr>
 {/foreach}
 </table>
