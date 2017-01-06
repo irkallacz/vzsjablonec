@@ -3,10 +3,11 @@
 <link rel="stylesheet" href="{$baseUri}/css/jquery.fancybox-thumbs.css" type="text/css" media="screen" />
 
 <style type="text/css" n:syntax="off">
-#photoBottom {clear: both; padding-top: 1em;}
-.popis span b {color: #ea9419;}
-.popis span.member {font-size: 1.1em;}
-.photoList li {position: relative;}
+#photoBottom { clear: both; padding-top: 1em; }
+.popis span b { color: #ea9419; }
+.popis span.member { font-size: 1.1em; }
+.photoList li { position: relative; }
+.icon { vertical-align: bottom; }
 </style>
 
 <script src="{$baseUri}/js/jquery.fancybox.pack.js" type="text/javascript"></script>
@@ -58,12 +59,12 @@
 </div>
 
 <p n:if="$album->visible">
-	<a title="Sdílet na Facebook" href="http://www.facebook.com/sharer.php?u={link //Album:view,$slug}"><img src="{$baseUri}/img/facebook.png" alt="Facebook"></a>
-	<a title="Sdílet na Google+" href="https://plus.google.com/share?url={link //Album:view,$slug}"><img src="{$baseUri}/img/gplus-32.png" alt="Google+"></a>
+	<a title="Sdílet na Facebook" href="http://www.facebook.com/sharer.php?u={link //Album:view,$slug}"><img class="icon" src="{$baseUri}/img/facebook.png" alt="Facebook"></a>
+	<a title="Sdílet na Google+" href="https://plus.google.com/share?url={link //Album:view,$slug}"><img class="icon" src="{$baseUri}/img/gplus-32.png" alt="Google+"></a>
 </p>
 
 <p n:if="$user->isLoggedIn()">
-	<a title="Sdílet" n:href="Album:view,$slug,$album->pubkey">Odkaz pro sdílení</a>
+    <a title="Sdílet" n:href="Album:view,$slug,$album->pubkey"><img class="icon" src="{$baseUri}/img/link.png"> Odkaz pro sdílení</a>
 </p>
 
 {/block}
