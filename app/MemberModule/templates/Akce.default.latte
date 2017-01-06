@@ -22,9 +22,8 @@ table .first td { padding-top: 0.5ex; }
 
 {foreach $akceAllList as $old => $akceList}
 
-<h2>
-    <span class="icon-calendar"></span>
-    {if $iterator->isOdd()}Nastávající akce{else}Proběhlé akce{/if}</a>
+<h2 n:if="$akceList->count()">
+    <span class="icon-calendar"></span> {if $iterator->isOdd()}Nastávající akce{else}Proběhlé akce{/if}
 </h2>
 
 {foreach $akceList as $akce}
