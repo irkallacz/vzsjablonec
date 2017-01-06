@@ -49,16 +49,37 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 
 <tr class="first"><td>
 {if (!$akce->confirm) and (in_array($akce->id,$orgList) or ($user->isInRole('Confirm')))}
-	{if $akce->confirm}<span class="no-wrap" title="Akce je schválena"><span class="char green icon-ok-circled"></span>{else}<span class="no-wrap" title="Akce není schválena"><span class="char red icon-cancel-circled"></span>{/if}schválení</span>
+	{if $akce->confirm}
+		<span class="no-wrap" title="Akce je schválena"><span class="char green icon-ok-circled"></span>
+	{else}
+		<span class="no-wrap" title="Akce není schválena"><span class="char red icon-cancel-circled"></span>
+	{/if}schválení</span>
 {/if}
 
-{if $akce->visible}<span class="no-wrap" title="Akce je viditelná veřejnosti"><span class="char green icon-ok-circled"></span>{else}<span class="no-wrap" title="Akce není viditelná veřejnosti"><span class="char red icon-cancel-circled"></span>{/if}viditelnost</span> 
+	{if $akce->visible}
+		<span class="no-wrap" title="Akce je viditelná veřejnosti"><span class="char green icon-ok-circled"></span>
+	{else}
+		<span class="no-wrap" title="Akce není viditelná veřejnosti"><span class="char red icon-cancel-circled"></span>
+	{/if}viditelnost</span>
 
-{if ($akce->login_mem or $akce->login_org)} <span class="no-wrap" title="Na akci se lze přihlásit"><span class="char green icon-ok-circled"></span>{else}<span class="no-wrap" title="Na akci se lze přihlásit"><span class="char red icon-cancel-circled"></span>{/if}přihlášení</span>
+{if ($akce->login_mem or $akce->login_org)}
+	<span class="no-wrap" title="Na akci se lze přihlásit"><span class="char green icon-ok-circled"></span>
+{else}
+	<span class="no-wrap" title="Na akci se lze přihlásit"><span class="char red icon-cancel-circled"></span>
+{/if}přihlášení</span>
 
 {if $old}
-	{if ($akce->report)or($akce->message)} <span class="no-wrap" title="Akce má vyplněný záznam"><span class="char green icon-ok-circled"></span>{else}<span class="no-wrap" title="Akce nemá vyplněný záznam"><span class="char red icon-cancel-circled"></span>{/if}záznam</span>
-	{if $akce->bill} <span class="no-wrap" title="Akce má vyplněné vyúčtování"><span class="char green icon-ok-circled"></span>{else}<span class="no-wrap" title="Akce nemá vyplněné vyučtování"><span class="char red icon-cancel-circled"></span>{/if}vyúčtování</span>
+	{if ($akce->report)or($akce->message)}
+		<span class="no-wrap" title="Akce má vyplněný záznam"><span class="char green icon-ok-circled"></span>
+	{else}
+		<span class="no-wrap" title="Akce nemá vyplněný záznam"><span class="char red icon-cancel-circled"></span>
+	{/if}záznam</span>
+
+	{if $akce->bill}
+		<span class="no-wrap" title="Akce má vyplněné vyúčtování"><span class="char green icon-ok-circled"></span>
+	{else}
+		<span class="no-wrap" title="Akce nemá vyplněné vyučtování"><span class="char red icon-cancel-circled"></span>
+	{/if}vyúčtování</span>
 {/if}
 
 </td><td class="right">{$akce->ref('akce_for','akce_for_id')->text}</td></tr>
