@@ -6,3 +6,9 @@
 #ratings .message p { margin-top: 0; }
 #ratings h4 { margin-bottom: 0; margin-top: 1ex; }
 #rating { margin-bottom: 0; }
+
+#check-star label:before { content: '☆' }
+#check-star input[type="radio"]:checked+label:before { content: '★' }
+#check-star input[type="radio"]:checked~label:before { content: '★' }
+#check-star input[type="radio"] { display: none; }
+#check-star {font-size: 1.5em}

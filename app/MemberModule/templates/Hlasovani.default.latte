@@ -1,13 +1,13 @@
 {block #head}
 <style type="text/css" n:syntax="off">
-.headerLike {margin: 0px; padding: 0px 1em 0.5ex 1em; display: inline-block;} 
-.borderLike {border-left: none; border-right: none; border-bottom: none;}
+.headerLike { margin: 0; padding: 0 1em 0.5ex 1em; display: inline-block;}
+.borderLike { border-left: none; border-right: none; border-bottom: none;}
 
-table#items td, table th {vertical-align: top; padding: 1ex 1ex;}
-table#items {border-collapse: collapse; width: 98%; }
-table#items td.col {padding: 0px;}
-table#items .right .headerLike {font-style: italic; text-align: center;}
-table#items .first {font-size: 1.1em;}
+table#items td, table th { vertical-align: top; padding: 1ex 1ex;}
+table#items { border-collapse: collapse; width: 98%; }
+table#items td.col { padding: 0;}
+table#items .right .headerLike { font-style: italic; text-align: center;}
+table#items .first { font-size: 1.1em;}
 
 </style>
 
@@ -31,16 +31,16 @@ table#items .first {font-size: 1.1em;}
 	<tr n:class="borderLike,hoverLike,$item->date_add > $user->getIdentity()->date_last ? 'new', 
 	$item->member_id == $user->getId() ? logged">
 	<td class="col"><a class="noLink" title="{$item->title}{if $locked} (uzamčeno){/if}" n:href="view,$item->id"><div>
-	<span class="headerLike">{if $locked}<span class="icon-lock"></span>{/if}
-	{$item->title|firstUpper}
-	</span>
+	<strong class="headerLike">
+		{if $locked}<span class="icon-lock"></span>{/if} {$item->title|firstUpper}
+	</strong>
 	<span class="no-wrap"><span class="char">⇨</span> od <b>{$item->member->surname} {$item->member->name}</b></span>
 	</div></a></td>
 	<td class="center">{$item->related('hlasovani_member','hlasovani_id')->count('member_id')}</td>
 	<td class="col">
 	 
 	<div class="right" n:if="$post">
-	<span class="headerLike" title="{$post->date_add|timeAgoInWords}">{$post->date_add|date:'%H:%M %d.%m.%Y'}</span>	
+	<strong class="headerLike" title="{$post->date_add|timeAgoInWords}">{$post->date_add|date:'%H:%M %d.%m.%Y'}</strong>
 	
 	<span n:if="$member" class="no-wrap"><span class="char">⇨</span> od <b>
 	{$member->surname} {$member->name}	

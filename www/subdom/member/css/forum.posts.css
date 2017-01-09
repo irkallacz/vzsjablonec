@@ -1,18 +1,27 @@
+table#posts td, table th {vertical-align: top; padding: 0;}
+table#posts {border-collapse: collapse; width: 98%;}
+table#posts .headerLike {text-align: center;}
+table#posts .borderLike {border-width: 3px 0 0 0;}
+table#posts .top .right {direction: rtl;}
+table#posts .bottom .right {padding-right: 1em;}
+table#posts .bottom .right .noLink {font-weight: bold;}
+
+table#posts .buttonLike { border-radius: 0 0 10px 10px;  padding-top: 2px; vertical-align: top;
+    background-image: none; background-color: white; color: #0089D2; direction: ltr;}
+
+table#posts .logged .buttonLike {color: #CC2222}
+table#posts .new .buttonLike {color: #12397e}
+
+table#posts .new .buttonLike:hover, table#posts .new .buttonLike:active,
+table#posts .new .buttonLike:focus, table#posts .logged .buttonLike:hover,
+table#posts .logged .buttonLike:active, table#posts .logged .buttonLike:focus {color: white}
+
 .quote {font-family: serif;}
 
+a.buttonLike:hover .lock {visibility: hidden;}
+
+table#posts .forum_post {max-width: 45em; padding-left: 1ex}
 .inline-nav li {font-size: inherit;}
 
-#posts .post {margin-bottom: 1em; border: 1px solid gray; border-radius: 1ex;}
-
-#posts .top {padding: 1ex 1em; border-radius: 1ex 1ex 0 0; font-size: 1em; font-weight: normal;}
-#posts .bottom {padding: 0 1ex 0.5ex 1em; border-radius: 0 0 1ex 1ex;}
-#posts .message {padding: 0 1em; font-size: 90%}
-
-#posts .update {text-align: left;}
-
-#posts .logged  .headerLike {opacity: 0.9;}
-
-.message blockquote {margin: 0 1em 0 1em; border-left: 2px solid #0089d2; background-color: #e6f3f7; padding-left: 15px;}
-.message h1 {font-size: 16px;}
-.message h2 {font-size: 14px;}
-.message h3 {font-size: 12px;}
+.inline-nav {list-style-type: none; padding: 0; margin-bottom: 1ex;}
+.inline-nav li {display: inline; font-size: 2ex;}

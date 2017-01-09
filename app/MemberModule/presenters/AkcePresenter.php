@@ -85,7 +85,6 @@ class AkcePresenter extends LayerPresenter{
 	}
 
 	public function renderView($id){
-		$this->template->delka = $this->akce->date_start->diff($this->akce->date_end);
 		$this->template->akce = $this->akce;
 		$this->template->title = $this->akce->name;
 		$this->template->akceIsOld = $this->akce->date_start < date_create();
@@ -108,6 +107,7 @@ class AkcePresenter extends LayerPresenter{
 
 		$this->registerTexy();
 		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->registerHelper('durationInWords', 'Helpers::durationInWords');
 	}
 
 	public function renderEdit($id){
@@ -363,11 +363,11 @@ class AkcePresenter extends LayerPresenter{
 		$form->addUpload('file','Soubor')
 		  ->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 10 MB.', 10 * 1024 * 1024);
 
-		$form->addText('price', 'Cena', 7)
-		  ->setType('number')
-		  ->setOption('description', 'Kč')
-		  ->addCondition(Form::FILLED)
-			->addRule(Form::INTEGER, '%label musí být číslo');
+//		$form->addText('price', 'Cena', 7)
+//		  ->setType('number')
+//		  ->setOption('description', 'Kč')
+//		  ->addCondition(Form::FILLED)
+//			->addRule(Form::INTEGER, '%label musí být číslo');
 
 		$form->addTextArea('perex', 'Stručný popis')
 		->setAttribute('class','texyla');

@@ -17,11 +17,11 @@
     <div id="ratings">
         {var $limit = 100}
         {foreach $ratings as $memberId => $rating}
-            <div id="rating-{$memberId}" n:if="($rating->public)or($isOrg)or($memberId == $user->id)">
+            <div class="hoverLike target" id="rating-{$memberId}" n:if="($rating->public)or($isOrg)or($memberId == $user->id)">
                 {if ($rating->rating)or($rating->message)}
                     <h4>
                         {if !$rating->anonymous}
-                            <a href="{plink Member:view $memberId}">{$rating->member->surname} {$rating->member->name}</a>
+                            <a href="{plink Member:view $memberId}"><span class="icon-user"></span> {$rating->member->surname} {$rating->member->name}</a>
                         {else}
                             Anonymní:
                         {/if}
@@ -58,7 +58,9 @@
 
             <div class="float_right">{input ok}</div>
             <p>
-                <span id="stars">{label rating /} {input rating}</span>
+                <span id="stars">
+                    <span id="check-star" n:inner-foreach="$form[rating]->items as $key => $label"><input n:name="rating:$key"><label n:name="rating:$key"></label></span>
+                </span>
                 <span class="no-wrap">{label public /}{input public} {label anonymous /}{input anonymous}</span>
             </p>
             <p>{input message}</p>
