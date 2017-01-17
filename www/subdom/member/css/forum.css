@@ -6,6 +6,8 @@ table#items tr, table#items td {padding: 0}
 
 table#items .count, table#items .author, table#items .post {padding: 0 1ex;}
 
+table#items .title a {color: white;}
+
 #frm-addTopicForm table {width: 100%; margin: 0 auto;}
 #frm-addTopicForm-title {width: 99%}
 #frm-addTopicForm table td textarea {width: 100%}

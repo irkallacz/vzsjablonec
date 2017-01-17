@@ -9,19 +9,6 @@
 
 {control texylaJs}
 
-<style type="text/css" n:syntax="off">
-{*.headerLike {margin: 0px; padding: 0px 1em 0.5ex 1em; display: inline-block;} *}
-{*.borderLike {border-left: none; border-right: none; border-bottom: none;}*}
-
-{*table#items td, table th {vertical-align: top; padding: 1ex 1ex;}*}
-{*table#items td.col {padding: 0px;}*}
-{*table#items .right .headerLike {font-style: italic; text-align: center;}*}
-{*table#items .first {font-size: 1.1em;}*}
-
-{*#frm-addTopicForm-title:-moz-placeholder { color: silver; }*}
-{*#frm-addTopicForm-title::-webkit-placeholder { color: silver; }*}
-</style>
-
 <script type="text/javascript">
 //<![CDATA[
 $.texyla.setDefaults({
@@ -53,10 +40,10 @@ $(function () {
 	{var $post = $topic->related('forum_post','forum_topic_id')->where('row_number > ?',1)->order('row_number DESC')->fetch()}
 	{var $postCount = $post ? ($post->row_number - 1) : 0}
 
-	<tr n:class="topic, (($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',
+	<tr n:class="hoverLike, topic, (($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',
 	 (($post)and($post->member_id == $user->getId())) ? logged, $topic->member_id == $user->getId() ? logged">
 	 
-		<td class="col title">
+		<td class="title">
 			<div class="headerLike">
 			<a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" n:href="Forum:view,$topic->id">
 				<strong>{if $topic->locked}<span class="icon-lock"></span>{/if}
@@ -70,12 +57,10 @@ $(function () {
 			</div>
 		</td>
 
-		<td class="col post right">
+		<td class="post right">
 		{if $post}
 			<div class="no-wrap">
-				{*<a title="profil uživatele" n:href="Nember:view $post->member_id">*}
-					{*<span class="icon-user"><span>*} {$post->member->surname} {$post->member->name}
-				{*<a>*}
+				{$post->member->surname} {$post->member->name}
 			</div>
 			<div class="no-wrap">
 				<a title="{$post->date_add|timeAgoInWords}" n:href="Forum:viewPost,$post->id">
@@ -85,7 +70,7 @@ $(function () {
 		{/if}
 		</td>
 
-		<td class="col author right">
+		<td class="author right">
 			<div class="no-wrap">
                 <a title="profil uživatele" n:href="Member:view $topic->member_id">
 					<span class="icon-user-o"><span> {$topic->member->surname} {$topic->member->name}
