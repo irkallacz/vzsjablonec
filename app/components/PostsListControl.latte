@@ -1,26 +1,34 @@
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
-<h3 n:if="$topic->locked" class="center"><span class="icon-lock"></span> Toto téma bylo uzavřeno.</h3>
-
-<table id="posts" n:inner-foreach="$posts as $post">
-    <tr id="p{$post->id}" n:class="top,borderLike,$post->date_add > $user->getIdentity()->date_last ? 'new', $post->member_id == $user->getId() ? logged">
-        <td>
-            <a href="{plink Forum:viewPost, $post->id}" title="{$post->date_add|timeAgoInWords}" class="noLink">
-                <div class="headerLike"><strong>{$post->date_add|date:'%d.%m.%Y %H:%M'}</strong></div>
+<div id="posts" n:inner-foreach="$posts as $post">
+    <div id="p{$post->id}" n:class="post, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
+        <div class="top headerLike">
+            <a class="float_right" href="{plink Forum:viewPost, $post->id}" title="{$post->date_add|timeAgoInWords}">
+                <span class="icon-chat"></span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
             </a>
-        </td>
-        <td class="right">
-            <span class="headerLike">#{$post->row_number}</span>
+            <a href="{plink Member:view,$post->member_id}" title="profil uživatele">
+                <strong>
+                    {$post->member->surname} {$post->member->name}
+                    <span class="icon-user"></span>
+                </strong>
+            </a>
+        </div>
 
-            {if !$topic->locked}
-                <a class="buttonLike" href="{plink Forum:citePost,$post->id}"><span class="icon-quote-left"></span> citace</a>
-                {if $user->id == $post->member_id or $user->isInRole('Member:Forum')}
-                    <a class="buttonLike" href="{plink Forum:edit,$post->id}"><span class="icon-pencil"></span> editovat</a>
-                    <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete,$post->id}"><span class="icon-trash"></span> smazat</a>
-                {/if}
-            {/if}
+        <div class="message">
+            {$post->text|texy|noescape}
+        </div>
 
-            {if $post->id == $topic->id and ($user->id == $post->member_id or $user->isInRole('Member:Forum'))}
+        {var $isTopic = ($post->id == $topic->id)}
+        {var $isUpdate = ($post->date_add != $post->date_update)}
+        {var $isAllow = (($user->id == $post->member_id) or ($user->isInRole('Member:Forum')))}
+
+        <div class="bottom" n:if="(!$topic->locked)or($isTopic or $isUpdate)">
+            <div n:if="$isUpdate" n:class="update, (!$topic->locked or $isTopic) ? float_left" title="{$post->date_update|timeAgoInWords}">
+                Upraveno {$post->date_update|date:'%d.%m.%Y %H:%M'}
+            </div>
+
+            <div class="right" n:if="!$topic->locked or $isTopic">
+            {if $isTopic and $isAllow}
                 {if $topic->locked}
                     <a class="buttonLike" href="{plink Forum:lockTopic,$post->id,0}">
                         <span class="icon-lock-open-alt"></span> odemknout
@@ -31,19 +39,17 @@
                     </a>
                 {/if}
             {/if}
-        </td>
-    </tr>
-    <tr class="bottom">
-        <td class="right">
-            <span class="char">⇨</span> od <a href="{plink Member:view,$post->member_id}" class="noLink" title="profil uživatele">
-                {$post->member->surname} {$post->member->name}</a>
-        </td>
-        <td class="forum_post">
-            {$post->text|texy|noescape}
 
-            <p n:if="$post->date_add != $post->date_update" class="update" title="{$post->date_update|timeAgoInWords}">
-                Upraveno ({$post->date_update|date:'%d.%m.%Y %H:%M'})
-            </p>
-        </td>
-    </tr>
-</table>
+            {if !$topic->locked}
+                {if $isAllow}
+                    <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete,$post->id}"><span class="icon-trash"></span> smazat</a>
+                    <a class="buttonLike" href="{plink Forum:edit,$post->id}"><span class="icon-pencil"></span> editovat</a>
+                {/if}
+                <a class="buttonLike" href="{plink Forum:citePost,$post->id}"><span class="icon-quote-left"></span> citace</a>
+            {/if}
+            </div>
+
+
+        </div>
+    </div>
+ </div>
