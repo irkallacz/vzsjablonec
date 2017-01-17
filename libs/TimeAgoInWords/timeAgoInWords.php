@@ -1,10 +1,8 @@
 <?php
 
-class Helpers
-{
+class Helpers{
 
-    public static function timeAgoInWords($time)
-    {
+    public static function timeAgoInWords($time){
         if (!$time) {
             return FALSE;
         } elseif (is_numeric($time)) {
@@ -46,18 +44,32 @@ class Helpers
         return 'před ' . round($delta / 525960) . ' lety';
     }
 
-
-
     /**
      * Plural: three forms, special cases for 1 and 2, 3, 4.
      * (Slavic family: Slovak, Czech)
      * @param  int
      * @return mixed
      */
-    private static function plural($n)
-    {
+    private static function plural($n){
         $args = func_get_args();
         return $args[($n == 1) ? 1 : (($n >= 2 && $n <= 4) ? 2 : 3)];
+    }
+
+    public static function durationInWords(DateTime $start, DateTime $end){
+		$duration = $end->diff($start);
+
+		$string = '';
+
+		if ($duration) {
+            if ($duration->y) $string.= $duration->y .' '. self::plural($duration->y, 'rok', 'roky', 'let') . ' ';
+			if ($duration->m) $string.= $duration->m .' '. self::plural($duration->m, 'měsíc', 'měsíce', 'měsíců') . ' ';
+			if ($duration->d) $string.= $duration->d .' '. self::plural($duration->d, 'den', 'dny', 'dní') . ' ';
+			if ($duration->h) $string.= $duration->h .' '. self::plural($duration->h, 'hodina', 'hodiny', 'hodin') . ' ';
+			if ($duration->i) $string.= $duration->i .' '. self::plural($duration->i, 'minuta', 'minuty', 'minut') . ' ';
+			if ($duration->s) $string.= $duration->s .' '. self::plural($duration->s, 'sekunda', 'sekundy', 'sekund');
+        }
+
+        return trim($string);     	
     }
 
 }

@@ -1,20 +1,11 @@
-table#items {border-collapse: collapse; width: 100%;}
-
-table#items .title .headerLike {border-radius: 0 0 1em 1em; padding: 1ex; margin-bottom: 1ex; }
-table#items tr.topic {border-top: 1px solid gray;}
-table#items tr, table#items td {padding: 0}
-
-table#items .count, table#items .author, table#items .post {padding: 0 1ex;}
-
-#frm-addTopicForm table {width: 100%; margin: 0 auto;}
-#frm-addTopicForm-title {width: 99%}
-#frm-addTopicForm table td textarea {width: 100%}
-
-#frm-addPostForm table { width: 100%; margin: 0 auto; }
-#frm-addPostForm table td textarea { width: 100% }
-
 .inline-nav {list-style-type: none; padding: 0; margin-bottom: 1ex;}
-.inline-nav li {display: inline;}
+.inline-nav li {display: inline; font-size: 2ex;}
 
 .paginator {line-height: 2em;}
 .paginator .buttonLike {line-height: 1.2em;}
+
+.forum_post h1 {font-size: 16px;} 
+.forum_post h2 {font-size: 14px;} 
+.forum_post h3 {font-size: 12px;} 
+
+.forum_post blockquote {margin: 0 1em 0 1em; border-left: 2px solid #0089d2; background-color: #e6f3f7; padding-left: 15px;}
