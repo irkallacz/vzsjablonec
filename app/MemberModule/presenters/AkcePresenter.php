@@ -135,13 +135,6 @@ class AkcePresenter extends LayerPresenter{
 
 			$form->setDefaults($akce);
 
-			$form['time_start']->setDefaultValue($akce->date_start->format('H:i'));
-			$form['time_end']->setDefaultValue($akce->date_end->format('H:i'));
-
-			$form['date_start']->setDefaultValue($akce->date_start->format('Y-m-d'));
-			$form['date_end']->setDefaultValue($akce->date_end->format('Y-m-d'));
-			$form['date_deatline']->setDefaultValue($akce->date_deatline->format('Y-m-d'));
-
 			if (!$akce->message) $form['message']->setDefaultValue($this->akceService->getAkceMessageDefault());
 
 			$this->template->akce = $akce;
@@ -270,43 +263,14 @@ class AkcePresenter extends LayerPresenter{
 		$form->addText('place', 'Místo', 50)
 		  ->setRequired('Vyplňte %label akce');
 
-		$form->addText('date_start', 'Začátek', 10)
-		  ->setRequired('Vyplňte datum začátku akce')
-		  ->setType('date')
-		  ->setDefaultValue($datum->format('Y-m-d'))
-		  ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-		  ->setAttribute('onchange','copyDate()')
-		  //->setAttribute('onkeyup','copyDate()')
-		  ->setAttribute('class','date');
+		$form['date_start'] = new \DateTimeInput('Začátek');
+		$form['date_start']->setDefaultValue($datum);
 
-		$form->addText('time_start',null,5)
-		  ->setRequired('Vyplňte čas začátku akce')
-		  ->addRule(Form::LENGTH, 'Čas musí mít právě %d znaků',5)
-		  ->addRule(Form::PATTERN, 'Čas musí být ve formátu HH:MM', '[0-2]{1}\d{1}:[0-5]{1}\d{1}')
-		  ->setRequired('Vyplňte čas začátku akce')
-		  ->setType('time')
-		  ->setAttribute('onchange','copyTime()')
-		  ->setAttribute('class','time')
-		  ->setDefaultValue($datum->format('H:i'));
-
-			$form->addText('date_end', 'Konec', 10)
-		  ->setRequired('Vyplňte datum konce akce')
-		  ->setType('date')
-		  ->setDefaultValue($datum->format('Y-m-d'))
-		  ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-		  ->addRule(function ($item, $arg) {
-			  return date_create($item->value) >= date_create($arg);
-			  }, 'Datum konce akce nesmí být menší než datum začátku akce', $form['date_start'])
-		  ->setAttribute('class','date');
-
-			$form->addText('time_end',null,5)
-		  ->setRequired('Vyplňte čas konce akce')
-		  ->addRule(Form::LENGTH, 'Čas musí mít právě %d znaků',5)
-		  ->addRule(Form::PATTERN, 'Čas musí být ve formátu HH:MM', '[0-2]{1}\d{1}:[0-5]{1}\d{1}')
-		  ->setRequired('Vyplňte čas konce akce')
-		  ->setType('time')
-		  ->setAttribute('class','time')
-		  ->setDefaultValue($datum->format('H:i'));
+		$form['date_end'] = new \DateTimeInput('Konec');
+		$form['date_end']->setDefaultValue($datum)
+			->addRule(function ($item, $arg) {
+				return $item->value >= $arg;
+			}, 'Datum konce akce nesmí být menší než datum začátku akce', $form['date_start']);
 
 		$form->addCheckbox('login_mem', 'Povoleno přihlašování účastníků')
 		  ->setDefaultValue(TRUE)
@@ -316,15 +280,12 @@ class AkcePresenter extends LayerPresenter{
 		  ->setDefaultValue(FALSE)
 		  ->setAttribute('onclick','doTheTrick()');
 
-		$form->addText('date_deatline', 'Přihlášení do', 10)
-		  ->setType('date')
-		  ->setDefaultValue($datum->format('Y-m-d'))
-		  ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-		  ->setAttribute('class','date')
-		  ->addRule(function ($item, $arg) {
-			  return date_create($item->value) <= date_create($arg);
+		$form['date_deatline'] = new \DateTimeInput('Přihlášení do');
+		$form['date_deatline']->setDefaultValue($datum)
+			->addRule(function ($item, $arg) {
+			  return $item->value <= $arg;
 			  }, 'Datum přihlášení musí být menší než datum začátku akce', $form['date_start'])
-		  ->addConditionOn($form['login_mem'],Form::EQUAL,TRUE)
+			->addConditionOn($form['login_mem'],Form::EQUAL,TRUE)
 			->addRule(Form::FILLED,'Vyplňte datum konce přihlašování');
 
 		$form['date_deatline']
@@ -404,7 +365,7 @@ class AkcePresenter extends LayerPresenter{
 
 		$data->date_deatline = new Datetime($data->date_deatline);
 
-		if (!$data->price) unset($data->price);
+		//if (!$data->price) unset($data->price);
 
 		$org = $data->organizator;
 		unset($data->organizator);
