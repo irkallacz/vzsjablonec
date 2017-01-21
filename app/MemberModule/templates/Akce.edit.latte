@@ -35,7 +35,7 @@ h2 { margin-top: 1ex }
 <h2>{if isset($title)}{$title}{/if}</h2>
 
 <p n:if="isset($nova)">
-Předtím, než přidáte novou akci, ujistěte se prosím, že je tato akce oznámena vedení skupiny. Dokud vedení akci neschválí, 
+Předtím, než přidáte novou akci, ujistěte se prosím, že je tato akce oznámena vedení skupiny. Dokud vedení akci neschválí,
 uvidí ji na webu pouze její organizatoři. Dokončením tohoto formuláře se automaticky odešle mail se žádostí o schválení akce.
 </p>
 
@@ -63,9 +63,9 @@ uvidí ji na webu pouze její organizatoři. Dokončením tohoto formuláře se 
 <p>{label forum_topic_id /}{input forum_topic_id} <span class="no-wrap">{label anketa_id /}{input anketa_id}</span>
 <p>{label album_id /}{input album_id}</p>
 
-<p>{label file class => 'hint', title => 'Nahraje nový soubor a přepíše starý' /}{input file} 
+<p>{label file class => 'hint', title => 'Nahraje nový soubor a přepíše starý' /}{input file}
 
- {*<span class="no-wrap">{label price class => 'hint', title => 'Pokud nevíte přesně, nechte prázné' /}{input price}</span>*}
+ <span class="no-wrap">{label price class => 'hint', title => 'Pokud nevíte přesně, nechte prázné' /}{input price}</span>
 </p>
 
 <p>{label perex class => 'hint', title => 'Tento text bude viditelný pro veřejnost'/}</p>
