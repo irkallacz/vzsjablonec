@@ -15,8 +15,8 @@ class WordpressService extends Nette\Object{
     }
 
     public function getLastNews(){
-        return $this->database->query('SELECT post_content FROM nnx2_posts LEFT JOIN nnx2_term_relationships ON object_id = id WHERE post_status = ? AND term_taxonomy_id = ? ORDER BY post_date DESC','publish',self::CATEGORY)
-            ->fetch();
+        $query = $this->database->query('SELECT post_content, post_status FROM nnx2_posts LEFT JOIN nnx2_term_relationships ON object_id = id WHERE term_taxonomy_id = ? ORDER BY post_date DESC LIMIT 1',self::CATEGORY);
+        return $query->fetch();
     }
 }
 
