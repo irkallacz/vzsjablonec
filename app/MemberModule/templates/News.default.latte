@@ -14,9 +14,9 @@ h3 { margin-bottom: 1ex; }
 <p>Dnes je: <b>{$nowDate|date:'%A %d.%m.%Y %H:%M'}</b>. 
 Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p>
 
-{if $novinky->post_status == 'publish'}
+{if isset($novinky) && $novinky->post_status == 'publish'}
 <h2>Aktuálně</h2>
-<p n:if="isset($novinky)">{!$novinky->post_content}</p>
+<p>{!$novinky->post_content}</p>
 {/if}
 
 <h2>Novinky</h2>
