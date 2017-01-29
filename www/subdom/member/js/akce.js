@@ -33,10 +33,10 @@ $(function() {
   	// elem.setAttribute('type', 'date');
     //
 	// if (elem.type === 'text') {
-	//     $('.date').datepicker();
+	     $('.date').datepicker();
 	// }
 
     $('#frm-akceForm-date_start').change(function(){copyDate()});
 	$('#frm-akceForm-date_end').change(function(){copyDate()});
-    $('#frm-akceForm-date_deatline').change(function(){copyDate()});
+    //$('#frm-akceForm-date_deatline').change(function(){copyDate()});
 });
