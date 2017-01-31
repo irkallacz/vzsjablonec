@@ -32,6 +32,7 @@ class SignPresenter extends BasePresenter{
 			->setRequired('Vyplňte heslo');
 
 		$form->addSubmit('send', 'Přihlásit');
+		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
 		$form->onSuccess[] = callback($this, 'signInFormSubmitted');
 		return $form;
@@ -65,6 +66,7 @@ class SignPresenter extends BasePresenter{
 			->addRule(FORM::EMAIL, 'Vyplňte správnou e-mailovou adresu');
                     
 		$form->addSubmit('send', 'poslat');
+	    $form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
 		$form->onSuccess[] = callback($this, 'forgotPassFormSubmitted');
 		return $form;
