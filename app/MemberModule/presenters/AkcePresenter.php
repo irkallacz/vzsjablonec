@@ -3,6 +3,7 @@ namespace MemberModule;
 
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Multiplier;
+use Nette\Diagnostics\Debugger;
 use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
 use Nette\DateTime;
@@ -81,7 +82,6 @@ class AkcePresenter extends LayerPresenter{
 
 		$this->orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
 		$this->memberList = $this->akceService->getMembersByAkceId($id,FALSE)->fetchPairs('id','id');
-
 	}
 
 	public function renderView($id){
@@ -110,18 +110,26 @@ class AkcePresenter extends LayerPresenter{
 		$this->template->registerHelper('durationInWords', 'Helpers::durationInWords');
 	}
 
+	public function actionEdit($id){
+		if (!$id) $this->redirect('default');
+
+		$this->akce = $this->akceService->getAkceById($id);
+
+		if ((!$this->akce)or(!$this->akce->enable)) {
+			$this->flashMessage('Akce nenalezena!','error');
+			$this->redirect('default');
+		}
+	}
+
 	public function renderEdit($id){
 		if (!$id) $this->redirect('default');
 
+		$this->template->akce = $this->akce;
+		$this->template->title = $this->akce->name;
+
 		$form = $this['akceForm'];
 		if (!$form->isSubmitted()) {
-			$akce = $this->akceService->getAkceById($id);
-			if ((!$akce)or(!$akce->enable)) {
-				$this->flashMessage('Akce nenalezena!','error');
-				$this->redirect('default');
-			}
-
-			$orgList = $akce->related('akce_member')->where('organizator',TRUE)->fetchPairs('member_id','member_id');
+			$orgList = $this->akce->related('akce_member')->where('organizator',TRUE)->fetchPairs('member_id','member_id');
 
 			if ((!$this->getUser()->isInArray($orgList))and(!$this->getUser()->isInRole($this->name))) {
 				$this->flashMessage('Nemáte právo tuto akci editovat','error');
@@ -131,15 +139,9 @@ class AkcePresenter extends LayerPresenter{
 			$form['organizator']->getLabelPrototype()->class('hide');
 			$form['organizator']->getControlPrototype()->class('hide');
 
-//			if ($akce->date_start < date_create()) unset($form['message']);
+			$form->setDefaults($this->akce);
 
-			$form->setDefaults($akce);
-
-			if (!$akce->message) $form['message']->setDefaultValue($this->akceService->getAkceMessageDefault());
-
-			$this->template->akce = $akce;
-			$this->template->title = $akce->name;
-
+			if (!$this->akce->message) $form['message']->setDefaultValue($this->akceService->getAkceMessageDefault());
 		}
 	}
 
@@ -358,18 +360,11 @@ class AkcePresenter extends LayerPresenter{
 		$data->name = ucfirst($data->name);
 
 		$data->date_update = $datum;
-		$data->date_start = new Datetime($data->date_start.' '.$data->time_start);
-		$data->date_end = new Datetime($data->date_end.' '.$data->time_end);
-		unset($data->time_start);
-		unset($data->time_end);
 
-		$data->date_deatline = new Datetime($data->date_deatline);
-
-		//if (!$data->price) unset($data->price);
+		if (!$data->price) unset($data->price);
 
 		$org = $data->organizator;
 		unset($data->organizator);
-
 
 		if (($form['file']->isFilled()) and ($data->file->isOK())){
 		  $data->file->move(WWW_DIR.'/doc/akce/'.$data->file->getSanitizedName());
