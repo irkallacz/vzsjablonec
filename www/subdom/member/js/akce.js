@@ -29,12 +29,12 @@ $(function() {
 	//$('#frm-akceForm-perex').texyla(akce_public);
 	$('.texyla').texyla(akce);
 
-	// var elem = document.createElement('input');
-  	// elem.setAttribute('type', 'date');
-    //
-	// if (elem.type === 'text') {
+	var elem = document.createElement('input');
+  	elem.setAttribute('type', 'date');
+
+	if (elem.type === 'text') {
 	     $('.date').datepicker();
-	// }
+	}
 
     $('#frm-akceForm-date_start').change(function(){copyDate()});
 	$('#frm-akceForm-date_end').change(function(){copyDate()});
