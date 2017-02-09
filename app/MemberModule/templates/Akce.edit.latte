@@ -76,6 +76,7 @@ uvidí ji na webu pouze její organizatoři. Dokončením tohoto formuláře se 
 
 {if !isset($nova)}
 {if $akce->date_start < date_create()}
+	<p>{label addMessage} {input addMessage}{/label}</p>
 	<p>{label message class => 'hint', title => 'Podrobná zpráva z akce'/}</p>
 	<p>{input message}</p>
 {/if}

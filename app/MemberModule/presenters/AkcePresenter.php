@@ -141,7 +141,8 @@ class AkcePresenter extends LayerPresenter{
 
 			$form->setDefaults($this->akce);
 
-			if (!$this->akce->message) $form['message']->setDefaultValue($this->akceService->getAkceMessageDefault());
+			if ($this->akce->message) $form['addMessage']->setDefaultValue(TRUE);
+			else $form['message']->setDefaultValue($this->akceService->getAkceMessageDefault());
 		}
 	}
 
@@ -341,6 +342,11 @@ class AkcePresenter extends LayerPresenter{
 
 		$text = $this->akceService->getAkceMessageDefault();
 
+		$form->addCheckbox('addMessage','Připojit zprávu z akce')
+			->setDefaultValue(FALSE)
+			->addCondition(Form::EQUAL, TRUE)
+			->toggle('frm-akceForm-message');
+
 		$form->addTextArea('message','Zpráva z akce')
 			->setDefaultValue($text)
 			->setAttribute('class','texyla');
@@ -365,6 +371,9 @@ class AkcePresenter extends LayerPresenter{
 
 		$org = $data->organizator;
 		unset($data->organizator);
+
+		if (!$data->addMessage) unset($data->message);
+		unset($data->addMessage);
 
 		if (($form['file']->isFilled()) and ($data->file->isOK())){
 		  $data->file->move(WWW_DIR.'/doc/akce/'.$data->file->getSanitizedName());
