@@ -24,7 +24,8 @@ class DokumentyService extends DatabaseService{
     public function getDokumentyCategory(){
         return $this->database->table('dokumenty_category')
             ->where('NOT id',self::ZAPISY)
-            ->order('id');        
+	        ->where('parent_id IS NULL')
+	        ->order('id');
     }
 
     /**
@@ -66,7 +67,7 @@ class DokumentyService extends DatabaseService{
      * @return \Nette\Database\Table\Selection
      */
     public function getZapisy(){
-        return $this->getDokumenty()->where('dokumenty_category_id',self::ZAPISY)->order('filename DESC');
+        return $this->database->table('dokumenty_category')->where('id',self::ZAPISY);
     }
 
     /**

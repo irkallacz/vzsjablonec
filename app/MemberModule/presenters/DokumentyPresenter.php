@@ -13,10 +13,31 @@ class DokumentyPresenter extends LayerPresenter{
     /** @var \Nette\Mail\IMailer @inject */
     public $mailer;
 
-    public function renderDefault(){
+    public function getFileIcon($filename){
+	    $path_info = pathinfo(strtolower($filename));
+	    switch ($path_info['extension']){
+		    case 'pdf':
+			    return 'file-pdf';
+			    break;
+		    case 'xls':
+		    case 'xlsx':
+			    return 'file-excel';
+			    break;
+		    case 'doc':
+		    case 'docx':
+			    return 'file-word';
+			    break;
+		    default:
+			    return 'doc';
+	    }
+    }
+
+	public function renderDefault(){
 		$this->template->category = $this->dokumentyService->getDokumentyCategory();
         $this->template->zapisy = $this->dokumentyService->getZapisy();
         $this->template->hlasovani = $this->dokumentyService->getHlasovani();
+
+	    $this->template->registerHelper('fileExtIcon', callback($this,'getFileIcon'));
   	}
 
     public function renderAdd(){
