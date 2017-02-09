@@ -1,52 +1,93 @@
 {block #head}
 <style type="text/css" n:syntax="off">
-h2 {margin-top: 1ex;}
-#docs {list-style-type: none;}
-#docs ol {list-style-type: disc;}
-#docs h3 {margin-bottom: 0px;}
-#text a.char {text-decoration: none;}
-#docs ol.role, ol#zapisy.role {list-style-type: none;}
-#docs .new {font-weight: bold;}
-#docs .new a.link {color: #12397e;}
-#zapisy .new {color: #12397e; font-weight: bold;}
-.hlasovani a.new {color: #12397e; font-weight: bold;}
-.buttonMenu {float: right; margin-top: 0px;}
-.buttonMenu li {float: none;}
+h2 { margin-top: 1ex; }
+.docs { list-style-type: none; }
+.docs ol { list-style-type: none; }
+#text a.char { text-decoration: none; }
+.docs ol.role, ol#zapisy.role { list-style-type: none; }
+.docs .new { font-weight: bold; }
+.docs .new a.link { color: #12397e; }
+.hlasovani a.new { color: #12397e; font-weight: bold; }
+.buttonMenu { float: right; margin-top: 0; }
+.buttonMenu li { float: none; }
 </style>
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
+<script type="text/javascript" src="{$basePath}/js/openhash.js"></script>
+<script type="text/javascript">
+	function toogle(dir) {
+		$('#d'+dir).toggle();
+
+        if ($('#d-link-icon'+dir).hasClass('icon-folder')) {
+            $('#d-link-icon'+dir).removeClass('icon-folder');
+            $('#d-link-icon'+dir).addClass('icon-folder-open');
+		}else{
+            $('#d-link-icon'+dir).removeClass('icon-folder-open');
+            $('#d-link-icon'+dir).addClass('icon-folder');
+		}
+    }
+    $(function() {
+        openHash(function(hash){
+			$('#'+hash.slice(1)).parent().parent().show();
+        });
+    })
+</script>
+
 {/block}
 
 <h1 n:block="title">Dokumenty</h1>
 
+{block #filelist}
+	<li class="dir"> <a id="d-link" href="javascript:toogle({$category->id})"><span id="d-link-icon{$category->id}" n:class="$category->parent_id ? icon-folder : icon-folder-open"></span> <strong>{$category->title}</strong></a></li>
+	<div id="d{$category->id}" n:class="$category->parent_id ? hide">
+	<ol n:foreach="$category->related('dokumenty_category','parent_id')->order('title') as $subcategory">
+        {include #filelist, category => $subcategory}
+	</ol>
+	<ol n:inner-foreach="$category->related('dokumenty')->order('title') as $file">
+		<li id="f{$file->id}" n:class="file, target, $file->date_add > $user->getIdentity()->date_last ? 'new'">
+			<span class="icon-{$file->filename|fileExtIcon}"></span> {$file->title} - <a class="link" href="{$basePath}/doc/{$category->dirname}/{$file->filename}">{$file->filename}</a>
+		</li>
+	</ol>
+	</div>
+{/block}
+
 {block #content}
 
-<ul n:if="$user->isInRole($presenter->name)" class="buttonMenu"><li><a n:href="add" class="buttonLike"><span class="icon-plus"></span> nový dokument</a></li></ul>
+    <ul n:if="$user->isInRole($presenter->name)" class="buttonMenu"><li><a n:href="add" class="buttonLike"><span class="icon-plus"></span> nový dokument</a></li></ul>
 
-<h2>Zápisy ze schůzí</h2> 
-<ol n:inner-foreach="$zapisy as $file" id="zapisy" n:class="$user->isInRole($presenter->name) ? 'role'">
-	<li id="d{$file->id}"> <a n:if="$user->isInRole($presenter->name)" class="icon-cancel char red confirm" n:href="delete, $file->id" 
-	title="Smazat dokument" data-query="Opravdu chcete tento dokument smazat?"></a>
-	<a n:class="$file->date_add > $user->getIdentity()->date_last ? 'new'" href="{$basePath}/doc/schuze/{$file->filename}">{$file->title}</a>
-	</li>
-</ol>
+    <h2>Zápisy ze schůzí</h2>
 
-<p>Staré záznamy ze schůzí představenstva si můžete <a href="{$basePath}/doc/schuze/schuze.zip">stáhnout</a>.</p>
+	<ol n:inner-foreach="$zapisy as $kategorie" id="zapisy" class="docs">
+        {include #filelist, category => $kategorie}
+	</ol>
 
-<h2>Hlasování představenstva</h2> 
+    {*<ol n:inner-foreach="$zapisy as $file" id="zapisy" n:class="$user->isInRole($presenter->name) ? 'role'">*}
+    {*<li id="d{$file->id}"> <a n:if="$user->isInRole($presenter->name)" class="icon-cancel char red confirm" n:href="delete, $file->id"*}
+    {*title="Smazat dokument" data-query="Opravdu chcete tento dokument smazat?"></a>*}
+    {*<a n:class="$file->date_add > $user->getIdentity()->date_last ? 'new'" href="{$basePath}/doc/schuze/{$file->filename}">{$file->title}</a>*}
+    {*</li>*}
+    {*</ol>*}
 
-<p id="d{$hlasovani->id}" class="hlasovani"><a n:class="$hlasovani->date_add > $user->getIdentity()->date_last ? 'new'" href="{$basePath}/doc/schuze/{$hlasovani->filename}">Aktuální přehled hlasování</a>.
-Poslední aktualizace <b>{$hlasovani->date_add|date:'%A %d. %m. %Y'}</b></p>
+	<p>Staré záznamy ze schůzí představenstva si můžete <a href="{$basePath}/doc/schuze/schuze.zip">stáhnout</a>.</p>
 
-<h2>Dokumenty</h2> 
-<ol n:inner-foreach="$category as $kategorie" id="docs">
-	{var $file = false}
-	{if}<li><h3>{$kategorie->title}</h3>
-	<ol n:inner-foreach="$kategorie->related('dokumenty')->order('title') as $file" n:class="$user->isInRole($presenter->name)? 'role file' : 'file'">
-		<li id="d{$file->id}" n:class="$file->date_add > $user->getIdentity()->date_last ? 'new'"> 
-		<a n:if="$user->isInRole($presenter->name)" class="icon-cancel char red confirm" n:href="delete, $file->id" 
-		 data-query="Opravdu chcete tento dokument smazat?" title="Smazat dokument"></a>
-		{$file->title} - <a class="link" href="{$basePath}/doc/{$kategorie->dirname}/{$file->filename}">{$file->filename}</a> </li>
-	</ol></li>
-	{/if $file}
-</ol>
+    <h2>Hlasování představenstva</h2>
+
+    <p id="d{$hlasovani->id}" class="hlasovani"><a n:class="$hlasovani->date_add > $user->getIdentity()->date_last ? 'new'" href="{$basePath}/doc/schuze/{$hlasovani->filename}">Aktuální přehled hlasování</a>.
+    Poslední aktualizace <b>{$hlasovani->date_add|date:'%A %d. %m. %Y'}</b></p>
+
+    <h2>Dokumenty</h2>
+
+	<ol n:inner-foreach="$category as $kategorie" class="docs">
+        {include #filelist, category => $kategorie}
+	</ol>
+
+	{*{var $file = false}*}
+	{*{if}<li><h3>{$kategorie->title}</h3>*}
+	{*<ol n:inner-foreach="$kategorie->related('dokumenty')->order('title') as $file" n:class="$user->isInRole($presenter->name)? 'role file' : 'file'">*}
+		{*<li id="d{$file->id}" n:class="$file->date_add > $user->getIdentity()->date_last ? 'new'"> *}
+		{*<a n:if="$user->isInRole($presenter->name)" class="icon-cancel char red confirm" n:href="delete, $file->id" *}
+		 {*data-query="Opravdu chcete tento dokument smazat?" title="Smazat dokument"></a>*}
+		{*{$file->title} - <a class="link" href="{$basePath}/doc/{$kategorie->dirname}/{$file->filename}">{$file->filename}</a> </li>*}
+	{*</ol></li>*}
+	{*{/if $file}*}
+
 {/block}
