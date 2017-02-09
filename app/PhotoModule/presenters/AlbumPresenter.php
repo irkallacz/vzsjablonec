@@ -178,7 +178,7 @@ class AlbumPresenter extends BasePresenter{
 
 		$uploader->createSettings()
 				 ->setRuntimes(array('html5','flash')) // Available: gears, flash, silverlight, browserplus, html5
-				 ->setMaxFileSize('3mb')
+				 ->setMaxFileSize('5mb')
 				 ->setMaxChunkSize('1mb'); // What is chunk you can find here: http://www.plupload.com/documentation.php
 				 //->setFlashSwfUrl('/js/plupload.flash.swf');
 
