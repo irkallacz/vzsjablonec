@@ -43,7 +43,7 @@ h2 { margin-top: 1ex; }
         {include #filelist, category => $subcategory}
 	</ol>
 	<ol n:inner-foreach="$category->related('dokumenty')->order('title') as $file">
-		<li id="f{$file->id}" n:class="file, $file->date_add > $user->getIdentity()->date_last ? 'new'">
+		<li id="f{$file->id}" n:class="file, target, $file->date_add > $user->getIdentity()->date_last ? 'new'">
 			<span class="icon-{$file->filename|fileExtIcon}"></span> {$file->title} - <a class="link" href="{$basePath}/doc/{$category->dirname}/{$file->filename}">{$file->filename}</a>
 		</li>
 	</ol>
