@@ -4,6 +4,7 @@ namespace MemberModule;
 use Nette\Application\UI\Form;
 use Nette\DateTime;
 use Nette\Diagnostics\Debugger;
+use Nette\Utils\Strings;
 
 class DokumentyPresenter extends LayerPresenter{
 
@@ -100,7 +101,7 @@ class DokumentyPresenter extends LayerPresenter{
         	->setRequired('Vyplňte %label');
 
         $form->addSelect('dokumenty_category_id','Kategorie',
-        		$this->dokumentyService->getDokumentyCategory()->fetchPairs('id','title')
+        		$this->dokumentyService->getDokumentyCategoryList()
         	)->setRequired('Vyplňte kategorii souboru')
         	->setDefaultValue(1);
         
@@ -113,16 +114,13 @@ class DokumentyPresenter extends LayerPresenter{
 
     public function addDokumentFormSubmitted(Form $form){
         $values = $form->getValues();
-
-        Debugger::barDump($values);
         
         $category = $this->dokumentyService->getDokumentyCategoryById($values->dokumenty_category_id);
 
         $values->filename = $values->file->getSanitizedName();
 
-        if (($form['file']->isFilled()) and ($values->file->isOK())){
+        if (($form['file']->isFilled()) and ($values->file->isOK()))
           $values->file->move(WWW_DIR.'/doc/'.$category->dirname.'/'.$values->filename);
-        }        
 
         unset($values->file);
 
@@ -134,7 +132,47 @@ class DokumentyPresenter extends LayerPresenter{
         $this->redirect('Dokumenty:');
     }
 
-    protected function createComponentAddZapisForm(){
+
+	protected function createComponentAddCategoryForm(){
+		$form = new Form;
+
+		$form->addText('title','Název kategorie',30)
+			->setRequired('Vyplňte %label');
+
+		$form->addText('dirname','Název adresáře',30)
+			->setRequired('Vyplňte %label');
+
+		$form->addSelect('parent_id','Nadřazená kategorie',
+			$this->dokumentyService->getDokumentyCategoryList()
+		)->setPrompt('Žádná');
+
+		$form->addSubmit('ok', 'Uložit');
+		$form->onSuccess[] = callback($this, 'addCategoryFormSubmitted');
+
+		return $form;
+	}
+
+	public function addCategoryFormSubmitted(Form $form){
+		$values = $form->getValues();
+
+		$category = $this->dokumentyService->getDokumentyCategoryById($values->parent_id);
+		$category_dirname = ($category) ? $category->dirname : NULL;
+		$values->dirname = $category_dirname.'/'.Strings::webalize($values->dirname);
+
+		$dir = WWW_DIR.'/doc/'.$values->dirname;
+
+		if (!file_exists($dir)) mkdir($dir, 0755);
+
+		unset($values->file);
+
+		$this->dokumentyService->addDokumentyCategoryById($values);
+
+		$this->flashMessage('Kategorie byla úspěšně přidána');
+		$this->redirect('Dokumenty:');
+	}
+
+
+	protected function createComponentAddZapisForm(){
         $form = new Form;
         
         $form->addUpload('file','Soubor')
@@ -187,16 +225,20 @@ class DokumentyPresenter extends LayerPresenter{
             $values->filename = 'schuze-' . $datum->format('Y-m-d') .'.pdf';
             
             $values->member_id = $this->getUser()->getId();
-            
-            $values->file->move(WWW_DIR.'/doc/schuze/'.$values->filename);                        
+
+	        $category = $this->dokumentyService->getZapisCategoryByYear($datum->format('Y'));
+
+	        $values->dokumenty_category_id = $category->id;
+
+	        $values->file->move(WWW_DIR.'/doc/'.$category->dirname.'/'.$values->filename);
 
             if ($values->mail) $this->sendZapisMail($values->file, $datum);
-            
+
             unset($values->mail);
             unset($values->file);
             unset($values->datum);
 
-            $this->dokumentyService->addZapis($values);
+            $this->dokumentyService->addDokument($values);
             $this->flashMessage('Byl úspěšně přidán nový zápis ze schůze');
             $this->redirect('Dokumenty:');
         }else {

@@ -12,18 +12,24 @@ h2 { margin-top: 1ex; }
 .buttonMenu li { float: none; }
 </style>
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
+<script type="text/javascript" src="{$basePath}/js/openhash.js"></script>
 <script type="text/javascript">
 	function toogle(dir) {
 		$('#d'+dir).toggle();
 
-        if ($('#d-link'+dir).hasClass('icon-folder')) {
-            $('#d-link'+dir).removeClass('icon-folder');
-            $('#d-link'+dir).addClass('icon-folder-open');
+        if ($('#d-link-icon'+dir).hasClass('icon-folder')) {
+            $('#d-link-icon'+dir).removeClass('icon-folder');
+            $('#d-link-icon'+dir).addClass('icon-folder-open');
 		}else{
-            $('#d-link'+dir).removeClass('icon-folder-open');
-            $('#d-link'+dir).addClass('icon-folder');
+            $('#d-link-icon'+dir).removeClass('icon-folder-open');
+            $('#d-link-icon'+dir).addClass('icon-folder');
 		}
     }
+    $(function() {
+        openHash(function(hash){
+			$('#'+hash.slice(1)).parent().parent().show();
+        });
+    })
 </script>
 
 {/block}
@@ -31,7 +37,7 @@ h2 { margin-top: 1ex; }
 <h1 n:block="title">Dokumenty</h1>
 
 {block #filelist}
-	<li class="dir"> <a href="javascript:toogle({$category->id})"><span id="d-link{$category->id}" n:class="$category->parent_id ? icon-folder : icon-folder-open"></span></a> <strong>{$category->title}</strong></li>
+	<li class="dir"> <a id="d-link" href="javascript:toogle({$category->id})"><span id="d-link-icon{$category->id}" n:class="$category->parent_id ? icon-folder : icon-folder-open"></span> <strong>{$category->title}</strong></a></li>
 	<div id="d{$category->id}" n:class="$category->parent_id ? hide">
 	<ol n:foreach="$category->related('dokumenty_category','parent_id')->order('title') as $subcategory">
         {include #filelist, category => $subcategory}

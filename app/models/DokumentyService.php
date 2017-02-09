@@ -28,6 +28,24 @@ class DokumentyService extends DatabaseService{
 	        ->order('id');
     }
 
+	/**
+	 * @return array
+	 */
+	public function getDokumentyCategoryList(){
+		$result = $this->database->query("SELECT `id`, `title`, LENGTH(`dirname`) - LENGTH(REPLACE(`dirname`, '/', '')) AS `level`
+		FROM `dokumenty_category`
+		WHERE `parent_id` <> ?
+		AND `id` <> ?
+		OR `parent_id` IS NULL
+		ORDER BY `dirname`", self::ZAPISY, self::ZAPISY);
+
+		$array = [];
+		foreach($result as $row){
+			$array[$row->id] = Nette\Utils\Html::el()->setHtml(str_repeat('&nbsp;&nbsp;',$row->level).$row->title);
+		}
+	return $array;
+    }
+
     /**
      * @param \Nette\DateTime $date
      * @return \Nette\Database\Table\Selection
@@ -46,7 +64,14 @@ class DokumentyService extends DatabaseService{
         return $this->database->table('dokumenty_category')->get($id);
     }
 
-    /**
+	/**
+	 * @param $values
+	 */
+	public function addDokumentyCategoryById($values){
+		$this->database->table('dokumenty_category')->insert($values);
+	}
+
+	/**
      * @param $id
      * @return \Nette\Database\Table\IRow
      */
@@ -70,15 +95,16 @@ class DokumentyService extends DatabaseService{
         return $this->database->table('dokumenty_category')->where('id',self::ZAPISY);
     }
 
-    /**
-     * @param $values
-     * @return bool|int|\Nette\Database\Table\IRow
-     */
-    public function addZapis($values){
-        $values->dokumenty_category_id = self::ZAPISY;
-
-        return $this->addDokument($values);
-    }
+	/**
+	 * @param $year
+	 * @return bool|mixed|\Nette\Database\Table\IRow
+	 */
+	public function getZapisCategoryByYear($year){
+		return $this->database->table('dokumenty_category')
+			->where('title',$year)
+			->where('parent_id',self::ZAPISY)
+			->fetch();
+	}
 
     /**
      * @return \Nette\Database\Table\IRow
