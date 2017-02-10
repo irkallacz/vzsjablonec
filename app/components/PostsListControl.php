@@ -45,7 +45,7 @@ class PostsListControl extends Nette\Application\UI\Control{
 
         $topic = $this->forumService->getTopicById($id);
         if ($this->forumService->checkTopic($topic)){
-            $this->template->topic = $topic;
+	        $this->template->isLocked = $topic->locked;
 
             $posts = $this->forumService->getPostsByTopicId($id);
 
