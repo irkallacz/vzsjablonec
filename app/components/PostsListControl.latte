@@ -18,18 +18,18 @@
             {$post->text|texy|noescape}
         </div>
 
-        {var $isTopic = ($post->id == $post->forum_topic_id)}
-        {var $isUpdated = ($post->date_add != $post->date_update)}
+        {var $isTopic = ($post->id == $topic->id)}
+        {var $isUpdate = ($post->date_add != $post->date_update)}
         {var $isAllow = (($user->id == $post->member_id) or ($user->isInRole('Member:Forum')))}
 
-        <div class="bottom" n:if="(!$isLocked)or($isTopic or $isUpdated)">
-            <div n:if="$isUpdated" n:class="update, (!$isLocked or $isTopic) ? float_left" title="{$post->date_update|timeAgoInWords}">
+        <div class="bottom" n:if="(!$topic->locked)or($isTopic or $isUpdate)">
+            <div n:if="$isUpdate" n:class="update, (!$topic->locked or $isTopic) ? float_left" title="{$post->date_update|timeAgoInWords}">
                 Upraveno {$post->date_update|date:'%d.%m.%Y %H:%M'}
             </div>
 
-            <div class="right" n:if="!$isLocked or $isTopic">
+            <div class="right" n:if="!$topic->locked or $isTopic">
             {if $isTopic and $isAllow}
-                {if $isLocked}
+                {if $topic->locked}
                     <a class="buttonLike" href="{plink Forum:lockTopic,$post->id,0}">
                         <span class="icon-lock-open-alt"></span> odemknout
                     </a>
@@ -40,7 +40,7 @@
                 {/if}
             {/if}
 
-            {if !$isLocked}
+            {if !$topic->locked}
                 {if $isAllow}
                     <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete,$post->id}"><span class="icon-trash"></span> smazat</a>
                     <a class="buttonLike" href="{plink Forum:edit,$post->id}"><span class="icon-pencil"></span> editovat</a>
