@@ -154,6 +154,7 @@ a.head {background-color: #12397e; font-size: 2ex; border: 1px solid black;
 
 #text .hoverLike {text-decoration: none; color: inherit;}
 .target:target, .highlight {background-color: #ffff66;}
+.highlight {color: gray;}
 .hoverLike:hover, .hoverLike:focus, .hoverLike:active, .hoverLike:hover.target:target {background-color: yellow;}
 #text a.hoverLike {display: block;}
 

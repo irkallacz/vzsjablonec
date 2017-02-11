@@ -17,7 +17,12 @@
 {*<div class="right">{control vp}</div>*}
 
 {if $q}
-{control searchPostsList}
+    {if $subject == 'posts'}
+        {control searchPostsList}
+    {/if}
+    {if $subject == 'topics'}
+        {control searchTopicsList}
+    {/if}
 {/if}
 
 <div class="right">{control vp}</div>

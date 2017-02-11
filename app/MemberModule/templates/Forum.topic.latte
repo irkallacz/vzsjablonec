@@ -39,59 +39,7 @@ $(function () {
 <li>» {$forum->title}</li>
 </ul>
 
-<table id="items">
-<tr class="first"><th>{*Téma*}</th><th class="post">Poslední příspěvek</th><th>Autor</th><th class="count"></th></tr>
-{foreach $topics as $topic}
-	{var $post = $topic->related('forum_post','forum_topic_id')->where('row_number > ?',1)->order('row_number DESC')->fetch()}
-	{var $postCount = $post ? ($post->row_number - 1) : 0}
-
-	<tr n:class="topic, (($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',
-	 (($post)and($post->member_id == $user->getId())) ? logged, $topic->member_id == $user->getId() ? logged">
-	 
-		<td class="col title">
-			<div class="headerLike">
-			<a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" n:href="Forum:view,$topic->id">
-				<strong>{if $topic->locked}<span class="icon-lock"></span>{/if}
-					{$topic->title|firstUpper}
-				</strong>
-			</a>
-
-			<span n:if="($postCount > $postPerPage) and ($postCount/$postPerPage < 6)" class="no-wrap" >
-				[ {for $i = 1; $i <= ceil($postCount/$postPerPage); $i++} <a n:href="view,$topic->id, vp-page => $i">{$i}</a>{/for} ]
-			</span>
-			</div>
-		</td>
-
-		<td class="col post right">
-		{if $post}
-			<div class="no-wrap">
-				{*<a title="profil uživatele" n:href="Nember:view $post->member_id">*}
-					{*<span class="icon-user"><span>*} {$post->member->surname} {$post->member->name}
-				{*<a>*}
-			</div>
-			<div class="no-wrap">
-				<a title="{$post->date_add|timeAgoInWords}" n:href="Forum:viewPost,$post->id">
-					<span class="icon-chat-empty"><span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
-				<a>
-			</div>
-		{/if}
-		</td>
-
-		<td class="col author right">
-			<div class="no-wrap">
-                <a title="profil uživatele" n:href="Nember:view $topic->member_id">
-					<span class="icon-user-o"><span> {$topic->member->surname} {$topic->member->name}
-				</a>
-			</div>
-			<div class="no-wrap">
-				{*<span class="icon-chat"><span>*} {$topic->date_add|date:'%d.%m.%Y %H:%M'}
-			</div>
-		</td>
-
-		<td class="count center">{$postCount}</td>
-	</tr>
-{/foreach}
-</table>
+{control topicList}
 
 <div class="right">{control vp}</div>
 
