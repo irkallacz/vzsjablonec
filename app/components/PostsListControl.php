@@ -8,56 +8,41 @@
  */
 class PostsListControl extends Nette\Application\UI\Control{
 
-    /** @var int */
-    private $limit;
+    /** @var \Nette\Database\Table\Selection */
+    private $posts;
 
-    /** @var int */
-    private $offset;
+    /** @var boolean */
+    private $isLocked;
 
-    /** @var ForumService */
-    private $forumService;
+    /**@var string */
+    private $search;
 
-    /**@var bool */
-    private $reverseOrder;
+	/**
+	 * PostsListControl constructor.
+	 * @param \Nette\Database\Table\Selection $posts
+	 * @param bool $isLocked
+	 * @param string $search
+	 */
+	public function __construct(\Nette\Database\Table\Selection $posts, $isLocked, $search = NULL){
+		parent::__construct();
+		$this->posts = $posts;
+		$this->isLocked = $isLocked;
+		$this->search = $search;
+	}
 
-    /**
-     * PostsListControl constructor.
-     * @param int $limit
-     * @param int $offset
-     * @param ForumService $forumService
-     * @param bool $reverseOrder
-     */
-    public function __construct($limit, $offset, ForumService $forumService, $reverseOrder = FALSE){
-        parent::__construct();
-        $this->offset = $offset;
-        $this->limit = $limit;
-        $this->forumService = $forumService;
-        $this->reverseOrder = $reverseOrder;
-    }
 
-    public function render($id){
+	public function render(){
         TexyFactory::$root = $this->template->basePath;
         $texy = TexyFactory::createForumTexy();
 
         $this->template->setFile(__DIR__ . '/PostsListControl.latte');
         $this->template->registerHelper('texy', callback($texy, 'process'));
         $this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+	    $this->template->posts = $this->posts;
+		$this->template->isLocked = $this->isLocked;
+		$this->template->search = $this->search;
 
-        $topic = $this->forumService->getTopicById($id);
-        if ($this->forumService->checkTopic($topic)){
-	        $this->template->isLocked = $topic->locked;
-
-            $posts = $this->forumService->getPostsByTopicId($id);
-
-            if ($this->reverseOrder) $posts->order('row_number DESC'); else $posts->order('row_number');
-
-            $posts->limit($this->limit, $this->offset);
-            $this->template->posts = $posts;
-        }else {
-            $this->flashMessage('Téma neexistuje','error');
-        }
-
-        $this->template->render();
+		$this->template->render();
     }
 
 }

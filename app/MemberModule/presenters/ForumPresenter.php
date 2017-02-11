@@ -3,6 +3,7 @@
 namespace MemberModule;
 
 use Nette\Application\UI\Form;
+use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Html;
 use Nette\Utils\Paginator;
 use Nette\Utils\Strings;
@@ -17,6 +18,9 @@ class ForumPresenter extends LayerPresenter{
 
 	/** @var \ForumService @inject */
 	public $forumService;
+
+	/** @var ActiveRow */
+	private $topic;
 
 	public function renderDefault(){
 		$this->template->forum = $this->forumService->getForum();
@@ -76,14 +80,24 @@ class ForumPresenter extends LayerPresenter{
 		$offset = $this['vp']->getPaginator()->getOffset();
 		$limit = $this['vp']->getPaginator()->getLength();
 
-		return new \PostsListControl($limit, $offset, $this->forumService);
+		$posts = $this->forumService->getPostsByTopicId($this->topic->id);
+		$posts->limit($limit,$offset);
+		$posts->order('row_number');
+
+		$isLocked = $this->topic->locked;
+
+		return new \PostsListControl($posts,$isLocked);
+	}
+
+	public function actionView($id){
+		$topic = $this->forumService->getTopicById($id);
+		$this->checkTopic($topic);
+		$this->topic = $topic;
 	}
 
 	public function renderView($id){
-		$topic = $this->forumService->getTopicById($id);
-		$this->checkTopic($topic);
-		$this->template->topic = $topic;
-		$this->template->title = $topic->title;
+		$this->template->topic = $this->topic;
+		$this->template->title = $this->topic->title;
 
 		$count = $this->forumService->getPostsCountByTopicId($id);
 
@@ -96,51 +110,68 @@ class ForumPresenter extends LayerPresenter{
     	$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
 
     	$this['addPostForm']['forum_topic_id']->setDefaultValue($id);  
-    	$this['addPostForm']['forum_id']->setDefaultValue($topic->forum_id);
+    	$this['addPostForm']['forum_id']->setDefaultValue($this->topic->forum_id);
 	}
 
-	public function renderSearch($q, $forum_id = null, $search_in = 'all'){
-		
+	public function renderSearch($q, $forum_id = null, $subject = 'posts'){
 		$vp = new \VisualPaginator($this, 'vp');
-		
-		$items = array();
+		$vp->getPaginator()->setItemsPerPage(self::postPerPage);
 
-		$paginator = $vp->getPaginator();
-		
-		$this->template->search_in = $search_in;		
+		$this->template->subject = $subject;
 		$this->template->forum_id = $forum_id;
-
-		if ($search_in == 'all') $search_in = 'title,text';
-
-		$this['searchForm']['forum_id']->setDefaultValue($forum_id);
-		$this['searchForm']['search_in']->setDefaultValue($search_in);
-
-		if ($q) {
-			//$this->forumService->createSearchIndex($search_in);
-
-			$items = $this->forumService->searchPosts($q,$search_in);
-			
-			$this['searchForm']['q']->setDefaultValue($q);			
-
-			if ($forum_id) $items->where('forum_id',$forum_id);
-			
-			$paginator->setItemsPerPage(self::postPerPage);			
-			$paginator->setItemCount(count($items));
-
-			$items->limit($paginator->getLength(), $paginator->getOffset());
-
-			//register_shutdown_function(callback($this, 'destroyIndex'));
-		}	
-		
 		$this->template->q = $q;
-		$this->template->items = $items;
-		$this->template->paginator = $paginator;
 
-    	$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this['searchForm']['q']->setDefaultValue($q);
+		$this['searchForm']['forum_id']->setDefaultValue($forum_id);
+		$this['searchForm']['subject']->setDefaultValue($subject);
 	}
 
-	public function destroyIndex(){
-		$this->forumService->destroySearchIndex();
+
+	protected function createComponentSearchPostsList(){
+		$q = $this->getParameter('q');
+		$forum_id = $this->getParameter('forum_id');
+		$subject = $this->getParameter('subject');
+
+		$posts = $this->forumService->searchPosts($q,$forum_id);
+		$paginator = $this['vp']->getPaginator();
+		$paginator->setItemCount(count($posts));
+
+		$offset = $paginator->getOffset();
+		$limit = $paginator->getLength();
+
+		$posts->limit($limit, $offset);
+		$posts->order('date_add DESC');
+
+		return new \PostsListControl($posts, TRUE, $q);
+	}
+
+	protected function createComponentSearchForm(){
+		$form = new Form;
+
+		$form->addText('q','Hledaný výraz',40)
+			->setAttribute('placeholder','Hledaný výraz')
+			->setRequired('Zadejte prosím hledaný výraz')
+			->setType('search')
+			->setAttribute('class','search');
+
+		$form->addSelect('forum_id','Kategorie:',
+			$this->forumService->getForum()->fetchPairs('id','title')
+		)->setPrompt('Všechny kategorie');
+
+		$form->addSelect('subject','Hledat:', ['posts' => 'Příspěvky'])
+			->setRequired('Zadejte prosím co vyhledávat');
+
+		$form->addSubmit('ok', '')
+			->setAttribute('class','myfont');
+
+		$form->onSuccess[] = callback($this,'processSearchForm');
+
+		return $form;
+	}
+
+	public function processSearchForm(Form $form){
+		$values = $form->getValues();
+		$this->redirect('search', $values->q, $values->forum_id, $values->subject);
 	}
 
 	public function actionTexyPreview($class = FALSE){
@@ -284,36 +315,6 @@ class ForumPresenter extends LayerPresenter{
 	    return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
 
-	protected function createComponentSearchForm(){
-		$form = new Form;
-		
-		$form->addText('q')
-			->setAttribute('placeholder','Hledaný výraz')
-			->setRequired('Zadejte prosím hledaný výraz')
-			->setType('search')
-			->setAttribute('class','search');
-		
-		$form->addSelect('forum_id','Kategorie:',
-				$this->forumService->getForum()->fetchPairs('id','title')
-			)->setPrompt('Všechny kategorie');
-			
-		$form->addSelect('search_in','Vyhledat v:',
-				//array('all'=>'Text zprávy a předmět','text'=>'Pouze text zprávy','title'=>'Pouze předmět')
-				array('title,text' => 'Text zprávy a předmět')
-			)->setRequired('Zadejte prosím kde vyhledávat');
-		
-		$form->addSubmit('ok', '')
-        	->setAttribute('class','myfont');
-
-		$form->onSuccess[]= callback($this,'processSearchForm');
-		return $form;
-	}
-
-	public function processSearchForm(Form $form){
-		$values = $form->getValues();
-		$this->redirect('search',$values->q,$values->forum_id,$values->search_in);
-	}
-	
 	protected function createComponentAddTopicForm(){
 		$form = new Form;
 		

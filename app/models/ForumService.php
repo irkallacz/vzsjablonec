@@ -32,30 +32,15 @@ class ForumService extends DatabaseService{
 
     /**
      * @param $q
-     * @param $in
+     * @param $forum
      * @return Selection
      */
-    public function searchPosts($q, $in){
-        $items = $this->getPosts()->where('MATCH('.$in.') AGAINST (?)',$q);
-        //->order('5 * MATCH(title) AGAINST (?) + MATCH(text) AGAINST (?) DESC',$q);
+    public function searchPosts($q, $forum = NULL){
+        $posts = $this->getPosts()->where('`text` LIKE ?',"%$q%");
+        if ($forum) $posts->where('forum_id',$forum);
 
-        return $items;
+	    return $posts;
     }
-
-    /**
-     * @param $in
-     */
-    public function createSearchIndex($in){
-        //return $this->database->exec('ALTER TABLE forum_post ADD FULLTEXT vyhledavani ('.$in.')');
-    }
-
-    /**
-     *
-     */
-    public function destroySearchIndex(){
-        //return $this->database->exec('ALTER TABLE `forum_post` DROP INDEX `vyhledavani`');
-    }
-
 
     /**
      * @param IRow $topic
