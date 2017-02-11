@@ -1,6 +1,6 @@
 {contentType application/rss+xml; charset=utf-8}
 {block #content}
-<title>VZS Jablonec Member Forum{if isset($forum)} : {$forum->title|firstUpper}{/if}{if isset($topic)} : {$topic->title|firstUpper}{/if}</title>
+<title>VZS Jablonec Forum{if isset($forum)} : {$forum->title|firstUpper}{/if}{if isset($topic)} : {$topic->title|firstUpper}{/if}</title>
 <link>{link //Forum:default}</link>
 <description>Forum členů VZS Jablonec</description>
 <item n:foreach="$items as $item">

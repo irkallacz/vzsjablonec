@@ -40,11 +40,13 @@ class MemberService extends DatabaseService{
      * @param $password
      * @return bool|mixed|\Nette\Database\Table\IRow
      */
-    public function getMemberByName($username, $password){
-        return $this->getMembers()
+    public function getMemberByAutentication($username, $password){
+        $member = $this->getMembers()
+	        ->select('login, password')
             ->where('login',$username)
-            ->where('hash',md5($password))
             ->fetch();
+
+        return Nette\Security\Passwords::verify($password, $member->hash) ? $member : FALSE;
     }
 
     /**
