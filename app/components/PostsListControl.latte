@@ -1,7 +1,7 @@
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 <div id="posts" n:inner-foreach="$posts as $post">
-    <div id="p{$post->id}" n:class="target, post, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
+    <div id="p{$post->id}" n:class="post, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
         <div class="top headerLike">
             <a class="float_right" href="{plink Forum:viewPost, $post->id}" title="{$post->date_add|timeAgoInWords}">
                 <span class="icon-chat"></span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
@@ -15,21 +15,21 @@
         </div>
 
         <div class="message">
-            {$post->text|texy|noescape}
+            {if !$search}{$post->text|texy|noescape}{else}{$post->text|replace:$search:'<span class="highlight">'.$search.'</span>'|texy|noescape}{/if}
         </div>
 
-        {var $isTopic = ($post->id == $topic->id)}
-        {var $isUpdate = ($post->date_add != $post->date_update)}
+        {var $isTopic = ($post->id == $post->forum_topic_id)}
+        {var $isUpdated = ($post->date_add != $post->date_update)}
         {var $isAllow = (($user->id == $post->member_id) or ($user->isInRole('Member:Forum')))}
 
-        <div class="bottom" n:if="(!$topic->locked)or($isTopic or $isUpdate)">
-            <div n:if="$isUpdate" n:class="update, (!$topic->locked or $isTopic) ? float_left" title="{$post->date_update|timeAgoInWords}">
+        <div class="bottom" n:if="(!$isLocked)or($isTopic or $isUpdated)">
+            <div n:if="$isUpdated" n:class="update, (!$isLocked or $isTopic) ? float_left" title="{$post->date_update|timeAgoInWords}">
                 Upraveno {$post->date_update|date:'%d.%m.%Y %H:%M'}
             </div>
 
-            <div class="right" n:if="!$topic->locked or $isTopic">
+            <div class="right" n:if="!$isLocked or $isTopic">
             {if $isTopic and $isAllow}
-                {if $topic->locked}
+                {if $isLocked}
                     <a class="buttonLike" href="{plink Forum:lockTopic,$post->id,0}">
                         <span class="icon-lock-open-alt"></span> odemknout
                     </a>
@@ -40,7 +40,7 @@
                 {/if}
             {/if}
 
-            {if !$topic->locked}
+            {if !$isLocked}
                 {if $isAllow}
                     <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete,$post->id}"><span class="icon-trash"></span> smazat</a>
                     <a class="buttonLike" href="{plink Forum:edit,$post->id}"><span class="icon-pencil"></span> editovat</a>

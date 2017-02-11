@@ -27,37 +27,34 @@ class ForumService extends DatabaseService{
      * @return Selection
      */
     public function getPosts(){
-        return $this->database->table('forum_post')->where('hidden',0);
+        return $this->database->table('forum_post')->where('NOT row_number',0);
     }
 
     /**
      * @param $q
-     * @param $in
+     * @param $forum
      * @return Selection
      */
-    public function searchPosts($q, $in){
-        $items = $this->getPosts()->where('MATCH('.$in.') AGAINST (?)',$q);
-        //->order('5 * MATCH(title) AGAINST (?) + MATCH(text) AGAINST (?) DESC',$q);
+    public function searchPosts($q, $forum = NULL){
+        $posts = $this->getPosts()->where('`text` LIKE ?',"%$q%");
+        if ($forum) $posts->where('forum_id',$forum);
 
-        return $items;
+	    return $posts;
     }
 
-    /**
-     * @param $in
-     */
-    public function createSearchIndex($in){
-        //return $this->database->exec('ALTER TABLE forum_post ADD FULLTEXT vyhledavani ('.$in.')');
-    }
+	/**
+	 * @param $q
+	 * @param $forum
+	 * @return Selection
+	 */
+	public function searchTopics($q, $forum = NULL){
+		$topics = $this->getTopics()->where('`title` LIKE ?',"%$q%");
+		if ($forum) $topics->where('forum_id',$forum);
 
-    /**
-     *
-     */
-    public function destroySearchIndex(){
-        //return $this->database->exec('ALTER TABLE `forum_post` DROP INDEX `vyhledavani`');
-    }
+		return $topics;
+	}
 
-
-    /**
+	/**
      * @param IRow $topic
      * @return bool
      */
@@ -72,7 +69,7 @@ class ForumService extends DatabaseService{
      * @return int
      */
     public function getPostsCountByTopicId($id){
-        return $this->database->table('forum_post')->where('hidden',0)->where('forum_topic_id',$id)->count('id');
+        return $this->getPosts()->where('forum_topic_id',$id)->count('id');
     }
 
     /**
@@ -80,7 +77,7 @@ class ForumService extends DatabaseService{
      * @return Selection
      */
     public function getPostsByTopicId($id){
-        return $this->database->table('forum_post')->where('hidden',0)->where('forum_topic_id',$id);
+        return $this->getPosts()->where('forum_topic_id',$id);
     }
 
     /**
@@ -114,7 +111,7 @@ class ForumService extends DatabaseService{
      * @return Selection
      */
     public function getTopics(){
-        return $this->getPosts()->where('forum_topic_id = id')->order('date_add DESC');
+        return $this->getPosts()->where('forum_topic_id = id');
     }
 
     /**
@@ -141,7 +138,11 @@ class ForumService extends DatabaseService{
      * @return Selection
      */
     public function getTopicsByForumId($id){
-        return $this->getTopics()->where('forum_id',$id)->where('forum_topic_id = id');
-    }   
-    
+        return $this->getTopics()->where('forum_id',$id)->where('forum_topic_id = id')->order('date_add DESC');
+    }
+
+	public function getTopicsCountByForumId($id){
+		return $this->getTopics()->where('forum_id',$id)->count('id');
+	}
+
 }
