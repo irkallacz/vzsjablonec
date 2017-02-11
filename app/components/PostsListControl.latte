@@ -22,8 +22,8 @@
         {var $isUpdated = ($post->date_add != $post->date_update)}
         {var $isAllow = (($user->id == $post->member_id) or ($user->isInRole('Member:Forum')))}
 
-        <div class="bottom" n:if="(!$isLocked)or($isTopic or $isUpdated)">
-            <div n:if="$isUpdated" n:class="update, (!$isLocked or $isTopic) ? float_left" title="{$post->date_update|timeAgoInWords}">
+        <div class="bottom" n:if="(!$isLocked)or($isLocked and $isUpdated)">
+            <div n:if="$isUpdated" n:class="update, (($isTopic and ($post->member_id == $user->id)) or !$isLocked) ? float_left" title="{$post->date_update|timeAgoInWords}">
                 Upraveno {$post->date_update|date:'%d.%m.%Y %H:%M'}
             </div>
 
