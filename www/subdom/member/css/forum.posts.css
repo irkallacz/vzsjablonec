@@ -1,6 +1,7 @@
 .quote {font-family: serif;}
 
-.inline-nav li {font-size: inherit;}
+.inline-nav {list-style-type: none; padding: 0; margin-bottom: 1ex;}
+.inline-nav li {display: inline; font-size: inherit;}
 
 #posts .post {margin-bottom: 1em; border: 1px solid gray; border-radius: 1ex;}
 

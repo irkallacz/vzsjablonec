@@ -153,7 +153,7 @@ a.head {background-color: #12397e; font-size: 2ex; border: 1px solid black;
 .borderLike {border: 3px solid #0089d2; }
 
 #text .hoverLike {text-decoration: none; color: inherit;}
-.target:target {background-color: #ffff66;}
+.target:target, .highlight {background-color: #ffff66;}
 .hoverLike:hover, .hoverLike:focus, .hoverLike:active, .hoverLike:hover.target:target {background-color: yellow;}
 #text a.hoverLike {display: block;}
 
