@@ -9,11 +9,6 @@
 
 {control texylaJs}
 
-<style type="text/css" n:syntax="off">
-	.inline-nav { list-style-type: none; padding: 0; margin-bottom: 1ex; }
-	.inline-nav li { display: inline; font-size: inherit; }
-</style>
-
 <script type="text/javascript">
 //<![CDATA[
 $.texyla.setDefaults({
@@ -35,9 +30,14 @@ $(function () {
 <div class="float_right" id="nav-top">{control vp}</div>
 
 <ul class="inline-nav">
-<li><a n:href="Forum:">Fórum</a></li>
-<li>» {$forum->title}</li>
+	<li><a n:href="Forum:">Fórum</a></li>
+	<li>» {$forum->title}</li>
 </ul>
+
+<div>
+	{form searchForm}{input q}{input ok}{/form}
+</div>
+
 
 {control topicList}
 

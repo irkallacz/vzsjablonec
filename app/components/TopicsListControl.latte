@@ -11,7 +11,7 @@
                 <div class="headerLike">
                     <a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" href="{plink Forum:view,$topic->id}">
                         <strong>{if $topic->locked}<span class="icon-lock"></span>{/if}
-                            {if !$search}{$topic->title|firstUpper}{else}{$topic->title|replace:$search:'<span class="highlight">'.$search.'</span>'|firstUpper|noescape}{/if}
+                            {if !$search}{$topic->title|firstUpper}{else}{$topic->title|replace:$search:'<em class="highlight">'.$search.'</em>'|firstUpper|noescape}{/if}
                         </strong>
                     </a>
 

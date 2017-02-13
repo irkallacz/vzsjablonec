@@ -29,14 +29,17 @@ $(function () {
 <h1 n:block="title">Fórum</h1>
 
 {block #content}
+<div class="float_right">{control vp}</div>
 
 <ul class="inline-nav">
-<li><a n:href="Forum:">Fórum</a></li>
-<li>» <a n:href="Forum:topic,$topic->forum->id">{$topic->forum->title|firstUpper}</a></li>
-<li>» {$topic->title|firstUpper}</li>
+	<li><a n:href="Forum:">Fórum</a></li>
+	<li>» <a n:href="Forum:topic,$topic->forum->id">{$topic->forum->title|firstUpper}</a></li>
+	<li>» {$topic->title|firstUpper}</li>
 </ul>
 
-<div class="float_right">{control vp}</div>
+<div class="float_right">
+	{form searchForm}{input q}{input ok}{/form}
+</div>
 
 <h2><span class="icon-lock" title="Toto téma bylo uzavřeno" n:if="$topic->locked"></span> {$topic->title|firstUpper}</h2>
 

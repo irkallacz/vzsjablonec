@@ -42,28 +42,31 @@ class ForumPresenter extends LayerPresenter{
 		$this->showPost($post);
 	}
 
-	public function renderTopic($id){
+	public function renderTopic($id, $q = null){
 		$forum = $this->forumService->getForumById($id);
 		$this->template->forum = $forum;
-		
+
 		$vp = new \VisualPaginator($this, 'vp');
 		
-		$count = $this->forumService->getTopicsCountByForumId($id);
+		$count = $this->forumService->getTopicsByForumId($id, $q)->count();
 
 		$paginator = $vp->getPaginator();
-		
 		$paginator->setItemsPerPage(self::topicPerPage);
 		$paginator->setItemCount($count);
+
+		$this['searchForm']['q']->setDefaultValue($q);
 	}
 
 	protected function createComponentTopicList(){
 		$id = $this->getParameter('id');
-		$topics = $this->forumService->getTopicsByForumId($id);
+		$search = $this->getParameter('q');
+
+		$topics = $this->forumService->getTopicsByForumId($id, $search);
 
 		$paginator = $this['vp']->getPaginator();
 		$topics->limit($paginator->getLength(), $paginator->getOffset());
 
-		return new \TopicsListControl($topics);
+		return new \TopicsListControl($topics, $search);
 	}
 
 	public function checkTopic($topic, $locked = FALSE){		
@@ -79,29 +82,31 @@ class ForumPresenter extends LayerPresenter{
 	}
 
 	public function createComponentPostsList(){
+		$search = $this->getParameter('q');
+
 		$offset = $this['vp']->getPaginator()->getOffset();
 		$limit = $this['vp']->getPaginator()->getLength();
 
-		$posts = $this->forumService->getPostsByTopicId($this->topic->id);
+		$posts = $this->forumService->getPostsByTopicId($this->topic->id, $search);
 		$posts->limit($limit,$offset);
 		$posts->order('row_number');
 
 		$isLocked = $this->topic->locked;
 
-		return new \PostsListControl($posts,$isLocked);
+		return new \PostsListControl($posts, $isLocked, $search);
 	}
 
-	public function actionView($id){
+	public function actionView($id, $q = null){
 		$topic = $this->forumService->getTopicById($id);
 		$this->checkTopic($topic);
 		$this->topic = $topic;
 	}
 
-	public function renderView($id){
+	public function renderView($id, $q = null){
 		$this->template->topic = $this->topic;
 		$this->template->title = $this->topic->title;
 
-		$count = $this->forumService->getPostsCountByTopicId($id);
+		$count = $this->forumService->getPostsByTopicId($id, $q)->count();
 
 		$vp = new \VisualPaginator($this, 'vp');
 		$paginator = $vp->getPaginator();
@@ -113,6 +118,8 @@ class ForumPresenter extends LayerPresenter{
 
     	$this['addPostForm']['forum_topic_id']->setDefaultValue($id);  
     	$this['addPostForm']['forum_id']->setDefaultValue($this->topic->forum_id);
+
+		$this['searchForm']['q']->setDefaultValue($q);
 	}
 
 	public function renderSearch($q, $forum_id = null, $subject = 'posts'){
@@ -123,9 +130,9 @@ class ForumPresenter extends LayerPresenter{
 		$this->template->forum_id = $forum_id;
 		$this->template->q = $q;
 
-		$this['searchForm']['q']->setDefaultValue($q);
-		$this['searchForm']['forum_id']->setDefaultValue($forum_id);
-		$this['searchForm']['subject']->setDefaultValue($subject);
+		$this['searchForumForm']['q']->setDefaultValue($q);
+		$this['searchForumForm']['forum_id']->setDefaultValue($forum_id);
+		$this['searchForumForm']['subject']->setDefaultValue($subject);
 	}
 
 	protected function createComponentSearchPostsList(){
@@ -162,22 +169,14 @@ class ForumPresenter extends LayerPresenter{
 		return new \TopicsListControl($topics, $q);
 	}
 
-
 	protected function createComponentSearchForm(){
 		$form = new Form;
 
-		$form->addText('q','Hledaný výraz',40)
+		$form->addText('q','Hledaný výraz',30)
 			->setAttribute('placeholder','Hledaný výraz')
 			->setRequired('Zadejte prosím hledaný výraz')
 			->setType('search')
 			->setAttribute('class','search');
-
-		$form->addSelect('forum_id','Kategorie:',
-			$this->forumService->getForum()->fetchPairs('id','title')
-		)->setPrompt('Všechny kategorie');
-
-		$form->addSelect('subject','Hledat:', ['posts' => 'Příspěvky', 'topics' => 'Témata'])
-			->setRequired('Zadejte prosím co vyhledávat');
 
 		$form->addSubmit('ok', '')
 			->setAttribute('class','myfont');
@@ -188,6 +187,29 @@ class ForumPresenter extends LayerPresenter{
 	}
 
 	public function processSearchForm(Form $form){
+		$action = $this->getAction();
+		$values = $form->getValues();
+		$id = $this->getParameter('id');
+
+		$this->redirect($action, $id, $values->q);
+	}
+
+	protected function createComponentSearchForumForm(){
+		$form = $this->createComponentSearchForm();
+
+		$form->addSelect('forum_id','Kategorie:',
+			$this->forumService->getForum()->fetchPairs('id','title')
+		)->setPrompt('Všechny kategorie');
+
+		$form->addSelect('subject','Hledat:', ['posts' => 'Příspěvky', 'topics' => 'Témata'])
+			->setRequired('Zadejte prosím co vyhledávat');
+
+		$form->onSuccess = [callback($this,'processSearchForumForm')];
+
+		return $form;
+	}
+
+	public function processSearchForumForm(Form $form){
 		$values = $form->getValues();
 		$this->redirect('search', $values->q, $values->forum_id, $values->subject);
 	}
