@@ -182,7 +182,16 @@ class AkcePresenter extends LayerPresenter{
 	}
 
 	public function createComponentPostsList(){
-		return new \PostsListControl(5, 0, $this->forumService, TRUE);
+		$topic = $this->forumService->getTopicById($this->akce->forum_topic_id);
+		if ($this->forumService->checkTopic($topic)){
+			$isLocked = $topic->locked;
+
+			$posts = $this->forumService->getPostsByTopicId($this->akce->forum_topic_id);
+			$posts->order('row_number DESC');
+			$posts->limit(5, 0);
+
+			return new \PostsListControl($posts,$isLocked);
+		}
 	}
 
     protected function createComponentAlbum(){

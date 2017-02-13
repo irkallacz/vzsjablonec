@@ -6,3 +6,5 @@
   #top img {display: none;}
   #top h1 {margin-top: 1ex;}
   #top #visible {display: none;}
+
+  table#items .post, table#items .count {display: none}

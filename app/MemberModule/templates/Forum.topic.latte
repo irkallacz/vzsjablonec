@@ -1,5 +1,5 @@
 {block #head}
-<link rel="alternate" title="VZS Jablonec Member Forum : {$forum->title}" n:href="//Feed:forum, fid => $forum->id" type="application/rss+xml">
+<link rel="alternate" title="VZS Jablonec Forum : {$forum->title}" n:href="//Feed:forum, fid => $forum->id" type="application/rss+xml">
 
 <link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
 
@@ -10,21 +10,8 @@
 {control texylaJs}
 
 <style type="text/css" n:syntax="off">
-.headerLike {margin: 0px; padding: 0px 1em 0.5ex 1em; display: inline-block;} 
-.borderLike {border-left: none; border-right: none; border-bottom: none;}
-
-table#items td, table th {vertical-align: top; padding: 1ex 1ex;}
-table#items {border-collapse: collapse; width: 98%; }
-table#items td.col {padding: 0px;}
-table#items .right .headerLike {font-style: italic; text-align: center;}
-table#items .first {font-size: 1.1em;}
-
-#frm-addTopicForm table {width: 90%; margin: 0px auto;}
-#frm-addTopicForm-title {width: 90%}
-#frm-addTopicForm table td textarea {width: 91%}
-
-#frm-addTopicForm-title:-moz-placeholder { color: silver; }
-#frm-addTopicForm-title::-webkit-placeholder { color: silver; }
+	.inline-nav { list-style-type: none; padding: 0; margin-bottom: 1ex; }
+	.inline-nav li { display: inline; font-size: inherit; }
 </style>
 
 <script type="text/javascript">
@@ -52,51 +39,7 @@ $(function () {
 <li>» {$forum->title}</li>
 </ul>
 
-<table id="items">
-<tr class="first"><th>Téma</th><th>Odpovědi</th><th>Poslední příspěvek</th></tr>
-{foreach $topics as $topic}
-	{var $post = $topic->related('forum_post','forum_topic_id')->where('row_number > ?',0)->order('row_number DESC')->fetch()}
-	{var $postCount = $post->row_number}
-
-	<tr n:class="hoverLike,borderLike,(($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',
-	 (($post)and($post->member_id == $user->getId())) ? logged, $topic->member_id == $user->getId() ? logged">
-	 
-	<td class="col"><a class="noLink" title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" n:href="Forum:view,$topic->id">
-	<strong class="headerLike">
-		{if $topic->locked}<span class="icon-lock"></span>{/if}
-		{$topic->title|firstUpper}
-	</strong>
-
-	<span class="no-wrap"><span class="char">⇨</span> od <b>{$topic->member->surname} {$topic->member->name}</b></span></a>
-
-	<span n:if="($postCount > $postPerPage) and ($postCount/$postPerPage < 6)" class="no-wrap" >
-		[ {for $i = 1; $i <= ceil($postCount/$postPerPage); $i++} <a n:href="view,$topic->id, vp-page => $i">{$i}</a>{/for} ]
-	</span>
-
-	</td>
-	
-	<td class="center">{$postCount-1}</td>
-	<td class="col right">
-	{*var $post = $posts->fetch()*}	
-		
-	{if $post} 
-	<a class="noLink" title="{$post->date_add|timeAgoInWords}" n:href="Forum:viewPost,$post->id">
-		<strong class="headerLike">
-			{$post->date_add|date:'%H:%M %d.%m.%Y'}
-		</strong>
-	<span class="no-wrap"><span class="char">⇨</span> od <b>
-	
-	{$post->member->surname} {$post->member->name}
-	
-	{*$post->member_id*}
-	
-	</b></span>
-	</a>
-	{/if}
-	</td>
-	</tr>
-{/foreach}
-</table>
+{control topicList}
 
 <div class="right">{control vp}</div>
 

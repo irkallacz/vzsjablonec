@@ -40,7 +40,7 @@ class FeedPresenter extends BasePresenter {
 	}
 
 	protected function zkontroluj(){
-		$member = $this->memberService->getMemberByName($_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
+		$member = $this->memberService->getMemberByAutentication($_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
 
 		if (!$member) {
 			$this->httpResponse->setCode(\Nette\Http\Response::S401_UNAUTHORIZED);
@@ -75,7 +75,7 @@ class FeedPresenter extends BasePresenter {
 
 	public function renderForum(){
 		$topicId = $this->getParameter('tid');
-		$forumId = $this->getParameter('tid');
+		$forumId = $this->getParameter('fid');
 
 		$items = $this->forumService->getPosts()->order('date_add DESC');
 		
