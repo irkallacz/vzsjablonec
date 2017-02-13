@@ -14,7 +14,7 @@
 {block #content}
 
 <table id="items">
-<tr class="first"><th></th><th>Poslední příspěk</th><th></th></tr>
+<tr class="first"><th></th><th>Poslední příspěvek</th><th></th></tr>
 {foreach $forum as $category}
 	{var $post = $category->related('forum_post')->order('date_add DESC')->fetch()}
 
