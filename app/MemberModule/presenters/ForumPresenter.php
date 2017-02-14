@@ -172,7 +172,7 @@ class ForumPresenter extends LayerPresenter{
 	protected function createComponentSearchForm(){
 		$form = new Form;
 
-		$form->addText('q','Hledaný výraz',30)
+		$form->addText('q', NULL, 20)
 			->setAttribute('placeholder','Hledaný výraz')
 			->setRequired('Zadejte prosím hledaný výraz')
 			->setType('search')
@@ -182,6 +182,12 @@ class ForumPresenter extends LayerPresenter{
 			->setAttribute('class','myfont');
 
 		$form->onSuccess[] = callback($this,'processSearchForm');
+
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['controls']['container'] = NULL;
+		$renderer->wrappers['pair']['container'] = NULL;
+		$renderer->wrappers['label']['container'] = NULL;
+		$renderer->wrappers['control']['container'] = NULL;
 
 		return $form;
 	}
