@@ -71,8 +71,8 @@ TODO odelílání na fomrulářích
     <p n:if="!$akce->confirm" class="red"><span class="icon-cancel"></span> Tato akce není schválena!</p>
 
     <div class="prev-next">
-        <a n:tag-if="$prev" class="buttonLike float_right" n:href="Akce:view, $prev->id">
-            <span n:tag-if="!$prev" class="buttonLike gray float_right">Předchozí <span class="char">»</span></span>
+        <a n:tag-if="$prev" class="buttonLike float-right" n:href="Akce:view, $prev->id">
+            <span n:tag-if="!$prev" class="buttonLike gray float-right">Předchozí <span class="char">»</span></span>
         </a>
         <a n:tag-if="$next" class="buttonLike" n:href="Akce:view, $next->id">
             <span n:tag-if="!$next" class="buttonLike gray"><span class="char">«</span> Další</span>
@@ -118,7 +118,7 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
 <span title="Přihlášení/odhlášení do: {$akce->date_deatline|date:'%A %d.%m.%Y'}" 
 class="hint">Čas na přihlášení vypršel</span></p>
 
-<div class="float_left">{control members}</div><div class="float_left">{control organizators}</div>
+<div class="float-left">{control members}</div><div class="float-left">{control organizators}</div>
 
 <div class="clearfix"></div>
 
@@ -181,7 +181,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
 <hr>
 <h3>Poslední příspěvky <span class="icon-chat-empty"></h3>
 
-<a n:if="!$topic->locked" class="buttonLike float_right" n:href="Forum:add $topic->id"><span class="icon-plus"></span> nový příspěvěk</a>
+<a n:if="!$topic->locked" class="buttonLike float-right" n:href="Forum:add $topic->id"><span class="icon-plus"></span> nový příspěvěk</a>
 
 <ul class="inline-nav">
 <li><a n:href="Forum:">Fórum</a></li>

@@ -14,14 +14,14 @@
 <li><a n:if="$user->isInRole($presenter->name)" class="buttonLike" n:href="delete,$member->id"><span class="icon-trash"></span> smazat</a></li>
 </ul>
 
-<div n:if="$fileExists" class="float_left" id="photo"><img src="{$basePath}/img/portrets/{$member->id}.jpg" alt="fotografie"></div>
+<div n:if="$fileExists" class="float-left" id="photo"><img src="{$basePath}/img/portrets/{$member->id}.jpg" alt="fotografie"></div>
 
 
 <a class="buttonLike head" n:href="vcf, $member->id" title="stáhnout vizitku ve formátu .vfc">
 	<span class="icon-user"></span> {$member->name} {$member->surname}
 </a>
 
-<div id="member" class="float_left">
+<div id="member" class="float-left">
 
 <p><b>Osobní číslo:</b> {$member->id}</p>
 <p><b>Věk:</b> {$narozeni->format('%y')}</p>
