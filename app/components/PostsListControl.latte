@@ -3,7 +3,7 @@
 <div id="posts" n:inner-foreach="$posts as $post">
     <div id="p{$post->id}" n:class="post, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
         <div class="top headerLike">
-            <a class="float_right" href="{plink Forum:viewPost, $post->id}" title="{$post->date_add|timeAgoInWords}">
+            <a class="float-right" href="{plink Forum:viewPost, $post->id}" title="{$post->date_add|timeAgoInWords}">
                 <span class="icon-chat"></span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
             </a>
             <a href="{plink Member:view,$post->member_id}" title="profil uživatele">
@@ -23,7 +23,7 @@
         {var $isAllow = (($user->id == $post->member_id) or ($user->isInRole('Member:Forum')))}
 
         <div class="bottom" n:if="(!$isLocked)or($isLocked and $isUpdated)">
-            <div n:if="$isUpdated" n:class="update, (($isTopic and ($post->member_id == $user->id)) or !$isLocked) ? float_left" title="{$post->date_update|timeAgoInWords}">
+            <div n:if="$isUpdated" n:class="update, (($isTopic and ($post->member_id == $user->id)) or !$isLocked) ? float-left" title="{$post->date_update|timeAgoInWords}">
                 Upraveno {$post->date_update|date:'%d.%m.%Y %H:%M'}
             </div>
 
