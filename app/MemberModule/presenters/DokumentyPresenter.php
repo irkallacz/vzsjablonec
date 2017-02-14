@@ -98,6 +98,7 @@ class DokumentyPresenter extends LayerPresenter{
         	->setRequired('Vyberte prosím soubor');
         
         $form->addText('title','Popisek souboru',40)
+            ->setAttribute('spellcheck', 'true')
         	->setRequired('Vyplňte %label');
 
         $form->addSelect('dokumenty_category_id','Kategorie',

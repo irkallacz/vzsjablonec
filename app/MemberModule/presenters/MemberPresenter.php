@@ -252,9 +252,11 @@ class MemberPresenter extends LayerPresenter{
 		$form->addGroup('Osobní data');
 
 		$form->addText('name', 'Jméno', 30)
+			->setAttribute('spellcheck', 'true')      		
       		->setRequired('Vyplňte %label');
 
 		$form->addText('surname', 'Příjmení', 30)
+			->setAttribute('spellcheck', 'true')	
       		->setRequired('Vyplňte %label');
 
 		$form->addText('date_born', 'Datum narození', 10)
@@ -265,6 +267,7 @@ class MemberPresenter extends LayerPresenter{
 		    ->setAttribute('class','date');
         
         $form->addText('zamestnani', 'Zaměstnání/Škola', 30)
+			->setAttribute('spellcheck', 'true')
       		->setRequired('Vyplňte %label');
 
         $form->addGroup('Přihlašovací údaje');
@@ -289,9 +292,11 @@ class MemberPresenter extends LayerPresenter{
         $form->addGroup('Adresa');
 
         $form->addText('ulice', 'Ulice', 30)
+			->setAttribute('spellcheck', 'true')	
       		->setRequired('Vyplňte ulici');
 
       	$form->addText('mesto', 'Město', 30)
+			->setAttribute('spellcheck', 'true')	
       		->setRequired('Vyplňte %label');
 
       	$form->addGroup('Kontakty');
@@ -313,7 +318,8 @@ class MemberPresenter extends LayerPresenter{
         		->addRule(Form::IMAGE, 'Fotografie musí být ve formátu JPEG')
         	->endCondition();
 
-    	$form->addTextArea('text', 'Poznámka', 30);
+    	$form->addTextArea('text', 'Poznámka', 30)
+			->setAttribute('spellcheck', 'true');
       		//->setRequired('Vyplňte %label');
       		//->setAttribute('class','texyla');	
 	

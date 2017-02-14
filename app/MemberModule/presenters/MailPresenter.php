@@ -75,7 +75,9 @@ class MailPresenter extends LayerPresenter{
 
 		$form->addText('subject', 'Předmět', 50)
       		->setRequired('Vyplňte %label')
+      		->setAttribute('spellcheck', 'true')
       		->setAttribute('class', 'max');
+
 
     	$form->addUpload('file','Příloha')
     		->setAttribute('class', 'max')
@@ -84,7 +86,9 @@ class MailPresenter extends LayerPresenter{
 
     	$form->addTextArea('text', 'Text e-mailu:', 45)
       		->setRequired('Vyplňte %label')
+      		->setAttribute('spellcheck', 'true')
       		->setAttribute('class', 'max');
+      		
       		//->setAttribute('class','texyla');	
 
         $form->addSubmit('ok', 'Odeslat');

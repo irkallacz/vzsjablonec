@@ -362,9 +362,11 @@ class ForumPresenter extends LayerPresenter{
 
 		$form->addText('title')
 			->setAttribute('placeholder','Název tématu')
+			->setAttribute('spellcheck', 'true')			
 			->setRequired('Zadejte prosím předmet');
 		$form->addTextArea('text')
 			->setRequired('Zadejte prosím text zprávy')
+			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla');
 
 		$form->onSuccess[]= callback($this,'processAddTopicForm');
@@ -404,6 +406,7 @@ class ForumPresenter extends LayerPresenter{
 
 		$form->addTextArea('text')
 			->setRequired('Zadejte prosím text zprávy')
+			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla');
 
 		$form->addHidden('id',0);

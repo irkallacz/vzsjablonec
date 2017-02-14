@@ -153,7 +153,8 @@ class TimesPresenter extends LayerPresenter{
           ->setAttribute('class','time')
           ->getLabelPrototype()->class('hint')->title = 'Čas musí být ve formátu MM:SS';
 
-        $form->addText('text','Poznámka',30);
+        $form->addText('text','Poznámka',30)
+            ->setAttribute('spellcheck', 'true');
 
         $form->addCheckBox('another','Vložit další záznam')
             ->setDefaultValue(TRUE);

@@ -156,12 +156,15 @@ class AnketyPresenter extends LayerPresenter{
 	protected function createComponentAnketaForm(){
 	    $form = new Form;
 
-	   	$form->addText('title','Název',30);
+	   	$form->addText('title','Název',30)
+			->setAttribute('spellcheck', 'true');	   	
 
-	    $form->addTextArea('text','Otázka',60);
+	    $form->addTextArea('text','Otázka',60)
+			->setAttribute('spellcheck', 'true');	    
 
 	    $users = $form->addDynamic('users', function (\Nette\Forms\Container $user) {
-	    	$user->addText('text', 'Odpověď', 30);
+	    	$user->addText('text', 'Odpověď', 30)
+				->setAttribute('spellcheck', 'true');
 
 	        $user->addButton('remove', '✖')
 	        	->setAttribute('class','buttonLike')
