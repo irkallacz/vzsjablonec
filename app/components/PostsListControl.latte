@@ -1,7 +1,7 @@
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 <div id="posts" n:inner-foreach="$posts as $post">
-    <div id="p{$post->id}" n:class="post, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
+    <div id="p{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
         <div class="top headerLike">
             <a class="float-right" href="{plink Forum:viewPost, $post->id}" title="{$post->date_add|timeAgoInWords}">
                 <span class="icon-chat"></span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
