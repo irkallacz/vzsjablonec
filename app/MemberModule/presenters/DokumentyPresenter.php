@@ -8,6 +8,8 @@ use Nette\Utils\Strings;
 
 class DokumentyPresenter extends LayerPresenter{
 
+	const DOCUMENT_DIR = 'doc';
+
     /** @var \DokumentyService @inject */
     public $dokumentyService;
 
@@ -34,9 +36,9 @@ class DokumentyPresenter extends LayerPresenter{
     }
 
 	public function renderDefault(){
-		$this->template->category = $this->dokumentyService->getDokumentyCategory();
-        $this->template->zapisy = $this->dokumentyService->getZapisy();
-        $this->template->hlasovani = $this->dokumentyService->getHlasovani();
+		$this->template->category = $this->dokumentyService->getDokumentyCategoryParent();
+//        $this->template->zapisy = $this->dokumentyService->getZapisy();
+//        $this->template->hlasovani = $this->dokumentyService->getHlasovani();
 
 	    $this->template->registerHelper('fileExtIcon', callback($this,'getFileIcon'));
   	}
@@ -74,23 +76,47 @@ class DokumentyPresenter extends LayerPresenter{
         $this->mailer->send($mail);
     }
     
-    public function sendHlasovaniMail($file,$datum){
-        $template = $this->createTemplate();
-        $template->setFile(__DIR__ . '/../templates/Mail/newHlasovani.latte');
-        $template->datum = $datum;
+//    public function sendHlasovaniMail($file,$datum){
+//        $template = $this->createTemplate();
+//        $template->setFile(__DIR__ . '/../templates/Mail/newHlasovani.latte');
+//        $template->datum = $datum;
+//
+//        $mail = $this->getNewMail();
+//
+//        $mail->addAttachment('hlasovani.pdf', $file->getContents());
+//
+//        $mail->addTo('predstavenstvo@vzs-jablonec.cz');
+//
+//        $mail->setBody($template);
+//
+//        $this->mailer->send($mail);
+//    }
 
-        $mail = $this->getNewMail();
+	protected function createComponentUpdateForm($name){
+		$form = new Form;
 
-        $mail->addAttachment('hlasovani.pdf', $file->getContents());
-        
-        $mail->addTo('predstavenstvo@vzs-jablonec.cz');
+		$form->addCheckboxList('files','Soubory',
+			$this->dokumentyService->getDokumenty()->fetchPairs('id','title')
+		);
 
-        $mail->setBody($template);
+		$form->addCheckboxList('dirs','Složky',
+			$this->dokumentyService->getDokumentyCategory()->fetchPairs('id','title')
+		);
 
-        $this->mailer->send($mail);
-    }
+		$form->addCheckbox('check','Vybrat soubory')
+			->setAttribute('onchange','toogleFileCheckbox()');
+			//->addRule(Form::EQUAL,TRUE);
 
-    protected function createComponentAddDokumentForm(){
+		$form->addSubmit('delete','Smazat');
+
+		$form->onSuccess[] = function(Form $form){
+			Debugger::barDump($form->getValues());
+		};
+
+		return $form;
+	}
+
+	protected function createComponentAddDokumentForm(){
 		$form = new Form;
 		
         $form->addUpload('file','Soubor')
@@ -121,7 +147,7 @@ class DokumentyPresenter extends LayerPresenter{
         $values->filename = $values->file->getSanitizedName();
 
         if (($form['file']->isFilled()) and ($values->file->isOK()))
-          $values->file->move(WWW_DIR.'/doc/'.$category->dirname.'/'.$values->filename);
+          $values->file->move(WWW_DIR.'/'.self::DOCUMENT_DIR.'/'.$category->dirname.'/'.$values->filename);
 
         unset($values->file);
 
@@ -156,17 +182,19 @@ class DokumentyPresenter extends LayerPresenter{
 	public function addCategoryFormSubmitted(Form $form){
 		$values = $form->getValues();
 
-		$category = $this->dokumentyService->getDokumentyCategoryById($values->parent_id);
-		$category_dirname = ($category) ? $category->dirname : NULL;
-		$values->dirname = $category_dirname.'/'.Strings::webalize($values->dirname);
+		if ($values->parent_id) {
+			$category = $this->dokumentyService->getDokumentyCategoryById($values->parent_id);
+			$values->dirname = $category->dirname.'/'.Strings::webalize($values->dirname);
+		}else
+			$values->dirname = Strings::webalize($values->dirname);
 
-		$dir = WWW_DIR.'/doc/'.$values->dirname;
+		$dir = WWW_DIR.'/'.self::DOCUMENT_DIR.'/'.$values->dirname;
 
 		if (!file_exists($dir)) mkdir($dir, 0755);
 
 		unset($values->file);
 
-		$this->dokumentyService->addDokumentyCategoryById($values);
+		$this->dokumentyService->addDokumentyCategory($values);
 
 		$this->flashMessage('Kategorie byla úspěšně přidána');
 		$this->redirect('Dokumenty:');
@@ -231,7 +259,7 @@ class DokumentyPresenter extends LayerPresenter{
 
 	        $values->dokumenty_category_id = $category->id;
 
-	        $values->file->move(WWW_DIR.'/doc/'.$category->dirname.'/'.$values->filename);
+	        $values->file->move(WWW_DIR.'/'.self::DOCUMENT_DIR.'/'.$category->dirname.'/'.$values->filename);
 
             if ($values->mail) $this->sendZapisMail($values->file, $datum);
 
@@ -247,26 +275,26 @@ class DokumentyPresenter extends LayerPresenter{
         }
     }
 
-    public function addHlasovaniFormSubmitted(Form $form){
-        $values = $form->getValues();
-        
-        if (($form['file']->isFilled()) and ($values->file->isOK())){
-            $values->file->move(WWW_DIR.'/doc/schuze/hlasovani.pdf');
-            
-            $datum = new DateTime();
-            $values->member_id = $this->getUser()->getId();
-
-            if ($values->mail) $this->sendHlasovaniMail($values->file, $datum);
-            
-            unset($values->mail);
-            unset($values->file);
-            
-            $this->dokumentyService->getHlasovani()->update(['date_add' => $datum]);
-            
-            $this->flashMessage('Soubor s hlasováním byl aktualizován');
-            $this->redirect('Dokumenty:');
-        }else {
-            $form->addError('Chyba při nahrávání souboru');
-        }
-    }
+//    public function addHlasovaniFormSubmitted(Form $form){
+//        $values = $form->getValues();
+//
+//        if (($form['file']->isFilled()) and ($values->file->isOK())){
+//            $values->file->move(WWW_DIR.'/doc/schuze/hlasovani.pdf');
+//
+//            $datum = new DateTime();
+//            $values->member_id = $this->getUser()->getId();
+//
+//            if ($values->mail) $this->sendHlasovaniMail($values->file, $datum);
+//
+//            unset($values->mail);
+//            unset($values->file);
+//
+//            $this->dokumentyService->getHlasovani()->update(['date_add' => $datum]);
+//
+//            $this->flashMessage('Soubor s hlasováním byl aktualizován');
+//            $this->redirect('Dokumenty:');
+//        }else {
+//            $form->addError('Chyba při nahrávání souboru');
+//        }
+//    }
 }
