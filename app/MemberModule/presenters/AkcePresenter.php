@@ -10,6 +10,8 @@ use Nette\DateTime;
 
 class AkcePresenter extends LayerPresenter{
 	const FORUM_AKCE_ID = 2;
+	const YEARS_END = 2007;
+	const YEARS_STEP = 5;
 
 	/** @var \AkceService @inject */
 	public $akceService;
@@ -55,19 +57,36 @@ class AkcePresenter extends LayerPresenter{
 		$this->template->akceList = $akce;
 	}
 
-	public function renderDefault($all = false){
-		$this->template->all = $all;
+	public function renderDefault($year = NULL){
+		$now = intval(date('Y'));
+		if (!$year) $year = $now;
+		$year = intval($year);
 
-		$akce[] = $this->akceService->getAkceByFuture(TRUE);
-		$akce[] = $this->akceService->getAkceByFuture();
+		if ($year < self::YEARS_END) $this->redirect('this', self::YEARS_END);
+		if ($year > $now) $this->redirect('this', $now);
 
-		if (!$all) $akce[1]->where('YEAR(date_start) = YEAR(NOW())');
+		$this->template->now = $year;
+
+		$akce[0] = ($year == $now) ? $this->akceService->getAkceByFuture(TRUE) : [];
+		$akce[1] = $this->akceService->getAkceByFuture(FALSE)
+			->where('YEAR(date_start)', $year);
 
 		$this->template->akceAllList = $akce;
 		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());
 		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(),TRUE);
 
 		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+
+		$years = [];
+		for($i = intval($year-self::YEARS_STEP);$i < intval($year+self::YEARS_STEP+1);$i++)
+			if (($i <= $now)and($i >= self::YEARS_END)) $years[$i] = $i;
+
+		$prev = Arrays::get($years, $year+1, 0);
+		$next = Arrays::get($years ,$year-1, 0);
+
+		$this->template->years = $years;
+		$this->template->prev = $next;
+		$this->template->next = $prev;
 	}
 
 	public function actionView($id){
