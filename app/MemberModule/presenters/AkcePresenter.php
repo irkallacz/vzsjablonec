@@ -10,6 +10,8 @@ use Nette\DateTime;
 
 class AkcePresenter extends LayerPresenter{
 	const FORUM_AKCE_ID = 2;
+	const YEARS_START = 2007;
+	const YEARS_STEP = 3;
 
 	/** @var \AkceService @inject */
 	public $akceService;
@@ -55,13 +57,36 @@ class AkcePresenter extends LayerPresenter{
 		$this->template->akceList = $akce;
 	}
 
-	public function renderDefault($all = false){
+	public function renderDefault($year = NULL){
+		$YEARS_END = intval(date('Y'));
+		if (!$year) $year = $YEARS_END;
+
+		$all = ($year == 'all');
+		$year = intval($year);
+
+		if (!$all){
+			if ($year < self::YEARS_START) $this->redirect('this', self::YEARS_START);
+			if ($year > $YEARS_END) $this->redirect('this', $YEARS_END);
+		} else $year = $YEARS_END;
+
+		$akce[0] = ($year == $YEARS_END) ? $this->akceService->getAkceByFuture(TRUE) : [];
+		$akce[1] = $this->akceService->getAkceByFuture(FALSE);
+
+		if (!$all) $akce[1]->where('YEAR(date_start)', $year);
+
+		$years = range(self::YEARS_START, $YEARS_END);
+		$offset = $year - self::YEARS_START - self::YEARS_STEP;
+		$count = 2*self::YEARS_STEP+1; //$count = 7;
+		if (($YEARS_END - $year) < self::YEARS_STEP) $offset = -$count;
+		if (($year - self::YEARS_START) < self::YEARS_STEP) $offset = 0;
+
+		$this->template->years = array_slice($years, $offset, $count);
+
+		$this->template->prev = (($year-1) >= self::YEARS_START) ? ($year-1) : NULL;
+		$this->template->next = (($year+1) <= $YEARS_END) ? ($year+1) : NULL;
+
 		$this->template->all = $all;
-
-		$akce[] = $this->akceService->getAkceByFuture(TRUE);
-		$akce[] = $this->akceService->getAkceByFuture();
-
-		if (!$all) $akce[1]->where('YEAR(date_start) = YEAR(NOW())');
+		$this->template->year = $year;
 
 		$this->template->akceAllList = $akce;
 		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());
@@ -270,10 +295,12 @@ class AkcePresenter extends LayerPresenter{
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
 		$form->addText('name', 'Název', 30)
-		  ->setRequired('Vyplňte %label akce');
+			->setAttribute('spellcheck', 'true')
+			->setRequired('Vyplňte %label akce');
 
 		$form->addText('place', 'Místo', 50)
-		  ->setRequired('Vyplňte %label akce');
+			->setAttribute('spellcheck', 'true')
+			->setRequired('Vyplňte %label akce');
 
 		$form['date_start'] = new \DateTimeInput('Začátek');
 		$form['date_start']->setDefaultValue($datum);
@@ -285,12 +312,12 @@ class AkcePresenter extends LayerPresenter{
 			}, 'Datum konce akce nesmí být menší než datum začátku akce', $form['date_start']);
 
 		$form->addCheckbox('login_mem', 'Povoleno přihlašování účastníků')
-		  ->setDefaultValue(TRUE)
-		  ->setAttribute('onclick','doTheTrick()');
+			->setDefaultValue(TRUE)
+			->setAttribute('onclick','doTheTrick()');
 
 		$form->addCheckbox('login_org', 'Povoleno přihlašování organizátorů')
-		  ->setDefaultValue(FALSE)
-		  ->setAttribute('onclick','doTheTrick()');
+			->setDefaultValue(FALSE)
+			->setAttribute('onclick','doTheTrick()');
 
 		$form['date_deatline'] = new \DateTimeInput('Přihlášení do');
 		$form['date_deatline']->setDefaultValue($datum)
@@ -301,53 +328,56 @@ class AkcePresenter extends LayerPresenter{
 			->addRule(Form::FILLED,'Vyplňte datum konce přihlašování');
 
 		$form['date_deatline']
-		  ->addConditionOn($form['login_org'],Form::EQUAL,TRUE)
-			->addRule(Form::FILLED,'Vyplňte datum konce přihlašování');
+			->addConditionOn($form['login_org'],Form::EQUAL,TRUE)
+				->addRule(Form::FILLED,'Vyplňte datum konce přihlašování');
 
 		$form->addSelect('forum_topic_id','Fórum',
-		  $this->forumService->getTopicsByForumId(self::FORUM_AKCE_ID)->fetchPairs('id','title')
+			$this->forumService->getTopicsByForumId(self::FORUM_AKCE_ID)->fetchPairs('id','title')
 		)->setPrompt('');
 
 		$form->addSelect('anketa_id','Anketa',
-		  $this->anketyService->getAnkety()->fetchPairs('id','title')
+			$this->anketyService->getAnkety()->fetchPairs('id','title')
 		)->setPrompt('');
 
 		$form->addSelect('album_id','Album',
-		  $this->galleryService->getAlbums()->order('date_add DESC')->fetchPairs('id','name')
+			$this->galleryService->getAlbums()->order('date_add DESC')->fetchPairs('id','name')
 		)->setPrompt('');
 
 		$form->addSelect('akce_for_id', 'Určeno',
-		  $this->akceService->getAkceForInArray()
+			$this->akceService->getAkceForInArray()
 		)->setDefaultValue(1);
 
-		$form->addCheckbox('visible', 'Viditelná veřejnosti')->setDefaultValue(TRUE);
+		$form->addCheckbox('visible', 'Viditelná veřejnosti')
+			->setDefaultValue(TRUE);
 
-			$form->addSelect('member_id', 'Zodpovědná osoba',
-		  $this->akceService->getMembers()->fetchPairs('id','jmeno'))
-		->setDefaultValue($this->getUser()->getId());
+		$form->addSelect('member_id', 'Zodpovědná osoba',
+				$this->akceService->getMembers()->fetchPairs('id','jmeno'))
+			->setDefaultValue($this->getUser()->getId());
 
 		$form->addSelect('organizator', 'Organizátor',
-			$this->akceService->getMembers()->fetchPairs('id','jmeno'))
-		  ->setDefaultValue($this->getUser()->getId())
-		  ->setPrompt('není')
-		  ->addConditionOn($form['login_org'],Form::EQUAL, FALSE)
-			->addRule(FORM::FILLED,'Musíte vybrat organizátora');
+				$this->akceService->getMembers()->fetchPairs('id','jmeno'))
+			->setDefaultValue($this->getUser()->getId())
+			->setPrompt('není')
+			->addConditionOn($form['login_org'],Form::EQUAL, FALSE)
+				->addRule(FORM::FILLED,'Musíte vybrat organizátora');
 
 		$form->addUpload('file','Soubor')
-		  ->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 10 MB.', 10 * 1024 * 1024);
+			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 10 MB.', 10 * 1024 * 1024);
 
 		$form->addText('price', 'Cena', 7)
-		  ->setType('number')
-		  ->setOption('description', 'Kč')
-		  ->addCondition(Form::FILLED)
+			->setType('number')
+			->setOption('description', 'Kč')
+			->addCondition(Form::FILLED)
 			->addRule(Form::INTEGER, '%label musí být číslo');
 
 		$form->addTextArea('perex', 'Stručný popis')
-		->setAttribute('class','texyla');
+			->setAttribute('spellcheck', 'true')
+			->setAttribute('class','texyla');
 
 		$form->addTextArea('description', 'Podrobný popis')
-		  ->setAttribute('class','texyla')
-		  ->setRequired('Vyplňte %label akce');
+			->setAttribute('spellcheck', 'true')
+			->setAttribute('class','texyla')
+			->setRequired('Vyplňte %label akce');
 
 		$text = $this->akceService->getAkceMessageDefault();
 
@@ -357,6 +387,7 @@ class AkcePresenter extends LayerPresenter{
 			->toggle('frm-akceForm-message');
 
 		$form->addTextArea('message','Zpráva z akce')
+			->setAttribute('spellcheck', 'true')
 			->setDefaultValue($text)
 			->setAttribute('class','texyla');
 

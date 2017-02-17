@@ -41,8 +41,8 @@ width: 100%; display: block; color: white; font-weight: bold; padding: 0.1ex 0.1
 
 .left {text-align: left;}
 .right {text-align: right;}
-.float_right {float: right;}
-.float_left {float: left;}
+.float-right {float: right;}
+.float-left {float: left;}
 .center {text-align: center;}
 .no-wrap {white-space: nowrap;}
 .clearfix {clear: both;}
@@ -154,7 +154,7 @@ a.head {background-color: #12397e; font-size: 2ex; border: 1px solid black;
 
 #text .hoverLike {text-decoration: none; color: inherit;}
 .target:target, .highlight {background-color: #ffff66;}
-.highlight {color: gray;}
+.highlight {color: gray; font-style: normal;}
 .hoverLike:hover, .hoverLike:focus, .hoverLike:active, .hoverLike:hover.target:target {background-color: yellow;}
 #text a.hoverLike {display: block;}
 

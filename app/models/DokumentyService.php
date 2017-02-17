@@ -22,11 +22,14 @@ class DokumentyService extends DatabaseService{
      * @return \Nette\Database\Table\Selection
      */
     public function getDokumentyCategory(){
-        return $this->database->table('dokumenty_category')
-            ->where('NOT id',self::ZAPISY)
-	        ->where('parent_id IS NULL')
-	        ->order('id');
+        return $this->database->table('dokumenty_category');
     }
+
+	public function getDokumentyCategoryParent(){
+		return $this->database->table('dokumenty_category')
+			->where('parent_id IS NULL')
+			->order('id');
+	}
 
 	/**
 	 * @return array
@@ -34,10 +37,7 @@ class DokumentyService extends DatabaseService{
 	public function getDokumentyCategoryList(){
 		$result = $this->database->query("SELECT `id`, `title`, LENGTH(`dirname`) - LENGTH(REPLACE(`dirname`, '/', '')) AS `level`
 		FROM `dokumenty_category`
-		WHERE `parent_id` <> ?
-		AND `id` <> ?
-		OR `parent_id` IS NULL
-		ORDER BY `dirname`", self::ZAPISY, self::ZAPISY);
+		ORDER BY `dirname`");
 
 		$array = [];
 		foreach($result as $row){
@@ -61,14 +61,14 @@ class DokumentyService extends DatabaseService{
      * @return \Nette\Database\Table\IRow
      */
     public function getDokumentyCategoryById($id){
-        return $this->database->table('dokumenty_category')->get($id);
+        return $this->getDokumentyCategory()->get($id);
     }
 
 	/**
 	 * @param $values
 	 */
-	public function addDokumentyCategoryById($values){
-		$this->database->table('dokumenty_category')->insert($values);
+	public function addDokumentyCategory($values){
+		$this->getDokumentyCategory()->insert($values);
 	}
 
 	/**
@@ -87,30 +87,30 @@ class DokumentyService extends DatabaseService{
         $values->date_add = new DateTime();
         return $this->getDokumenty()->insert($values);        
     }
-
-    /**
-     * @return \Nette\Database\Table\Selection
-     */
-    public function getZapisy(){
-        return $this->database->table('dokumenty_category')->where('id',self::ZAPISY);
-    }
-
-	/**
-	 * @param $year
-	 * @return bool|mixed|\Nette\Database\Table\IRow
-	 */
-	public function getZapisCategoryByYear($year){
-		return $this->database->table('dokumenty_category')
-			->where('title',$year)
-			->where('parent_id',self::ZAPISY)
-			->fetch();
-	}
-
-    /**
-     * @return \Nette\Database\Table\IRow
-     */
-    public function getHlasovani(){
-        return $this->getDokumenty()->get(self::HLASOVANI);
-    }            
+//
+//    /**
+//     * @return \Nette\Database\Table\Selection
+//     */
+//    public function getZapisy(){
+//        return $this->database->table('dokumenty_category')->where('id',self::ZAPISY);
+//    }
+//
+//	/**
+//	 * @param $year
+//	 * @return bool|mixed|\Nette\Database\Table\IRow
+//	 */
+//	public function getZapisCategoryByYear($year){
+//		return $this->database->table('dokumenty_category')
+//			->where('title',$year)
+//			->where('parent_id',self::ZAPISY)
+//			->fetch();
+//	}
+//
+//    /**
+//     * @return \Nette\Database\Table\IRow
+//     */
+//    public function getHlasovani(){
+//        return $this->getDokumenty()->get(self::HLASOVANI);
+//    }
 
 }

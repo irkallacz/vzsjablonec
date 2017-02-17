@@ -1,33 +1,63 @@
 {block #head}
 <style type="text/css" n:syntax="off">
-h2 { margin-top: 1ex; }
-.docs { list-style-type: none; }
-.docs ol { list-style-type: none; }
-#text a.char { text-decoration: none; }
-.docs ol.role, ol#zapisy.role { list-style-type: none; }
-.docs .new { font-weight: bold; }
-.docs .new a.link { color: #12397e; }
-.hlasovani a.new { color: #12397e; font-weight: bold; }
-.buttonMenu { float: right; margin-top: 0; }
-.buttonMenu li { float: none; }
+	h2 { margin-top: 1ex; }
+	.docs { list-style-type: none; padding-left: 0;}
+	.docs ol { list-style-type: none; }
+	#text a.char { text-decoration: none; }
+	.docs ol.role, ol#zapisy.role { list-style-type: none; }
+	.docs .new { font-weight: bold; }
+	.docs .new a.link { color: #12397e; }
+	.buttonMenu { float: right; margin-top: 0; }
+	.buttonMenu li { float: none; }
+	li.root { margin-top: 1em; }
+	.invisible { visibility: hidden; }
 </style>
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 <script type="text/javascript" src="{$basePath}/js/openhash.js"></script>
 <script type="text/javascript">
-	function toogle(dir) {
-		$('#d'+dir).toggle();
+    jQuery.fn.visible = function() {
+        return this.css('visibility', 'visible');
+    };
 
-        if ($('#d-link-icon'+dir).hasClass('icon-folder')) {
-            $('#d-link-icon'+dir).removeClass('icon-folder');
-            $('#d-link-icon'+dir).addClass('icon-folder-open');
-		}else{
-            $('#d-link-icon'+dir).removeClass('icon-folder-open');
-            $('#d-link-icon'+dir).addClass('icon-folder');
-		}
+    jQuery.fn.invisible = function() {
+        return this.css('visibility', 'hidden');
+    };
+
+    jQuery.fn.visibilityToggle = function() {
+        return this.css('visibility', function(i, visibility) {
+            return (visibility == 'visible') ? 'hidden' : 'visible';
+        });
+    };
+
+	function changeDirIcon(id) {
+        var el = document.getElementById('d-link-icon'+id);
+        if (el.classList.contains('icon-folder')){
+            el.classList.remove('icon-folder');
+            el.classList.add('icon-folder-open');
+        }else{
+            el.classList.remove('icon-folder-open');
+            el.classList.add('icon-folder');
+        }
     }
+
+	function toogleDir(id) {
+		$('#d'+id).toggle();
+		changeDirIcon(id);
+    }
+
+    function toogleFileCheckbox() {
+        $('.fileCheckbox').visibilityToggle();
+    }
+
     $(function() {
         openHash(function(hash){
-			$('#'+hash.slice(1)).parent().parent().show();
+            el = $(hash).parent().parent();
+            while(!el.hasClass('root')){
+                el.show();
+                var id = el.attr('id').slice(1);
+                changeDirIcon(id);
+                el = el.parent().parent();
+			}
         });
     })
 </script>
@@ -37,14 +67,23 @@ h2 { margin-top: 1ex; }
 <h1 n:block="title">Dokumenty</h1>
 
 {block #filelist}
-	<li class="dir"> <a id="d-link" href="javascript:toogle({$category->id})"><span id="d-link-icon{$category->id}" n:class="$category->parent_id ? icon-folder : icon-folder-open"></span> <strong>{$category->title}</strong></a></li>
-	<div id="d{$category->id}" n:class="$category->parent_id ? hide">
+	<li n:class="dir, (!$category->parent_id) ? root">
+		<input n:name="dirs:{$category->id}" class="dirCheckbox invisible">
+		<a id="d-link" href="javascript:toogleDir({$category->id})">
+			<span id="d-link-icon{$category->id}" n:class="$category->parent_id ? icon-folder : icon-folder-open"></span>
+			<strong>{$category->title}</strong>
+		</a>
+	</li>
+	<div id="d{$category->id}" n:class="level, $category->parent_id ? hide : root">
 	<ol n:foreach="$category->related('dokumenty_category','parent_id')->order('title') as $subcategory">
         {include #filelist, category => $subcategory}
 	</ol>
 	<ol n:inner-foreach="$category->related('dokumenty')->order('title') as $file">
 		<li id="f{$file->id}" n:class="file, target, $file->date_add > $user->getIdentity()->date_last ? 'new'">
-			<span class="icon-{$file->filename|fileExtIcon}"></span> {$file->title} - <a class="link" href="{$basePath}/doc/{$category->dirname}/{$file->filename}">{$file->filename}</a>
+			<input n:name="files:{$file->id}" class="fileCheckbox invisible">
+			<label n:name="files:{$file->id}">
+				<span class="icon-{$file->filename|fileExtIcon}"></span> {$file->title}
+			</label> - <a class="link" n:href="get, $file->id">{$file->filename}</a>
 		</li>
 	</ol>
 	</div>
@@ -54,11 +93,28 @@ h2 { margin-top: 1ex; }
 
     <ul n:if="$user->isInRole($presenter->name)" class="buttonMenu"><li><a n:href="add" class="buttonLike"><span class="icon-plus"></span> nový dokument</a></li></ul>
 
-    <h2>Zápisy ze schůzí</h2>
+	<h2>Dokumenty</h2>
 
-	<ol n:inner-foreach="$zapisy as $kategorie" id="zapisy" class="docs">
-        {include #filelist, category => $kategorie}
-	</ol>
+	{form updateForm}
+		<ol n:inner-foreach="$category as $kategorie" class="docs">
+			{include #filelist, category => $kategorie}
+		</ol>
+
+		<ul class="error" n:if="$form->hasErrors()">
+			<li n:foreach="$form->errors as $error">{$error}</li>
+		</ul>
+
+		{*<div>*}
+			{*{input check}*}
+			{*<span class="fileCheckbox invisible">{input delete}</span>*}
+		{*</div>*}
+	{/form}
+
+    {*<h2>Představenstvo</h2>*}
+
+    {*<ol n:inner-foreach="$zapisy as $kategorie" id="zapisy" class="docs">*}
+    {*{include #filelist, category => $kategorie}*}
+    {*</ol>*}
 
     {*<ol n:inner-foreach="$zapisy as $file" id="zapisy" n:class="$user->isInRole($presenter->name) ? 'role'">*}
     {*<li id="d{$file->id}"> <a n:if="$user->isInRole($presenter->name)" class="icon-cancel char red confirm" n:href="delete, $file->id"*}
@@ -67,18 +123,13 @@ h2 { margin-top: 1ex; }
     {*</li>*}
     {*</ol>*}
 
-	<p>Staré záznamy ze schůzí představenstva si můžete <a href="{$basePath}/doc/schuze/schuze.zip">stáhnout</a>.</p>
+    {*<p>Staré záznamy ze schůzí představenstva si můžete <a href="{$basePath}/doc/schuze/schuze.zip">stáhnout</a>.</p>*}
 
-    <h2>Hlasování představenstva</h2>
+    {*<h2>Hlasování představenstva</h2>*}
 
-    <p id="d{$hlasovani->id}" class="hlasovani"><a n:class="$hlasovani->date_add > $user->getIdentity()->date_last ? 'new'" href="{$basePath}/doc/schuze/{$hlasovani->filename}">Aktuální přehled hlasování</a>.
-    Poslední aktualizace <b>{$hlasovani->date_add|date:'%A %d. %m. %Y'}</b></p>
+    {*<p id="d{$hlasovani->id}" class="hlasovani"><a n:class="$hlasovani->date_add > $user->getIdentity()->date_last ? 'new'" href="{$basePath}/doc/schuze/{$hlasovani->filename}">Aktuální přehled hlasování</a>.*}
+    {*Poslední aktualizace <b>{$hlasovani->date_add|date:'%A %d. %m. %Y'}</b></p>*}
 
-    <h2>Dokumenty</h2>
-
-	<ol n:inner-foreach="$category as $kategorie" class="docs">
-        {include #filelist, category => $kategorie}
-	</ol>
 
 	{*{var $file = false}*}
 	{*{if}<li><h3>{$kategorie->title}</h3>*}

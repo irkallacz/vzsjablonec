@@ -42,7 +42,7 @@ class MemberService extends DatabaseService{
      */
     public function getMemberByAutentication($username, $password){
         $member = $this->getMembers()
-	        ->select('login, password')
+	        ->select('login, hash')
             ->where('login',$username)
             ->fetch();
 

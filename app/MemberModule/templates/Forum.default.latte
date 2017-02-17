@@ -14,7 +14,7 @@
 {block #content}
 
 <table id="items">
-<tr class="first"><th></th><th>Poslední příspěk</th><th></th></tr>
+<tr class="first"><th></th><th>Poslední příspěvek</th><th></th></tr>
 {foreach $forum as $category}
 	{var $post = $category->related('forum_post')->order('date_add DESC')->fetch()}
 
@@ -55,7 +55,7 @@
 {/foreach}
 </table>
 
-<p class="float_right">
+<p class="float-right">
 	<a n:href="Feed:forum" class="buttonLike"><span class="icon-rss"></span> RSS celého fóra</a>
 </p>
 

@@ -88,12 +88,12 @@ $(function() {
 <h3>{label pocasi /}</h3>
 <p id="pocasi">{input pocasi}</p>
 
-<table class="float_left tabulka">
+<table class="float-left tabulka">
   <caption>Ošetření</caption>
   <tr n:foreach="$form['osetreni']->getControls() as $control"><th>{$control->label}</th><td>{$control->control}</td></tr>
 </table>
 
-<table class="float_left tabulka">
+<table class="float-left tabulka">
   <caption>Akce na záchranu života</caption>
   <tr n:foreach="$form['akce']->getControls() as $control"><th>{$control->label}</th><td>{$control->control}</td></tr>
 </table>

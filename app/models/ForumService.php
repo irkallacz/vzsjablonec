@@ -76,8 +76,10 @@ class ForumService extends DatabaseService{
      * @param $id
      * @return Selection
      */
-    public function getPostsByTopicId($id){
-        return $this->getPosts()->where('forum_topic_id',$id);
+    public function getPostsByTopicId($id, $search = null){
+        $posts = $this->getPosts()->where('forum_topic_id',$id);
+	    if ($search) $posts->where('text LIKE ?',"%$search%");
+	    return $posts;
     }
 
     /**
@@ -133,14 +135,21 @@ class ForumService extends DatabaseService{
             ->group('forum_topic_id');
     }
 
-    /**
-     * @param $id
-     * @return Selection
-     */
-    public function getTopicsByForumId($id){
-        return $this->getTopics()->where('forum_id',$id)->where('forum_topic_id = id')->order('date_add DESC');
+	/**
+	 * @param $id
+	 * @param null $search
+	 * @return Selection
+	 */
+	public function getTopicsByForumId($id, $search = null){
+        $topics = $this->getTopics()->where('forum_id',$id)->where('forum_topic_id = id')->order('date_add DESC');
+	    if ($search) $topics->where('title LIKE ?',"%$search%");
+	    return $topics;
     }
 
+	/**
+	 * @param $id
+	 * @return int
+	 */
 	public function getTopicsCountByForumId($id){
 		return $this->getTopics()->where('forum_id',$id)->count('id');
 	}
