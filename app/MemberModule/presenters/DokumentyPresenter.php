@@ -1,9 +1,12 @@
 <?php
 namespace MemberModule;
 
+use Nette\Application\BadRequestException;
+use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
 use Nette\DateTime;
 use Nette\Diagnostics\Debugger;
+use Nette\Http\Response;
 use Nette\Utils\Strings;
 
 class DokumentyPresenter extends LayerPresenter{
@@ -37,9 +40,6 @@ class DokumentyPresenter extends LayerPresenter{
 
 	public function renderDefault(){
 		$this->template->category = $this->dokumentyService->getDokumentyCategoryParent();
-//        $this->template->zapisy = $this->dokumentyService->getZapisy();
-//        $this->template->hlasovani = $this->dokumentyService->getHlasovani();
-
 	    $this->template->registerHelper('fileExtIcon', callback($this,'getFileIcon'));
   	}
 
@@ -48,6 +48,17 @@ class DokumentyPresenter extends LayerPresenter{
             $this->flashMessage('Nemáte práva na tuto akci','error');
             $this->redirect('Dokumenty:');
         }
+    }
+
+	public function actionGet($id){
+		$file = $this->dokumentyService->getDokumentById($id);
+		if ($file) {
+			$dir = $this->dokumentyService->getDokumentyCategoryById($file->dokumenty_category_id);
+			if ($dir){
+				$filename = WWW_DIR.'/'.self::DOCUMENT_DIR.'/'.$dir->dirname.'/'.$file->filename;
+				$this->sendResponse(new FileResponse($filename, $file->filename, NULL));
+			}else throw new BadRequestException();
+		}else throw new BadRequestException();
     }
 
 	public function actionDelete($id){

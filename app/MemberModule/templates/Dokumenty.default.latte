@@ -83,7 +83,7 @@
 			<input n:name="files:{$file->id}" class="fileCheckbox invisible">
 			<label n:name="files:{$file->id}">
 				<span class="icon-{$file->filename|fileExtIcon}"></span> {$file->title}
-			</label> - <a class="link" href="{$basePath}/doc/{$category->dirname}/{$file->filename}">{$file->filename}</a>
+			</label> - <a class="link" n:href="get, $file->id">{$file->filename}</a>
 		</li>
 	</ol>
 	</div>
@@ -96,7 +96,6 @@
 	<h2>Dokumenty</h2>
 
 	{form updateForm}
-
 		<ol n:inner-foreach="$category as $kategorie" class="docs">
 			{include #filelist, category => $kategorie}
 		</ol>
