@@ -74,13 +74,21 @@ class AkcePresenter extends LayerPresenter{
 
 		if (!$all) $akce[1]->where('YEAR(date_start)', $year);
 
-		$years = range(self::YEARS_START, $YEARS_END);
-		$offset = $year - self::YEARS_START - self::YEARS_STEP;
-		$count = 2*self::YEARS_STEP+1; //$count = 7;
-		if (($YEARS_END - $year) < self::YEARS_STEP) $offset = -$count;
-		if (($year - self::YEARS_START) < self::YEARS_STEP) $offset = 0;
+        $count = 2*self::YEARS_STEP;
+        $start = self::YEARS_START + (($year - self::YEARS_START) - self::YEARS_STEP);
+        $end = $start + $count;
 
-		$this->template->years = array_slice($years, $offset, $count);
+        if ($end > $YEARS_END) {
+		    $start = $YEARS_END - $count;
+		    $end = $YEARS_END;
+        }
+
+        if ($start < self::YEARS_START) {
+            $start = self::YEARS_START;
+            $end = self::YEARS_START + $count;
+        }
+
+        $this->template->years = range($start, $end);
 
 		$this->template->prev = (($year-1) >= self::YEARS_START) ? ($year-1) : NULL;
 		$this->template->next = (($year+1) <= $YEARS_END) ? ($year+1) : NULL;
