@@ -366,8 +366,6 @@ class MemberPresenter extends LayerPresenter{
           	$this->flashMessage('Osobní profil byl změněn');
           	$this->redirect('Member:view',$id);
         }else {
-			$values->date_last = new Datetime();
-
 			$member = $this->memberService->addMember($values);
           	$this->flashMessage('Byl přidán nový člen');
           	$this->redirect('Member:view',$member->id);
