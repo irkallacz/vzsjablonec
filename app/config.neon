@@ -5,108 +5,111 @@
 # http://nette.org/security-warning
 #
 common:
-    parameters:
-        database:
-            driver: mysql
-            host: localhost
-            dbname: vzsjablonec
-            user: root
-            password:
-        photo:
-            driver: mysql
-            host: localhost
-            dbname: photo
-            user: root
-            password:
-        wordpress:
-            driver: mysql
-            host: localhost
-            dbname: wordpress
-            user: root
-            password:
-        google:
-            application_name: 'VZS Jablonec'
-            client_id: 432022277214.apps.googleusercontent.com
-            client_secret: zmLGsBKelZuVsk1HsZo7iSUM
-            developer_key: AIzaSyCBTFWZdN6hCDZAK37vc_R7fw5EDGpsaNc
-            private_calendar_id: vzs-jablonec.cz_i8von9ml9om2rbam3mv5v3efs0@group.calendar.google.com
-            public_calendar_id: vzs-jablonec.cz_n60ur3k3jf2mp02oilih2ghnro@group.calendar.google.com
+	parameters:
+		database:
+			driver: mysql
+			host: localhost
+			dbname: vzsjablonec
+			user: root
+			password:
+		photo:
+			driver: mysql
+			host: localhost
+			dbname: photo
+			user: root
+			password:
+		wordpress:
+			driver: mysql
+			host: localhost
+			dbname: wordpress
+			user: root
+			password:
+		google:
+			application_name: 'VZS Jablonec'
+			client_id: 432022277214.apps.googleusercontent.com
+			client_secret: zmLGsBKelZuVsk1HsZo7iSUM
+			developer_key: AIzaSyCBTFWZdN6hCDZAK37vc_R7fw5EDGpsaNc
+			private_calendar_id: vzs-jablonec.cz_i8von9ml9om2rbam3mv5v3efs0@group.calendar.google.com
+			public_calendar_id: vzs-jablonec.cz_n60ur3k3jf2mp02oilih2ghnro@group.calendar.google.com
 
-    nette:
-        database:  
-            default:  
-                dsn: '%database.driver%:host=%database.host%;dbname=%database.dbname%'
-                user: %database.user%        
-                password: %database.password%
-                debugger: true
-                explain: true
-                reflection: conventional #discovered 
+	nette:
+		application:
+			errorPresenter: Error
+#			mapping:
+#				*: App\*Module\Presenters\*Presenter
 
-            wordpress:  
-                dsn: '%wordpress.driver%:host=%wordpress.host%;dbname=%wordpress.dbname%'
-                user: %wordpress.user%        
-                password: %wordpress.password%
-                debugger: true
-                explain: false
-                reflection: conventional
-            
-            photogalery:  
-                dsn: '%photo.driver%:host=%photo.host%;dbname=%photo.dbname%'
-                user: %photo.user%        
-                password: %photo.password%
-                debugger: true
-                explain: false
-                reflection: conventional
-    
-        session:
-            expiration: '+ 14 days'
-    
-    php:
-        date.timezone: Europe/Prague        
-        session.save_path: "%tempDir%/../session"
-        zlib.output_compression: yes
+		database:  
+			default:  
+				dsn: '%database.driver%:host=%database.host%;dbname=%database.dbname%'
+				user: %database.user%		
+				password: %database.password%
+				debugger: true
+				explain: true
+				reflection: conventional #discovered 
 
-    services:
-        database: @nette.database.default
-        wordpress: @nette.database.wordpress
-        photogalery: @nette.database.photogalery
-        
-        authenticator: Authenticator
+			wordpress:  
+				dsn: '%wordpress.driver%:host=%wordpress.host%;dbname=%wordpress.dbname%'
+				user: %wordpress.user%		
+				password: %wordpress.password%
+				debugger: true
+				explain: false
+				reflection: conventional
+			
+			photogalery:  
+				dsn: '%photo.driver%:host=%photo.host%;dbname=%photo.dbname%'
+				user: %photo.user%		
+				password: %photo.password%
+				debugger: true
+				explain: false
+				reflection: conventional
+	
+		session:
+			expiration: '+ 14 days'
+	
+	php:
+		date.timezone: Europe/Prague		
+		session.save_path: "%tempDir%/../session"
+		zlib.output_compression: yes
 
-        router: RouterFactory::createRouter
+	services:
+		database: @nette.database.default
+		wordpress: @nette.database.wordpress
+		photogalery: @nette.database.photogalery
+		
+		authenticator: Authenticator
 
-        - AkceService
-        - ForumService
-        - MemberService
-        - DokumentyService
-        - AnketyService
-        - RatingService
-        - TimesService
-        - HlasovaniService
-        - GalleryService(Nette\Database\Context(@photogalery))
-        - WordpressService(Nette\Database\Context(@wordpress))
+		router: RouterFactory::createRouter
 
+		- AkceService
+		- ForumService
+		- MemberService
+		- DokumentyService
+		- AnketyService
+		- RatingService
+		- TimesService
+		- HlasovaniService
+		- GalleryService(Nette\Database\Context(@photogalery))
+		- WordpressService(Nette\Database\Context(@wordpress))
 
-#        nette.userStorage < nette.userStorage:
-#            setup:
-#                - setNamespace('member')
+#		nette.userStorage < nette.userStorage:
+#			setup:
+#				- setNamespace('member')
 
 factories:
 
 production < common:
-    nette:
-        debugger:
-            email: mottl@vzs-jablonec.cz
+	nette:
+		debugger:
+			email: mottl@vzs-jablonec.cz
 
 development < common:
-   services:
-        router: LocalRouterFactory::createRouter
-        nette.mailer:
-#            class: Nextras\MailPanel\FileMailer(%tempDir%/mails)
-            class: Nextras\MailPanel\SessionMailer
+	services:
+		router: LocalRouterFactory::createRouter
+		nette.mailer:
+			#class: Nextras\MailPanel\FileMailer(%tempDir%/mails)
+			class: Nextras\MailPanel\SessionMailer
 
-    nette:
-        debugger:
-            bar:
-                - Nextras\MailPanel\MailPanel()
-
+	nette:
+		debugger:
+			bar:
+				- Nextras\MailPanel\MailPanel()
