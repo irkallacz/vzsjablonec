@@ -1,5 +1,5 @@
 $(function () {
-        $('a.confirm').click(function () {                
+        $('.confirm').click(function () {
                 return confirm(this.getAttribute('data-query'));;
         });
 });
