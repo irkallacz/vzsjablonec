@@ -29,7 +29,7 @@ class AlbumPreviewControl extends Control{
         $album = $this->galleryService->getAlbumById($id);
         $photos = $album ? $album->related('photo')->order('order, date_add') : NULL;
 
-        $this->template->setFile(__DIR__.'/AlbumPreviewControl.latte');
+        $this->template->setFile(__DIR__ . '/AlbumPreviewControl.latte');
         $this->template->album = $album;
         
         if ($photos){
