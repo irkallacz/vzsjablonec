@@ -2,14 +2,8 @@ function doTheTrick() {
 	$('#deatline').toggle(Boolean($('#frm-akceForm-login_mem').attr('checked')) || Boolean($('#frm-akceForm-login_org').attr('checked')));
 }
 
-// function copyTime(){
-// 	var timeStart = $("#frm-akceForm-time_start").val();
-// 	var timeEnd = $("#frm-akceForm-time_end").val();
-// 	if (timeStart > timeEnd) $("#frm-akceForm-time_end").val(timeStart);
-// }
-
 function str2date(str) {
-    return new Date(str.substring(6,10)+'-'+str.substring(3,5)+'-'+str.substring(0,2));
+	return new Date(str);
 }
 
 function copyDate() {		
