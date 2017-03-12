@@ -123,10 +123,6 @@ class DokumentyPresenter extends LayerPresenter{
 			->setAttribute('class','confirm')
 			->onClick[] = callback($this, 'deleteDirs');
 
-		$form->onSuccess[] = function(Form $form){
-			Debugger::barDump($form->getValues());
-		};
-
 		return $form;
 	}
 
