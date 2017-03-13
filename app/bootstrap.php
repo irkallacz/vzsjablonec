@@ -35,8 +35,8 @@ $container = $configurator->createContainer();
 
 //$container->application->errorPresenter = 'Error';
 
-Nette\Security\User::extensionMethod('isInArray', function (Nette\Security\User $that, $array) {
-	return in_array($that->getId(),$array);
+Nette\Security\User::extensionMethod('isInArray', function (Nette\Security\User $user, $array) {
+	return in_array($user->getId(), $array);
 });
 
 // Configure and run the application!

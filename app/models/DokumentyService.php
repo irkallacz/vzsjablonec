@@ -95,16 +95,16 @@ class DokumentyService extends DatabaseService{
 //        return $this->database->table('dokumenty_category')->where('id',self::ZAPISY);
 //    }
 //
-//	/**
-//	 * @param $year
-//	 * @return bool|mixed|\Nette\Database\Table\IRow
-//	 */
-//	public function getZapisCategoryByYear($year){
-//		return $this->database->table('dokumenty_category')
-//			->where('title',$year)
-//			->where('parent_id',self::ZAPISY)
-//			->fetch();
-//	}
+	/**
+	 * @param $year
+	 * @return bool|mixed|\Nette\Database\Table\IRow
+	 */
+	public function getZapisCategoryByYear($year){
+		return $this->database->table('dokumenty_category')
+			->where('title',$year)
+			->where('parent_id',self::ZAPISY)
+			->fetch();
+	}
 //
 //    /**
 //     * @return \Nette\Database\Table\IRow

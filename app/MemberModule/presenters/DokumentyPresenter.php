@@ -86,22 +86,6 @@ class DokumentyPresenter extends LayerPresenter{
 
         $this->mailer->send($mail);
     }
-    
-//    public function sendHlasovaniMail($file,$datum){
-//        $template = $this->createTemplate();
-//        $template->setFile(__DIR__ . '/../templates/Mail/newHlasovani.latte');
-//        $template->datum = $datum;
-//
-//        $mail = $this->getNewMail();
-//
-//        $mail->addAttachment('hlasovani.pdf', $file->getContents());
-//
-//        $mail->addTo('predstavenstvo@vzs-jablonec.cz');
-//
-//        $mail->setBody($template);
-//
-//        $this->mailer->send($mail);
-//    }
 
 	protected function createComponentUpdateForm($name){
 		$form = new Form;
@@ -114,17 +98,95 @@ class DokumentyPresenter extends LayerPresenter{
 			$this->dokumentyService->getDokumentyCategory()->fetchPairs('id','title')
 		);
 
-		$form->addCheckbox('check','Vybrat soubory')
+		$form->addSelect('dokumenty_category_id', 'do adresáře: ',
+			$this->dokumentyService->getDokumentyCategoryList()
+		);
+
+		$form->addCheckbox('checkFiles','Soubory')
 			->setAttribute('onchange','toogleFileCheckbox()');
-			//->addRule(Form::EQUAL,TRUE);
 
-		$form->addSubmit('delete','Smazat');
+		$form->addCheckbox('checkDirs','Adresáře')
+			->setAttribute('onchange','toogleDirCheckbox()');
 
-		$form->onSuccess[] = function(Form $form){
-			Debugger::barDump($form->getValues());
-		};
+		$form->addSubmit('deleteFiles','Smazat')
+			->setAttribute('data-query','Opravdu chcete tyto dokumenty smazat?')
+			->setAttribute('class','confirm')
+			->onClick[] = callback($this, 'deleteFiles');
+
+		$form->addSubmit('moveFiles','Přesunout')
+			->setAttribute('data-query','Opravdu chcete tyto soubory přesunut?')
+			->setAttribute('class','confirm')
+			->onClick[] = callback($this, 'moveFiles');
+
+		$form->addSubmit('deleteDirs','Smazat')
+			->setAttribute('data-query','Opravdu chcete tyto adresáře smazat?')
+			->setAttribute('class','confirm')
+			->onClick[] = callback($this, 'deleteDirs');
 
 		return $form;
+	}
+
+	public function deleteFiles(){
+		$values = $this['updateForm']->getValues();
+		if ($values->files){
+			if ($this->getUser()->isInRole($this->presenter->name)){
+				$values = $this['updateForm']->getValues();
+				$this->dokumentyService->getDokumenty()
+					->where('id', $values->files)
+					->delete();
+
+				$this->flashMessage('Dokumenty byly smazány (' . count($values->files) . '×)');
+			}else{
+				$this->flashMessage('Nemáte opravánění k mazání dokumentů', 'error');
+			}
+		}else{
+			$this->flashMessage('Vyberte prosím nějaké soubory','error');
+		}
+		$this->redirect('default');
+	}
+
+	public function deleteDirs(){
+		$values = $this['updateForm']->getValues();
+		if ($values->dir){
+			if ($this->getUser()->isInRole($this->presenter->name)){
+				$this->dokumentyService->getDokumentyCategory()
+					->where('id',$values->dirs)
+					->delete();
+
+				$this->flashMessage('Adresáře byly smazány ('.count($values->dirs).'×)');
+			}else{
+				$this->flashMessage('Nemáte opravánění k mazání adresářů','error');
+			}
+		}else{
+			$this->flashMessage('Vyberte prosím nějaké adresáře','error');
+		}
+		$this->redirect('default');
+	}
+
+	public function moveFiles(){
+		$values = $this['updateForm']->getValues();
+		if ($values->files){
+			if ($this->getUser()->isInRole($this->presenter->name)){
+				$values = $this['updateForm']->getValues();
+				$files = $this->dokumentyService->getDokumenty()
+					->where('id',$values->files);
+
+				foreach ($files as $file){
+					$oldDir = $this->dokumentyService->getDokumentyCategoryById($file->dokumenty_category_id);
+					$newDir =  $this->dokumentyService->getDokumentyCategoryById($values->dokumenty_category_id);
+					$oldname = WWW_DIR.'/'.self::DOCUMENT_DIR.'/'.$oldDir->dirname.'/'.$file->filename;
+					$newname = WWW_DIR.'/'.self::DOCUMENT_DIR.'/'.$newDir->dirname.'/'.$file->filename;
+					rename($oldname, $newname);
+					$file->update(['dokumenty_category_id' => $newDir->id]);
+				}
+				$this->flashMessage('Dokumenty byly přesunuty ('.count($values->files).'×)');
+			}else{
+				$this->flashMessage('Nemáte opravánění k přesunu dokumentů','error');
+			}
+		}else{
+			$this->flashMessage('Vyberte prosím nějaké soubory','error');
+		}
+		$this->redirect('default');
 	}
 
 	protected function createComponentAddDokumentForm(){
@@ -211,7 +273,6 @@ class DokumentyPresenter extends LayerPresenter{
 		$this->redirect('Dokumenty:');
 	}
 
-
 	protected function createComponentAddZapisForm(){
         $form = new Form;
         
@@ -254,7 +315,7 @@ class DokumentyPresenter extends LayerPresenter{
     }
 
 
-     public function addZapisFormSubmitted(Form $form){
+	public function addZapisFormSubmitted(Form $form){
         $values = $form->getValues();
         
         if (($form['file']->isFilled()) and ($values->file->isOK())){
@@ -285,27 +346,4 @@ class DokumentyPresenter extends LayerPresenter{
             $form->addError('Chyba při nahrávání souboru');
         }
     }
-
-//    public function addHlasovaniFormSubmitted(Form $form){
-//        $values = $form->getValues();
-//
-//        if (($form['file']->isFilled()) and ($values->file->isOK())){
-//            $values->file->move(WWW_DIR.'/doc/schuze/hlasovani.pdf');
-//
-//            $datum = new DateTime();
-//            $values->member_id = $this->getUser()->getId();
-//
-//            if ($values->mail) $this->sendHlasovaniMail($values->file, $datum);
-//
-//            unset($values->mail);
-//            unset($values->file);
-//
-//            $this->dokumentyService->getHlasovani()->update(['date_add' => $datum]);
-//
-//            $this->flashMessage('Soubor s hlasováním byl aktualizován');
-//            $this->redirect('Dokumenty:');
-//        }else {
-//            $form->addError('Chyba při nahrávání souboru');
-//        }
-//    }
 }

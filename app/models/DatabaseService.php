@@ -5,7 +5,7 @@
  */
 abstract class DatabaseService extends Nette\Object
 {
-    /** @var Nette\Database\Connection */
+    /** @var Nette\Database\Context */
     public $database;
 
     public function __construct(Nette\Database\Context $database){

@@ -49,6 +49,10 @@
         $('.fileCheckbox').visibilityToggle();
     }
 
+    function toogleDirCheckbox() {
+        $('.dirCheckbox').visibilityToggle();
+    }
+
     $(function() {
         openHash(function(hash){
             el = $(hash).parent().parent();
@@ -104,10 +108,22 @@
 			<li n:foreach="$form->errors as $error">{$error}</li>
 		</ul>
 
-		{*<div>*}
-			{*{input check}*}
-			{*<span class="fileCheckbox invisible">{input delete}</span>*}
-		{*</div>*}
+		<div n:if="$user->isInRole($presenter->name)">
+			<div>
+                {input checkFiles}
+				<span class="fileCheckbox invisible">
+				{input moveFiles}
+				{label dokumenty_category_id /}{input dokumenty_category_id}
+				{input deleteFiles}
+			</span>
+			</div>
+			<div>
+            {input checkDirs}
+				<span class="dirCheckbox invisible">
+                {input deleteDirs}
+			</span>
+			</div>
+		</div>
 	{/form}
 
     {*<h2>Představenstvo</h2>*}
