@@ -1,4 +1,5 @@
-﻿{contentType text/plain; charset=utf-8}
+﻿{layout layout.latte}
+{block text}
 {var $mail->subject = '[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou'}
 Zdravím.
 
@@ -13,8 +14,4 @@ Svůj profil najdeš na adrese: {link //Member:profile}
 Zde si můžeš změnit heslo a upravit své osobní údaje.
 
 Vstup na stránky pro členy: {link //Akce:default}
-
-_____________________________________________________________
-Tato zpráva byla automaticky vygenerována informačním systémem
-VZS Jablonec nad Nisou a není třeba na ní odpovídat
-http://member.vzs-jablonec.cz/
+{/block}

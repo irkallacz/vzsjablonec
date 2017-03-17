@@ -1,30 +1,18 @@
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>[VZS Jablonec] Nové hlasování představenstva</title>
-</head>
-<body>
-<p>Zdravím.</p>
+{layout layout.latte}
+{block text}
+Zdravím.
 
-<p>Dnes {$hlasovani->date_add|date:'%d.%m.%Y'} v {$hlasovani->date_add|date:'H:i'} 
+Dnes {$hlasovani->date_add|date:'%d.%m.%Y'} v {$hlasovani->date_add|date:'H:i'}
 bylo na našem webu vytvořeno nové hlasování představentstva. Můžete jej najít na adrese:
-<a n:href="//Hlasovani:view,$hlasovani->id">{link //Hlasovani:view,$hlasovani->id}</a>
-<br>Toto hlasování končí {$hlasovani->date_deatline|date:'%d.%m.%Y'}</p>
+{link //Hlasovani:view,$hlasovani->id}
+Toto hlasování končí {$hlasovani->date_deatline|date:'%d.%m.%Y'}
 
-<p><b>{$hlasovani->title}</b></p>
+{$hlasovani->title}
 
-{!$hlasovani->text|texy}
+{!$hlasovani->text}
 
-<ul n:inner-foreach="$odpovedi as $odpoved">
-<li>{$odpoved->text}</li>
-</ul>
-
-<hr>
-<p>
-Tato zpráva byla automaticky vygenerována informačním systémem<br>
-VZS Jablonec nad Nisou a není třeba na ní odpovídat<br>
-http://member.vzs-jablonec.cz/
-</p>
-
-</body>
-</html>
+Odpovědi:
+{foreach $odpovedi as $odpoved}
+    - {$odpoved->text}
+{/foreach}
+{/block}
