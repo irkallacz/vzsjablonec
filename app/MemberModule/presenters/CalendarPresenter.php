@@ -1,10 +1,10 @@
 <?php
 namespace App\MemberModule\Presenters;
 
-use Google_Service_Calendar_Event;
 use Google_Client;
-use Google_Service_Calendar_EventDateTime;
 use Google_Service_Calendar;
+use Google_Service_Calendar_Event;
+use Google_Service_Calendar_EventDateTime;
 use Nette\Database\Table\ActiveRow;
 
 class CalendarPresenter extends BasePresenter{
