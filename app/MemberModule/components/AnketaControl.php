@@ -39,8 +39,8 @@ class AnketaControl extends Nette\Application\UI\Control{
             $this->template->celkem = count($memberList);
 
 	        $texy = \TexyFactory::createTexy();
-            $this->template->registerHelper('texy', callback($texy, 'process'));
-            $this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+            $this->template->addFilter('texy', [$texy, 'process']);
+            $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 
             $this->template->render();
         }else{

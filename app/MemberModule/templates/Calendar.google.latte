@@ -4,4 +4,4 @@
 	{/foreach}
 {/if}
 
-{if isset($authUrl)}<a class="login" href="{!$authUrl}">Connect Me!</a>{else}OK{/if}
+{if isset($authUrl)}<a class="login" href="{$authUrl|noescape}">Connect Me!</a>{else}OK{/if}

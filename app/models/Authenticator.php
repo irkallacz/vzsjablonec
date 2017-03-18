@@ -3,7 +3,7 @@
 use Nette\Object;
 use	Nette\Diagnostics\Debugger;
 use	Nette\Security as NS;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 
 
 /**

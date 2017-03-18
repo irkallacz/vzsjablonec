@@ -1,10 +1,10 @@
 <?php
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
 use Nette\Application\BadRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 use Nette\Diagnostics\Debugger;
 use Nette\Http\Response;
 use Nette\Utils\Strings;
@@ -40,7 +40,7 @@ class DokumentyPresenter extends LayerPresenter{
 
 	public function renderDefault(){
 		$this->template->category = $this->dokumentyService->getDokumentyCategoryParent();
-	    $this->template->registerHelper('fileExtIcon', callback($this,'getFileIcon'));
+	    $this->template->addFilter('fileExtIcon', [$this, 'getFileIcon']);
   	}
 
     public function renderAdd(){
@@ -111,17 +111,17 @@ class DokumentyPresenter extends LayerPresenter{
 		$form->addSubmit('deleteFiles','Smazat')
 			->setAttribute('data-query','Opravdu chcete tyto dokumenty smazat?')
 			->setAttribute('class','confirm')
-			->onClick[] = callback($this, 'deleteFiles');
+			->onClick[] = [$this, 'deleteFiles'];
 
 		$form->addSubmit('moveFiles','Přesunout')
 			->setAttribute('data-query','Opravdu chcete tyto soubory přesunut?')
 			->setAttribute('class','confirm')
-			->onClick[] = callback($this, 'moveFiles');
+			->onClick[] = [$this, 'moveFiles'];
 
 		$form->addSubmit('deleteDirs','Smazat')
 			->setAttribute('data-query','Opravdu chcete tyto adresáře smazat?')
 			->setAttribute('class','confirm')
-			->onClick[] = callback($this, 'deleteDirs');
+			->onClick[] = [$this, 'deleteDirs'];
 
 		return $form;
 	}
@@ -207,7 +207,7 @@ class DokumentyPresenter extends LayerPresenter{
         
         $form->addSubmit('ok', 'Nahrát');
 
-		$form->onSuccess[] = callback($this, 'addDokumentFormSubmitted');
+		$form->onSuccess[] = [$this, 'addDokumentFormSubmitted'];
 
     return $form;
 	}
@@ -247,7 +247,7 @@ class DokumentyPresenter extends LayerPresenter{
 		)->setPrompt('Žádná');
 
 		$form->addSubmit('ok', 'Uložit');
-		$form->onSuccess[] = callback($this, 'addCategoryFormSubmitted');
+		$form->onSuccess[] = [$this, 'addCategoryFormSubmitted'];
 
 		return $form;
 	}
@@ -291,7 +291,7 @@ class DokumentyPresenter extends LayerPresenter{
 
         $form->addSubmit('ok', 'Nahrát');
 
-        $form->onSuccess[] = callback($this, 'addZapisFormSubmitted');
+        $form->onSuccess[] = [$this, 'addZapisFormSubmitted'];
 
     return $form;
     }
@@ -309,7 +309,7 @@ class DokumentyPresenter extends LayerPresenter{
 
         $form->addSubmit('ok', 'Nahrát');
 
-        $form->onSuccess[] = callback($this, 'addHlasovaniFormSubmitted');
+        $form->onSuccess[] = [$this, 'addHlasovaniFormSubmitted'];
 
     return $form;
     }

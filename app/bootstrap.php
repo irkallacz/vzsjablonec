@@ -1,43 +1,22 @@
 <?php
 
-/**
- * My Application bootstrap file.
- */
-use Nette\Diagnostics\Debugger;
+require __DIR__ . '/../vendor/autoload.php';
 
-define('LIBS_DIR', __DIR__ . '/../libs');
-define('TEMP_DIR', __DIR__ . '/../tmp');
+$configurator = new Nette\Configurator;
 
-setlocale(LC_ALL,'cs_CZ.utf8');
+//$configurator->setDebugMode('23.75.345.200'); // enable for your remote IP
+$configurator->enableTracy(__DIR__ . '/../log');
 
-// Load Nette Framework
-require LIBS_DIR . '/Nette/loader.php';
+$configurator->setTimeZone('Europe/Prague');
+$configurator->setTempDirectory(__DIR__ . '/../tmp');
 
-
-// Configure application
-$configurator = new Nette\Configurator();
-
-// Enable Nette Debugger for error visualisation & logging
-//$configurator->setDebugMode($configurator::AUTO);
-$configurator->enableDebugger(__DIR__ . '/../log');
-
-// Enable RobotLoader - this will load all classes automatically
-$configurator->setTempDirectory(TEMP_DIR);
 $configurator->createRobotLoader()
-	->addDirectory(APP_DIR)
-	->addDirectory(LIBS_DIR)
+	->addDirectory(__DIR__)
 	->register();
 
-// Create Dependency Injection container from config.neon file
-$configurator->addConfig(__DIR__ . '/config.neon');
-if (file_exists(__DIR__ . '/config.local.neon')) $configurator->addConfig(__DIR__ . '/config.local.neon');
+$configurator->addConfig(__DIR__ . '/config/config.neon');
+$configurator->addConfig(__DIR__ . '/config/config.local.neon');
+
 $container = $configurator->createContainer();
 
-//$container->application->errorPresenter = 'Error';
-
-Nette\Security\User::extensionMethod('isInArray', function (Nette\Security\User $user, $array) {
-	return in_array($user->getId(), $array);
-});
-
-// Configure and run the application!
-$container->application->run();
+return $container;

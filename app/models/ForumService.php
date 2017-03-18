@@ -125,10 +125,10 @@ class ForumService extends DatabaseService{
     }
 
     /**
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @return Selection
      */
-    public function getTopicNews(\Nette\DateTime $date){
+    public function getTopicNews(\Nette\Utils\DateTime $date){
         return $this->getPosts()
             ->order('date_add DESC')
             ->where('date_add > ?',$date)

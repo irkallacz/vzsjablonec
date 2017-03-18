@@ -4,7 +4,7 @@
  * MemberService base class.
  */
 
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 
 class DokumentyService extends DatabaseService{
 
@@ -47,10 +47,10 @@ class DokumentyService extends DatabaseService{
     }
 
     /**
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @return \Nette\Database\Table\Selection
      */
-    public function getDokumentyNews(\Nette\DateTime $date){
+    public function getDokumentyNews(\Nette\Utils\DateTime $date){
         return $this->getDokumenty()
             ->where('date_add > ?',$date)
             ->order('date_add DESC');

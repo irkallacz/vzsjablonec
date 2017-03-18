@@ -1,12 +1,12 @@
 <?php
 
-namespace PhotoModule;
+namespace App\PhotoModule\Presenters;
 
 use Nette\Application\UI\Form;
 use Nette\Utils\Strings;
 use Nette\Utils\Html;
 use Nette\Diagnostics\Debugger;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 
 
 class MyselfPresenter extends BasePresenter{
@@ -65,7 +65,7 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozý hodnot
 
         $form->addSubmit('save', 'Ulož');
 
-        $form->onSuccess[] = callback($this, 'albumFormSubmitted');
+        $form->onSuccess[] = [$this, 'albumFormSubmitted'];
 
         return $form;
     }

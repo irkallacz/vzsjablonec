@@ -1,9 +1,9 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
 use Nette\Application\UI\Form;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 use Nette\Diagnostics\Debugger;
 use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
@@ -207,7 +207,7 @@ class ReportPresenter extends LayerPresenter{
 		      	->setDefaultValue(0);
 		}
 
-	    $users = $form->addDynamic('users', function (\Nette\Forms\Container $user) use ($lidi) {
+	    $users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) use ($lidi) {
 		    
 			$user->addSelect('member_id')
 			  ->setItems($lidi)
@@ -277,7 +277,7 @@ class ReportPresenter extends LayerPresenter{
 		foreach ($textArray as $key => $value) $textContainer->addTextArea($key,$value);
 		
 		$form->addSubmit('save', 'Uložit')
-			->onClick[] = callback($this, 'addReportFormSubmitted');
+			->onClick[] = [$this, 'addReportFormSubmitted'];
 		
 		return $form;
     }

@@ -37,7 +37,7 @@ h2 {margin-top: 1ex;}
 <h2>{$anketa->title|firstUpper}</h2>
 
 <div id="otazka" class="texy">
-{!$anketa->text|texy}
+{$anketa->text|texy|noescape}
 
 <p n:if="$anketa->date_add != $anketa->date_update" class="update"
 title="{$anketa->date_update|timeAgoInWords}">Upraveno ({$anketa->date_update|date:'%d.%m.%Y %H:%M'})</p>

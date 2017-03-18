@@ -52,10 +52,10 @@ class AnketyService extends DatabaseService{
     }
 
     /**
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @return \Nette\Database\Table\Selection
      */
-    public function getAnketyNews(\Nette\DateTime $date){
+    public function getAnketyNews(\Nette\Utils\DateTime $date){
         return $this->getAnkety()->where('date_add > ?',$date);
     }
 

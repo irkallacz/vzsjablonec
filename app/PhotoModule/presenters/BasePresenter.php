@@ -1,6 +1,6 @@
 <?php
 
-namespace PhotoModule;
+namespace App\PhotoModule\Presenters;
 
 use Nette\Application\UI\Presenter;
 
@@ -9,11 +9,6 @@ abstract class BasePresenter extends Presenter{
 
     const photoDir = 'albums';
 
-//    protected function startup(){
-//        parent::startup();
-//        $this->getUser()->getStorage()->setNamespace('photo');
-//    }
-//
     protected function afterRender(){
         parent::afterRender();
 
@@ -28,8 +23,8 @@ abstract class BasePresenter extends Presenter{
         parent::beforeRender();
 
         \LayoutHelpers::$thumbDirUri = self::photoDir.'/thumbs';
-        $this->template->registerHelper('thumb', 'LayoutHelpers::thumb');
-        $this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+        $this->template->addFilter('thumb', 'LayoutHelpers::thumb');
+        $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 
         $this->template->photoDir = self::photoDir;
 
@@ -72,6 +67,6 @@ abstract class BasePresenter extends Presenter{
 
     protected function registerTexy(){
         $texy = \TexyFactory::createTexy();
-        $this->template->registerHelper('texy', callback($texy, 'process'));
+        $this->template->addFilter('texy', [$texy, 'process']);
     }
 }

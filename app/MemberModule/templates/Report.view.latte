@@ -100,7 +100,7 @@
    
    <h3>Popis akce</h3>
    <div class="bor2">
-   {!$akce->popis|escape|nl2br}
+   {$akce->popis|escape|nl2br}
    </div>
    
    <h3>Účastníci</h3>
@@ -130,28 +130,28 @@
    {if $akce->material_ms}
    <h3>Použitý materiál na akce v majetku místní skupiny</h3>
    <div class="bor2">
-   {!$akce->material_ms|escape|nl2br}
+   {$akce->material_ms|escape|nl2br|noescape}
    </div>
    {/if}
    
    {if $akce->material_cizi}
    <h3>Další použitý materiál</h3>
    <div class="bor2">
-   {!$akce->material_cizi|escape|nl2br}
+   {$akce->material_cizi|escape|nl2br|noescape}
    </div>
    {/if} 
    
    {if $akce->material_ztraty}
    <h3>Ztráty a poškození materiálu</h3>
    <div class="bor2 half">
-   {!$akce->material_ztraty|escape|nl2br}
+   {$akce->material_ztraty|escape|nl2br|noescape}
    </div>
    {/if}
    
    {if $akce->doprava}
    <h3>Doprava na akci a způsob její úhrady</h3>
    <div class="bor2 half">
-   {!$akce->doprava|escape|nl2br}
+   {$akce->doprava|escape|nl2br|noescape}
    </div>
    {/if}
 

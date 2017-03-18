@@ -63,8 +63,8 @@ class RatingControl extends \Nette\Application\UI\Control {
 	    $this->template->myrating = (bool) $myrating;
 
 	    $texy = \TexyFactory::createTexy();
-	    $this->template->registerHelper('texy', callback($texy,'process'));
-	    $this->template->registerHelper('stars', function($count){
+	    $this->template->addFilter('texy', [$texy, 'process']);
+	    $this->template->addFilter('stars', function($count){
 		    $s = intval($count);
 		    return str_repeat('★', $count).str_repeat('☆', 5-$count);
 	    });
@@ -82,12 +82,12 @@ class RatingControl extends \Nette\Application\UI\Control {
 		$form->addCheckbox('anonymous','Anonymní')->setDefaultValue(FALSE);
 
 		$form->addTextArea('message','Slovní hodnocení')
-			->addConditionOn($form['rating'], ~Form::FILLED)
+			->addConditionOn($form['rating'], Form::BLANK)
 			->setRequired('Vyplňte slovní hodnocení nebo hvězdy');
 
 		$form->addSubmit('ok', 'Uložit');
 
-		$form->onSuccess[] = callback($this, 'ratingFormSubmitted');
+		$form->onSuccess[] = [$this, 'ratingFormSubmitted'];
 
 		return $form;
 	}

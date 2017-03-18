@@ -3,6 +3,9 @@
 /**
  * Model base class.
  */
+
+use Nette\Utils\DateTime;
+
 class AkceService extends DatabaseService
 {
     /**
@@ -33,10 +36,10 @@ class AkceService extends DatabaseService
     }
 
     /**
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @return \Nette\Database\Table\Selection
      */
-    public function getAkceNews(\Nette\DateTime $date){
+    public function getAkceNews(DateTime $date){
         return $this->getAkceByFuture(TRUE)
             ->where('confirm',TRUE)
             ->where('date_update > ?',$date);
@@ -44,10 +47,10 @@ class AkceService extends DatabaseService
 
     /**
      * @param $id
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @return bool|mixed|\Nette\Database\Table\IRow
      */
-    public function getAkceNext($id, \Nette\DateTime $date){
+    public function getAkceNext($id, DateTime $date){
         return $this->getAkce()
                 ->where('enable',TRUE)
                 ->where('confirm',TRUE)
@@ -60,10 +63,10 @@ class AkceService extends DatabaseService
 
     /**
      * @param $id
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @return bool|mixed|\Nette\Database\Table\IRow
      */
-    public function getAkcePrev($id, \Nette\DateTime $date){
+    public function getAkcePrev($id, DateTime $date){
         return $this->getAkce()
                 ->where('enable',TRUE)
                 ->where('confirm',TRUE)
@@ -171,11 +174,11 @@ class AkceService extends DatabaseService
     }
 
     /**
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @param $user_id
      * @return \Nette\Database\Table\Selection
      */
-    public function getFeedbackRequests(\Nette\DateTime $date, $user_id){
+    public function getFeedbackRequests(DateTime $date, $user_id){
         return $this->getAkceByFuture(FALSE)
             ->where('confirm',TRUE)
             ->where(':akce_member.member_id',$user_id)
@@ -185,11 +188,11 @@ class AkceService extends DatabaseService
 
 
 	/**
-	 * @param \Nette\DateTime $date
+	 * @param \Nette\Utils\DateTime $date
 	 * @param $user_id
 	 * @return \Nette\Database\Table\Selection
 	 */
-	public function getRatingNews(\Nette\DateTime $date, $user_id){
+	public function getRatingNews(DateTime $date, $user_id){
 		return $this->getAkceByFuture(FALSE)
 			->select('id, name, :akce_rating_member.member_id AS rating_member_id, :akce_rating_member.date_add AS rating_date_add')
 			->where(':akce_member.member_id',$user_id)
@@ -199,11 +202,11 @@ class AkceService extends DatabaseService
 	}
 
     /**
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @param $user_id
      * @return \Nette\Database\Table\Selection
      */
-    public function getReportRequests(\Nette\DateTime $date, $user_id){
+    public function getReportRequests(DateTime $date, $user_id){
         return $this->getAkceByFuture(FALSE)
             ->where('confirm',TRUE)
             ->where(':akce_member.member_id',$user_id)

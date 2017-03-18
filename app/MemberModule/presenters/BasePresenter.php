@@ -1,6 +1,6 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
 use Nette\Application\UI\Presenter;
 use Nette\Utils\Html;
@@ -25,7 +25,7 @@ abstract class BasePresenter extends Presenter{
 
     public function registerTexy(){
         $texy = \TexyFactory::createTexy();
-        $this->template->registerHelper('texy', callback($texy, 'process'));
+        $this->template->addFilter('texy', [$texy, 'process']);
     }
 
     public function actionTexyPreview($class = false){

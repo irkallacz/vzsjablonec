@@ -1,6 +1,6 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
 /**
  * Created by PhpStorm.
@@ -35,7 +35,7 @@ abstract class LayerPresenter extends BasePresenter{
     protected function startup(){
         parent::startup();
 
-        \Kdyby\Extension\Forms\Replicator\Replicator::register();
+        //\Kdyby\Extension\Forms\Replicator\Replicator::register();
 
         if (!$this->user->isLoggedIn()) {
             if ($this->user->getLogoutReason() === \Nette\Security\IUserStorage::INACTIVITY){

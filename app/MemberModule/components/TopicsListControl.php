@@ -28,7 +28,7 @@ class TopicsListControl extends Nette\Application\UI\Control{
 
 	public function render(){
         $this->template->setFile(__DIR__ . '/TopicsListControl.latte');
-        $this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+        $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	    $this->template->topics = $this->topics;
 		$this->template->search = $this->search;
 

@@ -13,7 +13,7 @@ bylo na nášem webu vytvořeno nové hlasováním představentstva. Můžete je
 
 <p><b>{$hlasovani->title}</b></p>
 
-{!$hlasovani->text|texy}
+{$hlasovani->text|texy|noescape}
 
 <ul n:inner-foreach="$odpovedi as $odpoved">
 <li>{$odpoved->text}</li>

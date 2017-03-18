@@ -1,9 +1,9 @@
 <?php
 
-namespace PhotoModule;
+namespace App\PhotoModule\Presenters;
 
 use Nette\Application\UI\Form;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 use Nette\Security as NS;
 
 
@@ -42,7 +42,7 @@ class SignPresenter extends BasePresenter{
 		$form->addSubmit('send', 'Přihlásit');
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
-		$form->onSuccess[] = callback($this, 'signInFormSubmitted');
+		$form->onSuccess[] = [$this, 'signInFormSubmitted'];
 		return $form;
 	}
 

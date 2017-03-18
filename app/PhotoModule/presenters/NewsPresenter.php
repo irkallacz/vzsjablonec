@@ -1,6 +1,6 @@
 <?php
 
-namespace PhotoModule;
+namespace App\PhotoModule\Presenters;
 
 use Nette\Application\UI\Form;
 use Nette\Diagnostics\Debugger;

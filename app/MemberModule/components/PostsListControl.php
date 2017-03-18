@@ -36,8 +36,8 @@ class PostsListControl extends Nette\Application\UI\Control{
         $texy = TexyFactory::createForumTexy();
 
         $this->template->setFile(__DIR__ . '/PostsListControl.latte');
-        $this->template->registerHelper('texy', callback($texy, 'process'));
-        $this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+        $this->template->addFilter('texy', [$texy, 'process']);
+        $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	    $this->template->posts = $this->posts;
 		$this->template->isLocked = $this->isLocked;
 		$this->template->search = $this->search;

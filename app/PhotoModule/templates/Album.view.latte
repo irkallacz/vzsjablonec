@@ -46,7 +46,7 @@
 
 <h2 n:block="title">{$album->name}</h2>
 
-<p n:if="$album->text">{!$album->text|texy}</p>
+<p n:if="$album->text">{$album->text|texy|noescape}</p>
 
 <ul class="photoList" n:inner-foreach="$photos as $image">
 	<li><a id="{$image->filename}" data-id="{$iterator->counter}" n:class="fancybox, ($album->visible and $user->isLoggedIn()) ? 'visible'.$image->visible" href="{$baseUri}/{$photoDir}/{$image->album_id}/{$image->filename}" rel="group" title="{$image->text}">

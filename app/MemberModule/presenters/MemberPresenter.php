@@ -1,21 +1,22 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
 use Nette\Application\UI\Form;
 use Nette\Diagnostics\Debugger;
 use Nette\Security\Passwords;
+use Nette\Utils\Random;
 use Nette\Utils\Strings;
 use Nette\Image;
 use Nette\Templating\FileTemplate;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 
 class MemberPresenter extends LayerPresenter{
 
 	/** @var \MemberService @inject */
 	public $memberService;
 
-	/** @var \Nette\Mail\iMailer @inject*/
+	/** @var \Nette\Mail\IMailer @inject*/
 	public $mailer;
 
 	public function actionUpdateCsv(){
@@ -202,7 +203,7 @@ class MemberPresenter extends LayerPresenter{
         	'text/comma-separated-values, text/csv, application/csv, application/excel, application/vnd.ms-excel, application/vnd.msexcel, text/anytext');
         $form->addSubmit('ok', '')->setAttribute('class','iconic');
 
-		$form->onSuccess[] = callback($this, 'uploadMembersFormSubmitted');
+		$form->onSuccess[] = [$this, 'uploadMembersFormSubmitted'];
 
     return $form;
 	}
@@ -224,7 +225,7 @@ class MemberPresenter extends LayerPresenter{
         $form->addSubmit('ok', '')
         	->setAttribute('class','myfont');
 
-		$form->onSuccess[] = callback($this, 'memberSearchFormSubmitted');
+		$form->onSuccess[] = [$this, 'memberSearchFormSubmitted'];
 
     return $form;
 	}
@@ -273,16 +274,16 @@ class MemberPresenter extends LayerPresenter{
         $form->addGroup('Přihlašovací údaje');
 
         $form->addText('login', 'Login', 20)
-      		->addRule(callback($this, 'uniqueValidator'), 'V databázi se již vyskytuje osoba se stejným přihlašovacím jménem')
+      		->addRule([$this, 'uniqueValidator'], 'V databázi se již vyskytuje osoba se stejným přihlašovacím jménem')
       		->setRequired('Vyplňte %label');
 
       	$form->addPassword('password', 'Nové heslo', 20)
       		->addCondition(Form::FILLED)
-      			//->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',6);
       			->addRule(Form::PATTERN,'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena','^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
-      			->addRule(callback($this,'currentPassValidator'),'Nesmíte použít svoje staré heslo',$this->getUser()->getIdentity()->hash);
+      			->addRule([$this, 'currentPassValidator'],'Nesmíte použít svoje staré heslo',$this->getUser()->getIdentity()->hash);
 	
       	$form->addPassword('confirm', 'Potvrzení', 20)
+	        ->setRequired(FALSE)
       		->addRule(Form::EQUAL,'Zadaná hesla se neschodují',$form['password'])
       		->addCondition(Form::FILLED)
       			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);     
@@ -303,7 +304,7 @@ class MemberPresenter extends LayerPresenter{
 
         $form->addText('mail', 'E-mail', 30)
         	->setType('email')
-        	->addRule(callback($this, 'uniqueValidator'), 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
+        	->addRule([$this, 'uniqueValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
 			->setRequired('Vyplňte %label');
 
       	$form->addText('telefon', 'Telefon', 30)
@@ -325,7 +326,7 @@ class MemberPresenter extends LayerPresenter{
 	
 
         $form->addSubmit('ok', 'Ulož');
-		$form->onSuccess[] = callback($this, 'memberFormSubmitted');
+		$form->onSuccess[] = [$this, 'memberFormSubmitted'];
 
     	return $form;
 	}
@@ -336,14 +337,14 @@ class MemberPresenter extends LayerPresenter{
 		$values = $form->getValues();
 		
 		if (!$id) {
-			$values->password = Strings::random(8);
+			$values->password = Random::generate(8);
 			if ($values->sendMail) $this->sendLogginMail($values);
 		}
 	
 		unset($values['sendMail']);
 
 		if ($values->password) {
-			$values->hash = \Nette\Security\Passwords::hash($values->password);
+			$values->hash = Passwords::hash($values->password);
 		}
 
 		unset($values['password']);

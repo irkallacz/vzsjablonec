@@ -29,10 +29,10 @@ DTEND;TZID=Europe/Prague:{$data->date_end|date:'Ymd\THis'}
 DTSTAMP;TZID=Europe/Prague:{$data->date_add|date:'Ymd\THis'}
 LAST-MODIFIED;TZID=Europe/Prague:{$data->date_update|date:'Ymd\THis'}
 ORGANIZER;CN={$data->member->name} {$data->member->surname}:MAILTO:{$data->member->mail}
-LOCATION:{!$data->place}
+LOCATION:{$data->place|noescape}
 URL:{link //Akce:view, $data->id}
-SUMMARY:{!$data->name}
-DESCRIPTION:{!$data->perex}
+SUMMARY:{$data->name|noescape}
+DESCRIPTION:{$data->perex|noescape}
 END:VEVENT
 {/foreach}
 END:VCALENDAR

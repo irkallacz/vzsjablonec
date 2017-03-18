@@ -10,4 +10,7 @@ define('APP_DIR', __DIR__ . '/../../../app');
 //require __DIR__ . '/.maintenance.php';
 
 // load bootstrap file
-require APP_DIR . '/bootstrap.php';
+$container = require APP_DIR . '/bootstrap.php';
+
+$container->getByType(Nette\Application\Application::class)
+	->run(); 

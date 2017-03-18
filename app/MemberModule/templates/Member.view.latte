@@ -39,7 +39,7 @@
 <p class="out"><b>Telefon:</b> {$member->telefon}</p>
 
 <div id="poznamka">
-{!$member->text|texy}
+{$member->text|noescape|texy}
 </div>
 
 </div>

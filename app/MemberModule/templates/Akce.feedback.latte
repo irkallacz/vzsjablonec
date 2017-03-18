@@ -2,21 +2,21 @@
 <link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
 
 <style type="text/css" n:syntax="off">
-h2 {margin-top: 1ex;}
+h2 { margin-top: 1ex;}
 
-table#items td, table th {vertical-align: top; padding: 1ex 1ex; padding: 0px;}
-table#items {border-collapse: collapse; width: 98%;}
-table#items .headerLike {text-align: center;}
-table#items .borderLike {border-width: 3px 0px 0px 0px;}
-table#items .top .right {direction: rtl;}
-table#items .bottom .right {padding-right: 1em;}
-table#items .bottom .right .noLink {font-weight: bold;}
+table#items td, table th { vertical-align: top; padding: 1ex 1ex; padding: 0;}
+table#items { border-collapse: collapse; width: 98%;}
+table#items .headerLike { text-align: center; }
+table#items .borderLike { border-width: 3px 0px 0px 0px;}
+table#items .top .right { direction: rtl;}
+table#items .bottom .right { padding-right: 1em;}
+table#items .bottom .right .noLink { font-weight: bold;}
 
-.quote {font-family: serif;}
+.quote { font-family: serif; }
 
-a.buttonLike:hover .lock {visibility: hidden;}
+a.buttonLike:hover .lock { visibility: hidden; }
 
-table#items .forum_post {max-width: 45em; padding-left: 1ex}
+table#items .forum_post { max-width: 45em; padding-left: 1ex }
 </style>
 {/block} 
 
@@ -47,7 +47,7 @@ table#items .forum_post {max-width: 45em; padding-left: 1ex}
         {$item->member->surname} {$item->member->name}</a> {else}<b>Anonymní</b>{/if}
     </td>   
     <td class="forum_post">
-    {!$item->message|texy} 
+    {$item->message|texy|noescape}
     </td></tr>
 {/foreach}
 </table>

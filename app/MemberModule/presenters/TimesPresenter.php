@@ -1,10 +1,10 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
 use Nette\Application\UI\Form;
 use Nette\Diagnostics\Debugger;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 
 class TimesPresenter extends LayerPresenter{
 
@@ -89,27 +89,27 @@ class TimesPresenter extends LayerPresenter{
 
 
     public function renderEdit($id){
-        if (!$this->getUser()->isInRole($this->name)) {
+        if (!$this->getUser()->isInRole($this->name)){
           $this->flashMessage('Na tuto akci máte práva','error');
           $this->redirect('default');
         }
 
         $form = $this['timeForm'];
         if (!$form->isSubmitted()) {
-            
             $time = $this->timesService->getTimeById($id);
             
             if (!$time) {
                 $this->flashMessage('Záznam nenalezen!','error');
                 $this->redirect('default');                                    
             }
-            
-            unset($form['another']);
 
-            $form->setDefaults($time);
+	        $form['member_id']->setDefaultValue($time->member_id);
+	        $form['times_disciplina_id']->setDefaultValue($time->times_disciplina_id);
+	        $form['time']->setDefaultValue($time->time->format('%I:%S'));
+	        $form['date']->setDefaultValue($time->date->format('Y-m-d'));
+	        $form['text']->setDefaultValue($time->text);
 
-            $form['time']->setDefaultValue($time->time->format('i:s'));
-            $form['date']->setDefaultValue($time->date->format('Y-m-d'));    
+	        \Tracy\Debugger::barDump($time);
         }
     }
 
@@ -161,7 +161,7 @@ class TimesPresenter extends LayerPresenter{
 
         $form->addSubmit('save','Uložit');
 
-        $form->onSuccess[] = callback($this, 'timeFormSubmitted');
+        $form->onSuccess[] = [$this, 'timeFormSubmitted'];
 
         return $form;        
     }

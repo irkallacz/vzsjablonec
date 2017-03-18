@@ -41,11 +41,11 @@ class HlasovaniService extends DatabaseService{
     }
 
     /**
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @param bool $isBoard
      * @return \Nette\Database\Table\Selection
      */
-    public function getHlasovaniNews(\Nette\DateTime $date, $isBoard = FALSE){
+    public function getHlasovaniNews(\Nette\Utils\DateTime $date, $isBoard = FALSE){
         $hlasovani = $this->getAnkety()->where('date_add > ?',$date);
         if ($isBoard) $hlasovani->where('date_deatline < NOW() OR locked = ?', 1);
         return $hlasovani;

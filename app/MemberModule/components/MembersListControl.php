@@ -39,7 +39,7 @@ class MembersListControl extends Nette\Application\UI\Control{
         $this->template->akce = $this->akce;
         $this->template->isOrg = $this->org;
 
-        $this->template->isAllow = $this->presenter->user->isInRole(get_class($this)) || $this->presenter->user->isInArray(array_keys($orgList));        
+        $this->template->isAllow = $this->presenter->user->isInRole(get_class($this)) || in_array($this->presenter->user->id,array_keys($orgList));
 
         $this->template->isAllowLogin = $this->org ? $this->akce->login_org : $this->akce->login_mem;
         if ($this->akce->date_deatline < date_create()) $this->template->isAllowLogin = false;
@@ -80,7 +80,7 @@ class MembersListControl extends Nette\Application\UI\Control{
         $list = $this->model->getMembers()->where('NOT id',array_keys($this->list));
         $form->addSelect('member', null, $list->fetchPairs('id','jmeno'));
         $form->addSubmit('send','+');//->setAttribute('class','myfont');
-        $form->onSuccess[] = callback($this, 'processLogginForm');
+        $form->onSuccess[] = [$this, 'processLogginForm'];
 
         return $form;            
     }

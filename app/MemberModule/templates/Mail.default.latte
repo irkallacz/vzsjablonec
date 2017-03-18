@@ -53,9 +53,9 @@ input.buttonLike:active {background-color: #da251c; color: white; background-ima
 <table id="mail">
 <tr><th>{label to /}</th><td class="no-wrap">{input to} {if !isset($isAkce)}{input open}{/if}</td></tr>
 <tr><td colspan="2">
-<fieldset id="adresati" class="hide" n:inner-foreach="$form['users']->containers as $id => $user">
+<fieldset id="adresati" class="hide" n:inner-foreach="$form[users]->items as $id => $label">
     {if $iterator->isFirst()}<div class="float-left">{/if}
-    <div class="label">{input users-$id-mail} {label users-$id-mail /}</div>
+		<div class="label"><input n:name="users:$id" class="member" {if !isset($isAkce)}data-mail="{$userMails[$id]}"{/if}> <label n:name="users:$id">{$label}</label></div>
     {if !($iterator->getCounter()%$pocet)} </div><div class="float-left"> {/if}
 	{if $iterator->isLast()}</div><p><i>Pro výběr všech položek využijte klávesovou zkratku Ctrl + A</i></p>{/if}
 </fieldset>

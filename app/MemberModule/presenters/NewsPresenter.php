@@ -1,9 +1,9 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
-use Nette\Diagnostics\Debugger;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 class NewsPresenter extends LayerPresenter{
 
@@ -32,10 +32,11 @@ class NewsPresenter extends LayerPresenter{
                 }
 
                 $datum = $this->getUser()->getIdentity()->date_last;
+
                 $user_id = $this->getUser()->getId();
 
                 $this->template->lastDate = $datum;
-                $this->template->nowDate = new Datetime();
+                $this->template->nowDate = new DateTime();
 
                 $this->template->akceList = $this->akceService->getAkceNews($datum);
                 $this->template->forumList = $this->forumService->getTopicNews($datum);
@@ -49,7 +50,7 @@ class NewsPresenter extends LayerPresenter{
                 $this->template->feedbackList = $this->akceService->getFeedbackRequests($datum, $user_id);
                 $this->template->reportList = $this->akceService->getReportRequests($datum, $user_id);
 
-                $this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+                $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
         }
 
 }

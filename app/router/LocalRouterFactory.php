@@ -23,7 +23,6 @@ class LocalRouterFactory{
 		$router[] = $member;
 		$router[] = $photo;
 
-		$router[] = new Route('<presenter>/<action>[/<id>]', 'News:default');
 		return $router;
 	}
 

@@ -1,12 +1,11 @@
 <?php
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
+use Joseki\Webloader\JsMinFilter;
 use Nette\Application\UI\Form;
-use Nette\Application\UI\Multiplier;
-use Nette\Diagnostics\Debugger;
 use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 
 class AkcePresenter extends LayerPresenter{
 	const FORUM_AKCE_ID = 2;
@@ -100,7 +99,7 @@ class AkcePresenter extends LayerPresenter{
 		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());
 		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(),TRUE);
 
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
 	public function actionView($id){
@@ -139,8 +138,8 @@ class AkcePresenter extends LayerPresenter{
 		}
 
 		$this->registerTexy();
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
-		$this->template->registerHelper('durationInWords', 'Helpers::durationInWords');
+		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->addFilter('durationInWords', 'Helpers::durationInWords');
 	}
 
 	public function actionEdit($id){
@@ -164,7 +163,7 @@ class AkcePresenter extends LayerPresenter{
 		if (!$form->isSubmitted()) {
 			$orgList = $this->akce->related('akce_member')->where('organizator',TRUE)->fetchPairs('member_id','member_id');
 
-			if ((!$this->getUser()->isInArray($orgList))and(!$this->getUser()->isInRole($this->name))) {
+			if ((!array_key_exists($this->getUser()->getId(),$orgList))and(!$this->getUser()->isInRole($this->name))) {
 				$this->flashMessage('Nemáte právo tuto akci editovat','error');
 				$this->redirect('Akce:view',$id);
 			}
@@ -187,7 +186,7 @@ class AkcePresenter extends LayerPresenter{
 	public function actionDelete($id){
 		$orgList = $this->akceService->getMemberListByAkceId($id,TRUE);
 
-		if ((!$this->getUser()->isInArray($orgList))and(!$this->getUser()->isInRole($this->name))) {
+		if ((!array_key_exists($this->getUser()->getId(),$orgList))and(!$this->getUser()->isInRole($this->name))) {
 			$this->flashMessage('Nemáte právo tuto akci smazat','error');
 			$this->redirect('Akce:view',$id);
 		}
@@ -291,7 +290,7 @@ class AkcePresenter extends LayerPresenter{
 //		$files->addFiles([WWW_DIR . '/js/texyla_public.js']);
 
 		$compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-		$compiler->addFileFilter(new \Webloader\Filter\jsShrink);
+		$compiler->addFileFilter(new JsMinFilter());
 
 		return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
@@ -311,9 +310,11 @@ class AkcePresenter extends LayerPresenter{
 			->setRequired('Vyplňte %label akce');
 
 		$form['date_start'] = new \DateTimeInput('Začátek');
+		$form['date_start']->setRequired(TRUE);
 		$form['date_start']->setDefaultValue($datum);
 
 		$form['date_end'] = new \DateTimeInput('Konec');
+		$form['date_end']->setRequired(TRUE);
 		$form['date_end']->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
 				return $item->value >= $arg;
@@ -328,6 +329,7 @@ class AkcePresenter extends LayerPresenter{
 			->setAttribute('onclick','doTheTrick()');
 
 		$form['date_deatline'] = new \DateTimeInput('Přihlášení do');
+		$form['date_deatline']->setRequired(FALSE);
 		$form['date_deatline']->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
 			  return $item->value <= $arg;
@@ -370,6 +372,7 @@ class AkcePresenter extends LayerPresenter{
 				->addRule(FORM::FILLED,'Musíte vybrat organizátora');
 
 		$form->addUpload('file','Soubor')
+			->setRequired(FALSE)
 			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 10 MB.', 10 * 1024 * 1024);
 
 		$form->addText('price', 'Cena', 7)
@@ -400,7 +403,7 @@ class AkcePresenter extends LayerPresenter{
 			->setAttribute('class','texyla');
 
 		$form->addSubmit('save', 'Ulož')->setAttribute('class', 'default');
-			$form->onSuccess[] = callback($this, 'akceFormSubmitted');
+			$form->onSuccess[] = [$this, 'akceFormSubmitted'];
 
 		return $form;
 	}
@@ -459,7 +462,7 @@ class AkcePresenter extends LayerPresenter{
 		$form->addSubmit('ok', '')
 		  ->setAttribute('class','myfont');
 
-		$form->onSuccess[] = callback($this, 'uploadBillFormSubmitted');
+		$form->onSuccess[] = [$this, 'uploadBillFormSubmitted'];
 
 		return $form;
 	}

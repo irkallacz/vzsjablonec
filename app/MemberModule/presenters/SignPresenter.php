@@ -1,9 +1,9 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
 use Nette\Application\UI\Form;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
 use Nette\Security as NS;
 use Nette\Utils\Strings;
 
@@ -12,7 +12,7 @@ class SignPresenter extends BasePresenter{
 	/** @var \MemberService  @inject*/
 	public $memberService;
 
-	/** @var \Nette\Mail\iMailer @inject*/
+	/** @var \Nette\Mail\IMailer @inject*/
 	public $mailer;
 
 	/** @persistent */
@@ -34,7 +34,7 @@ class SignPresenter extends BasePresenter{
 		$form->addSubmit('send', 'Přihlásit');
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
-		$form->onSuccess[] = callback($this, 'signInFormSubmitted');
+		$form->onSuccess[] = [$this, 'signInFormSubmitted'];
 		return $form;
 	}
 
@@ -68,7 +68,7 @@ class SignPresenter extends BasePresenter{
 		$form->addSubmit('send', 'poslat');
 	    $form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
-		$form->onSuccess[] = callback($this, 'forgotPassFormSubmitted');
+		$form->onSuccess[] = [$this, 'forgotPassFormSubmitted'];
 		return $form;
 	}
 
@@ -134,7 +134,7 @@ class SignPresenter extends BasePresenter{
 
 		$form->addProtection('Vypšela ochrana formuláře');
 
-		$form->onSuccess[] = callback($this, 'restorePasswordFormSubmitted');
+		$form->onSuccess[] = [$this, 'restorePasswordFormSubmitted'];
 		return $form;
 	}
 

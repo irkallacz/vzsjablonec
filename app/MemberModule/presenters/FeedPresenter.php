@@ -1,6 +1,6 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
 use Nette\Application\UI\Presenter;
 use	Nette\Diagnostics\Debugger;

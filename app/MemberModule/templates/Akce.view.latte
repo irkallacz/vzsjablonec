@@ -51,7 +51,7 @@ TODO odelílání na fomrulářích
 {block #content}
 
 <ul class="buttonMenu" n:snippet="menuOnTop">
-    {if $user->isInRole($presenter->name) or $user->isInArray($orgList)}
+    {if $user->isInRole($presenter->name) or array_key_exists($user->id,$orgList)}
     <li><a class="buttonLike" n:href="edit, $akce->id"><span class="icon-pencil"></span> editovat</a></li>
     <li><a class="buttonLike confirm" data-query="Opravdu chcete akci smazat?" n:href="delete, $akce->id">
     <span class="icon-trash"></span> smazat</a></li>
@@ -122,7 +122,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
 
 <div class="clearfix"></div>
 
-    <div n:if="$user->isInRole('Member:Mail') or $user->isInArray($orgList)" id="mail">
+    <div n:if="$user->isInRole('Member:Mail') or array_key_exists($user->id,$orgList)" id="mail">
         <a class="buttonLike" n:href="Mail:akce $akce->id"><span class="icon-mail"></span> poslat mail účastníkům</a>
         <a class="buttonLike" n:href="Mail:akce $akce->id, TRUE"><span class="icon-mail"></span> poslat mail organizátorům</a>
     </div>
@@ -132,7 +132,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
             <h3>Záznam o akci</h3>
             <p>
                 <a class="buttonLike" n:href="Report:view $akce->id"> <span class="icon-table"></span> náhled</a>
-                {if $user->isInRole($presenter->name) or $user->isInArray($orgList)} <a class="buttonLike" n:href="Report:edit $akce->id"><span class="icon-pencil"></span> editovat</a>{/if}
+                {if $user->isInRole($presenter->name) or array_key_exists($user->id,$orgList)} <a class="buttonLike" n:href="Report:edit $akce->id"><span class="icon-pencil"></span> editovat</a>{/if}
             </p>
         {/if}
 
@@ -146,7 +146,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
 
         {control rating}
 
-        {if ($akce->bill)or($user->isInArray($orgList))}
+        {if ($akce->bill)or(array_key_exists($user->id,$orgList))}
         <h3>Vyúčtování <span class="icon-dollar"></span></h3>
 
         {form uploadBillForm}
@@ -156,7 +156,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
 
             <p>
                 {if $akce->bill} <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->id}-{$akce->name|webalize}.xls"><span class="icon-download"></span> stáhnout</a>{/if}
-                {if $user->isInArray($orgList)} {input file} {input ok} {/if}
+                {if array_key_exists($user->id,$orgList)} {input file} {input ok} {/if}
             </p>
         {/form}
         {/if}

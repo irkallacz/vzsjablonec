@@ -1,15 +1,18 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Html;
 use Nette\Utils\Paginator;
 use Nette\Utils\Strings;
-use Nette\Diagnostics\Debugger;
 use Nette\Database\SqlLiteral;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
+use WebLoader\Compiler;
+use WebLoader\FileCollection;
+use WebLoader\Nette\JavaScriptLoader;
+use Joseki\Webloader\JsMinFilter;
 
 class ForumPresenter extends LayerPresenter{
 
@@ -24,7 +27,7 @@ class ForumPresenter extends LayerPresenter{
 
 	public function renderDefault(){
 		$this->template->forum = $this->forumService->getForum();
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
 	public function showPost($post){
@@ -114,7 +117,7 @@ class ForumPresenter extends LayerPresenter{
 		$paginator->setItemCount($count);
 		$this->template->paginator = $paginator;
 
-    	$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+    	$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 
     	$this['addPostForm']['forum_topic_id']->setDefaultValue($id);  
     	$this['addPostForm']['forum_id']->setDefaultValue($this->topic->forum_id);
@@ -181,7 +184,7 @@ class ForumPresenter extends LayerPresenter{
 		$form->addSubmit('ok', '')
 			->setAttribute('class','myfont');
 
-		$form->onSuccess[] = callback($this,'processSearchForm');
+		$form->onSuccess[] = [$this, 'processSearchForm'];
 
 		$renderer = $form->getRenderer();
 		$renderer->wrappers['controls']['container'] = NULL;
@@ -210,7 +213,7 @@ class ForumPresenter extends LayerPresenter{
 		$form->addSelect('subject','Hledat:', ['posts' => 'Příspěvky', 'topics' => 'Témata'])
 			->setRequired('Zadejte prosím co vyhledávat');
 
-		$form->onSuccess = [callback($this,'processSearchForumForm')];
+		$form->onSuccess = [[$this, 'processSearchForumForm']];
 
 		return $form;
 	}
@@ -349,16 +352,16 @@ class ForumPresenter extends LayerPresenter{
 	}
 
 	protected function createComponentTexylaJs(){
-	    $files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
+	    $files = new FileCollection(WWW_DIR . '/texyla/js');
 	    $files->addFiles(['texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js']);
 	    $files->addFiles(['../plugins/emoticon/emoticon.js']);
 	    $files->addFiles([WWW_DIR . '/js/texyla_forum.js']);
 	    $files->addFiles([WWW_DIR . '/js/jquery-ui.custom.min.js']);
 
-	    $compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-	    $compiler->addFileFilter(new \Webloader\Filter\jsShrink);
+	    $compiler = Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
+	    $compiler->addFileFilter(new JsMinFilter());
 
-	    return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+	    return new JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
 
 	protected function createComponentAddTopicForm(){
@@ -375,7 +378,7 @@ class ForumPresenter extends LayerPresenter{
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla');
 
-		$form->onSuccess[]= callback($this,'processAddTopicForm');
+		$form->onSuccess[]= [$this, 'processAddTopicForm'];
 		return $form;
 	}
 
@@ -419,7 +422,7 @@ class ForumPresenter extends LayerPresenter{
 		$form->addHidden('forum_topic_id');
 		$form->addHidden('forum_id');
 
-		$form->onSuccess[]= callback($this,'processAddPostForm');
+		$form->onSuccess[]= [$this, 'processAddPostForm'];
 		return $form;
 	}
 
