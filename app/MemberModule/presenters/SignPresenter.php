@@ -176,6 +176,7 @@ class SignPresenter extends BasePresenter{
 		$mail = $this->getNewMail();
 
 		$mail->addTo($member->mail,$member->surname.' '.$member->name);
+		$mail->setSubject('[VZS Jablonec] Obnova hesla');
 		$mail->setBody($template);
 		$this->mailer->send($mail);
 	}

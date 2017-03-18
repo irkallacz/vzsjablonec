@@ -109,9 +109,9 @@ class MemberService extends DatabaseService{
      * @param $member_id
      * @return bool|int|\Nette\Database\Table\IRow
      */
-    public function addPasswordSession($member_id){
+    public function addPasswordSession($member_id, $interval = '20 MINUTE'){
         $this->database->query('DELETE FROM `password_session` WHERE `member_id` = ?', $member_id);
-        return $this->database->table('password_session')->insert(['member_id' => $member_id, 'date_end' => new SqlLiteral('NOW() + INTERVAL 20 MINUTE')]);
+        return $this->database->table('password_session')->insert(['member_id' => $member_id, 'date_end' => new SqlLiteral('NOW() + INTERVAL '.$interval)]);
     }
 
 	/**

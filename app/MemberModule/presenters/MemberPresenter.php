@@ -183,13 +183,15 @@ class MemberPresenter extends LayerPresenter{
 		$this->redirect('Member:view',$id);
 	}
 
-	public function sendLogginMail($member){
+	public function sendLogginMail($member, $session){
 	    $template = $this->createTemplate();
 	    $template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
 	    $template->member = $member;
+		$template->session = $session;
 
-	    $mail = $this->getNewMail();
+		$mail = $this->getNewMail();
 	    $mail->addTo($member->mail,$member->surname.' '.$member->name);
+	    $mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
 	    $mail->setBody($template);
 
 		$this->mailer->send($mail);
@@ -336,11 +338,7 @@ class MemberPresenter extends LayerPresenter{
 
 		$values = $form->getValues();
 		
-		if (!$id) {
-			$values->password = Random::generate(8);
-			if ($values->sendMail) $this->sendLogginMail($values);
-		}
-	
+		$sendMail = $values->sendMail;
 		unset($values['sendMail']);
 
 		if ($values->password) {
@@ -367,7 +365,16 @@ class MemberPresenter extends LayerPresenter{
           	$this->flashMessage('Osobní profil byl změněn');
           	$this->redirect('Member:view',$id);
         }else {
+			$values->hash = '';
 			$member = $this->memberService->addMember($values);
+
+			if ($sendMail) {
+				$session = $this->memberService->addPasswordSession($member->id, '24 HOUR');
+				$this->sendLogginMail($member, $session);
+			}
+
+			$this->memberService->addMemberLogin($member->id, new DateTime());
+
           	$this->flashMessage('Byl přidán nový člen');
           	$this->redirect('Member:view',$member->id);
 		}		
