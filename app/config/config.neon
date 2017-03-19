@@ -58,24 +58,20 @@ php:
 
 
 services:
-#	database: @database.default
-#	wordpress: @database.wordpress
-#	photogalery: @database.photogalery
-	
-	authenticator: Authenticator
+	authenticator: App\Model\Authenticator
 
 	router: RouterFactory::createRouter
 
-	- AkceService
-	- ForumService
-	- MemberService
-	- DokumentyService
-	- AnketyService
-	- RatingService
-	- TimesService
-	- HlasovaniService
-	- GalleryService(@database.photogalery.context)
-	- WordpressService(@database.wordpress.context)
+	- App\Model\AkceService
+	- App\Model\ForumService
+	- App\Model\MemberService
+	- App\Model\DokumentyService
+	- App\Model\AnketyService
+	- App\Model\RatingService
+	- App\Model\TimesService
+	- App\Model\HlasovaniService
+	- App\Model\GalleryService(@database.photogalery.context)
+	- App\Model\WordpressService(@database.wordpress.context)
 
 extensions:
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension

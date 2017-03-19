@@ -1,13 +1,15 @@
 <?php
-
-namespace App\MemberModule\Presenters;
-
 /**
  * Created by PhpStorm.
  * User: Jakub
  * Date: 22.11.2016
  * Time: 23:09
  */
+
+namespace App\MemberModule\Presenters;
+
+use App\MemberModule\Components\AnketaControl;
+use Nette\Security\IUserStorage;
 
 abstract class LayerPresenter extends BasePresenter{
 
@@ -35,10 +37,8 @@ abstract class LayerPresenter extends BasePresenter{
     protected function startup(){
         parent::startup();
 
-        //\Kdyby\Extension\Forms\Replicator\Replicator::register();
-
         if (!$this->user->isLoggedIn()) {
-            if ($this->user->getLogoutReason() === \Nette\Security\IUserStorage::INACTIVITY){
+            if ($this->user->getLogoutReason() === IUserStorage::INACTIVITY){
                     $this->flashMessage('You have been signed out due to inactivity. Please sign in again.');
             }
             $backlink = $this->storeRequest();
@@ -47,7 +47,7 @@ abstract class LayerPresenter extends BasePresenter{
     }
 
     public function createComponentAnketa(){
-        return new \AnketaControl($this->anketyService);
+        return new AnketaControl($this->anketyService);
 	}
 
 }

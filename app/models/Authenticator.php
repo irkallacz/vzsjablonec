@@ -1,19 +1,17 @@
 <?php
 
+namespace App\Model;
+
 use Nette\Object;
-use	Nette\Diagnostics\Debugger;
-use	Nette\Security as NS;
-use Nette\Utils\DateTime;
+use	Nette\Security;
 
 
 /**
  * Users authenticator.
  */
-class Authenticator extends Object implements NS\IAuthenticator{
+class Authenticator extends Object implements Security\IAuthenticator {
 
-	/**
-	 * @var MemberService
-     */
+	/**@var MemberService */
 	private $memberService;
 
 	/**
@@ -27,8 +25,8 @@ class Authenticator extends Object implements NS\IAuthenticator{
 	/**
 	 * Performs an authentication
 	 * @param  array
-	 * @return Nette\Security\Identity
-	 * @throws Nette\Security\AuthenticationException
+	 * @return Security\Identity
+	 * @throws Security\AuthenticationException
 	 */
 	public function authenticate(array $credentials){
 		list($username, $password) = $credentials;
@@ -36,16 +34,16 @@ class Authenticator extends Object implements NS\IAuthenticator{
 		$user = $this->memberService->getMemberByLogin($username);
 
 		if (!$user) {
-			throw new NS\AuthenticationException("Uživatel '$username' nenalezen.", self::IDENTITY_NOT_FOUND);
+			throw new Security\AuthenticationException("Uživatel '$username' nenalezen.", self::IDENTITY_NOT_FOUND);
 		}
 
-		if (!NS\Passwords::verify($password, $user->hash)) {
-			throw new NS\AuthenticationException("Nesprávné heslo.", self::INVALID_CREDENTIAL);
+		if (!Security\Passwords::verify($password, $user->hash)) {
+			throw new Security\AuthenticationException("Nesprávné heslo.", self::INVALID_CREDENTIAL);
 		}
 
 		$rights = $this->memberService->getRightsByMemberId($user->id);
 		$data = $user->toArray();
 
-		return new NS\Identity($user->id, array_values($rights), $data);
+		return new Security\Identity($user->id, array_values($rights), $data);
 	}
 }

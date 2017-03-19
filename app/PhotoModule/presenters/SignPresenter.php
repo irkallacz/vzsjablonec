@@ -2,9 +2,10 @@
 
 namespace App\PhotoModule\Presenters;
 
+use App\Model\GalleryService;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
-use Nette\Security as NS;
+use Nette\Security;
 
 
 class SignPresenter extends BasePresenter{
@@ -12,7 +13,7 @@ class SignPresenter extends BasePresenter{
 	public $backlink = '';
 
 	/**
-	 * @var \GalleryService @inject
+	 * @var GalleryService @inject
      */
 	public $galleryService;
 
@@ -61,7 +62,7 @@ class SignPresenter extends BasePresenter{
 			$this->restoreRequest($this->backlink);
 			$this->redirect('Myself:');
 
-		} catch (NS\AuthenticationException $e) {
+		} catch (Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
 	}

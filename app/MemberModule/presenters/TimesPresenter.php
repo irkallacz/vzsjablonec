@@ -2,16 +2,16 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\Model\MemberService;
+use App\Model\TimesService;
 use Nette\Application\UI\Form;
-use Nette\Diagnostics\Debugger;
-use Nette\Utils\DateTime;
 
 class TimesPresenter extends LayerPresenter{
 
-    /** @var \TimesService @inject */
+    /** @var TimesService @inject */
     public $timesService;
 
-    /** @var \MemberService @inject */
+    /** @var MemberService @inject */
     public $memberService;
 
     /** @var array $order @persistent */

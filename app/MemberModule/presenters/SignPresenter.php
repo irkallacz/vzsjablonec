@@ -3,16 +3,18 @@
 namespace App\MemberModule\Presenters;
 
 use Nette\Application\UI\Form;
+use Nette\Mail\IMailer;
 use Nette\Utils\DateTime;
 use Nette\Security as NS;
 use Nette\Utils\Strings;
+use App\Model\MemberService;
 
 class SignPresenter extends BasePresenter{
 
-	/** @var \MemberService  @inject*/
+	/** @var MemberService  @inject*/
 	public $memberService;
 
-	/** @var \Nette\Mail\IMailer @inject*/
+	/** @var IMailer @inject*/
 	public $mailer;
 
 	/** @persistent */

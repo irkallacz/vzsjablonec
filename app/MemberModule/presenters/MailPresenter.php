@@ -2,18 +2,20 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\Model\AkceService;
+use App\Model\MemberService;
 use Nette\Application\UI\Form;
-use Tracy\Debugger;
+use Nette\Mail\IMailer;
 
 class MailPresenter extends LayerPresenter{
 
-	/** @var \MemberService @inject */
+	/** @var MemberService @inject */
 	public $memberService;
 
-	/** @var \AkceService @inject */
+	/** @var AkceService @inject */
 	public $akceService;
 
-	/** @var \Nette\Mail\IMailer @inject*/
+	/** @var IMailer @inject*/
 	public $mailer;
 
 	public function renderDefault(){

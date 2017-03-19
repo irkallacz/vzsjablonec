@@ -2,6 +2,8 @@
 
 namespace App\PhotoModule\Presenters;
 
+use App\Model\GalleryService;
+use App\Model\MemberService;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
 use Nette\Utils\Image;
@@ -16,10 +18,10 @@ use WebChemistry\Forms\Controls\Multiplier;
 
 class AlbumPresenter extends BasePresenter{
 
-	 /** @var \GalleryService @inject*/
+	 /** @var GalleryService @inject*/
 	public $gallery;
 
-	/** @var \MemberService @inject*/
+	/** @var MemberService @inject*/
 	public $members;
 
 	/** @var \Echo511\Plupload\Control\IPluploadControlFactory @inject */

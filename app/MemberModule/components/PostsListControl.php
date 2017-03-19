@@ -6,9 +6,15 @@
  * Date: 29.11.2016
  * Time: 23:55
  */
-class PostsListControl extends Nette\Application\UI\Control{
 
-    /** @var \Nette\Database\Table\Selection */
+namespace App\MemberModule\Components;
+
+use Nette\Application\UI\Control;
+use Nette\Database\Table\Selection;
+
+class PostsListControl extends Control{
+
+    /** @var Selection */
     private $posts;
 
     /** @var boolean */
@@ -19,11 +25,11 @@ class PostsListControl extends Nette\Application\UI\Control{
 
 	/**
 	 * PostsListControl constructor.
-	 * @param \Nette\Database\Table\Selection $posts
+	 * @param Selection $posts
 	 * @param bool $isLocked
 	 * @param string $search
 	 */
-	public function __construct(\Nette\Database\Table\Selection $posts, $isLocked, $search = NULL){
+	public function __construct(Selection $posts, $isLocked, $search = NULL){
 		parent::__construct();
 		$this->posts = $posts;
 		$this->isLocked = $isLocked;
@@ -32,8 +38,8 @@ class PostsListControl extends Nette\Application\UI\Control{
 
 
 	public function render(){
-        TexyFactory::$root = $this->template->basePath;
-        $texy = TexyFactory::createForumTexy();
+        \TexyFactory::$root = $this->template->basePath;
+        $texy = \TexyFactory::createForumTexy();
 
         $this->template->setFile(__DIR__ . '/PostsListControl.latte');
         $this->template->addFilter('texy', [$texy, 'process']);

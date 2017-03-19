@@ -4,6 +4,9 @@
  * Model base class.
  */
 
+namespace App\Model;
+
+use Nette;
 use Nette\Utils\DateTime;
 use Nette\Database\Table\Selection;
 use Nette\Database\Table\IRow;

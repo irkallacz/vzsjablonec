@@ -3,6 +3,11 @@
 /**
  * Model base class.
  */
+
+namespace App\Model;
+
+use Nette;
+
 class WordpressService extends Nette\Object{
 
     const CATEGORY = 2;

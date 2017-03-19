@@ -2,15 +2,15 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\Model\HlasovaniService;
 use Joseki\Webloader\JsMinFilter;
 use Nette\Application\UI\Form;
-use Nette\Diagnostics\Debugger;
-use Nette\Utils\DateTime;
 use Nette\Utils\Arrays;
+use Nette\Utils\DateTime;
 
 class HlasovaniPresenter extends LayerPresenter{
 
-	/** @var \HlasovaniService @inject */
+	/** @var HlasovaniService @inject */
 	public $hlasovani;
 
 	/** @var \Nette\Mail\IMailer @inject */
@@ -126,7 +126,7 @@ class HlasovaniPresenter extends LayerPresenter{
 			'member_id' => $this->getUser()->getId(),
 			'hlasovani_id' => $id,
 			'hlasovani_odpoved_id' => $odpoved,
-			'date_add' => new Datetime
+			'date_add' => new DateTime()
 		);
 		
 		$this->hlasovani->addVote($values);

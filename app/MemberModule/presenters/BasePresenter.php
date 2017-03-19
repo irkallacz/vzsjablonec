@@ -5,14 +5,8 @@ namespace App\MemberModule\Presenters;
 use Nette\Application\UI\Presenter;
 use Nette\Utils\Html;
 
-
 abstract class BasePresenter extends Presenter{
 
-//    protected function startup(){
-//        parent::startup();
-//        $this->getUser()->getStorage()->setNamespace('member');
-//    }
-//
     protected function afterRender(){
         parent::afterRender();
         if (!$this->context->parameters['productionMode']) {

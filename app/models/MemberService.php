@@ -1,14 +1,22 @@
 <?php
 
-use Nette\Database\SqlLiteral;
 /**
  * MemberService base class.
  */
+
+namespace App\Model;
+
+use Nette\Database\Table\IRow;
+use Nette\Database\Table\Selection;
+use Nette\Security\Passwords;
+use Nette\Utils\DateTime;
+use Nette\Database\SqlLiteral;
+
 class MemberService extends DatabaseService{
 
     /**
      * @param bool $activeOnly
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getMembers($activeOnly = TRUE){
         $member =  $this->database->table('member');
@@ -29,7 +37,7 @@ class MemberService extends DatabaseService{
 
     /**
      * @param $id
-     * @return \Nette\Database\Table\IRow
+     * @return IRow
      */
     public function getMemberById($id){
         return $this->getMembers()->get($id);        
@@ -38,7 +46,7 @@ class MemberService extends DatabaseService{
     /**
      * @param $username
      * @param $password
-     * @return bool|mixed|\Nette\Database\Table\IRow
+     * @return bool|mixed|IRow
      */
     public function getMemberByAutentication($username, $password){
         $member = $this->getMembers()
@@ -46,12 +54,12 @@ class MemberService extends DatabaseService{
             ->where('login',$username)
             ->fetch();
 
-        return Nette\Security\Passwords::verify($password, $member->hash) ? $member : FALSE;
+        return Passwords::verify($password, $member->hash) ? $member : FALSE;
     }
 
     /**
      * @param $role
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getMembersByRole($role){
         return $this->getMembers()->where(':rights_member.rights_id',$this->database->table('rights')->where('name',$role));
@@ -59,7 +67,7 @@ class MemberService extends DatabaseService{
 
     /**
      * @param $mail
-     * @return bool|mixed|\Nette\Database\Table\IRow
+     * @return bool|mixed|IRow
      */
     public function getMemberByEmail($mail){
         return $this->getMembers()->where('mail',$mail)->fetch();
@@ -67,7 +75,7 @@ class MemberService extends DatabaseService{
 
     /**
      * @param $login
-     * @return bool|mixed|\Nette\Database\Table\IRow
+     * @return bool|mixed|IRow
      */
     public function getMemberByLogin($login){
         return $this->getMembers()->select('id, hash, login')->where('login',$login)->fetch();
@@ -75,7 +83,7 @@ class MemberService extends DatabaseService{
 
     /**
      * @param $values
-     * @return bool|int|\Nette\Database\Table\IRow
+     * @return bool|int|IRow
      */
     public function addMember($values){
         return $this->getMembers()->insert($values);        
@@ -107,7 +115,7 @@ class MemberService extends DatabaseService{
 
 	/**
      * @param $member_id
-     * @return bool|int|\Nette\Database\Table\IRow
+     * @return bool|int|IRow
      */
     public function addPasswordSession($member_id, $interval = '20 MINUTE'){
         $this->database->query('DELETE FROM `password_session` WHERE `member_id` = ?', $member_id);
@@ -116,7 +124,7 @@ class MemberService extends DatabaseService{
 
 	/**
      * @param $pubkey
-     * @return bool|mixed|\Nette\Database\Table\IRow
+     * @return bool|mixed|IRow
      */
     public function getPasswordSession($pubkey){
         $this->database->query('DELETE FROM `password_session` WHERE `date_end` < ?', new SqlLiteral('NOW()'));

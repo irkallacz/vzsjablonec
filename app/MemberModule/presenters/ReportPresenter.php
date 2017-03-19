@@ -2,15 +2,14 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\Model\AkceService;
+use Joseki\Webloader\JsMinFilter;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
-use Nette\Diagnostics\Debugger;
-use Nette\Utils\Arrays;
-use Nette\Utils\Strings;
 
 class ReportPresenter extends LayerPresenter{
 
-	/** @var \AkceService @inject */
+	/** @var AkceService @inject */
 	public $akceService;
 
 	public function renderView($id){
@@ -106,7 +105,7 @@ class ReportPresenter extends LayerPresenter{
       $files->addFiles(array(WWW_DIR . '/js/texyla_public.js'));
 
       $compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-      $compiler->addFileFilter(new \Webloader\Filter\jsShrink);
+      $compiler->addFileFilter(new JsMinFilter());
 
       return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
   	}

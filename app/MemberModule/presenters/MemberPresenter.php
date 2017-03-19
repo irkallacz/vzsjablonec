@@ -2,21 +2,21 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\Model\MemberService;
+use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
-use Nette\Diagnostics\Debugger;
+use Nette\Mail\IMailer;
 use Nette\Security\Passwords;
-use Nette\Utils\Random;
 use Nette\Utils\Strings;
-use Nette\Image;
-use Nette\Templating\FileTemplate;
+use Nette\Utils\Image;
 use Nette\Utils\DateTime;
 
 class MemberPresenter extends LayerPresenter{
 
-	/** @var \MemberService @inject */
+	/** @var MemberService @inject */
 	public $memberService;
 
-	/** @var \Nette\Mail\IMailer @inject*/
+	/** @var IMailer @inject*/
 	public $mailer;
 
 	public function actionUpdateCsv(){
@@ -92,7 +92,7 @@ class MemberPresenter extends LayerPresenter{
 		
 		$zip->close();
 
-		$response = new \Nette\Application\Responses\FileResponse(
+		$response = new FileResponse(
             WWW_DIR.'/archive.zip',
             'member-archive.zip',
             'application/zip'
@@ -323,9 +323,6 @@ class MemberPresenter extends LayerPresenter{
 
     	$form->addTextArea('text', 'Poznámka', 30)
 			->setAttribute('spellcheck', 'true');
-      		//->setRequired('Vyplňte %label');
-      		//->setAttribute('class','texyla');	
-	
 
         $form->addSubmit('ok', 'Ulož');
 		$form->onSuccess[] = [$this, 'memberFormSubmitted'];

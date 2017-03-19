@@ -2,27 +2,27 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\Model;
 use Nette\Utils\DateTime;
-use Tracy\Debugger;
 
 class NewsPresenter extends LayerPresenter{
 
-        /** @var \AkceService @inject */
+        /** @var Model\AkceService @inject */
         public $akceService;
 
-        /** @var \WordpressService @inject */
+        /** @var Model\WordpressService @inject */
         public $wordpressService;
 
-        /** @var \ForumService @inject */
+        /** @var Model\ForumService @inject */
         public $forumService;
 
-        /** @var \DokumentyService @inject */
+        /** @var Model\DokumentyService @inject */
         public $dokumentyService;
 
-        /** @var \AnketyService @inject */
+        /** @var Model\AnketyService @inject */
         public $anketyService;
 
-        /** @var \HlasovaniService @inject */
+        /** @var Model\HlasovaniService @inject */
         public $hlasovaniService;
 
         public function renderDefault(){

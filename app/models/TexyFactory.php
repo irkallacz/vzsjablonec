@@ -6,7 +6,7 @@
  * Date: 8.12.2016
  * Time: 21:59
  */
-abstract class TexyFactory extends Nette\Object{
+class TexyFactory extends Nette\Object{
 
     static $root = '';
 

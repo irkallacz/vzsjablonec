@@ -4,6 +4,8 @@
  * ForumService base class.
  */
 
+namespace App\Model;
+
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 

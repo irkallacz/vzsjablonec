@@ -4,7 +4,6 @@ namespace App\PhotoModule\Presenters;
 
 use Nette\Application\UI\Presenter;
 
-
 abstract class BasePresenter extends Presenter{
 
     const photoDir = 'albums';

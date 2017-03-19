@@ -2,33 +2,33 @@
 
 namespace App\MemberModule\Presenters;
 
-use Nette\Application\UI\Presenter;
-use	Nette\Diagnostics\Debugger;
+use App\Model;
+use Tracy\Debugger;
 
 class FeedPresenter extends BasePresenter {
 
 	/** @var \Nette\Http\Response @inject*/
 	public $httpResponse;
 
-	/** @var \AkceService @inject */
+	/** @var Model\AkceService @inject */
 	public $akceService;
 
-	/** @var \ForumService @inject */
+	/** @var Model\ForumService @inject */
 	public $forumService;
 
-	/** @var \DokumentyService @inject */
+	/** @var Model\DokumentyService @inject */
 	public $dokumentyService;
 
-	/** @var \AnketyService @inject */
+	/** @var Model\AnketyService @inject */
 	public $anketyService;
 
-	/** @var \HlasovaniService @inject */
+	/** @var Model\HlasovaniService @inject */
 	public $hlasovaniService;
 
-	/** @var \MemberService @inject */
+	/** @var Model\MemberService @inject */
 	public $memberService;
 
-	/** @var \GalleryService @inject */
+	/** @var Model\GalleryService @inject */
 	public $galleryService;
 
 	protected function startup(){

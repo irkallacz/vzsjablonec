@@ -2,11 +2,12 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\PostsListControl;
+use App\MemberModule\Components\TopicsListControl;
+use App\Model\ForumService;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Html;
-use Nette\Utils\Paginator;
-use Nette\Utils\Strings;
 use Nette\Database\SqlLiteral;
 use Nette\Utils\DateTime;
 use WebLoader\Compiler;
@@ -19,7 +20,7 @@ class ForumPresenter extends LayerPresenter{
 	const postPerPage = 30;
 	const topicPerPage = 30;
 
-	/** @var \ForumService @inject */
+	/** @var ForumService @inject */
 	public $forumService;
 
 	/** @var ActiveRow */
@@ -69,7 +70,7 @@ class ForumPresenter extends LayerPresenter{
 		$paginator = $this['vp']->getPaginator();
 		$topics->limit($paginator->getLength(), $paginator->getOffset());
 
-		return new \TopicsListControl($topics, $search);
+		return new TopicsListControl($topics, $search);
 	}
 
 	public function checkTopic($topic, $locked = FALSE){		
@@ -96,7 +97,7 @@ class ForumPresenter extends LayerPresenter{
 
 		$isLocked = $this->topic->locked;
 
-		return new \PostsListControl($posts, $isLocked, $search);
+		return new PostsListControl($posts, $isLocked, $search);
 	}
 
 	public function actionView($id, $q = null){
@@ -152,7 +153,7 @@ class ForumPresenter extends LayerPresenter{
 		$posts->limit($limit, $offset);
 		$posts->order('date_add DESC');
 
-		return new \PostsListControl($posts, TRUE, $q);
+		return new PostsListControl($posts, TRUE, $q);
 	}
 
 	protected function createComponentSearchTopicsList(){
@@ -169,7 +170,7 @@ class ForumPresenter extends LayerPresenter{
 		$topics->limit($limit, $offset);
 		$topics->order('date_add DESC');
 
-		return new \TopicsListControl($topics, $q);
+		return new TopicsListControl($topics, $q);
 	}
 
 	protected function createComponentSearchForm(){

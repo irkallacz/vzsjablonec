@@ -1,6 +1,7 @@
 <?php
 namespace App\MemberModule\Presenters;
 
+use App\Model\AnketyService;
 use Joseki\Webloader\JsMinFilter;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
@@ -8,7 +9,7 @@ use Tracy\Debugger;
 
 class AnketyPresenter extends LayerPresenter{
 
-	/** @var \AnketyService @inject */
+	/** @var AnketyService @inject */
 	public $anketyService;
 
 	public function renderDefault(){

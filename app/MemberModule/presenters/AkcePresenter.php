@@ -1,39 +1,42 @@
 <?php
 namespace App\MemberModule\Presenters;
 
+use App\Model;
+use App\MemberModule\Components;
 use Joseki\Webloader\JsMinFilter;
 use Nette\Application\UI\Form;
-use Nette\Utils\Arrays;
-use Nette\Utils\Strings;
+use Nette\Database\Table\ActiveRow;
+use Nette\Mail\IMailer;
 use Nette\Utils\DateTime;
+use Nette\Utils\Strings;
 
 class AkcePresenter extends LayerPresenter{
 	const FORUM_AKCE_ID = 2;
 	const YEARS_START = 2007;
 	const YEARS_STEP = 3;
 
-	/** @var \AkceService @inject */
+	/** @var Model\AkceService @inject */
 	public $akceService;
 
-	/** @var \ForumService @inject */
+	/** @var Model\ForumService @inject */
 	public $forumService;
 
-	/** @var \AnketyService @inject */
+	/** @var Model\AnketyService @inject */
 	public $anketyService;
 
-	/** @var \RatingService @inject */
+	/** @var Model\RatingService @inject */
 	public $ratingService;
 
-	/** @var \GalleryService @inject */
+	/** @var Model\GalleryService @inject */
 	public $galleryService;
 
-	/** @var \MemberService @inject */
+	/** @var Model\MemberService @inject */
 	public $memberService;
 
-	/** @var \Nette\Mail\IMailer @inject */
+	/** @var IMailer @inject */
 	public $mailer;
 
-	/** @var \Nette\Database\Table\ActiveRow */
+	/** @var ActiveRow */
 	private $akce;
 
 	/** @var array */
@@ -204,7 +207,7 @@ class AkcePresenter extends LayerPresenter{
 
 			if ($allow) {
 			  $this->flashMessage('Akce byla povolena');
-			  $values['date_update'] = new Datetime();
+			  $values['date_update'] = new DateTime();
 			}
 			else $this->flashMessage('Akce byla zakázána');
 
@@ -222,12 +225,12 @@ class AkcePresenter extends LayerPresenter{
 			$posts->order('row_number DESC');
 			$posts->limit(5, 0);
 
-			return new \PostsListControl($posts,$isLocked);
+			return new Components\PostsListControl($posts,$isLocked);
 		}
 	}
 
     protected function createComponentAlbum(){
-        return new \AlbumPreviewControl($this->galleryService);
+        return new Components\AlbumPreviewControl($this->galleryService);
     }
 
 
@@ -235,7 +238,7 @@ class AkcePresenter extends LayerPresenter{
     	$userId = $this->getUser()->getId();
     	$isOrg = in_array($userId,$this->orgList);
     	$canComment = (in_array($userId,$this->memberList)or($isOrg));
-		return new \RatingControl($this->akce->id,$this->ratingService,$userId,$isOrg,$canComment);
+		return new Components\RatingControl($this->akce->id,$this->ratingService,$userId,$isOrg,$canComment);
 	}
 
 //    public function renderVcal($id = 0,$future = false){
@@ -272,11 +275,11 @@ class AkcePresenter extends LayerPresenter{
 	}
 
 	protected function createComponentMembers(){
-		return new \MembersListControl($this->akceService,$this->akce);
+		return new Components\MembersListControl($this->akceService,$this->akce);
 	}
 
 	protected function createComponentOrganizators(){
-		return new \MembersListControl($this->akceService,$this->akce,TRUE);
+		return new Components\MembersListControl($this->akceService,$this->akce,TRUE);
 	}
 
 	public function createComponentTexylaJs(){

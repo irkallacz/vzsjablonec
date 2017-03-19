@@ -1,22 +1,21 @@
 <?php
 namespace App\MemberModule\Presenters;
 
+use App\Model\DokumentyService;
 use Nette\Application\BadRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
-use Nette\Utils\DateTime;
-use Nette\Diagnostics\Debugger;
-use Nette\Http\Response;
+use Nette\Mail\IMailer;
 use Nette\Utils\Strings;
 
 class DokumentyPresenter extends LayerPresenter{
 
 	const DOCUMENT_DIR = 'doc';
 
-    /** @var \DokumentyService @inject */
+    /** @var DokumentyService @inject */
     public $dokumentyService;
 
-    /** @var \Nette\Mail\IMailer @inject */
+    /** @var IMailer @inject */
     public $mailer;
 
     public function getFileIcon($filename){
@@ -284,6 +283,7 @@ class DokumentyPresenter extends LayerPresenter{
         $form->addText('datum','Datum schůze',10)
             ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
             ->setType('date')
+	        ->setRequired(TRUE)
             ->setDefaultValue(date('Y-m-d'));
 
         $form->addCheckBox('mail', 'Poslat soubor představenstvu e-mailem')

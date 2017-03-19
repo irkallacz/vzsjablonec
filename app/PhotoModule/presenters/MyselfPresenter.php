@@ -2,16 +2,16 @@
 
 namespace App\PhotoModule\Presenters;
 
+use App\Model\GalleryService;
 use Nette\Application\UI\Form;
+use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 use Nette\Utils\Html;
-use Nette\Diagnostics\Debugger;
-use Nette\Utils\DateTime;
 
 
 class MyselfPresenter extends BasePresenter{
 
-    /** @var \GalleryService @inject */
+    /** @var GalleryService @inject */
     public $gallery;
 
     public function renderDefault(){
@@ -33,7 +33,7 @@ class MyselfPresenter extends BasePresenter{
         $this->template->newAlbums = $newAlbums;
         $this->template->newPhotos = $newPhotos;
 
-        $this->template->date_now = new Datetime();
+        $this->template->date_now = new DateTime();
         $this->template->date_last = $date_last;
     }
 

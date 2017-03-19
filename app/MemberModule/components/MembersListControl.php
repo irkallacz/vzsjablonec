@@ -1,18 +1,23 @@
 <?php
 
-use Nette\Application\UI\Form,
-    Nette\Diagnostics\Debugger;
-
 /**
  * Member list for logging on action
  *
  * @author     Jakub Mottl
  */
-class MembersListControl extends Nette\Application\UI\Control{
+
+namespace App\MemberModule\Components;
+
+use Nette\Application\UI\Form;
+use Nette\Application\UI\Control;
+use Nette\Database\Table\ActiveRow;
+use App\Model\AkceService;
+
+class MembersListControl extends Control{
     /** @var AkceService */
     private $model;
      
-    /** @var   Nette\Database\Table\ActiveRow */
+    /** @var ActiveRow */
     private $akce;
     private $list;
     private $org;

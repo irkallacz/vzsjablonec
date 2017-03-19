@@ -2,15 +2,16 @@
 
 namespace App\PhotoModule\Presenters;
 
-use Nette\Application\UI\Form;
-use Nette\Diagnostics\Debugger;
+
+use App\Model\GalleryService;
+use App\Model\MemberService;
 
 class NewsPresenter extends BasePresenter{
 
-	/** @var \GalleryService @inject */
+	/** @var GalleryService @inject */
 	public $gallery;
 
-	/** @var \MemberService @inject */
+	/** @var MemberService @inject */
 	public $member;
 
 	public function renderDefault(){

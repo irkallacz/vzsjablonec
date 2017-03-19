@@ -1,6 +1,7 @@
 <?php
 namespace App\MemberModule\Presenters;
 
+use App\Model\AkceService;
 use Google_Client;
 use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
@@ -9,7 +10,7 @@ use Nette\Database\Table\ActiveRow;
 
 class CalendarPresenter extends BasePresenter{
 
-	/** @var \AkceService @inject */
+	/** @var AkceService @inject */
 	public $akceService;
 
 	public function renderDefault(){

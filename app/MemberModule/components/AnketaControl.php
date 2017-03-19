@@ -6,17 +6,20 @@
  * Time: 18:45
  */
 
+namespace App\MemberModule\Components;
+
 use Nette\Utils\Arrays;
+use Nette\Application\UI\Control;
+use Nette\Utils\DateTime;
+use App\Model\AnketyService;
 
-
-class AnketaControl extends Nette\Application\UI\Control{
+class AnketaControl extends Control{
     /** @var AnketyService  */
     private $anketyService;
 
     /**
      * AnketaControl constructor.
      * @param AnketyService $anketyService
-     * @param Texy $texy
      */
     public function __construct(AnketyService $anketyService){
         parent::__construct();

@@ -4,6 +4,8 @@
  * TimesService base class.
  */
 
+namespace App\Model;
+
 use Nette\Database\Table\Selection;
 use Nette\Database\Table\IRow;
 

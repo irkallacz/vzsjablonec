@@ -3,8 +3,12 @@
 /**
  * Model base class.
  */
-abstract class DatabaseService extends Nette\Object
-{
+
+namespace App\Model;
+
+use Nette;
+
+abstract class DatabaseService extends Nette\Object{
     /** @var Nette\Database\Context */
     public $database;
 

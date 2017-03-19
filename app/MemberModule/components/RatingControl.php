@@ -7,10 +7,14 @@
  * Time: 16:16
  */
 
-use Nette\Application\UI\Form;
-use Nette\Utils\Arrays;
+namespace App\MemberModule\Components;
 
-class RatingControl extends \Nette\Application\UI\Control {
+use App\Model\RatingService;
+use Nette\Application\UI\Form;
+use Nette\Application\UI\Control;
+use	Nette\Utils\Arrays;
+
+class RatingControl extends Control {
 
 	/** @var int */
 	private $userId;
