@@ -7,7 +7,6 @@
 	{var $topic = $item->ref('forum_post','forum_topic_id')}
 	<title>{$topic->title|firstUpper} ({$item->forum->title|firstUpper})</title>	
 	{var $member = $item->member}
-	{* <dc:creator>{$member->surname} {$member->name}</dc:creator> *}
 	<author>{$member->mail} ({$member->surname} {$member->name})</author>
 	<link>{link //Forum:viewPost,$item->id}</link>
 	<guid isPermaLink="false">{$item->id}@{link Forum:default}</guid>
