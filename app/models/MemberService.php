@@ -78,7 +78,7 @@ class MemberService extends DatabaseService{
      * @return bool|mixed|IRow
      */
     public function getMemberByLogin($login){
-        return $this->getMembers()->select('id, hash, login')->where('login',$login)->fetch();
+        return $this->getMembers()->select('id, hash, name, surname, login, mail')->where('login',$login)->fetch();
     }
 
     /**
