@@ -74,5 +74,9 @@ services:
 	- App\Model\WordpressService(@database.wordpress.context)
 
 extensions:
+	console: Kdyby\Console\DI\ConsoleExtension
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	- Echo511\Plupload\DI\PluploadExtension
+
+console:
+    url: http://www.kdyby.org
