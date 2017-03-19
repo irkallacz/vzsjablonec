@@ -277,21 +277,16 @@ class HlasovaniPresenter extends LayerPresenter{
         $template->hlasovani = $hlasovani;
         $template->odpovedi = $odpovedi;
 
-        /* Not needed when don't use |texy, which causes bug:
-         * Call to undefined method Nette\Templating\FileTemplate::texy().
-         * in ...\libs\Nette\common\ObjectMixin.php:95
-         */
-//		$this->registerTexy();
+        $texy = \TexyFactory::createTexy();
+        $template->addFilter('texy', [$texy, 'process']);
 
         $mail = $this->getNewMail();
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
-        $mail->setBody($template);
-//        $mail->setHTMLBody($template);
+        $mail->setHTMLBody($template);
 
-		$this->mailer->send($mail);
+        $this->mailer->send($mail);
 
-	}
+    }
 
 
 }
-    
