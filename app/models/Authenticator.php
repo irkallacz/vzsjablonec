@@ -29,12 +29,12 @@ class Authenticator extends Object implements Security\IAuthenticator {
 	 * @throws Security\AuthenticationException
 	 */
 	public function authenticate(array $credentials){
-		list($username, $password) = $credentials;
+		list($email, $password) = $credentials;
 
-		$user = $this->memberService->getMemberByLogin($username);
+		$user = $this->memberService->getMemberByLogin($email);
 
 		if (!$user) {
-			throw new Security\AuthenticationException("Uživatel '$username' nenalezen.", self::IDENTITY_NOT_FOUND);
+			throw new Security\AuthenticationException("Uživatel s e-mailem '$email' nenalezen.", self::IDENTITY_NOT_FOUND);
 		}
 
 		if (!Security\Passwords::verify($password, $user->hash)) {

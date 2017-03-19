@@ -273,11 +273,11 @@ class MemberPresenter extends LayerPresenter{
 			->setAttribute('spellcheck', 'true')
       		->setRequired('Vyplňte %label');
 
-        $form->addGroup('Přihlašovací údaje');
+        $form->addGroup('Heslo');
 
-        $form->addText('login', 'Login', 20)
-      		->addRule([$this, 'uniqueValidator'], 'V databázi se již vyskytuje osoba se stejným přihlašovacím jménem')
-      		->setRequired('Vyplňte %label');
+//        $form->addText('login', 'Login', 20)
+//      		->addRule([$this, 'uniqueValidator'], 'V databázi se již vyskytuje osoba se stejným přihlašovacím jménem')
+//      		->setRequired('Vyplňte %label');
 
       	$form->addPassword('password', 'Nové heslo', 20)
       		->addCondition(Form::FILLED)
@@ -290,7 +290,8 @@ class MemberPresenter extends LayerPresenter{
       		->addCondition(Form::FILLED)
       			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);     
       		
-        $form->addCheckbox('sendMail','Poslat novému členu mail s přihlašovacími údaji')->setDefaultValue(TRUE);
+        $form->addCheckbox('sendMail','Poslat novému členu mail s přihlašovacími údaji')
+	        ->setDefaultValue(TRUE);
 
         $form->addGroup('Adresa');
 

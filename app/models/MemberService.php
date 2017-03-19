@@ -50,9 +50,8 @@ class MemberService extends DatabaseService{
      */
     public function getMemberByAutentication($username, $password){
         $member = $this->getMembers()
-	        ->select('login, hash')
-            ->where('login',$username)
-            ->fetch();
+	        ->select('mail, hash')
+            ->get($username);
 
         return Passwords::verify($password, $member->hash) ? $member : FALSE;
     }
@@ -78,7 +77,7 @@ class MemberService extends DatabaseService{
      * @return bool|mixed|IRow
      */
     public function getMemberByLogin($login){
-        return $this->getMembers()->select('id, hash, name, surname, login, mail')->where('login',$login)->fetch();
+        return $this->getMembers()->select('id, hash, name, surname, mail')->where('mail',$login)->fetch();
     }
 
     /**
