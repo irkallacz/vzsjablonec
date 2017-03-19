@@ -128,6 +128,7 @@ class SignPresenter extends BasePresenter{
 			->addRule(Form::PATTERN,'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena','^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$');
 
 		$form->addPassword('confirm', 'Potvrzení hesla:', 20)
+			->setRequired(TRUE)
 			->addRule(Form::EQUAL,'Zadaná hesla se neschodují',$form['password'])
 			->addCondition(Form::FILLED)
 			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);
