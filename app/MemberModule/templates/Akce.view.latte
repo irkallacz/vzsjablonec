@@ -185,8 +185,8 @@ class="hint">Čas na přihlášení vypršel</span></p>
 
 <ul class="inline-nav">
 <li><a n:href="Forum:">Fórum</a></li>
-<li>» <a n:href="Forum:topic $topic->forum->id">{$topic->forum->title|firstUpper}</a></li>
-<li>» <a n:href="Forum:view $topic->id">{$topic->title|firstUpper}</a></li>
+<li>» <a n:href="Forum:category $topic->forum->id">{$topic->forum->title|firstUpper}</a></li>
+<li>» <a n:href="Forum:topic $topic->id">{$topic->title|firstUpper}</a></li>
 </ul>
 
 {control postsList}

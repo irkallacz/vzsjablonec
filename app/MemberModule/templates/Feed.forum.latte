@@ -8,7 +8,7 @@
 	<title>{$topic->title|firstUpper} ({$item->forum->title|firstUpper})</title>	
 	{var $member = $item->member}
 	<author>{$member->mail} ({$member->surname} {$member->name})</author>
-	<link>{link //Forum:viewPost,$item->id}</link>
+	<link>{link //Forum:post,$item->id}</link>
 	<guid isPermaLink="false">{$item->id}@{link Forum:default}</guid>
 	<description>{$item->text|texy}</description>
 	<pubDate>{$item->date_add|date:DATE_RSS}</pubDate>

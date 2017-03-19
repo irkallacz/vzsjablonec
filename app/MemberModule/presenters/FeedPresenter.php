@@ -3,11 +3,11 @@
 namespace App\MemberModule\Presenters;
 
 use App\Model;
-use Tracy\Debugger;
+use Nette\Http\Response;
 
 class FeedPresenter extends BasePresenter {
 
-	/** @var \Nette\Http\Response @inject*/
+	/** @var \Nette\Http\Response @inject */
 	public $httpResponse;
 
 	/** @var Model\AkceService @inject */
@@ -43,7 +43,7 @@ class FeedPresenter extends BasePresenter {
 		$member = $this->memberService->getMemberByAutentication($_SERVER['PHP_AUTH_USER'],$_SERVER['PHP_AUTH_PW']);
 
 		if (!$member) {
-			$this->httpResponse->setCode(\Nette\Http\Response::S401_UNAUTHORIZED);
+			$this->httpResponse->setCode(Response::S401_UNAUTHORIZED);
 
 		    echo 'Chyba přihlášení';
 		    $this->terminate();	
@@ -52,7 +52,7 @@ class FeedPresenter extends BasePresenter {
 
 	protected function prihlas(){
 		$this->httpResponse->setHeader('WWW-Authenticate','Basic realm="VZS member"');
-		$this->httpResponse->setCode(\Nette\Http\Response::S401_UNAUTHORIZED);
+		$this->httpResponse->setCode(Response::S401_UNAUTHORIZED);
 		
 		$this->terminate();
 	}	

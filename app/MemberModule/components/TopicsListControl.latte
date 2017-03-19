@@ -9,14 +9,14 @@
 
             <td class="col title">
                 <div class="headerLike">
-                    <a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" href="{plink Forum:view,$topic->id}">
+                    <a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" href="{plink Forum:topic,$topic->id}">
                         <strong>{if $topic->locked}<span class="icon-lock"></span>{/if}
                             {if !$search}{$topic->title|firstUpper}{else}{$topic->title|replace:$search:'<em class="highlight">'.$search.'</em>'|firstUpper|noescape}{/if}
                         </strong>
                     </a>
 
                     <span n:if="(isset($postPerPage))and($postCount > $postPerPage) and ($postCount/$postPerPage < 6)" class="no-wrap" >
-				        [ {for $i = 1; $i <= ceil($postCount/$postPerPage); $i++} <a href="{plink Forum:view, $topic->id, vp-page => $i}">{$i}</a>{/for} ]
+				        [ {for $i = 1; $i <= ceil($postCount/$postPerPage); $i++} <a href="{plink Forum:topic, $topic->id, vp-page => $i}">{$i}</a>{/for} ]
 			        </span>
                 </div>
             </td>
@@ -29,7 +29,7 @@
                         {*<a>*}
                     </div>
                     <div class="no-wrap">
-                        <a title="{$post->date_add|timeAgoInWords}" href="{plink Forum:viewPost, $post->id}">
+                        <a title="{$post->date_add|timeAgoInWords}" href="{plink Forum:post, $post->id}">
 					<span class="icon-chat-empty"><span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
                             <a>
                     </div>

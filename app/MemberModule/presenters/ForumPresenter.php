@@ -33,20 +33,15 @@ class ForumPresenter extends LayerPresenter{
 
 	public function showPost($post){
 		$page = ceil($post->row_number/self::postPerPage);	
-		$this->redirect("Forum:view#p$post->id", array($post->forum_topic_id, 'vp-page' => $page));
-	}
-	
-	public function actionViewLast($id){
-		$post = $this->forumService->getPostsByTopicId($id)->order('row_number DESC')->fetch();
-		$this->showPost($post);
+		$this->redirect("Forum:topic#post/$post->id", array($post->forum_topic_id, 'vp-page' => $page));
 	}
 
-	public function actionViewPost($id){
+	public function actionPost($id){
 		$post = $this->forumService->getPostById($id);		
 		$this->showPost($post);
 	}
 
-	public function renderTopic($id, $q = null){
+	public function renderCategory($id, $q = null){
 		$forum = $this->forumService->getForumById($id);
 		$this->template->forum = $forum;
 
@@ -81,7 +76,7 @@ class ForumPresenter extends LayerPresenter{
 
 		if ($locked and $topic->locked) {
         	$this->flashMessage('Toto téma bylo uzavřeno','error');
-        	$this->redirect('view',$topic->id);
+        	$this->redirect('topic',$topic->id);
         } 
 	}
 
@@ -100,13 +95,13 @@ class ForumPresenter extends LayerPresenter{
 		return new PostsListControl($posts, $isLocked, $search);
 	}
 
-	public function actionView($id, $q = null){
+	public function actionTopic($id, $q = null){
 		$topic = $this->forumService->getTopicById($id);
 		$this->checkTopic($topic);
 		$this->topic = $topic;
 	}
 
-	public function renderView($id, $q = null){
+	public function renderTopic($id, $q = null){
 		$this->template->topic = $this->topic;
 		$this->template->title = $this->topic->title;
 
@@ -242,7 +237,7 @@ class ForumPresenter extends LayerPresenter{
 	private function checkPost($post){		
 		if ($post->row_number == 0) {
         	$this->flashMessage('Příspěvek neexistuje','error');
-        	$this->redirect('view', $post->forum_topic_id->id);
+        	$this->redirect('topic', $post->forum_topic_id->id);
         }
 	}
 	
@@ -258,7 +253,7 @@ class ForumPresenter extends LayerPresenter{
 
 		if ((!$this->getUser()->isInRole($this->name))and($post->member_id!=$this->getUser()->getId())) {
             	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('view',$post->forum_topic_id);
+            	$this->redirect('topic',$post->forum_topic_id);
         }
 
 		$this->template->isEdit = TRUE;
@@ -279,7 +274,7 @@ class ForumPresenter extends LayerPresenter{
         $this->template->title = $topic->title;
 	}
 
-	public function renderCitePost($id){
+	public function renderCite($id){
 		if (!$id) {
         	$this->flashMessage('Nebyl vybrán žádný příspěvek','error');
         	$this->redirect('default');
@@ -322,7 +317,7 @@ class ForumPresenter extends LayerPresenter{
 
 	 if ((!$this->getUser()->isInRole($this->name))and($post->member_id!=$this->getUser()->getId())) {
             	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('view',$post->forum_topic_id);
+            	$this->redirect('topic',$post->forum_topic_id);
         }
 
 	 if ($post->id != $post->forum_topic_id) {		
@@ -332,7 +327,7 @@ class ForumPresenter extends LayerPresenter{
 	 	
 	 	$post->update(array('row_number' => 0, 'hidden' => 1));
 
-	 	$this->redirect('Forum:view', $post->forum_topic_id);
+	 	$this->redirect('Forum:topic', $post->forum_topic_id);
 	 }
 	 else {
 	 	$this->forumService->getPostsByTopicId($post->id)->update(array('row_number' => 0, 'hidden' => 1));
@@ -345,11 +340,11 @@ class ForumPresenter extends LayerPresenter{
 	 
 	 if ((!$this->getUser()->isInRole($this->name))and($post->member_id!=$this->getUser()->getId())) {
             	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('view',$post->forum_topic_id);
+            	$this->redirect('topic',$post->forum_topic_id);
         }
 
 	 $post->update(array('locked' => $lock));
-	 $this->redirect('Forum:view',$post->forum_topic_id);
+	 $this->redirect('topic',$post->forum_topic_id);
 	}
 
 	protected function createComponentTexylaJs(){
@@ -396,7 +391,7 @@ class ForumPresenter extends LayerPresenter{
 			$id = (int) $this->getParameter('id');
 			$this->forumService->getTopicById($id)->update($values);
         	$this->flashMessage('Téma bylo upraveno');
-        	$this->redirect('view',$id); 	
+        	$this->redirect('topic',$id);
         }
 		
 		if ($akce == 'topic'){
