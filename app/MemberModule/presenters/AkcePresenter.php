@@ -263,12 +263,15 @@ class AkcePresenter extends LayerPresenter{
 
 		$member = $akce->member;
 
+        $texy = \TexyFactory::createTexy();
+        $template->addFilter('texy', [$texy, 'process']);
+
 		$mail->addReplyTo($member->mail,$member->surname.' '.$member->name);
 
 		foreach($this->memberService->getMembersByRole('Confirm') as $member)
 		  $mail->addTo($member->mail,$member->surname.' '.$member->name);
 
-		$mail->setBody($template);
+		$mail->setHTMLBody($template);
 		$this->mailer->send($mail);
 	}
 

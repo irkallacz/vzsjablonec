@@ -7,6 +7,7 @@ use Nette\Application\UI\Form;
 use Nette\DateTime;
 use Nette\Diagnostics\Debugger;
 use Nette\Http\Response;
+use Nette\Mail\IMailer;
 use Nette\Utils\Strings;
 
 class DokumentyPresenter extends LayerPresenter{
@@ -82,7 +83,7 @@ class DokumentyPresenter extends LayerPresenter{
         $mail->addAttachment('schuze-'.$datum->format('Y-m-d').'.pdf', $file->getContents());
 
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
-        $mail->setBody($template);
+        $mail->setHTMLBody($template);
 
         $this->mailer->send($mail);
     }
