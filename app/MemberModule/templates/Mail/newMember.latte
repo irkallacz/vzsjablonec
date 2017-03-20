@@ -1,17 +1,18 @@
 ﻿{layout '@mail_layout.latte'}
-{block text}
-{var $mail->subject = '[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou'}
-Zdravím.
+{contentType text/html; charset=utf-8}
+{block content}
+    <p>Zdravím.</p>
 
-Právě si byl zaregistrován do systému Pobočného spolku VZS Jablonec nad Nisou.
+    <p>Právě si byl zaregistrován do systému VZS Jablonec nad Nisou.</p>
 
-Zde jsou tvé přihlašovací údaje:
+    <p>Tvoje přihlašovací jméno: {$member->login}</p>
+    <p>Svoje heslo si můžeš nastavit na adrese:
+        <a href="//Sign:restorePassword pubkey => $session->pubkey">
+            {link //Sign:restorePassword pubkey => $session->pubkey}</a><br>
+        Tento odkaz bude fungovat 24 hodin (do {$session->date_end|date:'d.m.Y H:i:s'})</p>
 
-Přihlašovací jméno: {$member->login}
-Heslo: {$member->password}
+    <p>Svůj profil najdeš na adrese: <a href="//Member:profile">{link //Member:profile}</a><br>
+        Zde si upravit své osobní údaje.</p>
 
-Svůj profil najdeš na adrese: {link //Member:profile}
-Zde si můžeš změnit heslo a upravit své osobní údaje.
-
-Vstup na stránky pro členy: {link //Akce:default}
+    <p>Vstup na stránky pro členy: <a href="//Akce:default">{link //Akce:default}</a></p>
 {/block}
