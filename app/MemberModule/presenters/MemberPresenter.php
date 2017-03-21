@@ -10,6 +10,7 @@ use Nette\Security\Passwords;
 use Nette\Utils\Strings;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 class MemberPresenter extends LayerPresenter{
 
@@ -158,8 +159,9 @@ class MemberPresenter extends LayerPresenter{
  		$form['name']->setAttribute('readonly');
   		$form['surname']->setAttribute('readonly');
 
+  		if (!$this->getUser()->isInRole($this->getName())) unset($form['date_add']);
+
   		$form->setDefaults($member);
-  		$form['date_born']->setDefaultValue($member->date_born->format('Y-m-d'));
 
   		unset($this['memberForm']['sendMail']);
   		$this->template->title = $member->surname .' '. $member->name;
@@ -171,11 +173,12 @@ class MemberPresenter extends LayerPresenter{
             $this->redirect($this->name.':');
         }
 
-    	//$this['memberForm']['password']->setRequired('Vyplňte heslo');
     	unset($this['memberForm']['password']);
     	unset($this['memberForm']['confirm']);
+		unset($this['memberForm']['image']);
+		unset($this['memberForm']['text']);
 
-    	$this->setView('edit');  	
+		$this->setView('edit');
   	}
 
 	public function actionProfile(){
@@ -262,38 +265,42 @@ class MemberPresenter extends LayerPresenter{
 			->setAttribute('spellcheck', 'true')	
       		->setRequired('Vyplňte %label');
 
-		$form->addText('date_born', 'Datum narození', 10)
-		 	->setType('date')
-			->setRequired('Vyplňte %label')
-		   	->setDefaultValue(date('Y-m-d'))
-		    ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-		    ->setAttribute('class','date');
-        
-        $form->addText('zamestnani', 'Zaměstnání/Škola', 30)
+		$form['date_born'] = new \DateInput('Datum narození');
+		$form['date_born']->setRequired('Vyplňte datum narození')
+			->setDefaultValue(new DateTime());
+
+		$form->addText('zamestnani', 'Zaměstnání/Škola', 30)
 			->setAttribute('spellcheck', 'true')
       		->setRequired('Vyplňte %label');
 
-        $form->addGroup('Heslo');
+        $form->addGroup('Přihlašovací údaje');
 
-//        $form->addText('login', 'Login', 20)
-//      		->addRule([$this, 'uniqueValidator'], 'V databázi se již vyskytuje osoba se stejným přihlašovacím jménem')
-//      		->setRequired('Vyplňte %label');
-
-      	$form->addPassword('password', 'Nové heslo', 20)
+		$form->addPassword('password', 'Nové heslo', 20)
       		->addCondition(Form::FILLED)
       			->addRule(Form::PATTERN,'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena','^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
       			->addRule([$this, 'currentPassValidator'],'Nesmíte použít svoje staré heslo',$this->getUser()->getIdentity()->hash);
-	
-      	$form->addPassword('confirm', 'Potvrzení', 20)
+
+		$form->addPassword('confirm', 'Potvrzení', 20)
 	        ->setRequired(FALSE)
       		->addRule(Form::EQUAL,'Zadaná hesla se neschodují',$form['password'])
       		->addCondition(Form::FILLED)
-      			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);     
-      		
-        $form->addCheckbox('sendMail','Poslat novému členu mail s přihlašovacími údaji')
-	        ->setDefaultValue(TRUE);
+      			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);
 
-        $form->addGroup('Adresa');
+		$form->addCheckbox('sendMail','Poslat novému členu mail s přihlašovacími údaji')
+			->setDefaultValue(TRUE);
+
+		$form->addGroup('Kontakty');
+
+		$form->addText('mail', 'E-mail', 30)
+			->setType('email')
+			->addRule([$this, 'uniqueValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
+			->setRequired('Vyplňte %label');
+
+		$form->addText('telefon', 'Telefon', 30)
+			->setRequired('Vyplňte %label')
+			->addRule(Form::LENGTH,'%label musí mít %d znaků',9);
+
+		$form->addGroup('Adresa');
 
         $form->addText('ulice', 'Ulice', 30)
 			->setAttribute('spellcheck', 'true')	
@@ -303,20 +310,13 @@ class MemberPresenter extends LayerPresenter{
 			->setAttribute('spellcheck', 'true')	
       		->setRequired('Vyplňte %label');
 
-      	$form->addGroup('Kontakty');
+    	$form->setCurrentGroup(null);
 
-        $form->addText('mail', 'E-mail', 30)
-        	->setType('email')
-        	->addRule([$this, 'uniqueValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
-			->setRequired('Vyplňte %label');
+		$form['date_add'] = new \DateInput('Datum registrace');
+		$form['date_add']->setRequired('Vyplňte datum registrace')
+			->setDefaultValue(new DateTime());
 
-      	$form->addText('telefon', 'Telefon', 30)
-      		->setRequired('Vyplňte %label')
-			->addRule(Form::LENGTH,'%label musí mít %d znaků',9);
-	
-    	$form->setCurrentGroup(null); 
-
-    	$form->addUpload('image','Nový obrázek')
+		$form->addUpload('image','Nový obrázek')
     		->addCondition(Form::FILLED)    			
         		->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 5 MB.',5 * 1024 * 1024 /* v bytech */)
         		->addRule(Form::IMAGE, 'Fotografie musí být ve formátu JPEG')
@@ -357,6 +357,8 @@ class MemberPresenter extends LayerPresenter{
         unset($values->image);
 
         if (!$values->text) unset($values->text);
+
+        $values->date_update = new DateTime();
 
 		if ($id) {
           	$this->memberService->getMemberById($id)->update($values);

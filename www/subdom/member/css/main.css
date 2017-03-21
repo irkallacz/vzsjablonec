@@ -17,7 +17,7 @@ border-radius: 0 0 15px 15px; float: right; color: #12397e; font-weight: bold; f
 #menu { float: left; list-style-type: none; margin: 0; padding: 0; }
 #menu li a {display: block; text-decoration: none; color: inherit;}
 #menu li {background-color: #60afe4; text-decoration: none; border: 1px solid black; 
-font-size: 1.5em;  font-family: Arial, sans-serif; margin-top: 10%; border-radius: 1ex; 
+font-size: 1.5em;  font-family: Arial, sans-serif; margin-top: 10%; border-radius: 1ex;
 width: 100%; display: block; color: white; font-weight: bold; padding: 0.1ex 0.1ex 0.1ex 0.5ex;
 	background-image: -moz-linear-gradient(#60afe4,#0089d2); 
 	background-image: -webkit-linear-gradient(#60afe4,#0089d2); 
@@ -102,6 +102,8 @@ input[type='email']:hover, input[type='number']:hover, input[type='time']:hover,
 input[type='text']:focus, input[type='password']:focus, input[type='date']:focus, input[type='datetime']:focus, 
 input[type='email']:focus, input[type='number']:focus, input[type='time']:focus, textarea:focus, select:hover 
 {border-color: darkorange;}
+
+input[type='date'], input.date {text-align: center}
 
 a img {border: none;}  
 

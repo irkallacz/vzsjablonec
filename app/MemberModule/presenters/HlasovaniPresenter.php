@@ -44,7 +44,7 @@ class HlasovaniPresenter extends LayerPresenter{
 		$this->template->locked = $locked;
 		$this->template->items = $anketa->related('hlasovani_odpoved')->order('text');
 		
-		$members = $this->hlasovani->getMembersByAnketaId($id)->order('date_add');
+		$members = $this->hlasovani->getMembersByAnketaId($id)->order(':hlasovani_member.date_add');
 
 		$this->template->members = $members;//$members->fetchPairs('id','jmeno');
 
@@ -53,7 +53,6 @@ class HlasovaniPresenter extends LayerPresenter{
 		$memberList = $members->fetchPairs('id','hlasovani_odpoved_id');
 		$this->template->memberList = $memberList;
 		$this->template->isLogged = Arrays::get($memberList, $this->getUser()->getId(),0);
-		
 
 		$this->registerTexy();
 		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
@@ -97,7 +96,6 @@ class HlasovaniPresenter extends LayerPresenter{
 
 		    $form['pocet']->setDefaultValue(count($odpovedi));    
 		    $form->setDefaults($anketa);
-		    $form['date_deatline']->setDefaultValue($anketa->date_deatline->format('Y-m-d'));
 		    $form['users']->setValues($odpovedi);
 
 		    $this->template->title = ucfirst($anketa->title);
@@ -193,15 +191,13 @@ class HlasovaniPresenter extends LayerPresenter{
 	    $form->addTextArea('text','Otázka',60)
 			->setAttribute('spellcheck', 'true');
 
-	    $form->addText('date_deatline', 'Konec hlasování', 10)
-	      ->setRequired('Vyplňte datum konce hlasování')
-    	  ->setType('date')
-      	  ->setDefaultValue(date_create()->format('Y-m-d'))
-      	  ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-      	  ->setAttribute('class','date');
+		$form['date_deatline'] = new \DateInput('Konec hlasování');
+		$form['date_deatline']->setRequired('Vyplňte datum konce hlasování')
+			->setDefaultValue(new DateTime());
 
 	    $users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) {
 	    	$user->addText('text', 'Odpověď', 30);
+		    $user->addHidden('id');
 
 	        $user->addButton('remove', '✖')
 	        	->setAttribute('class','buttonLike')
@@ -216,7 +212,15 @@ class HlasovaniPresenter extends LayerPresenter{
 
 		$form->addSubmit('save', 'Uložit')
 			->onClick[] = [$this, 'addAnketaFormSubmitted'];
-		
+
+		$id = $this->getParameter('id');
+
+		if ($id){
+			$odpovedi = $this->hlasovani->getOdpovediByAnketaId($id)->fetchPairs('id');
+			$form->setDefaults(['users' => $odpovedi, 'pocet' => count($odpovedi)]);
+		}
+
+
 		return $form;
     }
 
@@ -262,8 +266,8 @@ class HlasovaniPresenter extends LayerPresenter{
 				$this->hlasovani->addOdpoved($array);
 			}
 		}else {
-			foreach ($odpovedi as $odpoved_id => $odpoved) {
-				$this->hlasovani->getOdpovedById($odpoved_id)->update(array('text' => ucfirst($odpoved->text)));
+			foreach ($odpovedi as $odpoved) {
+				$this->hlasovani->getOdpovedById($odpoved->id)->update(array('text' => ucfirst($odpoved->text)));
 			}
 		}
 
