@@ -30,9 +30,9 @@ Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p
 {/if isset($akce)}
 
 {if}<h3>Příspěvky ve fóru</h3>
-<ol class="news" n:inner-foreach="$forumList as $topic">
-	<li><a n:class="$topic->member_id == $user->getId() ? logged" n:href="Forum:viewLast,$topic->forum_topic_id" 
-	title="{$topic->date_add|timeAgoInWords}">{$topic->ref('forum_post','forum_topic_id')->title} ({$topic->forum->title})</a></li>
+<ol class="news" n:inner-foreach="$forumList as $post">
+	<li><a n:class="$topic->member_id == $user->getId() ? logged" n:href="Forum:post,$post->id" 
+	title="{$topic->date_add|timeAgoInWords}">{$post->ref('forum_post','forum_topic_id')->title} ({$post->forum->title})</a></li>
 </ol>
 {/if isset($topic)}
 
