@@ -322,7 +322,7 @@ class DokumentyPresenter extends LayerPresenter{
             
             $datum = new Datetime($values->datum);
             
-            $values->title = 'Schůze ' . $datum->format('d.m.Y');
+            $values->title = 'Schůze ' . $datum->format('Y.m.d');
             $values->filename = 'schuze-' . $datum->format('Y-m-d') .'.pdf';
             
             $values->member_id = $this->getUser()->getId();
