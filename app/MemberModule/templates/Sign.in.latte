@@ -8,13 +8,7 @@
   
   <p>Pokud jsi zapomněl/a své přihlašovací jméno a heslo, tak zadej svůj e-mail,
   a na něj ti přijdou instrukce k jeho obnovení.</p>
-  
-  {form forgotPassForm}
-    <ul class="error" n:if="$form->hasErrors()">
-        <li n:foreach="$form->errors as $error">{$error}</li>
-    </ul>
 
-    <p class="required"><b>{label mail /}</b> {input mail} {input send}</p>
-  {/form forgotPassForm}
+  <p class="required"><b>{control forgotPassForm}</p>
 
 {/block}

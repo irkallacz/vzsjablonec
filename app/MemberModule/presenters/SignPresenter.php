@@ -26,13 +26,13 @@ class SignPresenter extends BasePresenter{
 	 */
 	protected function createComponentSignInForm(){
 		$form = new Form;
-		$form->addText('mail', 'Email:')
+		$form->addText('mail', 'Email:', 30)
 			->setAttribute('autofocus')
 			->setRequired('Vyplňte váš email')
 			->setType('email')
 			->addRule(FORM::EMAIL, 'Vyplňte správnou e-mailovou adresu');
 
-		$form->addPassword('password', 'Heslo:')
+		$form->addPassword('password', 'Heslo:', 30)
 			->setRequired('Vyplňte heslo');
 
 		$form->addSubmit('send', 'Přihlásit');
@@ -64,16 +64,23 @@ class SignPresenter extends BasePresenter{
 
     protected function createComponentForgotPassForm(){
 		$form = new Form;
-		$form->addText('mail', 'Email:')
+		$form->addText('mail', 'Email:', 30)
 			->setRequired('Vyplňte váš email')
 			->setType('email')
 			->addRule(FORM::EMAIL, 'Vyplňte správnou e-mailovou adresu');
                     
-		$form->addSubmit('send', 'poslat');
+		$form->addSubmit('send', 'Odeslat');
 	    $form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
 		$form->onSuccess[] = [$this, 'forgotPassFormSubmitted'];
-		return $form;
+
+	    $renderer = $form->getRenderer();
+	    $renderer->wrappers['controls']['container'] = NULL;
+	    $renderer->wrappers['pair']['container'] = NULL;
+	    $renderer->wrappers['label']['container'] = NULL;
+	    $renderer->wrappers['control']['container'] = NULL;
+
+	    return $form;
 	}
 
 	public function forgotPassFormSubmitted(Form $form){
@@ -121,9 +128,6 @@ class SignPresenter extends BasePresenter{
 
 	protected function createComponentRestorePasswordForm(){
 		$form = new Form;
-		$form->addText('login','Přihlašovací jméno: ')
-			//->setAttribute('readonly','readonly');
-			->setDisabled();
 
 		$form->addPassword('password', 'Nové heslo:', 20)
 			->addCondition(Form::FILLED)
