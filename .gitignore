@@ -48,6 +48,7 @@ session/
 log/
 vendor/
 config.local.neon
+config.local.neon.production
 .idea
 www/subdom/t9
 www/subdom/photo/albums
