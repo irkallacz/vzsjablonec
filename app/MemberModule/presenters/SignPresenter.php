@@ -178,13 +178,11 @@ class SignPresenter extends BasePresenter{
 
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/restorePassword.latte');
-		$template->member = $member;
-		$template->pubkey = $session->pubkey;
-		$template->date_end = $session->date_end;
+		$template->session = $session;
 
 		$mail = $this->getNewMail();
 
-		$mail->addTo($member->mail,$member->surname.' '.$member->name);
+		$mail->addTo($member->mail, $member->surname.' '.$member->name);
 		$mail->setSubject('[VZS Jablonec] Obnova hesla');
 		$mail->setHTMLBody($template);
 
