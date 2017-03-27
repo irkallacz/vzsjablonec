@@ -181,16 +181,16 @@ class MemberPresenter extends LayerPresenter{
 
 		$this->setView('edit');
 
-		$session = new ArrayHash();
-		$session->pubkey = '12345679';
-		$session->date_end = new DateTime('+24 hours');
-
-		$member =  new ArrayHash();
-		$member->name = 'Pavel';
-		$member->surname = 'Vok';
-		$member->mail = 'pavel.vok@seznamc.cz';
-
-		$this->sendLogginMail($member,$session);
+//		$session = new ArrayHash();
+//		$session->pubkey = '12345679';
+//		$session->date_end = new DateTime('+24 hours');
+//
+//		$member =  new ArrayHash();
+//		$member->name = 'Pavel';
+//		$member->surname = 'Vok';
+//		$member->mail = 'pavel.vok@seznamc.cz';
+//
+//		$this->sendLogginMail($member,$session);
 	}
 
 	public function actionProfile(){
@@ -204,10 +204,12 @@ class MemberPresenter extends LayerPresenter{
 		$template->session = $session;
 
 		$mail = $this->getNewMail();
-	    $mail->addTo($member->mail,$member->surname.' '.$member->name);
+
+		$mail->addTo($member->mail, $member->surname.' '.$member->name);
 	    $mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
 	    $mail->setHTMLBody($template);
-		$this->mailer->send($mail);
+
+	    $this->mailer->send($mail);
   	}
 
 	protected function createComponentUploadMembersForm(){

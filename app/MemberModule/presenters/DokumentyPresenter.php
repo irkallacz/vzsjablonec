@@ -82,7 +82,8 @@ class DokumentyPresenter extends LayerPresenter{
         $mail->addAttachment('schuze-'.$datum->format('Y-m-d').'.pdf', $file->getContents());
 
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
-        $mail->setHTMLBody($template);
+	    $mail->setSubject('[VZS Jablonec] Nový zápis ze schůze');
+	    $mail->setHTMLBody($template);
 
         $this->mailer->send($mail);
     }
