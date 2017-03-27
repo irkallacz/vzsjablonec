@@ -38,7 +38,7 @@ $(function () {
 <ul class="inline-nav">
 <li><a n:href="Forum:">Fórum</a></li>
 <li>» <a n:href="Forum:topic,$topic->forum->id">{$topic->forum->title}</a></li>
-<li>» <a n:href="Forum:view,$topic->id">{$topic->title}</a></li>
+<li>» <a n:href="Forum:post,$topic->id">{$topic->title}</a></li>
 </ul>
 
 <h2>{if isset($isEdit)}Upravit{else}Přidat{/if} {if isset($isTopic)}téma{else}příspěvek{/if}</h2>
