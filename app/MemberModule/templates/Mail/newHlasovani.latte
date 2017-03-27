@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -28,3 +29,24 @@ http://member.vzs-jablonec.cz/<br>
 
 </body>
 </html>
+=======
+{layout '@mail_layout.latte'}
+{contentType text/html; charset=utf-8}
+{block content}
+    <p>Zdravím.</p>
+
+    <p>Dnes {$hlasovani->date_add|date:'%d.%m.%Y'} v {$hlasovani->date_add|date:'H:i'}
+        bylo na našem webu vytvořeno nové hlasování představentstva. Můžete jej najít na adrese:
+        <a n:href="//Hlasovani:view,$hlasovani->id">{link //Hlasovani:view,$hlasovani->id}</a></p>
+    <p>Toto hlasování končí {$hlasovani->date_deatline|date:'%d.%m.%Y'}</p>
+
+    <strong>{$hlasovani->title}</strong>
+
+    <p>{$hlasovani->text|noescape|texy}</p>
+
+    <p>Odpovědi:
+    <ul n:foreach="$odpovedi as $odpoved">
+        <li>{$odpoved->text}</li>
+    </ul>
+{/block}
+>>>>>>> vzsjablonec/mail

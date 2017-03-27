@@ -276,21 +276,25 @@ class HlasovaniPresenter extends LayerPresenter{
 
     protected function sendHlasovaniMail($hlasovani,$odpovedi){
         $template = $this->createTemplate();
-        $template->setFile(__DIR__ . '/../templates/Mail/newWebHlasovani.latte');
+        $template->setFile(__DIR__ . '/../templates/Mail/newHlasovani.latte');
         $template->hlasovani = $hlasovani;
         $template->odpovedi = $odpovedi;
 
+<<<<<<< HEAD
 	    $texy = \TexyFactory::createTexy();
 	    $template->addFilter('texy', [$texy, 'process']);
+=======
+        $texy = \TexyFactory::createTexy();
+        $template->addFilter('texy', [$texy, 'process']);
+>>>>>>> vzsjablonec/mail
 
         $mail = $this->getNewMail();
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
         $mail->setHTMLBody($template);
 
-		$this->mailer->send($mail);
+        $this->mailer->send($mail);
 
-	}
+    }
 
 
 }
-    

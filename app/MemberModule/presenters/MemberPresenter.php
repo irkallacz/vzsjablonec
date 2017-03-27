@@ -195,7 +195,11 @@ class MemberPresenter extends LayerPresenter{
 		$mail = $this->getNewMail();
 	    $mail->addTo($member->mail,$member->surname.' '.$member->name);
 	    $mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
+<<<<<<< HEAD
 	    $mail->setBody($template);
+=======
+	    $mail->setHTMLBody($template);
+>>>>>>> vzsjablonec/mail
 
 		$this->mailer->send($mail);
   	}

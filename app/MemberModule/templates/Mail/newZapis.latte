@@ -1,12 +1,7 @@
-{contentType text/plain; charset=utf-8}
-{var $mail->subject = '[VZS Jablonec] Nový zápis ze schůze'}
-Zdarvím
-
-Na náš web byla přidána nový zápis ze schůze, která se konala v {$datum|date:'%A %d.%m.%Y'}
-
-Tento zápis najdete v příloze.
-
-_____________________________________________________________
-Tato zpráva automaticky generovana informačním systémem 
-VZS Jablonec nad Nisou a není třeba na ní odpovídat
-http://member.vzs-jablonec.cz/
+{layout '@mail_layout.latte'}
+{contentType text/html; charset=utf-8}
+{block content}
+    <p>Zdravím.</p>
+    <p>Na náš web byl přidán nový zápis ze schůze, která se konala v {$datum|date:'%A %d.%m.%Y'}</p>
+    <p>Tento zápis najdete v příloze.</p>
+{/block}

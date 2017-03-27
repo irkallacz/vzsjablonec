@@ -134,8 +134,13 @@ class SignPresenter extends BasePresenter{
 			->addRule(Form::PATTERN,'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena','^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$');
 
 		$form->addPassword('confirm', 'Potvrzení hesla:', 20)
+<<<<<<< HEAD
 			->setRequired(TRUE)
 			->addRule(Form::EQUAL,'Zadaná hesla se neschodují',$form['password'])
+=======
+            ->setRequired(TRUE)
+            ->addRule(Form::EQUAL,'Zadaná hesla se neschodují',$form['password'])
+>>>>>>> vzsjablonec/mail
 			->addCondition(Form::FILLED)
 			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);
 
@@ -185,8 +190,14 @@ class SignPresenter extends BasePresenter{
 		$mail = $this->getNewMail();
 
 		$mail->addTo($member->mail,$member->surname.' '.$member->name);
+<<<<<<< HEAD
 		$mail->setSubject('[VZS Jablonec] Obnova hesla');
 		$mail->setBody($template);
+=======
+
+		$mail->setSubject('[VZS Jablonec] Obnova hesla');
+		$mail->setHTMLBody($template);
+>>>>>>> vzsjablonec/mail
 		$this->mailer->send($mail);
 	}
 

@@ -1,16 +1,13 @@
-{contentType text/plain; charset=utf-8}
-{var $mail->subject = '[VZS Jablonec] Nová akce čeká na Vaše schválení'}
-Na web byla přidána následující akce:
+{layout '@mail_layout.latte'}
+{contentType text/html; charset=utf-8}
+{block content}
+    <p>Na web byla přidána následující akce:</p>
 
-{$akce->name}
+    <strong>{$akce->name}</strong>
+    <p>{$akce->perex|noescape|texy}</p>
+    <p>Tato akce není schválena a čeká na Vaše potvrzení.</p>
 
-Tato akce není schválena a čeká na Vaše potvrzení.
+    <p>Akci najdete na adrese <a href="//Akce:view,$akce->id">{link //Akce:view,$akce->id}</a></p>
 
-Akci najdete na adrese {link //Akce:view,$akce->id}
-
-Prosím navštivte co nejdříve stránku akce, aby bylo možno se na akci přihlásit.
-
-_____________________________________________________________
-Tato zpráva automaticky generovana informačním systémem 
-VZS Jablonec nad Nisou a není třeba na ní odpovídat
-http://member.vzs-jablonec.cz/
+    <p>Prosím navštivte co nejdříve stránku akce, aby bylo možno se na akci přihlásit.</p>
+{/block}
