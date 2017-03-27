@@ -1,13 +1,13 @@
 <?php
 
-namespace PhotoModule;
+namespace App\PhotoModule\Presenters;
 
-use Nette\Diagnostics\Debugger;
+use App\Model\GalleryService;
 use Nette\Utils\Finder;
 
 class CliPresenter extends BasePresenter{
 
-     /** @var \GalleryService @inject*/
+     /** @var GalleryService @inject*/
     public $gallery;
 
     public function renderPhotosTime(){

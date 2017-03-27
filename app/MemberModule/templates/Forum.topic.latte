@@ -1,7 +1,8 @@
 {block #head}
-<link rel="alternate" title="VZS Jablonec Forum : {$forum->title}" n:href="//Feed:forum, fid => $forum->id" type="application/rss+xml">
+<link rel="alternate" title="VZS Jablonec Forum : {$topic->title}" n:href="//Feed:forum, tid => $topic->id" type="application/rss+xml">
 
 <link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/css/forum.posts.css" type="text/css">
 
 <link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
 <link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
@@ -9,6 +10,7 @@
 
 {control texylaJs}
 
+<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 <script type="text/javascript">
 //<![CDATA[
 $.texyla.setDefaults({
@@ -21,35 +23,37 @@ $(function () {
 });
 //]]>
 </script>
+
 {/block}
 
-<h1 n:block="title">{$forum->title}</h1>
+<h1 n:block="title">Fórum</h1>
 
 {block #content}
-
-<div class="float-right" id="nav-top">{control vp}</div>
+<div class="float-right">{control vp}</div>
 
 <ul class="inline-nav">
 	<li><a n:href="Forum:">Fórum</a></li>
-	<li>» {$forum->title}</li>
+	<li>» <a n:href="Forum:category,$topic->forum->id">{$topic->forum->title|firstUpper}</a></li>
+	<li>» {$topic->title|firstUpper}</li>
 </ul>
 
-<div>
+<div class="float-right">
 	{control searchForm}
 </div>
 
-{control topicList}
+<h2><span clas="no-wrap"><span class="icon-lock" title="Toto téma bylo uzavřeno" n:if="$topic->locked"></span> {$topic->title|firstUpper}</span></h2>
+
+{control postsList}
 
 <div class="right">{control vp}</div>
 
-<p class="float-right">
-	<a n:href="Feed:forum, fid => $forum->id" class="buttonLike"><span class="icon-rss"></span> RSS této kategorie</a>
+<p class="right">
+	<a n:href="Feed:forum, tid => $topic->id" class="buttonLike"><span class="icon-rss"></span> RSS tohoto tématu</a>
 </p>
 
-<p>
-	<a n:href="search,null,$forum->id" class="buttonLike"><span class="icon-search"></span> Hledat ve fóru</a>
-</p>
+{if !$topic->locked}
+<h2>Rychlá odpověď</h2>
+{control addPostForm}
+{/if}
 
-<h2>Nové téma</h2>
-{control addTopicForm}
 {/block}

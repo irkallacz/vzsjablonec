@@ -1,40 +1,43 @@
 <?php
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
+use App\Model;
+use App\MemberModule\Components;
+use Joseki\Webloader\JsMinFilter;
 use Nette\Application\UI\Form;
-use Nette\Application\UI\Multiplier;
-use Nette\Diagnostics\Debugger;
-use Nette\Utils\Arrays;
+use Nette\Database\Table\ActiveRow;
+use Nette\Mail\IMailer;
+use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
-use Nette\DateTime;
+use Tracy\Debugger;
 
 class AkcePresenter extends LayerPresenter{
 	const FORUM_AKCE_ID = 2;
 	const YEARS_START = 2007;
 	const YEARS_STEP = 3;
 
-	/** @var \AkceService @inject */
+	/** @var Model\AkceService @inject */
 	public $akceService;
 
-	/** @var \ForumService @inject */
+	/** @var Model\ForumService @inject */
 	public $forumService;
 
-	/** @var \AnketyService @inject */
+	/** @var Model\AnketyService @inject */
 	public $anketyService;
 
-	/** @var \RatingService @inject */
+	/** @var Model\RatingService @inject */
 	public $ratingService;
 
-	/** @var \GalleryService @inject */
+	/** @var Model\GalleryService @inject */
 	public $galleryService;
 
-	/** @var \MemberService @inject */
+	/** @var Model\MemberService @inject */
 	public $memberService;
 
-	/** @var \Nette\Mail\IMailer @inject */
+	/** @var IMailer @inject */
 	public $mailer;
 
-	/** @var \Nette\Database\Table\ActiveRow */
+	/** @var ActiveRow */
 	private $akce;
 
 	/** @var array */
@@ -59,20 +62,32 @@ class AkcePresenter extends LayerPresenter{
 
 	public function renderDefault($year = NULL){
 		$YEARS_END = intval(date('Y'));
-		if (!$year) $year = $YEARS_END;
 
-		$all = ($year == 'all');
-		$year = intval($year);
+		switch ($year){
+			case NULL:
+				$year = NAN;
+				break;
+			case 'INF':
+				$year = INF;
+				break;
+			default:
+				$year = intval($year);
+		}
 
-		if (!$all){
+		if (is_int($year)){
 			if ($year < self::YEARS_START) $this->redirect('this', self::YEARS_START);
 			if ($year > $YEARS_END) $this->redirect('this', $YEARS_END);
-		} else $year = $YEARS_END;
 
-		$akce[0] = ($year == $YEARS_END) ? $this->akceService->getAkceByFuture(TRUE) : [];
-		$akce[1] = $this->akceService->getAkceByFuture(FALSE);
+			$akce[0] = [];
+		}else{
+			$akce[0] = $this->akceService->getAkceByFuture(TRUE);
+		}
 
-		if (!$all) $akce[1]->where('YEAR(date_start)', $year);
+		$akce[1] = (is_nan($year)) ? [] : $this->akceService->getAkceByFuture(FALSE);
+
+		$this->template->year = $year;
+
+		if (is_int($year)) $akce[1]->where('YEAR(date_start)', $year); else $year = $YEARS_END;
 
         $count = 2*self::YEARS_STEP;
         $start = self::YEARS_START + (($year - self::YEARS_START) - self::YEARS_STEP);
@@ -93,14 +108,11 @@ class AkcePresenter extends LayerPresenter{
 		$this->template->prev = (($year-1) >= self::YEARS_START) ? ($year-1) : NULL;
 		$this->template->next = (($year+1) <= $YEARS_END) ? ($year+1) : NULL;
 
-		$this->template->all = $all;
-		$this->template->year = $year;
-
 		$this->template->akceAllList = $akce;
 		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());
 		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(),TRUE);
 
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
 	public function actionView($id){
@@ -139,8 +151,8 @@ class AkcePresenter extends LayerPresenter{
 		}
 
 		$this->registerTexy();
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
-		$this->template->registerHelper('durationInWords', 'Helpers::durationInWords');
+		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->addFilter('durationInWords', 'Helpers::durationInWords');
 	}
 
 	public function actionEdit($id){
@@ -164,7 +176,7 @@ class AkcePresenter extends LayerPresenter{
 		if (!$form->isSubmitted()) {
 			$orgList = $this->akce->related('akce_member')->where('organizator',TRUE)->fetchPairs('member_id','member_id');
 
-			if ((!$this->getUser()->isInArray($orgList))and(!$this->getUser()->isInRole($this->name))) {
+			if ((!array_key_exists($this->getUser()->getId(),$orgList))and(!$this->getUser()->isInRole($this->name))) {
 				$this->flashMessage('Nemáte právo tuto akci editovat','error');
 				$this->redirect('Akce:view',$id);
 			}
@@ -187,7 +199,7 @@ class AkcePresenter extends LayerPresenter{
 	public function actionDelete($id){
 		$orgList = $this->akceService->getMemberListByAkceId($id,TRUE);
 
-		if ((!$this->getUser()->isInArray($orgList))and(!$this->getUser()->isInRole($this->name))) {
+		if ((!array_key_exists($this->getUser()->getId(),$orgList))and(!$this->getUser()->isInRole($this->name))) {
 			$this->flashMessage('Nemáte právo tuto akci smazat','error');
 			$this->redirect('Akce:view',$id);
 		}
@@ -205,7 +217,7 @@ class AkcePresenter extends LayerPresenter{
 
 			if ($allow) {
 			  $this->flashMessage('Akce byla povolena');
-			  $values['date_update'] = new Datetime();
+			  $values['date_update'] = new DateTime();
 			}
 			else $this->flashMessage('Akce byla zakázána');
 
@@ -223,12 +235,12 @@ class AkcePresenter extends LayerPresenter{
 			$posts->order('row_number DESC');
 			$posts->limit(5, 0);
 
-			return new \PostsListControl($posts,$isLocked);
+			return new Components\PostsListControl($posts,$isLocked);
 		}
 	}
 
     protected function createComponentAlbum(){
-        return new \AlbumPreviewControl($this->galleryService);
+        return new Components\AlbumPreviewControl($this->galleryService);
     }
 
 
@@ -236,7 +248,7 @@ class AkcePresenter extends LayerPresenter{
     	$userId = $this->getUser()->getId();
     	$isOrg = in_array($userId,$this->orgList);
     	$canComment = (in_array($userId,$this->memberList)or($isOrg));
-		return new \RatingControl($this->akce->id,$this->ratingService,$userId,$isOrg,$canComment);
+		return new Components\RatingControl($this->akce->id,$this->ratingService,$userId,$isOrg,$canComment);
 	}
 
 //    public function renderVcal($id = 0,$future = false){
@@ -263,21 +275,24 @@ class AkcePresenter extends LayerPresenter{
 
 		$member = $akce->member;
 
+        $texy = \TexyFactory::createTexy();
+        $template->addFilter('texy', [$texy, 'process']);
+
 		$mail->addReplyTo($member->mail,$member->surname.' '.$member->name);
 
 		foreach($this->memberService->getMembersByRole('Confirm') as $member)
 		  $mail->addTo($member->mail,$member->surname.' '.$member->name);
 
-		$mail->setBody($template);
+		$mail->setHTMLBody($template);
 		$this->mailer->send($mail);
 	}
 
 	protected function createComponentMembers(){
-		return new \MembersListControl($this->akceService,$this->akce);
+		return new Components\MembersListControl($this->akceService,$this->akce);
 	}
 
 	protected function createComponentOrganizators(){
-		return new \MembersListControl($this->akceService,$this->akce,TRUE);
+		return new Components\MembersListControl($this->akceService,$this->akce,TRUE);
 	}
 
 	public function createComponentTexylaJs(){
@@ -291,7 +306,7 @@ class AkcePresenter extends LayerPresenter{
 //		$files->addFiles([WWW_DIR . '/js/texyla_public.js']);
 
 		$compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-		$compiler->addFileFilter(new \Webloader\Filter\jsShrink);
+		$compiler->addFileFilter(new JsMinFilter());
 
 		return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
@@ -311,9 +326,11 @@ class AkcePresenter extends LayerPresenter{
 			->setRequired('Vyplňte %label akce');
 
 		$form['date_start'] = new \DateTimeInput('Začátek');
+		$form['date_start']->setRequired(TRUE);
 		$form['date_start']->setDefaultValue($datum);
 
 		$form['date_end'] = new \DateTimeInput('Konec');
+		$form['date_end']->setRequired(TRUE);
 		$form['date_end']->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
 				return $item->value >= $arg;
@@ -328,6 +345,7 @@ class AkcePresenter extends LayerPresenter{
 			->setAttribute('onclick','doTheTrick()');
 
 		$form['date_deatline'] = new \DateTimeInput('Přihlášení do');
+		$form['date_deatline']->setRequired(FALSE);
 		$form['date_deatline']->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
 			  return $item->value <= $arg;
@@ -370,6 +388,7 @@ class AkcePresenter extends LayerPresenter{
 				->addRule(FORM::FILLED,'Musíte vybrat organizátora');
 
 		$form->addUpload('file','Soubor')
+			->setRequired(FALSE)
 			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 10 MB.', 10 * 1024 * 1024);
 
 		$form->addText('price', 'Cena', 7)
@@ -400,7 +419,7 @@ class AkcePresenter extends LayerPresenter{
 			->setAttribute('class','texyla');
 
 		$form->addSubmit('save', 'Ulož')->setAttribute('class', 'default');
-			$form->onSuccess[] = callback($this, 'akceFormSubmitted');
+			$form->onSuccess[] = [$this, 'akceFormSubmitted'];
 
 		return $form;
 	}
@@ -459,7 +478,7 @@ class AkcePresenter extends LayerPresenter{
 		$form->addSubmit('ok', '')
 		  ->setAttribute('class','myfont');
 
-		$form->onSuccess[] = callback($this, 'uploadBillFormSubmitted');
+		$form->onSuccess[] = [$this, 'uploadBillFormSubmitted'];
 
 		return $form;
 	}

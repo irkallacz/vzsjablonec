@@ -1,17 +1,19 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
+use App\Model\MemberService;
+use App\Model\TimesService;
 use Nette\Application\UI\Form;
-use Nette\Diagnostics\Debugger;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 class TimesPresenter extends LayerPresenter{
 
-    /** @var \TimesService @inject */
+    /** @var TimesService @inject */
     public $timesService;
 
-    /** @var \MemberService @inject */
+    /** @var MemberService @inject */
     public $memberService;
 
     /** @var array $order @persistent */
@@ -89,27 +91,26 @@ class TimesPresenter extends LayerPresenter{
 
 
     public function renderEdit($id){
-        if (!$this->getUser()->isInRole($this->name)) {
+        if (!$this->getUser()->isInRole($this->name)){
           $this->flashMessage('Na tuto akci máte práva','error');
           $this->redirect('default');
         }
 
         $form = $this['timeForm'];
         if (!$form->isSubmitted()) {
-            
             $time = $this->timesService->getTimeById($id);
             
             if (!$time) {
                 $this->flashMessage('Záznam nenalezen!','error');
                 $this->redirect('default');                                    
             }
-            
-            unset($form['another']);
 
-            $form->setDefaults($time);
+	        $form['member_id']->setDefaultValue($time->member_id);
+	        $form['times_disciplina_id']->setDefaultValue($time->times_disciplina_id);
+	        $form['date']->setDefaultValue($time->date);
+	        $form['text']->setDefaultValue($time->text);
 
-            $form['time']->setDefaultValue($time->time->format('i:s'));
-            $form['date']->setDefaultValue($time->date->format('Y-m-d'));    
+	        $form['time']->setDefaultValue($time->time->format('%I:%S'));
         }
     }
 
@@ -136,15 +137,12 @@ class TimesPresenter extends LayerPresenter{
             $this->timesService->getTimesDisciplineArray()
         )
             ->setRequired('Vyplňte disciplínu');
-        
-        $form->addText('date', 'Datum', 10)
-          ->setRequired('Vyplňte datum')
-          ->setType('date')
-          ->setDefaultValue(date('Y-m-d'))  
-          ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-          ->setAttribute('class','date');
-    
-        $form->addText('time','Výsledný čas',5)
+
+	    $form['date'] = new \DateInput('Datum');
+	    $form['date']->setRequired('Vyplňte datum')
+		    ->setDefaultValue(new DateTime());
+
+	    $form->addText('time','Výsledný čas',5)
           ->setRequired('Vyplňte %label')
           ->addRule(Form::LENGTH, 'Čas musí mít právě %d znaků',5)
           ->addRule(Form::PATTERN, 'Čas musí být ve formátu MM:SS', '[0-5]{1}\d{1}:[0-5]{1}\d{1}')
@@ -161,7 +159,7 @@ class TimesPresenter extends LayerPresenter{
 
         $form->addSubmit('save','Uložit');
 
-        $form->onSuccess[] = callback($this, 'timeFormSubmitted');
+        $form->onSuccess[] = [$this, 'timeFormSubmitted'];
 
         return $form;        
     }
@@ -174,6 +172,9 @@ class TimesPresenter extends LayerPresenter{
         if ($id) {
           unset($values->another);
           $values->time = '00:'.$values->time;
+
+          Debugger::barDump($values);
+
           $this->timesService->getTimeById($id)->update($values);
           $this->flashMessage('Výsledek byl změněn');
         }else {

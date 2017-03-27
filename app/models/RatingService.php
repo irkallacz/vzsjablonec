@@ -6,10 +6,16 @@
  * Date: 26.12.2016
  * Time: 16:18
  */
+
+namespace App\Model;
+
+use Nette\Database\Table\IRow;
+use Nette\Database\Table\Selection;
+
 class RatingService extends DatabaseService {
 
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return Selection
 	 */
 	public function getRating(){
 		return $this->database->table('akce_rating_member');
@@ -17,7 +23,7 @@ class RatingService extends DatabaseService {
 
 	/**
 	 * @param $akce_id
-	 * @return \Nette\Database\Table\Selection
+	 * @return Selection
 	 */
 	public function getRatingByAkceId($akce_id){
 		return $this->getRating()->where('akce_id',$akce_id);
@@ -34,7 +40,7 @@ class RatingService extends DatabaseService {
 	/**
 	 * @param $akce_id
 	 * @param $member_id
-	 * @return bool|mixed|\Nette\Database\Table\IRow
+	 * @return bool|mixed|IRow
 	 */
 	public function getRatingByAkceAndMemberId($akce_id, $member_id){
 		return $this->getRating()->where('akce_id',$akce_id)->where('member_id',$member_id)->fetch();//get(array($akce_id,$member_id));

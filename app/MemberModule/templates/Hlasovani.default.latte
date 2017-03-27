@@ -23,7 +23,7 @@ table#items .first { font-size: 1.1em;}
 <tr class="first"><th>Hlasování</th><th>Počet hlasů</th><th>Poslední hlas</th></tr>
 {foreach $ankety as $item}
 	{var locked = $item->locked}
-	{if $item->date_deatline < date_create()}{? $locked = TRUE}{/if}
+	{if $item->date_deatline < date_create()}{var $locked = TRUE}{/if}
 	{var $post = $item->related('hlasovani_member','hlasovani_id')->order('date_add DESC')->fetch()}
 	
 	{if $post}{var $member = $post->ref('member')}{else}{var $member = 0}{/if}

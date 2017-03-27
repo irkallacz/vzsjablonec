@@ -3,10 +3,16 @@
 /**
  * HlasovaniService base class.
  */
+
+namespace App\Model;
+
+use Nette\Database\Table\IRow;
+use Nette\Database\Table\Selection;
+
 class HlasovaniService extends DatabaseService{
 
     /**
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getAnkety(){
         return $this->database->table('hlasovani')->order('date_add DESC');
@@ -14,7 +20,7 @@ class HlasovaniService extends DatabaseService{
 
     /**
      * @param $id
-     * @return \Nette\Database\Table\IRow
+     * @return IRow
      */
     public function getAnketaById($id){
         $anketa = $this->getAnkety()->get($id);
@@ -24,7 +30,7 @@ class HlasovaniService extends DatabaseService{
 
     /**
      * @param $id
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getOdpovediByAnketaId($id){
         return $this->database->table('hlasovani_odpoved')->where('hlasovani_id',$id)->order('text');
@@ -32,7 +38,7 @@ class HlasovaniService extends DatabaseService{
 
     /**
      * @param $id
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getMembersByAnketaId($id){
         return $this->database->table('member')
@@ -41,11 +47,11 @@ class HlasovaniService extends DatabaseService{
     }
 
     /**
-     * @param \Nette\DateTime $date
+     * @param \Nette\Utils\DateTime $date
      * @param bool $isBoard
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
-    public function getHlasovaniNews(\Nette\DateTime $date, $isBoard = FALSE){
+    public function getHlasovaniNews(\Nette\Utils\DateTime $date, $isBoard = FALSE){
         $hlasovani = $this->getAnkety()->where('date_add > ?',$date);
         if ($isBoard) $hlasovani->where('date_deatline < NOW() OR locked = ?', 1);
         return $hlasovani;
@@ -62,7 +68,7 @@ class HlasovaniService extends DatabaseService{
 
     /**
      * @param $values
-     * @return bool|int|\Nette\Database\Table\IRow
+     * @return bool|int|IRow
      */
     public function addAnketa($values){
         return $this->getAnkety()->insert($values);
@@ -70,7 +76,7 @@ class HlasovaniService extends DatabaseService{
 
     /**
      * @param $id
-     * @return \Nette\Database\Table\IRow
+     * @return IRow
      */
     public function getOdpovedById($id){
         return $this->database->table('hlasovani_odpoved')->get($id);
@@ -86,7 +92,7 @@ class HlasovaniService extends DatabaseService{
 
     /**
      * @param $values
-     * @return bool|int|\Nette\Database\Table\IRow
+     * @return bool|int|IRow
      */
     public function addOdpoved($values){
         return $this->database->table('hlasovani_odpoved')->insert($values);
@@ -94,7 +100,7 @@ class HlasovaniService extends DatabaseService{
 
     /**
      * @param $values
-     * @return bool|int|\Nette\Database\Table\IRow
+     * @return bool|int|IRow
      */
     public function addVote($values){
         return $this->database->table('hlasovani_member')->insert($values);

@@ -16,7 +16,7 @@
 	$(function(){
 		$('#slides').slides({
 			preload: false,
-			preloadImage: '{!$baseUri}/img/fancybox_loading.gif',
+			preloadImage: '{$baseUri|noescape}/img/fancybox_loading.gif',
 			generatePagination: false,
 			play: 5000,
 			pause: 2500,

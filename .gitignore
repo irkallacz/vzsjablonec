@@ -46,7 +46,9 @@ Temporary Items
 tmp/
 session/
 log/
+vendor/
 config.local.neon
+config.local.neon.production
 .idea
 www/subdom/t9
 www/subdom/photo/albums
@@ -54,4 +56,3 @@ www/subdom/member/archive.zip
 www/subdom/member/doc
 www/subdom/member/img/portrets
 www/subdom/member/texyla/temp
-bin

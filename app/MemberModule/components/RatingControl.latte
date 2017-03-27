@@ -31,7 +31,7 @@
                     {if $rating->message}
                         <div id="rating-preview-{$memberId}" class="preview">
                             <a n:tag-if="mb_strlen($rating->message) > $limit" href="javascript:more({$memberId})" class="noLink">
-                                {$rating->message|nl2br|noescape|truncate:$limit}
+                                {$rating->message|breaklines|noescape|truncate:$limit}
                             </a>
                             <a n:if="mb_strlen($rating->message) > $limit" class="more" href="javascript:more({$memberId})">Více</a>
                         </div>

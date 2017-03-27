@@ -1,18 +1,18 @@
 {block #head}
 <style type="text/css" n:syntax="off">
-.menu_right {float: right; list-style-type: none; padding: 0px; padding-bottom: 2em; margin-top: 0px;}
-.menu_right li {float: right; margin-left: 1ex; margin-bottom: 1ex;}
-#items {border-collapse: collapse; margin: 1em auto; width: 98%}
-#items td {padding: 0.5ex 1ex;}
-#items th {padding: 0.5ex 2ex; font-weight: normal;}
-#items th.min {text-align: left}
-#otazka {clear: right;}
-#members .logged {color: #c22;}
-ul#members {list-style-type: none; }
-ol#members {margin-bottom: 1em;}
-.headerLike {border-radius: 1em; height: 1em; padding: 0px}
-.bar {min-width: 20em;}
-h2 {margin-top: 1ex;}
+	.menu_right { float: right; list-style-type: none; padding: 0; padding-bottom: 2em; margin-top: 0;}
+	.menu_right li { float: right; margin-left: 1ex; margin-bottom: 1ex;}
+	#items { border-collapse: collapse; margin: 1em auto; width: 98%}
+	#items td { padding: 0.5ex 1ex;}
+	#items th { padding: 0.5ex 2ex; font-weight: normal;}
+	#items th.min { text-align: left}
+	#otazka { clear: right;}
+	#members .logged { color: #c22;}
+	ul#members { list-style-type: none; }
+	ol#members { margin-bottom: 1em;}
+	.headerLike { border-radius: 1em; height: 1em; padding: 0}
+	.bar { min-width: 20em;}
+	h2 { margin-top: 1ex;}
 </style>
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 {/block}
@@ -37,7 +37,7 @@ h2 {margin-top: 1ex;}
 <h2>{$anketa->title|firstUpper}</h2>
 
 <div id="otazka" class="texy">
-{!$anketa->text|texy}
+{$anketa->text|texy|noescape}
 
 <p n:if="$anketa->date_add != $anketa->date_update" class="update"
 title="{$anketa->date_update|timeAgoInWords}">Upraveno ({$anketa->date_update|date:'%d.%m.%Y %H:%M'})</p>

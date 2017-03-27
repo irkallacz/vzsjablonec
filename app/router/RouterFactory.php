@@ -15,6 +15,10 @@ class RouterFactory{
 		$router = new RouteList;
 
 		$member = new RouteList('Member');
+
+		$member[] = new Route('//member.%domain%/forum/view-post/<id>','Forum:post', Route::ONE_WAY);
+		$member[] = new Route('//member.%domain%/forum/view/<id>','Forum:topic', Route::ONE_WAY);
+
 		$member[] = new Route('//member.%domain%/forum/<action>/<id>[/page/<vp-page>]','Forum:view');
 		$member[] = new Route('//member.%domain%/<presenter>/<action>[/<id>]', 'News:default');
 
@@ -25,7 +29,6 @@ class RouterFactory{
 		$router[] = $member;
 		$router[] = $photo;
 
-		$router[] = new Route('<presenter>/<action>[/<id>]', 'News:default');
 		return $router;
 	}
 }

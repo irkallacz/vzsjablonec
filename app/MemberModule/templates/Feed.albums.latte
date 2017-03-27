@@ -1,16 +1,16 @@
 {contentType application/xml; charset=utf-8}
 {block #content}
 <title>VZS Jablonec Fotogalerie</title>
-<link>http://photo.vzs-jablonec.cz/album/</link>
+<link>{link //:Photo:Album:default}</link>
 <description>Fotogalerie členů VZS Jablonec</description>
 <item n:foreach="$items as $item">
 	<title>{$item->name}</title>	
 	{var $member = $members[$item->member_id]}
 	<author>{if $member}{$member->mail} ({$member->surname} {$member->name}{else} info@vzs-jablonec.cz (VZS Jablonec){/if})</author>
-	<link>http://photo.vzs-jablonec.cz/album/{$item->id}-{$item->slug}/</link>
-	<guid isPermaLink="false">{$item->id}@http://photo.vzs-jablonec.cz/album/</guid>
+	<link>{link //:Photo:Album:view $item->id, $item->slug}/</link>
+	<guid isPermaLink="false">{$item->id}@{link //:Photo:Album:default}</guid>
 	<description>
-	{block |escape}
+	{block|escape}
 	<p>Datum alba: {$item->date|date:'%A %d.%m.%Y'}</p>
 	{/block}
 	{$item->text|texy}

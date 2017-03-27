@@ -1,12 +1,19 @@
-{contentType text/plain; charset=utf-8}
-{var $mail->subject = '[VZS Jablonec] Soubor s výledky hlasování byl aktualizován'}
-Zdravím
+{layout '@mail_layout.latte'}
+{contentType text/html; charset=utf-8}
+{block content}
+    <p>Zdravím.</p>
 
-Dnes {$datum|date:'%d.%m.%Y'} v {$datum|date:'H:i'} byl na náš web nahrán aktualizováný soubor s hlasováním představentstva.
+    <p>Dnes {$hlasovani->date_add|date:'%d.%m.%Y'} v {$hlasovani->date_add|date:'H:i'}
+        bylo na našem webu vytvořeno nové hlasování představentstva. Můžete jej najít na adrese:
+        <a n:href="//Hlasovani:view,$hlasovani->id">{link //Hlasovani:view,$hlasovani->id}</a></p>
+    <p>Toto hlasování končí {$hlasovani->date_deatline|date:'%d.%m.%Y'}</p>
 
-Tento nový soubor najdete v příloze.
+    <strong>{$hlasovani->title}</strong>
 
-_____________________________________________________________
-Tato zpráva automaticky generovana informačním systémem 
-VZS Jablonec nad Nisou a není třeba na ní odpovídat
-http://member.vzs-jablonec.cz/
+    <p>{$hlasovani->text|noescape|texy}</p>
+
+    <p>Odpovědi:
+    <ul n:foreach="$odpovedi as $odpoved">
+        <li>{$odpoved->text}</li>
+    </ul>
+{/block}

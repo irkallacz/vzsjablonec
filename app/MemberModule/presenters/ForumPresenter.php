@@ -1,22 +1,26 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\PostsListControl;
+use App\MemberModule\Components\TopicsListControl;
+use App\Model\ForumService;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Html;
-use Nette\Utils\Paginator;
-use Nette\Utils\Strings;
-use Nette\Diagnostics\Debugger;
 use Nette\Database\SqlLiteral;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
+use WebLoader\Compiler;
+use WebLoader\FileCollection;
+use WebLoader\Nette\JavaScriptLoader;
+use Joseki\Webloader\JsMinFilter;
 
 class ForumPresenter extends LayerPresenter{
 
 	const postPerPage = 30;
 	const topicPerPage = 30;
 
-	/** @var \ForumService @inject */
+	/** @var ForumService @inject */
 	public $forumService;
 
 	/** @var ActiveRow */
@@ -24,25 +28,20 @@ class ForumPresenter extends LayerPresenter{
 
 	public function renderDefault(){
 		$this->template->forum = $this->forumService->getForum();
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
 	public function showPost($post){
 		$page = ceil($post->row_number/self::postPerPage);	
-		$this->redirect("Forum:view#p$post->id", array($post->forum_topic_id, 'vp-page' => $page));
-	}
-	
-	public function actionViewLast($id){
-		$post = $this->forumService->getPostsByTopicId($id)->order('row_number DESC')->fetch();
-		$this->showPost($post);
+		$this->redirect("Forum:topic#post/$post->id", array($post->forum_topic_id, 'vp-page' => $page));
 	}
 
-	public function actionViewPost($id){
+	public function actionPost($id){
 		$post = $this->forumService->getPostById($id);		
 		$this->showPost($post);
 	}
 
-	public function renderTopic($id, $q = null){
+	public function renderCategory($id, $q = null){
 		$forum = $this->forumService->getForumById($id);
 		$this->template->forum = $forum;
 
@@ -66,7 +65,7 @@ class ForumPresenter extends LayerPresenter{
 		$paginator = $this['vp']->getPaginator();
 		$topics->limit($paginator->getLength(), $paginator->getOffset());
 
-		return new \TopicsListControl($topics, $search);
+		return new TopicsListControl($topics, $search);
 	}
 
 	public function checkTopic($topic, $locked = FALSE){		
@@ -77,7 +76,7 @@ class ForumPresenter extends LayerPresenter{
 
 		if ($locked and $topic->locked) {
         	$this->flashMessage('Toto téma bylo uzavřeno','error');
-        	$this->redirect('view',$topic->id);
+        	$this->redirect('topic',$topic->id);
         } 
 	}
 
@@ -93,16 +92,16 @@ class ForumPresenter extends LayerPresenter{
 
 		$isLocked = $this->topic->locked;
 
-		return new \PostsListControl($posts, $isLocked, $search);
+		return new PostsListControl($posts, $isLocked, $search);
 	}
 
-	public function actionView($id, $q = null){
+	public function actionTopic($id, $q = null){
 		$topic = $this->forumService->getTopicById($id);
 		$this->checkTopic($topic);
 		$this->topic = $topic;
 	}
 
-	public function renderView($id, $q = null){
+	public function renderTopic($id, $q = null){
 		$this->template->topic = $this->topic;
 		$this->template->title = $this->topic->title;
 
@@ -114,7 +113,7 @@ class ForumPresenter extends LayerPresenter{
 		$paginator->setItemCount($count);
 		$this->template->paginator = $paginator;
 
-    	$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+    	$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 
     	$this['addPostForm']['forum_topic_id']->setDefaultValue($id);  
     	$this['addPostForm']['forum_id']->setDefaultValue($this->topic->forum_id);
@@ -149,7 +148,7 @@ class ForumPresenter extends LayerPresenter{
 		$posts->limit($limit, $offset);
 		$posts->order('date_add DESC');
 
-		return new \PostsListControl($posts, TRUE, $q);
+		return new PostsListControl($posts, TRUE, $q);
 	}
 
 	protected function createComponentSearchTopicsList(){
@@ -166,7 +165,7 @@ class ForumPresenter extends LayerPresenter{
 		$topics->limit($limit, $offset);
 		$topics->order('date_add DESC');
 
-		return new \TopicsListControl($topics, $q);
+		return new TopicsListControl($topics, $q);
 	}
 
 	protected function createComponentSearchForm(){
@@ -181,7 +180,7 @@ class ForumPresenter extends LayerPresenter{
 		$form->addSubmit('ok', '')
 			->setAttribute('class','myfont');
 
-		$form->onSuccess[] = callback($this,'processSearchForm');
+		$form->onSuccess[] = [$this, 'processSearchForm'];
 
 		$renderer = $form->getRenderer();
 		$renderer->wrappers['controls']['container'] = NULL;
@@ -210,7 +209,7 @@ class ForumPresenter extends LayerPresenter{
 		$form->addSelect('subject','Hledat:', ['posts' => 'Příspěvky', 'topics' => 'Témata'])
 			->setRequired('Zadejte prosím co vyhledávat');
 
-		$form->onSuccess = [callback($this,'processSearchForumForm')];
+		$form->onSuccess = [[$this, 'processSearchForumForm']];
 
 		return $form;
 	}
@@ -238,7 +237,7 @@ class ForumPresenter extends LayerPresenter{
 	private function checkPost($post){		
 		if ($post->row_number == 0) {
         	$this->flashMessage('Příspěvek neexistuje','error');
-        	$this->redirect('view', $post->forum_topic_id->id);
+        	$this->redirect('topic', $post->forum_topic_id->id);
         }
 	}
 	
@@ -254,7 +253,7 @@ class ForumPresenter extends LayerPresenter{
 
 		if ((!$this->getUser()->isInRole($this->name))and($post->member_id!=$this->getUser()->getId())) {
             	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('view',$post->forum_topic_id);
+            	$this->redirect('topic',$post->forum_topic_id);
         }
 
 		$this->template->isEdit = TRUE;
@@ -275,7 +274,7 @@ class ForumPresenter extends LayerPresenter{
         $this->template->title = $topic->title;
 	}
 
-	public function renderCitePost($id){
+	public function renderCite($id){
 		if (!$id) {
         	$this->flashMessage('Nebyl vybrán žádný příspěvek','error');
         	$this->redirect('default');
@@ -293,8 +292,8 @@ class ForumPresenter extends LayerPresenter{
     	$this->setView('edit');
 
     	$text = '> '.$post->member->surname . ' ' . $post->member->name . " napsal(a):\n>\n";
-    	$text .= preg_replace('~^.+~m','> $0',trim($post->text))."\n\n";
-    	
+    	$text .= preg_replace('~^~m','> $0',trim($post->text))."\n\n";
+
 		$this['addPostForm']['text']->setDefaultValue($text);  
     	$this['addPostForm']['forum_topic_id']->setDefaultValue($post->forum_topic_id);  
     	$this['addPostForm']['forum_id']->setDefaultValue($post->forum_id);
@@ -318,7 +317,7 @@ class ForumPresenter extends LayerPresenter{
 
 	 if ((!$this->getUser()->isInRole($this->name))and($post->member_id!=$this->getUser()->getId())) {
             	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('view',$post->forum_topic_id);
+            	$this->redirect('topic',$post->forum_topic_id);
         }
 
 	 if ($post->id != $post->forum_topic_id) {		
@@ -328,7 +327,7 @@ class ForumPresenter extends LayerPresenter{
 	 	
 	 	$post->update(array('row_number' => 0, 'hidden' => 1));
 
-	 	$this->redirect('Forum:view', $post->forum_topic_id);
+	 	$this->redirect('Forum:topic', $post->forum_topic_id);
 	 }
 	 else {
 	 	$this->forumService->getPostsByTopicId($post->id)->update(array('row_number' => 0, 'hidden' => 1));
@@ -341,24 +340,24 @@ class ForumPresenter extends LayerPresenter{
 	 
 	 if ((!$this->getUser()->isInRole($this->name))and($post->member_id!=$this->getUser()->getId())) {
             	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('view',$post->forum_topic_id);
+            	$this->redirect('topic',$post->forum_topic_id);
         }
 
 	 $post->update(array('locked' => $lock));
-	 $this->redirect('Forum:view',$post->forum_topic_id);
+	 $this->redirect('topic',$post->forum_topic_id);
 	}
 
 	protected function createComponentTexylaJs(){
-	    $files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
+	    $files = new FileCollection(WWW_DIR . '/texyla/js');
 	    $files->addFiles(['texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js']);
 	    $files->addFiles(['../plugins/emoticon/emoticon.js']);
 	    $files->addFiles([WWW_DIR . '/js/texyla_forum.js']);
 	    $files->addFiles([WWW_DIR . '/js/jquery-ui.custom.min.js']);
 
-	    $compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-	    $compiler->addFileFilter(new \Webloader\Filter\jsShrink);
+	    $compiler = Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
+	    $compiler->addFileFilter(new JsMinFilter());
 
-	    return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+	    return new JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
 
 	protected function createComponentAddTopicForm(){
@@ -375,7 +374,7 @@ class ForumPresenter extends LayerPresenter{
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla');
 
-		$form->onSuccess[]= callback($this,'processAddTopicForm');
+		$form->onSuccess[]= [$this, 'processAddTopicForm'];
 		return $form;
 	}
 
@@ -392,7 +391,7 @@ class ForumPresenter extends LayerPresenter{
 			$id = (int) $this->getParameter('id');
 			$this->forumService->getTopicById($id)->update($values);
         	$this->flashMessage('Téma bylo upraveno');
-        	$this->redirect('view',$id); 	
+        	$this->redirect('topic',$id);
         }
 		
 		if ($akce == 'topic'){
@@ -419,7 +418,7 @@ class ForumPresenter extends LayerPresenter{
 		$form->addHidden('forum_topic_id');
 		$form->addHidden('forum_id');
 
-		$form->onSuccess[]= callback($this,'processAddPostForm');
+		$form->onSuccess[]= [$this, 'processAddPostForm'];
 		return $form;
 	}
 

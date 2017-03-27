@@ -1,15 +1,16 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
+use App\Model\HlasovaniService;
+use Joseki\Webloader\JsMinFilter;
 use Nette\Application\UI\Form;
-use Nette\Diagnostics\Debugger;
-use Nette\DateTime;
 use Nette\Utils\Arrays;
+use Nette\Utils\DateTime;
 
 class HlasovaniPresenter extends LayerPresenter{
 
-	/** @var \HlasovaniService @inject */
+	/** @var HlasovaniService @inject */
 	public $hlasovani;
 
 	/** @var \Nette\Mail\IMailer @inject */
@@ -20,7 +21,7 @@ class HlasovaniPresenter extends LayerPresenter{
 		if (!$this->user->isInRole('Board')) $ankety->where('date_deatline < NOW() OR locked = ?',1);
 
 		$this->template->ankety = $ankety;
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
 	public function renderView($id){		
@@ -43,7 +44,7 @@ class HlasovaniPresenter extends LayerPresenter{
 		$this->template->locked = $locked;
 		$this->template->items = $anketa->related('hlasovani_odpoved')->order('text');
 		
-		$members = $this->hlasovani->getMembersByAnketaId($id)->order('date_add');
+		$members = $this->hlasovani->getMembersByAnketaId($id)->order(':hlasovani_member.date_add');
 
 		$this->template->members = $members;//$members->fetchPairs('id','jmeno');
 
@@ -52,18 +53,19 @@ class HlasovaniPresenter extends LayerPresenter{
 		$memberList = $members->fetchPairs('id','hlasovani_odpoved_id');
 		$this->template->memberList = $memberList;
 		$this->template->isLogged = Arrays::get($memberList, $this->getUser()->getId(),0);
-		
 
 		$this->registerTexy();
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 
 		$this->template->title = $anketa->title;
 	}
 
 	public function renderAdd(){
 		$form = $this['anketaForm'];
-		$form['users'][0]['text']->setValue('Zdržuji se hlasovaní');
-		
+		$form['users'][0]['text']->setValue('Jsem pro');
+		$form['users'][1]['text']->setValue('Jsem proti');
+		$form['users'][2]['text']->setValue('Zdržuji se hlasovaní');
+
 		$this->setView('edit');
 		$this->template->nova = TRUE;
 	}
@@ -93,8 +95,7 @@ class HlasovaniPresenter extends LayerPresenter{
 		    $odpovedi = $this->hlasovani->getOdpovediByAnketaId($id);
 
 		    $form['pocet']->setDefaultValue(count($odpovedi));    
-		    $form->setValues($anketa);
-		    $form['date_deatline']->setDefaultValue($anketa->date_deatline->format('Y-m-d'));
+		    $form->setDefaults($anketa);
 		    $form['users']->setValues($odpovedi);
 
 		    $this->template->title = ucfirst($anketa->title);
@@ -123,7 +124,7 @@ class HlasovaniPresenter extends LayerPresenter{
 			'member_id' => $this->getUser()->getId(),
 			'hlasovani_id' => $id,
 			'hlasovani_odpoved_id' => $odpoved,
-			'date_add' => new Datetime
+			'date_add' => new DateTime()
 		);
 		
 		$this->hlasovani->addVote($values);
@@ -161,22 +162,22 @@ class HlasovaniPresenter extends LayerPresenter{
             $this->redirect('view',$id);
         }
 
-		$anketa->update(array('locked' => $lock, 'date_update' => new Datetime));
+		$anketa->update(['locked' => $lock, 'date_update' => new Datetime]);
 		$this->redirect('view',$id);
 	}
 
 	public function createComponentTexylaJs(){
       $files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
-      $files->addFiles(array('texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js'));
-      $files->addFiles(array('../plugins/table/table.js'));
-      $files->addFiles(array('../plugins/color/color.js'));
-      $files->addFiles(array('../plugins/symbol/symbol.js'));
-      $files->addFiles(array('../plugins/textTransform/textTransform.js'));
-      $files->addFiles(array(WWW_DIR . '/js/texyla_anketa.js'));
+      $files->addFiles(['texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js']);
+      $files->addFiles(['../plugins/table/table.js']);
+      $files->addFiles(['../plugins/color/color.js']);
+      $files->addFiles(['../plugins/symbol/symbol.js']);
+      $files->addFiles(['../plugins/textTransform/textTransform.js']);
+      $files->addFiles([WWW_DIR . '/js/texyla_anketa.js']);
       
 
       $compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-      $compiler->addFileFilter(new \Webloader\Filter\jsShrink);
+      $compiler->addFileFilter(new JsMinFilter());
 
       return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
   	}
@@ -190,32 +191,36 @@ class HlasovaniPresenter extends LayerPresenter{
 	    $form->addTextArea('text','Otázka',60)
 			->setAttribute('spellcheck', 'true');
 
-	    $form->addText('date_deatline', 'Konec hlasování', 10)
-	      ->setRequired('Vyplňte datum konce hlasování')
-    	  ->setType('date')
-      	  ->setDefaultValue(date_create()->format('Y-m-d'))
-      	  ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-      	  ->setAttribute('class','date');
+		$form['date_deatline'] = new \DateInput('Konec hlasování');
+		$form['date_deatline']->setRequired('Vyplňte datum konce hlasování')
+			->setDefaultValue(new DateTime());
 
-	    $users = $form->addDynamic('users', function (\Nette\Forms\Container $user) {
+	    $users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) {
 	    	$user->addText('text', 'Odpověď', 30);
+		    $user->addHidden('id');
 
 	        $user->addButton('remove', '✖')
 	        	->setAttribute('class','buttonLike')
 	        	->setAttribute('title','Smazat odpověď')
 	        	->setAttribute('onClick','removeRow(this)');
 	            
-	    }, 0);
+	    }, 3);
 
-	    $users->addSubmit('add', 'Přidat odpovědi')
-	        ->setValidationScope(FALSE)
-	        ->addCreateOnClick(TRUE); // metodu vytváří replicator
-		
+		$users->addCreateButton('Přidat odpovědi'); // metodu vytváří replicator
+
 		$form->addHidden('pocet',0);
 
 		$form->addSubmit('save', 'Uložit')
-			->onClick[] = callback($this, 'addAnketaFormSubmitted');
-		
+			->onClick[] = [$this, 'addAnketaFormSubmitted'];
+
+		$id = $this->getParameter('id');
+
+		if ($id){
+			$odpovedi = $this->hlasovani->getOdpovediByAnketaId($id)->fetchPairs('id');
+			$form->setDefaults(['users' => $odpovedi, 'pocet' => count($odpovedi)]);
+		}
+
+
 		return $form;
     }
 
@@ -239,8 +244,7 @@ class HlasovaniPresenter extends LayerPresenter{
 
 			$this->flashMessage('Hlasování bylo aktualizováno');
 		}
-		else
-		{
+		else {
 			$values->member_id = $this->getUser()->getId();
 			$values->date_add = $datum;
 			
@@ -261,10 +265,9 @@ class HlasovaniPresenter extends LayerPresenter{
 				$array = array('hlasovani_id' => $anketa_id, 'text' => ucfirst($odpoved->text));
 				$this->hlasovani->addOdpoved($array);
 			}
-		}else
-		{
-			foreach ($odpovedi as $odpoved_id => $odpoved) {
-				$this->hlasovani->getOdpovedById($odpoved_id)->update(array('text' => ucfirst($odpoved->text)));
+		}else {
+			foreach ($odpovedi as $odpoved) {
+				$this->hlasovani->getOdpovedById($odpoved->id)->update(array('text' => ucfirst($odpoved->text)));
 			}
 		}
 
@@ -273,20 +276,19 @@ class HlasovaniPresenter extends LayerPresenter{
 
     protected function sendHlasovaniMail($hlasovani,$odpovedi){
         $template = $this->createTemplate();
-        $template->setFile(__DIR__ . '/../templates/Mail/newWebHlasovani.latte');
+        $template->setFile(__DIR__ . '/../templates/Mail/newHlasovani.latte');
         $template->hlasovani = $hlasovani;
         $template->odpovedi = $odpovedi;
 
-		$this->registerTexy();
-
+        $texy = \TexyFactory::createTexy();
+        $template->addFilter('texy', [$texy, 'process']);
         $mail = $this->getNewMail();
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
         $mail->setHTMLBody($template);
 
-		$this->mailer->send($mail);
+        $this->mailer->send($mail);
 
-	}
+    }
 
 
 }
-    

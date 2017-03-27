@@ -1,21 +1,24 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
+use App\Model\MemberService;
+use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
-use Nette\Diagnostics\Debugger;
+use Nette\Mail\IMailer;
 use Nette\Security\Passwords;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
-use Nette\Image;
-use Nette\Templating\FileTemplate;
-use Nette\DateTime;
+use Nette\Utils\Image;
+use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 class MemberPresenter extends LayerPresenter{
 
-	/** @var \MemberService @inject */
+	/** @var MemberService @inject */
 	public $memberService;
 
-	/** @var \Nette\Mail\iMailer @inject*/
+	/** @var IMailer @inject*/
 	public $mailer;
 
 	public function actionUpdateCsv(){
@@ -91,7 +94,7 @@ class MemberPresenter extends LayerPresenter{
 		
 		$zip->close();
 
-		$response = new \Nette\Application\Responses\FileResponse(
+		$response = new FileResponse(
             WWW_DIR.'/archive.zip',
             'member-archive.zip',
             'application/zip'
@@ -157,8 +160,9 @@ class MemberPresenter extends LayerPresenter{
  		$form['name']->setAttribute('readonly');
   		$form['surname']->setAttribute('readonly');
 
+  		if (!$this->getUser()->isInRole($this->getName())) unset($form['date_add']);
+
   		$form->setDefaults($member);
-  		$form['date_born']->setDefaultValue($member->date_born->format('Y-m-d'));
 
   		unset($this['memberForm']['sendMail']);
   		$this->template->title = $member->surname .' '. $member->name;
@@ -170,27 +174,39 @@ class MemberPresenter extends LayerPresenter{
             $this->redirect($this->name.':');
         }
 
-    	//$this['memberForm']['password']->setRequired('Vyplňte heslo');
     	unset($this['memberForm']['password']);
     	unset($this['memberForm']['confirm']);
+		unset($this['memberForm']['image']);
+		unset($this['memberForm']['text']);
 
-    	$this->setView('edit');  	
-  	}
+		$this->setView('edit');
+
+		$session = new ArrayHash();
+		$session->pubkey = '12345679';
+		$session->date_end = new DateTime('+24 hours');
+
+		$member =  new ArrayHash();
+		$member->name = 'Pavel';
+		$member->surname = 'Vok';
+		$member->mail = 'pavel.vok@seznamc.cz';
+
+		$this->sendLogginMail($member,$session);
+	}
 
 	public function actionProfile(){
 		$id = $this->getUser()->getId();
 		$this->redirect('Member:view',$id);
 	}
 
-	public function sendLogginMail($member){
+	public function sendLogginMail($member, $session){
 	    $template = $this->createTemplate();
 	    $template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
-	    $template->member = $member;
+		$template->session = $session;
 
-	    $mail = $this->getNewMail();
+		$mail = $this->getNewMail();
 	    $mail->addTo($member->mail,$member->surname.' '.$member->name);
-	    $mail->setBody($template);
-
+	    $mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
+	    $mail->setHTMLBody($template);
 		$this->mailer->send($mail);
   	}
 
@@ -202,7 +218,7 @@ class MemberPresenter extends LayerPresenter{
         	'text/comma-separated-values, text/csv, application/csv, application/excel, application/vnd.ms-excel, application/vnd.msexcel, text/anytext');
         $form->addSubmit('ok', '')->setAttribute('class','iconic');
 
-		$form->onSuccess[] = callback($this, 'uploadMembersFormSubmitted');
+		$form->onSuccess[] = [$this, 'uploadMembersFormSubmitted'];
 
     return $form;
 	}
@@ -224,7 +240,7 @@ class MemberPresenter extends LayerPresenter{
         $form->addSubmit('ok', '')
         	->setAttribute('class','myfont');
 
-		$form->onSuccess[] = callback($this, 'memberSearchFormSubmitted');
+		$form->onSuccess[] = [$this, 'memberSearchFormSubmitted'];
 
     return $form;
 	}
@@ -259,37 +275,42 @@ class MemberPresenter extends LayerPresenter{
 			->setAttribute('spellcheck', 'true')	
       		->setRequired('Vyplňte %label');
 
-		$form->addText('date_born', 'Datum narození', 10)
-		 	->setType('date')
-			->setRequired('Vyplňte %label')
-		   	->setDefaultValue(date('Y-m-d'))
-		    ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-		    ->setAttribute('class','date');
-        
-        $form->addText('zamestnani', 'Zaměstnání/Škola', 30)
+		$form['date_born'] = new \DateInput('Datum narození');
+		$form['date_born']->setRequired('Vyplňte datum narození')
+			->setDefaultValue(new DateTime());
+
+		$form->addText('zamestnani', 'Zaměstnání/Škola', 30)
 			->setAttribute('spellcheck', 'true')
       		->setRequired('Vyplňte %label');
 
         $form->addGroup('Přihlašovací údaje');
 
-        $form->addText('login', 'Login', 20)
-      		->addRule(callback($this, 'uniqueValidator'), 'V databázi se již vyskytuje osoba se stejným přihlašovacím jménem')
-      		->setRequired('Vyplňte %label');
-
-      	$form->addPassword('password', 'Nové heslo', 20)
+		$form->addPassword('password', 'Nové heslo', 20)
       		->addCondition(Form::FILLED)
-      			//->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',6);
       			->addRule(Form::PATTERN,'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena','^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
-      			->addRule(callback($this,'currentPassValidator'),'Nesmíte použít svoje staré heslo',$this->getUser()->getIdentity()->hash);
-	
-      	$form->addPassword('confirm', 'Potvrzení', 20)
+      			->addRule([$this, 'currentPassValidator'],'Nesmíte použít svoje staré heslo',$this->getUser()->getIdentity()->hash);
+
+		$form->addPassword('confirm', 'Potvrzení', 20)
+	        ->setRequired(FALSE)
       		->addRule(Form::EQUAL,'Zadaná hesla se neschodují',$form['password'])
       		->addCondition(Form::FILLED)
-      			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);     
-      		
-        $form->addCheckbox('sendMail','Poslat novému členu mail s přihlašovacími údaji')->setDefaultValue(TRUE);
+      			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);
 
-        $form->addGroup('Adresa');
+		$form->addCheckbox('sendMail','Poslat novému členu mail s přihlašovacími údaji')
+			->setDefaultValue(TRUE);
+
+		$form->addGroup('Kontakty');
+
+		$form->addText('mail', 'E-mail', 30)
+			->setType('email')
+			->addRule([$this, 'uniqueValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
+			->setRequired('Vyplňte %label');
+
+		$form->addText('telefon', 'Telefon', 30)
+			->setRequired('Vyplňte %label')
+			->addRule(Form::LENGTH,'%label musí mít %d znaků',9);
+
+		$form->addGroup('Adresa');
 
         $form->addText('ulice', 'Ulice', 30)
 			->setAttribute('spellcheck', 'true')	
@@ -299,20 +320,13 @@ class MemberPresenter extends LayerPresenter{
 			->setAttribute('spellcheck', 'true')	
       		->setRequired('Vyplňte %label');
 
-      	$form->addGroup('Kontakty');
+    	$form->setCurrentGroup(null);
 
-        $form->addText('mail', 'E-mail', 30)
-        	->setType('email')
-        	->addRule(callback($this, 'uniqueValidator'), 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
-			->setRequired('Vyplňte %label');
+		$form['date_add'] = new \DateInput('Datum registrace');
+		$form['date_add']->setRequired('Vyplňte datum registrace')
+			->setDefaultValue(new DateTime());
 
-      	$form->addText('telefon', 'Telefon', 30)
-      		->setRequired('Vyplňte %label')
-			->addRule(Form::LENGTH,'%label musí mít %d znaků',9);
-	
-    	$form->setCurrentGroup(null); 
-
-    	$form->addUpload('image','Nový obrázek')
+		$form->addUpload('image','Nový obrázek')
     		->addCondition(Form::FILLED)    			
         		->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 5 MB.',5 * 1024 * 1024 /* v bytech */)
         		->addRule(Form::IMAGE, 'Fotografie musí být ve formátu JPEG')
@@ -320,12 +334,9 @@ class MemberPresenter extends LayerPresenter{
 
     	$form->addTextArea('text', 'Poznámka', 30)
 			->setAttribute('spellcheck', 'true');
-      		//->setRequired('Vyplňte %label');
-      		//->setAttribute('class','texyla');	
-	
 
         $form->addSubmit('ok', 'Ulož');
-		$form->onSuccess[] = callback($this, 'memberFormSubmitted');
+		$form->onSuccess[] = [$this, 'memberFormSubmitted'];
 
     	return $form;
 	}
@@ -335,15 +346,11 @@ class MemberPresenter extends LayerPresenter{
 
 		$values = $form->getValues();
 		
-		if (!$id) {
-			$values->password = Strings::random(8);
-			if ($values->sendMail) $this->sendLogginMail($values);
-		}
-	
+		$sendMail = $values->sendMail;
 		unset($values['sendMail']);
 
 		if ($values->password) {
-			$values->hash = \Nette\Security\Passwords::hash($values->password);
+			$values->hash = Passwords::hash($values->password);
 		}
 
 		unset($values['password']);
@@ -361,12 +368,23 @@ class MemberPresenter extends LayerPresenter{
 
         if (!$values->text) unset($values->text);
 
+        $values->date_update = new DateTime();
+
 		if ($id) {
           	$this->memberService->getMemberById($id)->update($values);
           	$this->flashMessage('Osobní profil byl změněn');
           	$this->redirect('Member:view',$id);
         }else {
+			$values->hash = '';
 			$member = $this->memberService->addMember($values);
+
+			if ($sendMail) {
+				$session = $this->memberService->addPasswordSession($member->id, '24 HOUR');
+				$this->sendLogginMail($member, $session);
+			}
+
+			$this->memberService->addMemberLogin($member->id, new DateTime());
+
           	$this->flashMessage('Byl přidán nový člen');
           	$this->redirect('Member:view',$member->id);
 		}		

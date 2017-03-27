@@ -1,20 +1,17 @@
-﻿{contentType text/plain; charset=utf-8}
-{var $mail->subject = '[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou'}
-Zdravím
+﻿﻿{layout '@mail_layout.latte'}
+{contentType text/html; charset=utf-8}
+{block content}
+    <p>Zdravím.</p>
 
-Právě si byl zaregistrován do systému Místní skupiny VZS Jablonec nad Nisou. 
+    <p>Právě si byl zaregistrován do systému VZS Jablonec nad Nisou.</p>
 
-Zde jsou tvé přihlašovací údaje:
+    <p>Svoje heslo si můžeš nastavit na adrese:
+        <a n:href="//Sign:restorePassword pubkey => $session->pubkey">
+            {link //Sign:restorePassword pubkey => $session->pubkey}</a><br>
+        Tento odkaz bude fungovat 24 hodin (do {$session->date_end|date:'d.m.Y H:i:s'})</p>
 
-Přihlašovací jméno: {$member->login}
-Heslo: {$member->password}
+    <p>Svůj profil najdeš na adrese: <a n:href="//Member:profile">{link //Member:profile}</a><br>
+        Zde si upravit své osobní údaje.</p>
 
-Tvůj profil najdeš na adrese: {link //Member:profile}
-Zde si můžeš změnit heslo a upravit své osobní údaje.
-
-Vstup na stránky pro členy: {link //Akce:default}
-
-_____________________________________________________________
-Tato zpráva automaticky generovana informačním systémem 
-VZS Jablonec nad Nisou a není třeba na ní odpovídat
-http://member.vzs-jablonec.cz/
+    <p>Vstup na stránky pro členy: <a n:href="//Akce:default">{link //Akce:default}</a></p>
+{/block}

@@ -2,18 +2,18 @@
 <link rel="stylesheet" href="{$baseUri}/css/jquery-ui.custom.css" type="text/css" media="screen" />
 
 <style type="text/css" n:syntax="off">
-	.photoList li {width: 150px; height: 100px; font-size: 1em; text-align: center; position: relative; cursor: move;}
-	.photoList li img:hover, .photoList li:hover img {border-color: #ea9419;}
-	.photoList li.hidden:before {background-color: rgba(0,10,100,0.7); width: 100%; height: 100%; position: absolute; top: 0px; bottom: 0px; display: block; z-index: 1; content: ' ';}
-	.photoList li input.title {width: 98%; position: absolute; bottom: 0px; right: 0px; font-size: 0.8em; background-color: rgba(0,0,0,0.8); z-index: 2;}
-	.photoList li label {position: absolute; top: 0px; left: 0px; z-index: 2;}
-	#frm-superForm label {font-weight: bold;}
-	#frm-superForm-name {font-size: 1.5em; font-weight: bold;}
-	#frm-superForm-text {width: 98%; font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-size: 1em; height: 10em;}
-	.clearel {clear: both;}
-	#fistrRow {line-height: 2em}
-	.date {text-align: center;}
-	#ui-datepicker-div {z-index: 5 !important;}
+	.photoList li { width: 150px; height: 100px; font-size: 1em; text-align: center; position: relative; cursor: move;}
+	.photoList li img:hover, .photoList li:hover img { border-color: #ea9419;}
+	.photoList li.hidden:before { background-color: rgba(0,10,100,0.7); width: 100%; height: 100%; position: absolute; top: 0px; bottom: 0px; display: block; z-index: 1; content: ' ';}
+	.photoList li input.title { width: 98%; position: absolute; bottom: 0px; right: 0px; font-size: 0.8em; background-color: rgba(0,0,0,0.8); z-index: 2;}
+	.photoList li input.selected { position: absolute; top: 0px; left: 0px; z-index: 2;}
+	#frm-superForm label { font-weight: bold;}
+	#frm-superForm-name { font-size: 1.5em; font-weight: bold;}
+	#frm-superForm-text { width: 98%; font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-size: 1em; height: 10em;}
+	.clearel { clear: both;}
+	#fistrRow { line-height: 2em}
+	.date { text-align: center;}
+	#ui-datepicker-div { z-index: 5 !important;}
 </style>
 
 <script src="{$baseUri}/js/jquery.nette.js" type="text/javascript"></script> 
@@ -24,12 +24,6 @@
 <script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
 
 <script type="text/javascript">
-	function select(id){
- 		var el = $('#frm-superForm-photos-'+id+'-selected'); 
- 		var val = el.attr('checked');
- 		el.attr('checked', val ? false : true);
-	}
-
 	function swapTitle(el){
 		var attribute = el.checked ? 'date' : 'title';
 
@@ -106,10 +100,12 @@
 </ul>
 
 <ul id="list" class="photoList" n:inner-foreach="$photos as $image">
-	<li n:class="(($album->visible) and (!$image->visible)) ? 'hidden'" onclick="select({$image->id})">
-		<img src="{$baseUri}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" alt="{$image->filename}" class="image">
-		{input photos-$image->id-selected}
-		<div>{input photos-$image->id-text, class => title}</div>
+	<li n:class="(($album->visible) and (!$image->visible)) ? 'hidden'">
+		<label n:name="photos-$image->id-selected">
+			<img src="{$baseUri}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" alt="{$image->filename}" class="image">
+		</label>
+		<input n:name="photos-$image->id-selected" class="selected">
+		<div><input n:name="photos-$image->id-text" class="title" data-date="{$image->date_taken ? $image->date_taken->format('d.m.Y H:i:s')}" data-title="{$image->text}"></div>
 	</li>
 </ul>
 {/form}

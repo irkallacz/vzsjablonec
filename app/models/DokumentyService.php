@@ -4,7 +4,12 @@
  * MemberService base class.
  */
 
-use Nette\DateTime;
+namespace App\Model;
+
+use Nette\Database\Table\IRow;
+use Nette\Database\Table\Selection;
+use Nette\Utils\DateTime;
+use Nette\Utils\Html;
 
 class DokumentyService extends DatabaseService{
 
@@ -12,14 +17,14 @@ class DokumentyService extends DatabaseService{
     const ZAPISY = 6;
 
     /**
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getDokumenty(){
         return $this->database->table('dokumenty');
     }
 
     /**
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getDokumentyCategory(){
         return $this->database->table('dokumenty_category');
@@ -41,16 +46,16 @@ class DokumentyService extends DatabaseService{
 
 		$array = [];
 		foreach($result as $row){
-			$array[$row->id] = Nette\Utils\Html::el()->setHtml(str_repeat('&nbsp;&nbsp;',$row->level).$row->title);
+			$array[$row->id] = Html::el()->setHtml(str_repeat('&nbsp;&nbsp;',$row->level).$row->title);
 		}
 	return $array;
     }
 
     /**
-     * @param \Nette\DateTime $date
-     * @return \Nette\Database\Table\Selection
+     * @param DateTime $date
+     * @return Selection
      */
-    public function getDokumentyNews(\Nette\DateTime $date){
+    public function getDokumentyNews(DateTime $date){
         return $this->getDokumenty()
             ->where('date_add > ?',$date)
             ->order('date_add DESC');
@@ -58,7 +63,7 @@ class DokumentyService extends DatabaseService{
 
     /**
      * @param $id
-     * @return \Nette\Database\Table\IRow
+     * @return IRow
      */
     public function getDokumentyCategoryById($id){
         return $this->getDokumentyCategory()->get($id);
@@ -73,7 +78,7 @@ class DokumentyService extends DatabaseService{
 
 	/**
      * @param $id
-     * @return \Nette\Database\Table\IRow
+     * @return IRow
      */
     public function getDokumentById($id){
         return $this->getDokumenty()->get($id);        
@@ -81,23 +86,16 @@ class DokumentyService extends DatabaseService{
 
     /**
      * @param $values
-     * @return bool|int|\Nette\Database\Table\IRow
+     * @return bool|int|IRow
      */
     public function addDokument($values){
         $values->date_add = new DateTime();
         return $this->getDokumenty()->insert($values);        
     }
-//
-//    /**
-//     * @return \Nette\Database\Table\Selection
-//     */
-//    public function getZapisy(){
-//        return $this->database->table('dokumenty_category')->where('id',self::ZAPISY);
-//    }
-//
+
 	/**
 	 * @param $year
-	 * @return bool|mixed|\Nette\Database\Table\IRow
+	 * @return bool|mixed|IRow
 	 */
 	public function getZapisCategoryByYear($year){
 		return $this->database->table('dokumenty_category')
@@ -105,12 +103,5 @@ class DokumentyService extends DatabaseService{
 			->where('parent_id',self::ZAPISY)
 			->fetch();
 	}
-//
-//    /**
-//     * @return \Nette\Database\Table\IRow
-//     */
-//    public function getHlasovani(){
-//        return $this->getDokumenty()->get(self::HLASOVANI);
-//    }
 
 }

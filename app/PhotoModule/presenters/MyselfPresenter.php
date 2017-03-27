@@ -1,17 +1,17 @@
 <?php
 
-namespace PhotoModule;
+namespace App\PhotoModule\Presenters;
 
+use App\Model\GalleryService;
 use Nette\Application\UI\Form;
+use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 use Nette\Utils\Html;
-use Nette\Diagnostics\Debugger;
-use Nette\DateTime;
 
 
 class MyselfPresenter extends BasePresenter{
 
-    /** @var \GalleryService @inject */
+    /** @var GalleryService @inject */
     public $gallery;
 
     public function renderDefault(){
@@ -33,7 +33,7 @@ class MyselfPresenter extends BasePresenter{
         $this->template->newAlbums = $newAlbums;
         $this->template->newPhotos = $newPhotos;
 
-        $this->template->date_now = new Datetime();
+        $this->template->date_now = new DateTime();
         $this->template->date_last = $date_last;
     }
 
@@ -65,7 +65,7 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozý hodnot
 
         $form->addSubmit('save', 'Ulož');
 
-        $form->onSuccess[] = callback($this, 'albumFormSubmitted');
+        $form->onSuccess[] = [$this, 'albumFormSubmitted'];
 
         return $form;
     }

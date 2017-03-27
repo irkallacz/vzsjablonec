@@ -1,18 +1,21 @@
 <?php
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
+use App\Model\AnketyService;
+use Joseki\Webloader\JsMinFilter;
 use Nette\Application\UI\Form;
-use Nette\DateTime;
+use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 class AnketyPresenter extends LayerPresenter{
 
-	/** @var \AnketyService @inject */
+	/** @var AnketyService @inject */
 	public $anketyService;
 
 	public function renderDefault(){
 		$ankety = $this->anketyService->getAnkety();
 		$this->template->ankety = $ankety;
-		$this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
 	public function renderView($id){
@@ -56,10 +59,8 @@ class AnketyPresenter extends LayerPresenter{
 
 		    $odpovedi = $this->anketyService->getOdpovediByAnketaId($id);
 
-		    $form['pocet']->setDefaultValue(count($odpovedi));
-
-		    $form->setValues($anketa);
-		    $form['users']->setValues($odpovedi);
+		    $form->setDefaults($anketa);
+		    //$form['users']->setValues($odpovedi);
 
 		    $this->template->title = ucfirst($anketa->title);
 	    }
@@ -139,16 +140,16 @@ class AnketyPresenter extends LayerPresenter{
 
 	public function createComponentTexylaJs(){
       $files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
-      $files->addFiles(array('texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js'));
-      $files->addFiles(array('../plugins/table/table.js'));
-      $files->addFiles(array('../plugins/color/color.js'));
-      $files->addFiles(array('../plugins/symbol/symbol.js'));
-      $files->addFiles(array('../plugins/textTransform/textTransform.js'));
-      $files->addFiles(array(WWW_DIR . '/js/texyla_anketa.js'));
+      $files->addFiles(['texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js']);
+      $files->addFiles(['../plugins/table/table.js']);
+      $files->addFiles(['../plugins/color/color.js']);
+      $files->addFiles(['../plugins/symbol/symbol.js']);
+      $files->addFiles(['../plugins/textTransform/textTransform.js']);
+      $files->addFiles([WWW_DIR . '/js/texyla_anketa.js']);
 
 
       $compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-      $compiler->addFileFilter(new \Webloader\Filter\jsShrink);
+      $compiler->addFileFilter(new JsMinFilter());
 
       return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
   	}
@@ -162,9 +163,11 @@ class AnketyPresenter extends LayerPresenter{
 	    $form->addTextArea('text','Otázka',60)
 			->setAttribute('spellcheck', 'true');	    
 
-	    $users = $form->addDynamic('users', function (\Nette\Forms\Container $user) {
+	    $users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) {
 	    	$user->addText('text', 'Odpověď', 30)
 				->setAttribute('spellcheck', 'true');
+
+	    	$user->addHidden('id');
 
 	        $user->addButton('remove', '✖')
 	        	->setAttribute('class','buttonLike')
@@ -173,15 +176,19 @@ class AnketyPresenter extends LayerPresenter{
 
 	    }, 0);
 
-	    $users->addSubmit('add', 'Přidat odpovědi')
-	        ->setAttribute('class','buttonLike')
-	        ->setValidationScope(FALSE)
-	        ->addCreateOnClick(TRUE); // metodu vytváří replicator
+	    $users->addCreateButton('Přidat odpovědi');
 
 		$form->addHidden('pocet',0);
 
 		$form->addSubmit('save', 'Uložit')
-			->onClick[] = callback($this, 'addAnketaFormSubmitted');
+			->onClick[] = [$this, 'addAnketaFormSubmitted'];
+
+		$id = $this->getParameter('id');
+
+		if ($id){
+			$odpovedi = $this->anketyService->getOdpovediByAnketaId($id)->fetchPairs('id');
+			$form->setDefaults(['users' => $odpovedi, 'pocet' => count($odpovedi)]);
+		}
 
 		return $form;
     }
@@ -222,13 +229,13 @@ class AnketyPresenter extends LayerPresenter{
 			}
 
 			foreach ($odpovedi as $odpoved) {
-				$array = array('anketa_id' => $anketa_id, 'text' => ucfirst($odpoved->text));
+				$array = ['anketa_id' => $anketa_id, 'text' => ucfirst($odpoved->text)];
 				$this->anketyService->addOdpoved($array);
 			}
 		}else
 		{
-			foreach ($odpovedi as $odpoved_id => $odpoved) {
-				$this->anketyService->getOdpovedById($odpoved_id)->update(array('text' => ucfirst($odpoved->text)));
+			foreach ($odpovedi as $odpoved) {
+				$this->anketyService->getOdpovedById($odpoved->id)->update(array('text' => ucfirst($odpoved->text)));
 			}
 		}
 

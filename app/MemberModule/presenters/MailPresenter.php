@@ -1,18 +1,21 @@
 <?php
 
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
+use App\Model\AkceService;
+use App\Model\MemberService;
 use Nette\Application\UI\Form;
+use Nette\Mail\IMailer;
 
 class MailPresenter extends LayerPresenter{
 
-	/** @var \MemberService @inject */
+	/** @var MemberService @inject */
 	public $memberService;
 
-	/** @var \AkceService @inject */
+	/** @var AkceService @inject */
 	public $akceService;
 
-	/** @var \Nette\Mail\IMailer @inject*/
+	/** @var IMailer @inject*/
 	public $mailer;
 
 	public function renderDefault(){
@@ -21,39 +24,27 @@ class MailPresenter extends LayerPresenter{
             $this->redirect('News:');
         }
 
+        $userMails = $this->memberService->getMembers(TRUE)->fetchPairs('id','mail');
+        $this->template->userMails = $userMails;
+
 		$form = $this['mailForm'];
-    	//if (!$form->isSubmitted()) {    
-	        foreach ($this->memberService->getMembers()->order('surname, name') as $member) {
-	            $form['users'][$member->id]['mail']
-	            	->setAttribute('data-mail',$member->mail)
-	            	->setAttribute('class','member')
-	            	->caption = $member->surname.' '.$member->name;
-	        }
-    		$this->template->pocet = ceil(count($form['users']->values)/3);
-    	//}
+    	if (!$form->isSubmitted()) {
+    		$this->template->pocet = ceil(count($userMails)/3);
+    	}
   	}
 
 	public function renderAkce($id,$organizator=FALSE){
 		$form = $this['mailForm'];
-    	//if (!$form->isSubmitted()) {    
-	        $array = array();
-	        foreach ($this->akceService->getMembersByAkceId($id,$organizator) as $member) {
 
-	            $form['users'][$member->id]['mail']
-	            	->setAttribute('data-mail',$member->mail)
-	            	->setDefaultValue(TRUE)
-	            	->caption = $member->surname.' '.$member->name;
-	        	
-	        	$array[] = $member->mail;
-	        }	
-    		
-    		$form['to']->setDefaultValue(implode(',',$array));
-    		
-    		$this->template->isAkce = TRUE;
+		$users = $this->akceService->getMembersByAkceId($id,$organizator);
+        $form['to']->setDefaultValue(join(',',$users->fetchPairs('id','mail')));
+		$form['users']->setDefaultValue($users->fetchPairs('id','id'));
 
-    		$this->template->pocet = ceil(count($form['users']->values)/3);
-    		$this->setView('default');
-    	//}
+        $this->template->isAkce = TRUE;
+
+        $this->template->pocet = ceil(count($users)/3);
+        $this->setView('default');
+
   	}
 
 	protected function createComponentMailForm(){
@@ -68,10 +59,8 @@ class MailPresenter extends LayerPresenter{
     		->setAttribute('class', 'buttonLike myfont')
     		->setAttribute('onclick', 'adresy()');
 
-		$form->addDynamic('users', function (\Nette\Forms\Container $container) {
-	        $container->addCheckBox('mail', 'jmeno')
-	        	->setDefaultValue(FALSE);
-	    });
+		$form->addCheckboxList('users', 'Příjemci')
+			->setItems($this->memberService->getMembersArray());
 
 		$form->addText('subject', 'Předmět', 50)
       		->setRequired('Vyplňte %label')
@@ -92,7 +81,7 @@ class MailPresenter extends LayerPresenter{
       		//->setAttribute('class','texyla');	
 
         $form->addSubmit('ok', 'Odeslat');
-		$form->onSuccess[] = callback($this, 'mailFormSubmitted');
+		$form->onSuccess[] = [$this, 'mailFormSubmitted'];
 
     	return $form;
 	}
@@ -101,11 +90,9 @@ class MailPresenter extends LayerPresenter{
 		$akce_id = (int) $this->getParameter('id');
 
 		$values = $form->getValues();
-		
-		$memberList = array_keys(iterator_to_array($form['users']->values));
 
 		$sender = $this->memberService->getMemberById($this->getUser()->getId());
-		$members = $this->memberService->getMembers()->where('id',$memberList);
+		$members = $this->memberService->getMembers()->where('id', $values->users);
 
 		if (($form['file']->isFilled()) and (!$values->file->isOK())) {
 			$form->addError('Chyba při nahrávání souboru');

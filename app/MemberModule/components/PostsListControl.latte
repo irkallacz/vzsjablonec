@@ -1,9 +1,9 @@
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 <div id="posts" n:inner-foreach="$posts as $post">
-    <div id="p{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
+    <div id="post/{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
         <div class="top headerLike">
-            <a class="float-right" href="{plink Forum:viewPost, $post->id}" title="{$post->date_add|timeAgoInWords}">
+            <a class="float-right" href="{plink Forum:post, $post->id}" title="{$post->date_add|timeAgoInWords}">
                 <span class="icon-chat"></span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
             </a>
             <a href="{plink Member:view,$post->member_id}" title="profil uživatele">
@@ -45,7 +45,7 @@
                     <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete,$post->id}"><span class="icon-trash"></span> smazat</a>
                     <a class="buttonLike" href="{plink Forum:edit,$post->id}"><span class="icon-pencil"></span> editovat</a>
                 {/if}
-                <a class="buttonLike" href="{plink Forum:citePost,$post->id}"><span class="icon-quote-left"></span> citace</a>
+                <a class="buttonLike" href="{plink Forum:cite,$post->id}"><span class="icon-quote-left"></span> citace</a>
             {/if}
             </div>
 

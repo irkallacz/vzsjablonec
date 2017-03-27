@@ -6,9 +6,16 @@
  * Date: 29.11.2016
  * Time: 23:55
  */
-class TopicsListControl extends Nette\Application\UI\Control{
 
-    /** @var \Nette\Database\Table\Selection */
+namespace App\MemberModule\Components;
+
+use Nette\Application\UI\Control;
+use Nette\Database\Table\Selection;
+
+
+class TopicsListControl extends Control{
+
+    /** @var Selection */
     private $topics;
 
     /**@var string */
@@ -16,10 +23,10 @@ class TopicsListControl extends Nette\Application\UI\Control{
 
 	/**
 	 * PostsListControl constructor.
-	 * @param \Nette\Database\Table\Selection $posts
+	 * @param Selection $posts
 	 * @param string $search
 	 */
-	public function __construct(\Nette\Database\Table\Selection $topics, $search = NULL){
+	public function __construct(Selection $topics, $search = NULL){
 		parent::__construct();
 		$this->topics = $topics;
 		$this->search = $search;
@@ -28,7 +35,7 @@ class TopicsListControl extends Nette\Application\UI\Control{
 
 	public function render(){
         $this->template->setFile(__DIR__ . '/TopicsListControl.latte');
-        $this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+        $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	    $this->template->topics = $this->topics;
 		$this->template->search = $this->search;
 

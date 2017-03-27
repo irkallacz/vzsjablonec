@@ -6,17 +6,20 @@
  * Time: 18:45
  */
 
+namespace App\MemberModule\Components;
+
 use Nette\Utils\Arrays;
+use Nette\Application\UI\Control;
+use Nette\Utils\DateTime;
+use App\Model\AnketyService;
 
-
-class AnketaControl extends Nette\Application\UI\Control{
+class AnketaControl extends Control{
     /** @var AnketyService  */
     private $anketyService;
 
     /**
      * AnketaControl constructor.
      * @param AnketyService $anketyService
-     * @param Texy $texy
      */
     public function __construct(AnketyService $anketyService){
         parent::__construct();
@@ -39,8 +42,8 @@ class AnketaControl extends Nette\Application\UI\Control{
             $this->template->celkem = count($memberList);
 
 	        $texy = \TexyFactory::createTexy();
-            $this->template->registerHelper('texy', callback($texy, 'process'));
-            $this->template->registerHelper('timeAgoInWords', 'Helpers::timeAgoInWords');
+            $this->template->addFilter('texy', [$texy, 'process']);
+            $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 
             $this->template->render();
         }else{

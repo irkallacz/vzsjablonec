@@ -1,16 +1,16 @@
 <?php
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
-use Nette\Application\UI\Presenter;
-use Google_Event;
+use App\Model\AkceService;
 use Google_Client;
-use Google_EventDateTime;
-use Google_CalendarService;
+use Google_Service_Calendar;
+use Google_Service_Calendar_Event;
+use Google_Service_Calendar_EventDateTime;
 use Nette\Database\Table\ActiveRow;
 
 class CalendarPresenter extends BasePresenter{
 
-	/** @var \AkceService @inject */
+	/** @var AkceService @inject */
 	public $akceService;
 
 	public function renderDefault(){
@@ -27,14 +27,14 @@ class CalendarPresenter extends BasePresenter{
     	$httpResponse->setHeader('Content-type','text/calendar; charset=utf-8');
   	}
 
-  	private function setEvent(ActiveRow $akce, Google_Event $event){
+  	private function setEvent(ActiveRow $akce, Google_Service_Calendar_Event $event){
 		$event->setSummary($akce->name);
 		$event->setLocation($akce->place);
 		$event->setDescription($akce->perex);
-		$start = new Google_EventDateTime();
+		$start = new Google_Service_Calendar_EventDateTime;
 		$start->setDateTime($akce->date_start->format('c'));
 		$event->setStart($start);
-		$end = new Google_EventDateTime();
+		$end = new Google_Service_Calendar_EventDateTime;
 		$end->setDateTime($akce->date_end->format('c'));
 		$event->setEnd($end);
 		
@@ -56,9 +56,9 @@ class CalendarPresenter extends BasePresenter{
 		$client->setRedirectUri($this->link('//Calendar:google'));
 		$client->setDeveloperKey($this->context->parameters['google']['developer_key']);
 
-		$client->setUseObjects(true); 
+		//$client->setUseObjects(true);
 
-		$service = new Google_CalendarService($client); 
+		$service = new Google_Service_Calendar($client);
 
 		if (!is_null($logout)) unlink($tokenFile);
 

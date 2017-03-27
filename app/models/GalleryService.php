@@ -4,13 +4,16 @@
  * Model base class.
  */
 
-use Nette\DateTime;
+namespace App\Model;
+
+use Nette;
+use Nette\Utils\DateTime;
 use Nette\Database\Table\Selection;
 use Nette\Database\Table\IRow;
 
 class GalleryService extends Nette\Object{
 
-    /** @var Nette\Database\Connection */
+    /** @var Nette\Database\Context */
     public $database;
 
     /**

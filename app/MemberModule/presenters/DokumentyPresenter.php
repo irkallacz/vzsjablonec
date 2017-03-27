@@ -1,22 +1,22 @@
 <?php
-namespace MemberModule;
+namespace App\MemberModule\Presenters;
 
+use App\Model\DokumentyService;
 use Nette\Application\BadRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
-use Nette\DateTime;
-use Nette\Diagnostics\Debugger;
-use Nette\Http\Response;
+use Nette\Utils\DateTime;
+use Nette\Mail\IMailer;
 use Nette\Utils\Strings;
 
 class DokumentyPresenter extends LayerPresenter{
 
 	const DOCUMENT_DIR = 'doc';
 
-    /** @var \DokumentyService @inject */
+    /** @var DokumentyService @inject */
     public $dokumentyService;
 
-    /** @var \Nette\Mail\IMailer @inject */
+    /** @var IMailer @inject */
     public $mailer;
 
     public function getFileIcon($filename){
@@ -40,7 +40,7 @@ class DokumentyPresenter extends LayerPresenter{
 
 	public function renderDefault(){
 		$this->template->category = $this->dokumentyService->getDokumentyCategoryParent();
-	    $this->template->registerHelper('fileExtIcon', callback($this,'getFileIcon'));
+	    $this->template->addFilter('fileExtIcon', [$this, 'getFileIcon']);
   	}
 
     public function renderAdd(){
@@ -82,7 +82,7 @@ class DokumentyPresenter extends LayerPresenter{
         $mail->addAttachment('schuze-'.$datum->format('Y-m-d').'.pdf', $file->getContents());
 
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
-        $mail->setBody($template);
+        $mail->setHTMLBody($template);
 
         $this->mailer->send($mail);
     }
@@ -111,17 +111,17 @@ class DokumentyPresenter extends LayerPresenter{
 		$form->addSubmit('deleteFiles','Smazat')
 			->setAttribute('data-query','Opravdu chcete tyto dokumenty smazat?')
 			->setAttribute('class','confirm')
-			->onClick[] = callback($this, 'deleteFiles');
+			->onClick[] = [$this, 'deleteFiles'];
 
 		$form->addSubmit('moveFiles','Přesunout')
 			->setAttribute('data-query','Opravdu chcete tyto soubory přesunut?')
 			->setAttribute('class','confirm')
-			->onClick[] = callback($this, 'moveFiles');
+			->onClick[] = [$this, 'moveFiles'];
 
 		$form->addSubmit('deleteDirs','Smazat')
 			->setAttribute('data-query','Opravdu chcete tyto adresáře smazat?')
 			->setAttribute('class','confirm')
-			->onClick[] = callback($this, 'deleteDirs');
+			->onClick[] = [$this, 'deleteDirs'];
 
 		return $form;
 	}
@@ -207,7 +207,7 @@ class DokumentyPresenter extends LayerPresenter{
         
         $form->addSubmit('ok', 'Nahrát');
 
-		$form->onSuccess[] = callback($this, 'addDokumentFormSubmitted');
+		$form->onSuccess[] = [$this, 'addDokumentFormSubmitted'];
 
     return $form;
 	}
@@ -247,7 +247,7 @@ class DokumentyPresenter extends LayerPresenter{
 		)->setPrompt('Žádná');
 
 		$form->addSubmit('ok', 'Uložit');
-		$form->onSuccess[] = callback($this, 'addCategoryFormSubmitted');
+		$form->onSuccess[] = [$this, 'addCategoryFormSubmitted'];
 
 		return $form;
 	}
@@ -284,6 +284,7 @@ class DokumentyPresenter extends LayerPresenter{
         $form->addText('datum','Datum schůze',10)
             ->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
             ->setType('date')
+	        ->setRequired(TRUE)
             ->setDefaultValue(date('Y-m-d'));
 
         $form->addCheckBox('mail', 'Poslat soubor představenstvu e-mailem')
@@ -291,7 +292,7 @@ class DokumentyPresenter extends LayerPresenter{
 
         $form->addSubmit('ok', 'Nahrát');
 
-        $form->onSuccess[] = callback($this, 'addZapisFormSubmitted');
+        $form->onSuccess[] = [$this, 'addZapisFormSubmitted'];
 
     return $form;
     }
@@ -309,7 +310,7 @@ class DokumentyPresenter extends LayerPresenter{
 
         $form->addSubmit('ok', 'Nahrát');
 
-        $form->onSuccess[] = callback($this, 'addHlasovaniFormSubmitted');
+        $form->onSuccess[] = [$this, 'addHlasovaniFormSubmitted'];
 
     return $form;
     }
@@ -322,7 +323,7 @@ class DokumentyPresenter extends LayerPresenter{
             
             $datum = new Datetime($values->datum);
             
-            $values->title = 'Schůze ' . $datum->format('d.m.Y');
+            $values->title = 'Schůze ' . $datum->format('Y.m.d');
             $values->filename = 'schuze-' . $datum->format('Y-m-d') .'.pdf';
             
             $values->member_id = $this->getUser()->getId();

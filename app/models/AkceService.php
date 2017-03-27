@@ -3,10 +3,17 @@
 /**
  * Model base class.
  */
+
+namespace App\Model;
+
+use Nette\Database\Table\IRow;
+use Nette\Database\Table\Selection;
+use Nette\Utils\DateTime;
+
 class AkceService extends DatabaseService
 {
     /**
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getAkce(){
         return $this->database->table('akce');        
@@ -14,29 +21,29 @@ class AkceService extends DatabaseService
 
     /**
      * @param bool $future
-     * @return Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getAkceByFuture($future = false){
-        $akce = $this->getAkce()->where('enable',1)->order('date_start DESC');
+        $akce = $this->getAkce()->where('enable',1);
         
-        if ($future) $akce->where('date_start > NOW()'); else $akce->where('date_start < NOW()');
+        if ($future) $akce->where('date_start > NOW()')->order('date_start ASC'); else $akce->where('date_start < NOW()')->order('date_start DESC');;
         
         return $akce;
     }
 
     /**
      * @param $id
-     * @return \Nette\Database\Table\IRow
+     * @return IRow
      */
     public function getAkceById($id){
         return $this->getAkce()->get($id);
     }
 
     /**
-     * @param \Nette\DateTime $date
-     * @return \Nette\Database\Table\Selection
+     * @param DateTime $date
+     * @return Selection
      */
-    public function getAkceNews(\Nette\DateTime $date){
+    public function getAkceNews(DateTime $date){
         return $this->getAkceByFuture(TRUE)
             ->where('confirm',TRUE)
             ->where('date_update > ?',$date);
@@ -44,10 +51,10 @@ class AkceService extends DatabaseService
 
     /**
      * @param $id
-     * @param \Nette\DateTime $date
-     * @return bool|mixed|\Nette\Database\Table\IRow
+     * @param DateTime $date
+     * @return bool|mixed|IRow
      */
-    public function getAkceNext($id, \Nette\DateTime $date){
+    public function getAkceNext($id, DateTime $date){
         return $this->getAkce()
                 ->where('enable',TRUE)
                 ->where('confirm',TRUE)
@@ -60,10 +67,10 @@ class AkceService extends DatabaseService
 
     /**
      * @param $id
-     * @param \Nette\DateTime $date
-     * @return bool|mixed|\Nette\Database\Table\IRow
+     * @param DateTime $date
+     * @return bool|mixed|IRow
      */
-    public function getAkcePrev($id, \Nette\DateTime $date){
+    public function getAkcePrev($id, DateTime $date){
         return $this->getAkce()
                 ->where('enable',TRUE)
                 ->where('confirm',TRUE)
@@ -76,7 +83,7 @@ class AkceService extends DatabaseService
 
     /**
      * @param $values
-     * @return bool|int|\Nette\Database\Table\IRow
+     * @return bool|int|IRow
      */
     public function addAkce($values){
         return $this->getAkce()->insert($values);
@@ -92,7 +99,7 @@ class AkceService extends DatabaseService
     /**
      * @param $id
      * @param bool $org
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getMembersByAkceId($id, $org = false){
         return $this->database->table('member')->where(':akce_member.akce_id',$id)->where('organizator',$org);
@@ -125,7 +132,7 @@ class AkceService extends DatabaseService
 
     /**
      * @param bool $activeOnly
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getMembers($activeOnly = TRUE){
         $members = $this->database->table('member')->select('id, CONCAT(surname, " ", name)AS jmeno')
@@ -171,11 +178,11 @@ class AkceService extends DatabaseService
     }
 
     /**
-     * @param \Nette\DateTime $date
+     * @param DateTime $date
      * @param $user_id
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
-    public function getFeedbackRequests(\Nette\DateTime $date, $user_id){
+    public function getFeedbackRequests(DateTime $date, $user_id){
         return $this->getAkceByFuture(FALSE)
             ->where('confirm',TRUE)
             ->where(':akce_member.member_id',$user_id)
@@ -185,11 +192,11 @@ class AkceService extends DatabaseService
 
 
 	/**
-	 * @param \Nette\DateTime $date
+	 * @param DateTime $date
 	 * @param $user_id
-	 * @return \Nette\Database\Table\Selection
+	 * @return Selection
 	 */
-	public function getRatingNews(\Nette\DateTime $date, $user_id){
+	public function getRatingNews(DateTime $date, $user_id){
 		return $this->getAkceByFuture(FALSE)
 			->select('id, name, :akce_rating_member.member_id AS rating_member_id, :akce_rating_member.date_add AS rating_date_add')
 			->where(':akce_member.member_id',$user_id)
@@ -199,11 +206,11 @@ class AkceService extends DatabaseService
 	}
 
     /**
-     * @param \Nette\DateTime $date
+     * @param DateTime $date
      * @param $user_id
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
-    public function getReportRequests(\Nette\DateTime $date, $user_id){
+    public function getReportRequests(DateTime $date, $user_id){
         return $this->getAkceByFuture(FALSE)
             ->where('confirm',TRUE)
             ->where(':akce_member.member_id',$user_id)
@@ -214,7 +221,7 @@ class AkceService extends DatabaseService
 
     /**
      * @param $id
-     * @return \Nette\Database\Table\IRow
+     * @return IRow
      */
     public function getReportById($id){
         return $this->database->table('report')->get($id);
@@ -222,7 +229,7 @@ class AkceService extends DatabaseService
 
     /**
      * @param $values
-     * @return bool|int|\Nette\Database\Table\IRow
+     * @return bool|int|IRow
      */
     public function addReport($values){
         return $this->database->table('report')->insert($values);
@@ -230,7 +237,7 @@ class AkceService extends DatabaseService
 
     /**
      * @param $id
-     * @return \Nette\Database\Table\Selection
+     * @return Selection
      */
     public function getMembersByReportId($id){
         return $this->database->table('member')->where(':report_member.report_id',$id);

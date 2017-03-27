@@ -1,30 +1,31 @@
 <?php
 
-namespace PhotoModule;
+namespace App\PhotoModule\Presenters;
 
+use App\Model\GalleryService;
+use App\Model\MemberService;
 use Nette\Application\UI\Form;
-use Nette\DateTime;
-use Nette\Image;
+use Nette\Utils\DateTime;
+use Nette\Utils\Image;
 use Nette\Utils\Strings;
 use Nette\Database\SqlLiteral;
-use Nette\Diagnostics\Debugger;
 use Echo511\Plupload;
+use Echo511\Plupload\Entity\UploadQueue;
 use Nette\Http\FileUpload;
 use lsolesen\pel\PelJpeg;
+use Tracy\Debugger;
+use WebChemistry\Forms\Controls\Multiplier;
 
 class AlbumPresenter extends BasePresenter{
 
-	 /** @var \GalleryService @inject*/
+	 /** @var GalleryService @inject*/
 	public $gallery;
 
-	/** @var \MemberService @inject*/
+	/** @var MemberService @inject*/
 	public $members;
 
-    protected function startup(){
-        parent::startup();
-	    \Kdyby\Extension\Forms\Replicator\Replicator::register();
-    }
-
+	/** @var \Echo511\Plupload\Control\IPluploadControlFactory @inject */
+	public $controlFactory;
 
 	public function getAlbumById($slug){
 		$id = $this->getIdFromSlug($slug);
@@ -114,11 +115,11 @@ class AlbumPresenter extends BasePresenter{
 
 		$form = $this['superForm'];
 		if (!$form->isSubmitted()) {
-			foreach ($photos as $photo) {
-				$form['photos'][$photo->id]['text']->setDefaultValue($photo->text);
-				$form['photos'][$photo->id]['text']->setAttribute('data-date', $photo->date_taken ? $photo->date_taken->format('d.m.Y H:i:s') : NULL);
-				$form['photos'][$photo->id]['text']->setAttribute('data-title', $photo->text);
-			}
+//			foreach ($photos as $photo) {
+//				$form['photos'][$photo->id]['text']->setDefaultValue($photo->text);
+//				$form['photos'][$photo->id]['text']->setAttribute('data-date', $photo->date_taken ? $photo->date_taken->format('d.m.Y H:i:s') : NULL);
+//				$form['photos'][$photo->id]['text']->setAttribute('data-title', $photo->text);
+//			}
 
 			$form->setDefaults($album);
 			$form['date']->setValue($album->date->format('Y-m-d'));
@@ -169,25 +170,47 @@ class AlbumPresenter extends BasePresenter{
 	}
 
 	public function createComponentPlupload(){
-		$uploader = new Plupload\Rooftop();
-		$uploader->disableMagic();
+		$plupload = $this->controlFactory->create();
 
-		$uploader->setWwwDir(WWW_DIR) // Full path to your frontend directory
-				 ->setBasePath($this->template->basePath) // BasePath provided by Nette
-				 ->setTempLibsDir(WWW_DIR . '/js'); // Full path to the location of plupload libs (js, css)
+		$plupload->maxFileSize = '5mb';
+		$plupload->maxChunkSize = '1mb';
+		$plupload->allowedExtensions = 'jpg';
 
-		$uploader->createSettings()
-				 ->setRuntimes(array('html5','flash')) // Available: gears, flash, silverlight, browserplus, html5
-				 ->setMaxFileSize('5mb')
-				 ->setMaxChunkSize('1mb'); // What is chunk you can find here: http://www.plupload.com/documentation.php
-				 //->setFlashSwfUrl('/js/plupload.flash.swf');
+		$slug = (string) $this->getParameter('slug');
+		$id = $this->getIdFromSlug($slug);
 
-		$uploader->createUploader()
-				 ->setTempUploadsDir(TEMP_DIR . '/uploads') // Where should be placed temporaly files
-				 ->setToken('vzs') // Resolves file names collisions in temp directory
-				 ->setOnSuccess(array($this, 'pluploadSubmbited')); // Callback when upload is successful: returns Nette\Http\FileUpload
+		$plupload->onFileUploaded[] = function(UploadQueue $uploadQueue) use($id) {
+			$upload = $uploadQueue->getLastUpload();
 
-		return $uploader->getComponent();
+			$name = $upload->getName();
+			$filename = self::photoDir.'/'.$id.'/'.$name;
+			$filepath = WWW_DIR.'/'. $filename;
+			$upload->move($filepath);
+
+			$values = [
+				'filename' => $name,
+				'album_id' => $id,
+				'date_add' => new DateTime
+			];
+
+			$exif = exif_read_data($filepath);
+			if (array_key_exists('DateTime', $exif)) {
+				$datetime = new Datetime($exif['DateTime']);
+				if ($datetime != FALSE) $values['date_taken'] = $datetime;
+			}
+
+			$this->gallery->addPhoto($values);
+
+			\LayoutHelpers::$thumbDirUri = 'albums/thumbs';
+			\LayoutHelpers::thumb($filename,150,100);
+		};
+
+		$plupload->onUploadComplete[] = function(UploadQueue $uploadQueue) use ($slug) {
+			$this->flashMessage('Fotografie byli v pořádku přidány');
+			$this->redirect('view',$slug);
+		};
+
+		return $plupload;
 	}
 
 	public function pluploadSubmbited(FileUpload $file){
@@ -251,26 +274,33 @@ class AlbumPresenter extends BasePresenter{
 
 		$form->addTextArea('text','Popis',30);
 
-		$photos = $form->addDynamic('photos', function (\Nette\Forms\Container $photo) {
+		$form->addMultiplier('photos', function (\Nette\Forms\Container $photo) {
 			$photo->addText('text', 'Popis', 30, 50);
-			$photo->addCheckBox('selected')->setAttribute('class','select');
+			$photo->addHidden('id');
+			$photo->addCheckBox('selected')
+				->setAttribute('class','select')
+				->setDefaultValue(FALSE);
 		}, 0);
 
 		$form->addSubmit('save', 'uložit změny')
-			->onClick[] =  callback($this, 'SuperFormSave');
+			->onClick[] =  [$this, 'SuperFormSave'];
 
 		$form->addSubmit('delete', 'vymazat vybrané')
-			->onClick[] =  callback($this, 'SuperFormDelete');
+			->onClick[] =  [$this, 'SuperFormDelete'];
 
 		$form->addSubmit('visible', 'změnit viditelnost')
-			->onClick[] =  callback($this, 'SuperFormVisible');
+			->onClick[] =  [$this, 'SuperFormVisible'];
 
 		$form->addSubmit('turnLeft', 'otočit o 90° doleva')
-			->onClick[] =  callback($this, 'SuperFormTurnLeft');
+			->onClick[] =  [$this, 'SuperFormTurnLeft'];
 
 		$form->addSubmit('turnRight', 'otočit o 90° doprava')
-			->onClick[] =  callback($this, 'SuperFormTurnRight');
+			->onClick[] =  [$this, 'SuperFormTurnRight'];
 
+
+		$album = $this->getAlbumById($this->getParameter('slug'));
+		$photos = $this->gallery->getPhotosByAlbumId($album->id)->fetchPairs('id');
+		$form->setDefaults(['photos' => $photos]);
 
 		return $form;
 	}
@@ -291,10 +321,10 @@ class AlbumPresenter extends BasePresenter{
 		unset($values->photos);
 
 		$this->gallery->getAlbumById($id)->update($values);
-		$order = array_flip(array_keys(iterator_to_array($photos)));
 
-		foreach ($photos as $key => $photo) {
-			$update = ['order' => $order[$key]];
+		Debugger::barDump($photos);
+		foreach ($photos as $order => $photo) {
+			$update = ['order' => $order];
 
 			if ($show_date) {
 				$datetime = $photo->text ? date_create($photo->text) : NULL;
@@ -303,7 +333,7 @@ class AlbumPresenter extends BasePresenter{
 			}
 			else $update['text'] = self::nullString($photo->text);
 
-			$this->gallery->getPhotoById($key)->update($update);
+			$this->gallery->getPhotoById($photo->id)->update($update);
 		}
 
 		$this->flashMessage('Album bylo upraveno');

@@ -1,10 +1,11 @@
 <?php
 
-namespace PhotoModule;
+namespace App\PhotoModule\Presenters;
 
+use App\Model\GalleryService;
 use Nette\Application\UI\Form;
-use Nette\DateTime;
-use Nette\Security as NS;
+use Nette\Utils\DateTime;
+use Nette\Security;
 
 
 class SignPresenter extends BasePresenter{
@@ -12,7 +13,7 @@ class SignPresenter extends BasePresenter{
 	public $backlink = '';
 
 	/**
-	 * @var \GalleryService @inject
+	 * @var GalleryService @inject
      */
 	public $galleryService;
 
@@ -32,17 +33,18 @@ class SignPresenter extends BasePresenter{
 	 */
 	protected function createComponentSignInForm(){
 		$form = new Form;
-		$form->addText('username', 'Přihlašovací jméno:')
-			->setAttribute('autofocus')
-			->setRequired('Vyplňte přihlašovací jméno');
+		$form->addText('mail', 'Email:', 30)
+			->setRequired('Vyplňte váš email')
+			->setType('email')
+			->addRule(FORM::EMAIL, 'Vyplňte správnou e-mailovou adresu');
 
-		$form->addPassword('password', 'Heslo:')
+		$form->addPassword('password', 'Heslo:', 30)
 			->setRequired('Vyplňte heslo');
 
 		$form->addSubmit('send', 'Přihlásit');
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
-		$form->onSuccess[] = callback($this, 'signInFormSubmitted');
+		$form->onSuccess[] = [$this, 'signInFormSubmitted'];
 		return $form;
 	}
 
@@ -51,7 +53,7 @@ class SignPresenter extends BasePresenter{
 			$values = $form->getValues();
 
 			$this->getUser()->setExpiration('0', TRUE);
-			$this->getUser()->login($values->username, $values->password);
+			$this->getUser()->login($values->mail, $values->password);
 
 			$user_id = $this->getUser()->getId();
 
@@ -61,7 +63,7 @@ class SignPresenter extends BasePresenter{
 			$this->restoreRequest($this->backlink);
 			$this->redirect('Myself:');
 
-		} catch (NS\AuthenticationException $e) {
+		} catch (Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
 	}
