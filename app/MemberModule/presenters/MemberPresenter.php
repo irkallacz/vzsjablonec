@@ -180,17 +180,6 @@ class MemberPresenter extends LayerPresenter{
 		unset($this['memberForm']['text']);
 
 		$this->setView('edit');
-
-//		$session = new ArrayHash();
-//		$session->pubkey = '12345679';
-//		$session->date_end = new DateTime('+24 hours');
-//
-//		$member =  new ArrayHash();
-//		$member->name = 'Pavel';
-//		$member->surname = 'Vok';
-//		$member->mail = 'pavel.vok@seznamc.cz';
-//
-//		$this->sendLogginMail($member,$session);
 	}
 
 	public function actionProfile(){
