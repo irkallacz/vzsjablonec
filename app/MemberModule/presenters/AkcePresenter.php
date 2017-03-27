@@ -283,6 +283,7 @@ class AkcePresenter extends LayerPresenter{
 		foreach($this->memberService->getMembersByRole('Confirm') as $member)
 		  $mail->addTo($member->mail,$member->surname.' '.$member->name);
 
+		$mail->setSubject('[VZS Jablonec] Nová akce čeká na schválení');
 		$mail->setHTMLBody($template);
 		$this->mailer->send($mail);
 	}
