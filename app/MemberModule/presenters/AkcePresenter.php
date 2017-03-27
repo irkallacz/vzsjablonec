@@ -9,6 +9,7 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Mail\IMailer;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
+use Tracy\Debugger;
 
 class AkcePresenter extends LayerPresenter{
 	const FORUM_AKCE_ID = 2;
@@ -61,20 +62,32 @@ class AkcePresenter extends LayerPresenter{
 
 	public function renderDefault($year = NULL){
 		$YEARS_END = intval(date('Y'));
-		if (!$year) $year = $YEARS_END;
 
-		$all = ($year == 'all');
-		$year = intval($year);
+		switch ($year){
+			case NULL:
+				$year = NAN;
+				break;
+			case 'INF':
+				$year = INF;
+				break;
+			default:
+				$year = intval($year);
+		}
 
-		if (!$all){
+		if (is_int($year)){
 			if ($year < self::YEARS_START) $this->redirect('this', self::YEARS_START);
 			if ($year > $YEARS_END) $this->redirect('this', $YEARS_END);
-		} else $year = $YEARS_END;
 
-		$akce[0] = ($year == $YEARS_END) ? $this->akceService->getAkceByFuture(TRUE) : [];
-		$akce[1] = $this->akceService->getAkceByFuture(FALSE);
+			$akce[0] = [];
+		}else{
+			$akce[0] = $this->akceService->getAkceByFuture(TRUE);
+		}
 
-		if (!$all) $akce[1]->where('YEAR(date_start)', $year);
+		$akce[1] = (is_nan($year)) ? [] : $this->akceService->getAkceByFuture(FALSE);
+
+		$this->template->year = $year;
+
+		if (is_int($year)) $akce[1]->where('YEAR(date_start)', $year); else $year = $YEARS_END;
 
         $count = 2*self::YEARS_STEP;
         $start = self::YEARS_START + (($year - self::YEARS_START) - self::YEARS_STEP);
@@ -94,9 +107,6 @@ class AkcePresenter extends LayerPresenter{
 
 		$this->template->prev = (($year-1) >= self::YEARS_START) ? ($year-1) : NULL;
 		$this->template->next = (($year+1) <= $YEARS_END) ? ($year+1) : NULL;
-
-		$this->template->all = $all;
-		$this->template->year = $year;
 
 		$this->template->akceAllList = $akce;
 		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());

@@ -21,9 +21,9 @@ table .first td { padding-top: 0.5ex; }
 <ul class="buttonMenu"><li><a class="buttonLike" n:href="add"><span class="icon-plus"></span> nová akce</a></li></ul>
 
 {foreach $akceAllList as $old => $akceList}
-
 <h2 n:if="$akceList">
-    <span class="icon-calendar"></span> {if $iterator->isOdd()}Nastávající akce{else}Proběhlé akce {if !$all}{$year}{/if}{/if}
+    <span class="icon-calendar"></span> {if $iterator->isOdd()}Nastávající akce{else}Proběhlé akce {if $year != INF}{$year}{/if}
+	{/if}
 </h2>
 
 {foreach $akceList as $akce}
@@ -100,12 +100,12 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 	<a n:href="Feed:akce" class="buttonLike float-right"><span class="icon-rss char"></span> RSS Akce</a>
 
 	<span class="buttonLike gray" n:tag-if="!$prev"><a n:tag-if="$prev" class="buttonLike" n:href="default, $prev"><span class="char">«</span> Předchozí</a></span>
-	<a n:foreach="$years as $y" n:tag-if="($all)or($year != $y)" n:href="this, $y">{$y}</a>
+	<a n:foreach="$years as $y" n:tag-if="$year != $y" n:href="this, $y">{$y}</a>
 	<span class="buttonLike gray" n:tag-if="!$next"><a n:tag-if="$next" class="buttonLike" n:href="default, $next">Další <span class="char">»</span></a></span>
 </p>
 
-<p n:if="!$all">
-	<a class="buttonLike" n:href="this, all"><span class="icon-ok char"></span> Zobrazit všechny akce</a>
+<p n:if="$year != INF">
+	<a class="buttonLike" n:href="this, INF"><span class="icon-ok char"></span> Zobrazit všechny akce</a>
 </p>
 
 

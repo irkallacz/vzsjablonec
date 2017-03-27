@@ -24,9 +24,9 @@ class AkceService extends DatabaseService
      * @return Selection
      */
     public function getAkceByFuture($future = false){
-        $akce = $this->getAkce()->where('enable',1)->order('date_start DESC');
+        $akce = $this->getAkce()->where('enable',1);
         
-        if ($future) $akce->where('date_start > NOW()'); else $akce->where('date_start < NOW()');
+        if ($future) $akce->where('date_start > NOW()')->order('date_start ASC'); else $akce->where('date_start < NOW()')->order('date_start DESC');;
         
         return $akce;
     }
