@@ -292,8 +292,8 @@ class ForumPresenter extends LayerPresenter{
     	$this->setView('edit');
 
     	$text = '> '.$post->member->surname . ' ' . $post->member->name . " napsal(a):\n>\n";
-    	$text .= preg_replace('~^.+~m','> $0',trim($post->text))."\n\n";
-    	
+    	$text .= preg_replace('~^~m','> $0',trim($post->text))."\n\n";
+
 		$this['addPostForm']['text']->setDefaultValue($text);  
     	$this['addPostForm']['forum_topic_id']->setDefaultValue($post->forum_topic_id);  
     	$this['addPostForm']['forum_id']->setDefaultValue($post->forum_id);
