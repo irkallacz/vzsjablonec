@@ -7,6 +7,7 @@ use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
 use Nette\Security\Passwords;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
@@ -179,7 +180,18 @@ class MemberPresenter extends LayerPresenter{
 		unset($this['memberForm']['text']);
 
 		$this->setView('edit');
-  	}
+
+		$session = new ArrayHash();
+		$session->pubkey = '12345679';
+		$session->date_end = new DateTime('+24 hours');
+
+		$member =  new ArrayHash();
+		$member->name = 'Pavel';
+		$member->surname = 'Vok';
+		$member->mail = 'pavel.vok@seznamc.cz';
+
+		$this->sendLogginMail($member,$session);
+	}
 
 	public function actionProfile(){
 		$id = $this->getUser()->getId();
@@ -189,18 +201,12 @@ class MemberPresenter extends LayerPresenter{
 	public function sendLogginMail($member, $session){
 	    $template = $this->createTemplate();
 	    $template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
-	    $template->member = $member;
 		$template->session = $session;
 
 		$mail = $this->getNewMail();
 	    $mail->addTo($member->mail,$member->surname.' '.$member->name);
 	    $mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
-<<<<<<< HEAD
-	    $mail->setBody($template);
-=======
 	    $mail->setHTMLBody($template);
->>>>>>> vzsjablonec/mail
-
 		$this->mailer->send($mail);
   	}
 

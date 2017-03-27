@@ -1,35 +1,3 @@
-<<<<<<< HEAD
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>[VZS Jablonec] Nové hlasování představenstva</title>
-</head>
-<body>
-<p>Zdravím</p>
-
-<p>Dnes {$hlasovani->date_add|date:'%d.%m.%Y'} v {$hlasovani->date_add|date:'H:i'} 
-bylo na nášem webu vytvořeno nové hlasováním představentstva. Můžete jen najít na adrese: 
-<a n:href="//Hlasovani:view,$hlasovani->id">{link //Hlasovani:view,$hlasovani->id}</a>
-<br>Toto hlasování končí {$hlasovani->date_deatline|date:'%d.%m.%Y'}</p>
-
-<p><b>{$hlasovani->title}</b></p>
-
-{$hlasovani->text|texy|noescape}
-
-<ul n:inner-foreach="$odpovedi as $odpoved">
-<li>{$odpoved->text}</li>
-</ul>
-
-<hr>
-<p>
-Tato zpráva automaticky generovana informačním systémem<br>
-VZS Jablonec nad Nisou a není třeba na ní odpovídat<br>
-http://member.vzs-jablonec.cz/<br>
-</p>
-
-</body>
-</html>
-=======
 {layout '@mail_layout.latte'}
 {contentType text/html; charset=utf-8}
 {block content}
@@ -49,4 +17,3 @@ http://member.vzs-jablonec.cz/<br>
         <li>{$odpoved->text}</li>
     </ul>
 {/block}
->>>>>>> vzsjablonec/mail

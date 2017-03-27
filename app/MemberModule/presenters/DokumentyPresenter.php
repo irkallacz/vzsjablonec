@@ -5,12 +5,7 @@ use App\Model\DokumentyService;
 use Nette\Application\BadRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
-<<<<<<< HEAD
-=======
-use Nette\DateTime;
-use Nette\Diagnostics\Debugger;
-use Nette\Http\Response;
->>>>>>> vzsjablonec/mail
+use Nette\Utils\DateTime;
 use Nette\Mail\IMailer;
 use Nette\Utils\Strings;
 

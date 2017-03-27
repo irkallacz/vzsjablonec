@@ -280,14 +280,8 @@ class HlasovaniPresenter extends LayerPresenter{
         $template->hlasovani = $hlasovani;
         $template->odpovedi = $odpovedi;
 
-<<<<<<< HEAD
-	    $texy = \TexyFactory::createTexy();
-	    $template->addFilter('texy', [$texy, 'process']);
-=======
         $texy = \TexyFactory::createTexy();
         $template->addFilter('texy', [$texy, 'process']);
->>>>>>> vzsjablonec/mail
-
         $mail = $this->getNewMail();
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
         $mail->setHTMLBody($template);
