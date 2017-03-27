@@ -48,10 +48,10 @@ class MemberService extends DatabaseService{
      * @param $password
      * @return bool|mixed|IRow
      */
-    public function getMemberByAutentication($username, $password){
+    public function getMemberByAutentication($id, $password){
         $member = $this->getMembers()
 	        ->select('mail, hash')
-            ->get($username);
+            ->get($id);
 
         return Passwords::verify($password, $member->hash) ? $member : FALSE;
     }
