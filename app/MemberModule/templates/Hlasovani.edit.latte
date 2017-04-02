@@ -63,11 +63,12 @@ bude to mít za následek vymazání dosavadních hlasů a resetování hlasová
 <h3>{label text /}</h3>
 {input text class => texyla}
 <h3>
-	{input $form['users']['multiplier_creator'] class => buttonLike, title => 'Přidat další odpověď'}
+	Odpovědi
+	{*{input $form['users']['multiplier_creator'] class => buttonLike, title => 'Přidat další odpověď'}*}
 </h3>
 <table>
 {foreach $form['users']->getContainers() as $id => $line}
-    <tr><td>{label users-$id-text /} {input users-$id-text} {input users-$id-remove}</td></tr>
+    <tr><td>{label users-$id-text /} {input users-$id-text} {*{input users-$id-remove}*}</td></tr>
 {/foreach}
 </table>
 <p>{input save}</p>

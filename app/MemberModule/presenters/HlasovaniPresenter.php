@@ -199,14 +199,14 @@ class HlasovaniPresenter extends LayerPresenter{
 	    	$user->addText('text', 'Odpověď', 30);
 		    $user->addHidden('id');
 
-	        $user->addButton('remove', '✖')
-	        	->setAttribute('class','buttonLike')
-	        	->setAttribute('title','Smazat odpověď')
-	        	->setAttribute('onClick','removeRow(this)');
+	        // $user->addButton('remove', '✖')
+	        // 	->setAttribute('class','buttonLike')
+	        // 	->setAttribute('title','Smazat odpověď')
+	        // 	->setAttribute('onClick','removeRow(this)');
 	            
 	    }, 3);
 
-		$users->addCreateButton('Přidat odpovědi'); // metodu vytváří replicator
+		//$users->addCreateButton('Přidat odpovědi'); // metodu vytváří replicator
 
 		$form->addHidden('pocet',0);
 
