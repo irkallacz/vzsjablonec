@@ -284,6 +284,7 @@ class HlasovaniPresenter extends LayerPresenter{
         $template->addFilter('texy', [$texy, 'process']);
         $mail = $this->getNewMail();
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
+		$mail->setSubject('[VZS Jablonec] Nové hlasování představenstva');
         $mail->setHTMLBody($template);
 
         $this->mailer->send($mail);
