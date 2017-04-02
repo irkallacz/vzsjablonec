@@ -16,15 +16,15 @@ class RouterFactory{
 
 		$member = new RouteList('Member');
 
-		$member[] = new Route('//member.%domain%/forum/view-post/<id>','Forum:post', Route::ONE_WAY);
-		$member[] = new Route('//member.%domain%/forum/view/<id>','Forum:topic', Route::ONE_WAY);
+		$member[] = new Route('https://member.%domain%/forum/view-post/<id>','Forum:post', Route::ONE_WAY);
+		$member[] = new Route('https://member.%domain%/forum/view/<id>','Forum:topic', Route::ONE_WAY);
 
-		$member[] = new Route('//member.%domain%/forum/<action>/<id>[/page/<vp-page>]','Forum:view');
-		$member[] = new Route('//member.%domain%/<presenter>/<action>[/<id>]', 'News:default');
+		$member[] = new Route('https://member.%domain%/forum/<action>/<id>[/page/<vp-page>]','Forum:view');
+		$member[] = new Route('https://member.%domain%/<presenter>/<action>[/<id>]', 'News:default');
 
 		$photo = new RouteList('Photo');
-		$photo[] = new Route('//photo.%domain%/album/<slug \d+-.+>/<action view|edit|add>','Album:view');
-		$photo[] = new Route('//photo.%domain%/<presenter>/<action>[/<id>]', 'News:default');
+		$photo[] = new Route('https://photo.%domain%/album/<slug \d+-.+>/<action view|edit|add>','Album:view');
+		$photo[] = new Route('https://photo.%domain%/<presenter>/<action>[/<id>]', 'News:default');
 
 		$router[] = $member;
 		$router[] = $photo;
