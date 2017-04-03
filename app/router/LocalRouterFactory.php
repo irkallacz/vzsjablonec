@@ -16,7 +16,7 @@ class LocalRouterFactory{
 		$member[] = new Route('member/forum/view-post/<id>','Forum:post', Route::ONE_WAY);
 		$member[] = new Route('member/forum/view/<id>','Forum:topic', Route::ONE_WAY);
 
-		$member[] = new Route('member/forum/<action>/<id>[/page/<vp-page>]','Forum:view');
+		$member[] = new Route('member/forum/<action>/<id>[/page/<vp-page>]','Forum:topic');
 		$member[] = new Route('member/<presenter>/<action>[/<id>]', 'News:default');
 
 		$photo = new RouteList('Photo');

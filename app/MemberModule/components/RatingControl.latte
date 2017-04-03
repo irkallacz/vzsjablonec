@@ -46,7 +46,7 @@
 {if $canComment}
     <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
-    <h3>Moje hodnocení <span class="icon icon-star-empty"></span></h3>
+    <h3 id="rating-edit">Moje hodnocení <span class="icon icon-star-empty"></span></h3>
 
     <p id="rating-edit-sign" n:if="$myrating"><a class="buttonLike" href="javascript:editRating({$user->id})"><span class="icon-pencil"></span> editovat</a></p>
 
