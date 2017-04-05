@@ -32,8 +32,10 @@ class ForumPresenter extends LayerPresenter{
 	}
 
 	public function showPost($post){
-		$page = ceil($post->row_number/self::postPerPage);	
-		$this->redirect("Forum:topic#post/$post->id", array($post->forum_topic_id, 'vp-page' => $page));
+		$param = ['id' => $post->forum_topic_id];
+		$page = ceil($post->row_number/self::postPerPage);
+		if ($page > 1) $param['vp-page'] = $page;	
+		$this->redirect("Forum:topic#post/$post->id", $param);
 	}
 
 	public function actionPost($id){
