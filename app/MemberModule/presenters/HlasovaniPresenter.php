@@ -120,12 +120,12 @@ class HlasovaniPresenter extends LayerPresenter{
             $this->redirect('view',$id);
         }
 
-		$values = array(
+		$values = [
 			'member_id' => $this->getUser()->getId(),
 			'hlasovani_id' => $id,
 			'hlasovani_odpoved_id' => $odpoved,
 			'date_add' => new DateTime()
-		);
+		];
 		
 		$this->hlasovani->addVote($values);
 		$this->redirect('view',$id);
@@ -267,7 +267,7 @@ class HlasovaniPresenter extends LayerPresenter{
 			}
 		}else {
 			foreach ($odpovedi as $odpoved) {
-				$this->hlasovani->getOdpovedById($odpoved->id)->update(array('text' => ucfirst($odpoved->text)));
+				$this->hlasovani->getOdpovedById($odpoved->id)->update(['text' => ucfirst($odpoved->text)]);
 			}
 		}
 

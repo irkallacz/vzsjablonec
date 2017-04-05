@@ -99,10 +99,10 @@ class ReportPresenter extends LayerPresenter{
 	
 	public function createComponentTexylaJs(){
       $files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
-      $files->addFiles(array('texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js'));
-      $files->addFiles(array('../plugins/symbol/symbol.js'));
-      $files->addFiles(array('../plugins/textTransform/textTransform.js'));
-      $files->addFiles(array(WWW_DIR . '/js/texyla_public.js'));
+      $files->addFiles(['texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js']);
+      $files->addFiles(['../plugins/symbol/symbol.js']);
+      $files->addFiles(['../plugins/textTransform/textTransform.js']);
+      $files->addFiles([WWW_DIR . '/js/texyla_public.js']);
 
       $compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
       $compiler->addFileFilter(new JsMinFilter());
@@ -180,7 +180,7 @@ class ReportPresenter extends LayerPresenter{
 //		$form->addTextArea('public','Veřejný popis akce')
 //	    	  ->setRequired('Vyplňte %label');
 
-		$akceArray = array('breh' => 'Na břehu', 'voda' => 'Ve vodě', 'majetek' => 'Na záchranu majetku');
+		$akceArray = ['breh' => 'Na břehu', 'voda' => 'Ve vodě', 'majetek' => 'Na záchranu majetku'];
 
 		$akceContainer = $form->addContainer('akce');
 
@@ -193,7 +193,7 @@ class ReportPresenter extends LayerPresenter{
 		      	->setDefaultValue(0);
 		}
 
-		$osetreniArray = array('drobne' => 'Drobné', 'vetsi' => 'Větší', 'odvoz' => 'S odvozem');
+		$osetreniArray = ['drobne' => 'Drobné', 'vetsi' => 'Větší', 'odvoz' => 'S odvozem'];
 
 		$osetreniContainer = $form->addContainer('osetreni');
 
@@ -264,12 +264,12 @@ class ReportPresenter extends LayerPresenter{
 	        ->addCreateOnClick(TRUE); // metodu vytváří replicator		
 
 		
-		$textArray = array(
+		$textArray = [
 			'material_ms' => 'Použitý materiál na akce v majetku místní skupiny', 
 			'material_cizi' => 'Další použitý materiál',
 			'material_ztraty' => 'Ztráty a poškození materiálu', 
 			'doprava' => 'Doprava na akci a způsob její úhrady'
-			);
+			];
 
 		$textContainer = $form->addContainer('texts');
 

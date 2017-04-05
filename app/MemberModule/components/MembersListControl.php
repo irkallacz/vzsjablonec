@@ -35,7 +35,7 @@ class MembersListControl extends Control{
 
         $this->template->members = $this->list;
 
-        if (!$this->list) $this->list = array(0);
+        if (!$this->list) $this->list = [0];
         
         if ($this->org) $orgList = $this->list; else 
             $orgList = $this->model->getMembersByAkceId($this->akce->id,TRUE)->fetchPairs('id','id');
@@ -80,7 +80,7 @@ class MembersListControl extends Control{
         //$form->getElementPrototype()->class('ajax');
 
         if (!$this->list) $this->list = $this->getList();
-        if (!$this->list) $this->list = array(0);
+        if (!$this->list) $this->list = [0];
 
         $list = $this->model->getMembers()->where('NOT id',array_keys($this->list));
         $form->addSelect('member', null, $list->fetchPairs('id','jmeno'));

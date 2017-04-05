@@ -76,7 +76,7 @@ class CalendarPresenter extends BasePresenter{
 
 			if ($client->getAccessToken()) {
 				
-				$eventList = array();
+				$eventList = [];
 
 				$updateEvents = $this->akceService->getAkce()
 					->where('confirm',TRUE)
@@ -133,11 +133,11 @@ class CalendarPresenter extends BasePresenter{
 
 				foreach ($deleteEvents as $deleteEvent) {
 					$service->events->delete($privateCalendarId, $deleteEvent->privateId);
-					$deleteEvent->update(array('privateId' => null));
+					$deleteEvent->update(['privateId' => null]);
 
 					if (($deleteEvent->visible)and($deleteEvent->publicId)) {
 						$service->events->delete($publicCalendarId, $deleteEvent->publicId);
-						$deleteEvent->update(array('publicId' => null));
+						$deleteEvent->update(['publicId' => null]);
 					}
 
 					$eventList[] = $deleteEvent->id;
@@ -151,7 +151,7 @@ class CalendarPresenter extends BasePresenter{
 
 				foreach ($privateEvents as $privateEvent) {
 					$service->events->delete($publicCalendarId, $privateEvent->publicId);
-					$privateEvent->update(array('publicId' => null));
+					$privateEvent->update(['publicId' => null]);
 					$eventList[] = $privateEvent->id;
 				}
 

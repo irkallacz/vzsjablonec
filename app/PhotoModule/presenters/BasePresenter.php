@@ -59,7 +59,7 @@ abstract class BasePresenter extends Presenter{
                     $this->flashMessage('Byl jste odhlášen z důvodu dlouhé nečinosti. Přihlaste se prosím znovu.');
             }
             $backlink = $this->storeRequest();
-            $this->redirect('Sign:in', array('backlink' => $backlink));
+            $this->redirect('Sign:in', ['backlink' => $backlink]);
         }
     }
 

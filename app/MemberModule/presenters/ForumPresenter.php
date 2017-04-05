@@ -323,14 +323,14 @@ class ForumPresenter extends LayerPresenter{
 	 if ($post->id != $post->forum_topic_id) {		
 		$this->forumService->getPostsByTopicId($post->forum_topic_id)
 			->where('row_number > ?', $post->row_number)
-			->update(array('row_number' => new SqlLiteral('row_number - 1')));
+			->update(['row_number' => new SqlLiteral('row_number - 1')]);
 	 	
-	 	$post->update(array('row_number' => 0, 'hidden' => 1));
+	 	$post->update(['row_number' => 0, 'hidden' => 1]);
 
 	 	$this->redirect('Forum:topic', $post->forum_topic_id);
 	 }
 	 else {
-	 	$this->forumService->getPostsByTopicId($post->id)->update(array('row_number' => 0, 'hidden' => 1));
+	 	$this->forumService->getPostsByTopicId($post->id)->update(['row_number' => 0, 'hidden' => 1]);
 	 	$this->redirect('Forum:topic',$post->forum_id);
 	 }
 	}
@@ -338,12 +338,12 @@ class ForumPresenter extends LayerPresenter{
 	public function actionLockTopic($id,$lock){
 	 $post = $this->forumService->getPostById($id);
 	 
-	 if ((!$this->getUser()->isInRole($this->name))and($post->member_id!=$this->getUser()->getId())) {
+	 if ((!$this->getUser()->isInRole($this->name))and($post->member_id != $this->getUser()->getId())) {
             	$this->flashMessage('Nemáte práva na tuto akci','error');
             	$this->redirect('topic',$post->forum_topic_id);
         }
 
-	 $post->update(array('locked' => $lock));
+	 $post->update(['locked' => $lock]);
 	 $this->redirect('topic',$post->forum_topic_id);
 	}
 

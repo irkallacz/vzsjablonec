@@ -144,7 +144,7 @@ class AlbumPresenter extends BasePresenter{
 			$this->redirect('view',$slug);
 		}
 
-		$this->gallery->getAlbumById($id)->update(array('visible'=>$visible));
+		$this->gallery->getAlbumById($id)->update(['visible' => $visible]);
 
 		$text = $visible ? null : 'ne';
 		$this->flashMessage('Album bylo označeno jako '.$text.'viditelné pro veřenost');
@@ -349,7 +349,7 @@ class AlbumPresenter extends BasePresenter{
 			$this->redirect('edit',$slug);
 		}
 
-		$selected = array();
+		$selected = [];
 		foreach ($photos as $key => $photo) {
 			if ($photo->selected) $selected[] = (int) $key;
 		}
