@@ -98,7 +98,7 @@ class CalendarPresenter extends BasePresenter{
 							$service->events->update($publicCalendarId, $updateEvent->publicId, $event);
 						}
 						else {
-							$event = $this->setEvent($updateEvent, new Google_Event);
+							$event = $this->setEvent($updateEvent, new Google_Service_Calendar_Event);
 							$createdEvent = $service->events->insert($publicCalendarId, $event);
 							$updateEvent->update(array('privateId' => $createdEvent->getId()));
 						}
@@ -114,14 +114,14 @@ class CalendarPresenter extends BasePresenter{
 		  		
 		  		foreach ($newEvents as $newEvent) {
 					$visible = $newEvent->visible;
-					$event = $this->setEvent($newEvent, new Google_Event);
+					$event = $this->setEvent($newEvent, new Google_Service_Calendar_Event);
 					
 					$createdEvent = $service->events->insert($privateCalendarId, $event);
-					$newEvent->update(array('privateId' => $createdEvent->getId()));
+					$newEvent->update(['privateId' => $createdEvent->getId()]);
 
 					if ($visible) {
 						$createdEvent = $service->events->insert($publicCalendarId, $event);
-						$newEvent->update(array('publicId' => $createdEvent->getId()));
+						$newEvent->update(['publicId' => $createdEvent->getId()]);
 					}
 					
 					$eventList[] = $newEvent->id;
