@@ -31,13 +31,14 @@
 <body>
 <div id="main">
 <div id="top">
-  <div id="top_right"><span id="visible"><a n:href="Member:profile">
-  <b>{$user->identity->name} {$user->identity->surname}</b></a> ({$user->getId()}) | </span>
-  <a n:href="Sign:out">odhlásit</a></div>
-    <table>
-    <tr><td><img src="{$basePath}/img/vzs_jbc_logo.png" alt="VZS JBC logo" height="85" width="170"></td>
-    <td>{include #title}</td></tr>
-    </table>
+  <div id="top_right">
+  	<a n:href="Member:profile">
+  		<b>{$user->identity->name} {$user->identity->surname}</b>
+  	</a> ({$user->id})
+  	<a n:href="Sign:out">odhlásit</a>
+  </div>
+    <img src="{$basePath}/img/vzs_jbc_logo.png" alt="VZS JBC logo" height="85" width="170">
+    {include #title}
 </div>
 
 <ul id="menu" n:inner-foreach="$mainMenu as $item">
