@@ -47,9 +47,6 @@ database:
 		user: %photo.user%		
 		password: %photo.password%
 
-session:
-	expiration: 14 days
-
 
 php:
 	date.timezone: Europe/Prague		

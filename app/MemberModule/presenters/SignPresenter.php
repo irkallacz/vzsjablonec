@@ -46,7 +46,7 @@ class SignPresenter extends BasePresenter{
 		try {
 			$values = $form->getValues();
 
-			$this->getUser()->setExpiration('0', TRUE);
+			$this->getUser()->setExpiration('6 hours', TRUE);
 			$this->getUser()->login($values->mail, $values->password);
 
 			$user_id = $this->getUser()->getId();
