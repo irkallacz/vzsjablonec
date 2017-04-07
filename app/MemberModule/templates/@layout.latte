@@ -32,9 +32,9 @@
 <div id="main">
 <div id="top">
   <div id="top_right">
-  	<a n:href="Member:profile">
-  		<b>{$user->identity->name} {$user->identity->surname}</b>
-  	</a> ({$user->id})
+      <span id="profile">
+          <a n:href="Member:profile"><b>{$user->identity->name} {$user->identity->surname}</b></a> ({$user->id})
+      </span>
   	<a n:href="Sign:out">odhlásit</a>
   </div>
     <img src="{$basePath}/img/vzs_jbc_logo.png" alt="VZS JBC logo" height="85" width="170">
