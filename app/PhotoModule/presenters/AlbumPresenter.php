@@ -322,7 +322,6 @@ class AlbumPresenter extends BasePresenter{
 
 		$this->gallery->getAlbumById($id)->update($values);
 
-		Debugger::barDump($photos);
 		foreach ($photos as $order => $photo) {
 			$update = ['order' => $order];
 
@@ -350,8 +349,8 @@ class AlbumPresenter extends BasePresenter{
 		}
 
 		$selected = [];
-		foreach ($photos as $key => $photo) {
-			if ($photo->selected) $selected[] = (int) $key;
+		foreach ($photos as $order => $photo) {
+			if ($photo->selected) $selected[] = $photo->id;
 		}
 
 		if (empty($selected)) {
