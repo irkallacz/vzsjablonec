@@ -5,9 +5,17 @@ namespace App\MemberModule\Presenters;
 use Nette\Application\UI\Presenter;
 use Nette\Utils\Html;
 
-abstract class BasePresenter extends Presenter{
+abstract class BasePresenter extends Presenter
+{
+    protected function beforeRender()
+    {
+        if ($this->user->loggedIn) {
+            $this->redirect('News:');
+        }
+    }
 
-    protected function afterRender(){
+    protected function afterRender()
+    {
         parent::afterRender();
         if (!$this->context->parameters['productionMode']) {
             parent::afterRender();
@@ -17,13 +25,15 @@ abstract class BasePresenter extends Presenter{
         }
     }
 
-    public function registerTexy(){
+    public function registerTexy()
+    {
         $texy = \TexyFactory::createTexy();
         $this->template->addFilter('texy', [$texy, 'process']);
     }
 
-    public function actionTexyPreview($class = false){
-        if ($this->isAjax()){
+    public function actionTexyPreview($class = false)
+    {
+        if ($this->isAjax()) {
 
             $texy = \TexyFactory::createTexy();
             $httpRequest = $this->context->getByType('Nette\Http\Request');
@@ -36,12 +46,13 @@ abstract class BasePresenter extends Presenter{
         }
     }
 
-    public function getNewMail(){
-      $mail = new \Nette\Mail\Message;
+    public function getNewMail()
+    {
+        $mail = new \Nette\Mail\Message;
 
-      $mail->setFrom('info@vzs-jablonec.cz','VZS Jablonec')
-        ->addCc('info@vzs-jablonec.cz');
+        $mail->setFrom('info@vzs-jablonec.cz', 'VZS Jablonec')
+            ->addCc('info@vzs-jablonec.cz');
 
-      return $mail;
+        return $mail;
     }
 }
