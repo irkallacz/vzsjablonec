@@ -84,12 +84,12 @@ class AnketyPresenter extends LayerPresenter{
             $this->redirect('view',$id);
         }
 
-		$values = array(
+		$values = [	
 			'member_id' => $this->getUser()->getId(),
 			'anketa_id' => $id,
 			'anketa_odpoved_id' => $odpoved,
 			'date_add' => new Datetime
-		);
+		];
 
 		$this->anketyService->addVote($values);
 		$this->redirect('view',$id);
@@ -134,7 +134,7 @@ class AnketyPresenter extends LayerPresenter{
             $this->redirect('view',$id);
         }
 
-		$anketa->update(array('locked' => $lock));
+		$anketa->update(['locked' => $lock]);
 		$this->redirect('Ankety:view',$id);
 	}
 
@@ -235,7 +235,7 @@ class AnketyPresenter extends LayerPresenter{
 		}else
 		{
 			foreach ($odpovedi as $odpoved) {
-				$this->anketyService->getOdpovedById($odpoved->id)->update(array('text' => ucfirst($odpoved->text)));
+				$this->anketyService->getOdpovedById($odpoved->id)->update(['text' => ucfirst($odpoved->text)]);
 			}
 		}
 

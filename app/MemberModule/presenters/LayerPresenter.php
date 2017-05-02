@@ -39,7 +39,7 @@ abstract class LayerPresenter extends BasePresenter{
 
         if (!$this->user->isLoggedIn()) {
             if ($this->user->getLogoutReason() === IUserStorage::INACTIVITY){
-                    $this->flashMessage('You have been signed out due to inactivity. Please sign in again.');
+                    $this->flashMessage('Byl jste odhlášen z důvodu neaktivity. Přihlaste se prosím znovu.');
             }
             $backlink = $this->storeRequest();
             $this->redirect('Sign:in', ['backlink' => $backlink]);

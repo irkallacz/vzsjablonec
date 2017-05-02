@@ -17,10 +17,10 @@ class TimesPresenter extends LayerPresenter{
     public $memberService;
 
     /** @var array $order @persistent */
-    public $order = array();
+    public $order = [];
     
     /** @var array $where @persistent */
-    public $where = array();
+    public $where = [];
 
 	  public function renderDefault(){
         $times = $this->timesService->getDefaultTimes();
@@ -33,8 +33,8 @@ class TimesPresenter extends LayerPresenter{
         $this->template->where = $this->where;
         $this->template->order = $this->order;
 
-        $this->template->columLabels = array('jmeno'=>'Jméno','disciplina'=>'Disciplína','time'=>'Čas','date'=>'Datum','text'=>'Poznámka');
-        $this->template->whereValues = array('member_id'=>'jmeno','times_disciplina_id'=>'disciplina','times.text'=>'text','date'=>'date','time'=>'time');        
+        $this->template->columLabels = ['jmeno'=>'Jméno','disciplina'=>'Disciplína','time'=>'Čas','date'=>'Datum','text'=>'Poznámka'];
+        $this->template->whereValues = ['member_id'=>'jmeno','times_disciplina_id'=>'disciplina','times.text'=>'text','date'=>'date','time'=>'time'];        
   	}
 
 
@@ -71,8 +71,8 @@ class TimesPresenter extends LayerPresenter{
     }
 
     public function renderAdd(){
-        $this->order = array();
-        $this->where = array();
+        $this->order = [];
+        $this->where = [];
 
         $this->template->nova = TRUE;
 

@@ -33,12 +33,12 @@ abstract class BasePresenter extends Presenter{
 	    ];
 
 	    if ($this->getUser()->isLoggedIn()) {
-		    $mainMenu[] = ['title' => 'můj účet', 'link' => 'Myself:', 'current' => 'Myself:*'];
-		    $mainMenu[] = ['title' => 'rss', 'link' => ':Member:Feed:albums', 'current' => ':Member:Feed:albums'];
-		    $mainMenu[] = ['title' => 'member', 'link' => ':Member:News:', 'current' => ':Member:News:'];
-		    $mainMenu[] = ['title' => 'odhlášení', 'link' => 'Sign:out', 'current' => 'Sign:out'];
+		    $mainMenu[] = ['title' => 'můj účet',     'link' => 'Myself:',                'current' => 'Myself:*'];
+		    $mainMenu[] = ['title' => 'rss',          'link' => ':Member:Feed:albums',    'current' => ':Member:Feed:albums'];
+		    $mainMenu[] = ['title' => 'member',       'link' => ':Member:News:',          'current' => ':Member:News:'];
+		    $mainMenu[] = ['title' => 'odhlášení',    'link' => 'Sign:out',               'current' => 'Sign:out'];
 	    }else{
-		    $mainMenu[] = ['title' => 'přihlášení', 'link' => 'Sign:in', 'current' => 'Sign:in'];
+		    $mainMenu[] = ['title' => 'přihlášení',   'link' => 'Sign:in',                'current' => 'Sign:in'];
 	    }
 
         $this->template->mainMenu = $mainMenu;
@@ -59,7 +59,7 @@ abstract class BasePresenter extends Presenter{
                     $this->flashMessage('Byl jste odhlášen z důvodu dlouhé nečinosti. Přihlaste se prosím znovu.');
             }
             $backlink = $this->storeRequest();
-            $this->redirect('Sign:in', array('backlink' => $backlink));
+            $this->redirect('Sign:in', ['backlink' => $backlink]);
         }
     }
 

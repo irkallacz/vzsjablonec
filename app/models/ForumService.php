@@ -108,7 +108,7 @@ class ForumService extends DatabaseService{
         $values->forum_topic_id = 1;
         $values->row_number = 1;
         $row = $this->getTopics()->insert($values);
-        $this->getPostById($row->id)->update(array('forum_topic_id'=>$row->id));
+        $this->getPostById($row->id)->update(['forum_topic_id'=>$row->id]);
     }
 
     /**

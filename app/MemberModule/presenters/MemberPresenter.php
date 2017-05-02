@@ -24,7 +24,7 @@ class MemberPresenter extends LayerPresenter{
 	public function actionUpdateCsv(){
 		if (($handle = fopen('members_update.csv', 'r')) !== FALSE) {
 			while (($data = fgetcsv($handle, 0, ",",'"')) !== FALSE) {
-				$array = array(
+				$array = [
 					'surname'	=> $data[1],
 					'name' 		=> $data[2],
 					'date_born'	=> date_create($data[3]),
@@ -32,7 +32,7 @@ class MemberPresenter extends LayerPresenter{
 					'ulice' 	=> $data[5],
 					'mail' 		=> $data[6],
 					'telefon' 	=> $data[7]
-				);
+				];
 
 				$member = $this->memberService->getMemberById($data[0]);
 				
@@ -123,7 +123,7 @@ class MemberPresenter extends LayerPresenter{
         	$this->redirect('default',$id);
         }
 
-		$member->update(array('active'=>0));
+		$member->update(['active' => 0]);
 
 		$this->flashMessage('Člen byl úspěšně smazán');
 		$this->redirect('default');

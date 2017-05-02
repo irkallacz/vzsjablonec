@@ -204,7 +204,7 @@ class AkcePresenter extends LayerPresenter{
 			$this->redirect('Akce:view',$id);
 		}
 
-		$this->akceService->getAkceById($id)->update(array('enable'=>0));
+		$this->akceService->getAkceById($id)->update(['enable' => 0]);
 		$this->flashMessage('Akce byla smazána');
 		$this->redirect('Akce:default');
 	}
@@ -213,7 +213,7 @@ class AkcePresenter extends LayerPresenter{
 		if (!$this->getUser()->isInRole('Confirm')) {
 			$this->flashMessage('Nemáte právo tuto akci povolit ani zakázat','error');
 		}else {
-			$values = array('confirm' => $allow);
+			$values = ['confirm' => $allow];
 
 			if ($allow) {
 			  $this->flashMessage('Akce byla povolena');
@@ -493,7 +493,7 @@ class AkcePresenter extends LayerPresenter{
 		if (($form['file']->isFilled()) and ($data->file->isOK())){
 			$data->file->move(WWW_DIR.'/doc/vyuctovani/'.$id.'-'.Strings::webalize($akce->name).'.xls');
 
-			$akce->update(array('bill' => 1));
+			$akce->update(['bill' => 1]);
 			$this->flashMessage('Vyúčtování nahráno');
 			$this->redirect('Akce:view',$id);
 		}
