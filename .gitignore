@@ -49,6 +49,7 @@ log/
 vendor/
 config.local.neon
 config.local.neon.production
+google_api_service.json
 .idea
 www/subdom/t9
 www/subdom/photo/albums

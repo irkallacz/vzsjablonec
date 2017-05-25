@@ -1,3 +1,6 @@
+session:
+	expiration: 12 hours
+
 tracy:
 	bar:
 		- Nextras\MailPanel\MailPanel(%tempDir%/mail-panel-latte)

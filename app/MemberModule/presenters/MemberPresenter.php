@@ -140,7 +140,8 @@ class MemberPresenter extends LayerPresenter{
   		$this->template->member = $member;
 
 		$httpResponse = $this->context->getByType('Nette\Http\Response');
-	    $httpResponse->setHeader('Content-Disposition','attachment; filename="'.$member->surname.' '.$member->name.'.vcf"');
+        $httpResponse->setContentType('text/x-vcard');
+		$httpResponse->setHeader('Content-Disposition','attachment; filename="'.$member->surname.' '.$member->name.'.vcf"');
 	}
 
 	public function renderEdit($id){

@@ -41,126 +41,101 @@ class CalendarPresenter extends BasePresenter{
 		return $event;
   	}
   	
-  	public function actionGoogle($code = null,$logout = null){
-		$tokenFile = $this->context->parameters['tempDir'].'/google_calendar_token.txt';
-		$codeFile = $this->context->parameters['tempDir'].'/google_calendar_code.txt';
+  	public function actionGoogle(){
+        $privateCalendarId = $this->context->parameters['google']['private_calendar_id'];
+        $publicCalendarId = $this->context->parameters['google']['public_calendar_id'];
+        $account = $this->context->parameters['google']['account'];
 
-		$privateCalendarId = $this->context->parameters['google']['private_calendar_id'];
-		$publicCalendarId = $this->context->parameters['google']['public_calendar_id'];
-		
-		$client = new Google_Client();
-		$client->setApplicationName($this->context->parameters['google']['application_name']);
+        $client = new Google_Client();
+        //putenv('GOOGLE_APPLICATION_CREDENTIALS='.APP_DIR.'/config/google_api_service.json');
+        $client->setAuthConfig(APP_DIR.'/config/google_api_service.json');
+        //$client->useApplicationDefaultCredentials();
 
-		$client->setClientId($this->context->parameters['google']['client_id']);
-		$client->setClientSecret($this->context->parameters['google']['client_secret']);
-		$client->setRedirectUri($this->link('//Calendar:google'));
-		$client->setDeveloperKey($this->context->parameters['google']['developer_key']);
+        $client->setSubject($account);
 
-		//$client->setUseObjects(true);
+        $client->setScopes([
+            'https://www.googleapis.com/auth/calendar'
+        ]);
 
 		$service = new Google_Service_Calendar($client);
 
-		if (!is_null($logout)) unlink($tokenFile);
+        $eventList = [];
 
-		if (!is_null($code)) {
-		    file_put_contents($codeFile, $code);		  
-		    
-		    $client->authenticate($code);
-		   	file_put_contents($tokenFile, $client->getAccessToken()); 
+        $updateEvents = $this->akceService->getAkce()
+            ->where('confirm',TRUE)
+            ->where('enable',TRUE)
+            ->where('date_update > NOW() - INTERVAL 1 DAY')
+            ->where('NOT privateId',null);
 
-			$this->redirect('Calendar:google');		  
-		} 
+        foreach ($updateEvents as $updateEvent) {
+            $visible = $updateEvent->visible;
 
-		if (file_exists($tokenFile)) {
-			$client->setAccessToken(file_get_contents($tokenFile));
+            $event = $service->events->get($privateCalendarId, $updateEvent->privateId);
+            $event = $this->setEvent($updateEvent,$event);
+            $service->events->update($privateCalendarId, $updateEvent->privateId, $event);
 
-			if ($client->getAccessToken()) {
-				
-				$eventList = [];
+            if ($visible) {
+                if ($updateEvent->publicId) {
+                    $event = $service->events->get($publicCalendarId, $updateEvent->publicId);
+                    $event = $this->setEvent($updateEvent,$event);
+                    $service->events->update($publicCalendarId, $updateEvent->publicId, $event);
+                }
+                else {
+                    $event = $this->setEvent($updateEvent, new Google_Service_Calendar_Event);
+                    $createdEvent = $service->events->insert($publicCalendarId, $event);
+                    $updateEvent->update(array('privateId' => $createdEvent->getId()));
+                }
+            }
 
-				$updateEvents = $this->akceService->getAkce()
-					->where('confirm',TRUE)
-					->where('enable',TRUE)
-					->where('date_update > NOW() - INTERVAL 1 DAY')
-					->where('NOT privateId',null);
-		  		
-		  		foreach ($updateEvents as $updateEvent) {
-			  		$visible = $updateEvent->visible;
+            $eventList[] = $updateEvent->id;
+        }
 
-					$event = $service->events->get($privateCalendarId, $updateEvent->privateId);
-					$event = $this->setEvent($updateEvent,$event);
-					$service->events->update($privateCalendarId, $updateEvent->privateId, $event);
+        $newEvents = $this->akceService->getAkce()
+            ->where('confirm',TRUE)
+            ->where('enable',TRUE)
+            ->where('privateId',null);
 
-					if ($visible) {
-						if ($updateEvent->publicId) {
-							$event = $service->events->get($publicCalendarId, $updateEvent->publicId);
-							$event = $this->setEvent($updateEvent,$event);
-							$service->events->update($publicCalendarId, $updateEvent->publicId, $event);
-						}
-						else {
-							$event = $this->setEvent($updateEvent, new Google_Service_Calendar_Event);
-							$createdEvent = $service->events->insert($publicCalendarId, $event);
-							$updateEvent->update(array('privateId' => $createdEvent->getId()));
-						}
-					}
-							  		
-			  		$eventList[] = $updateEvent->id;
-				}
+        foreach ($newEvents as $newEvent) {
+            $visible = $newEvent->visible;
+            $event = $this->setEvent($newEvent, new Google_Service_Calendar_Event);
 
-		    	$newEvents = $this->akceService->getAkce()
-					->where('confirm',TRUE)
-					->where('enable',TRUE)
-					->where('privateId',null);
-		  		
-		  		foreach ($newEvents as $newEvent) {
-					$visible = $newEvent->visible;
-					$event = $this->setEvent($newEvent, new Google_Service_Calendar_Event);
-					
-					$createdEvent = $service->events->insert($privateCalendarId, $event);
-					$newEvent->update(['privateId' => $createdEvent->getId()]);
+            $createdEvent = $service->events->insert($privateCalendarId, $event);
+            $newEvent->update(['privateId' => $createdEvent->getId()]);
 
-					if ($visible) {
-						$createdEvent = $service->events->insert($publicCalendarId, $event);
-						$newEvent->update(['publicId' => $createdEvent->getId()]);
-					}
-					
-					$eventList[] = $newEvent->id;
-				}
+            if ($visible) {
+                $createdEvent = $service->events->insert($publicCalendarId, $event);
+                $newEvent->update(['publicId' => $createdEvent->getId()]);
+            }
 
-				$deleteEvents = $this->akceService->getAkce()
-					->where('confirm = ? OR enable = ?',FALSE,FALSE)
-					->where('NOT privateId',null);
+            $eventList[] = $newEvent->id;
+        }
 
-				foreach ($deleteEvents as $deleteEvent) {
-					$service->events->delete($privateCalendarId, $deleteEvent->privateId);
-					$deleteEvent->update(['privateId' => null]);
+        $deleteEvents = $this->akceService->getAkce()
+            ->where('confirm = ? OR enable = ?',FALSE,FALSE)
+            ->where('NOT privateId',null);
 
-					if (($deleteEvent->visible)and($deleteEvent->publicId)) {
-						$service->events->delete($publicCalendarId, $deleteEvent->publicId);
-						$deleteEvent->update(['publicId' => null]);
-					}
+        foreach ($deleteEvents as $deleteEvent) {
+            $service->events->delete($privateCalendarId, $deleteEvent->privateId);
+            $deleteEvent->update(['privateId' => null]);
 
-					$eventList[] = $deleteEvent->id;
-				}
+            if (($deleteEvent->visible)and($deleteEvent->publicId)) {
+                $service->events->delete($publicCalendarId, $deleteEvent->publicId);
+                $deleteEvent->update(['publicId' => null]);
+            }
 
-				$privateEvents = $this->akceService->getAkce()
-					->where('confirm',TRUE)
-					->where('enable',TRUE)
-					->where('visible',FALSE)
-					->where('NOT publicId',null);
+            $eventList[] = $deleteEvent->id;
+        }
 
-				foreach ($privateEvents as $privateEvent) {
-					$service->events->delete($publicCalendarId, $privateEvent->publicId);
-					$privateEvent->update(['publicId' => null]);
-					$eventList[] = $privateEvent->id;
-				}
+        $privateEvents = $this->akceService->getAkce()
+            ->where('confirm',TRUE)
+            ->where('enable',TRUE)
+            ->where('visible',FALSE)
+            ->where('NOT publicId',null);
 
-				file_put_contents($tokenFile, $client->getAccessToken());
-
-				$this->template->akce = $eventList;
-
-			} else $this->template->authUrl = $client->createAuthUrl();
-		} else $this->template->authUrl = $client->createAuthUrl();
-  	} 
-
+        foreach ($privateEvents as $privateEvent) {
+            $service->events->delete($publicCalendarId, $privateEvent->publicId);
+            $privateEvent->update(['publicId' => null]);
+            $eventList[] = $privateEvent->id;
+        }
+    }
 }
