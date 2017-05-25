@@ -396,7 +396,7 @@ class ForumPresenter extends LayerPresenter{
         	$this->redirect('topic',$id);
         }
 		
-		if ($akce == 'topic'){
+		if ($akce == 'category'){
 			$values->date_add = $datum;
 			$values->forum_id = (int) $this->getParameter('id');
 			$values->member_id = $this->getUser()->getId();
