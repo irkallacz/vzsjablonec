@@ -18,12 +18,9 @@ parameters:
 		user: root
 		password:
 	google:
-		application_name: 'VZS Jablonec'
-		client_id: 432022277214.apps.googleusercontent.com
-		client_secret: zmLGsBKelZuVsk1HsZo7iSUM
-		developer_key: AIzaSyCBTFWZdN6hCDZAK37vc_R7fw5EDGpsaNc
-		private_calendar_id: vzs-jablonec.cz_i8von9ml9om2rbam3mv5v3efs0@group.calendar.google.com
-		public_calendar_id: vzs-jablonec.cz_n60ur3k3jf2mp02oilih2ghnro@group.calendar.google.com
+		account: info@vzs-jablonec.cz
+		private_calendar_id: vzs-jablonec.cz_5sgkju7cluluhm9uoa86eogoi4@group.calendar.google.com
+		public_calendar_id: vzs-jablonec.cz_38dbt8t70rudqhng421phh7ru0@group.calendar.google.com
 
 
 application:
