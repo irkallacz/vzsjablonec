@@ -48,10 +48,10 @@ font-size: 0px; z-index: 10; display:none;}
 .photoList li a {display: block;}
 .photoList li img {border: 1px solid gray; width: 150px; height: 100px;}
 .photoList li a:hover img, .photoList li a:active img, .photoList li a:focus img {border-color: #ea9419;}
-.photoList li a.visible0:before, .photoList li a.visible1:before {background-repeat: no-repeat; bottom: 0; content: " "; 
-    display: block; height: 12px; position: absolute; width: 14px;}
+.photoList li a.visible0:before {background-repeat: no-repeat; bottom: 0; content: " ";
+    display: block; height: 14px; position: absolute; width: 14px;}
 .visible0:before {background-image: url('../img/nonvisible.png');}
-.visible1:before {background-image: url('../img/visible.png');}
+/*.visible1:before {background-image: url('../img/visible.png');}*/
 
 .left {text-align: left;}
 .right {text-align: right;}
