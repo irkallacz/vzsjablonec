@@ -20,6 +20,13 @@ class SignPresenter extends BasePresenter{
 	/** @persistent */
 	public $backlink = '';
 
+	protected function beforeRender(){
+		if ($this->user->loggedIn) {
+			if ($this->backlink) $this->restoreRequest($this->backlink);
+			$this->redirect('News:');
+		}
+	}
+
 	/**
 	 * Sign in form component factory.
 	 * @return Form
@@ -54,7 +61,7 @@ class SignPresenter extends BasePresenter{
 			$this->getUser()->getIdentity()->date_last = $this->memberService->getLastLoginByMemberId($user_id);
 			$this->memberService->addMemberLogin($user_id, new DateTime());
 
-			$this->restoreRequest($this->backlink);
+			if ($this->backlink) $this->restoreRequest($this->backlink);
 			$this->redirect('News:default');
 
 		} catch (NS\AuthenticationException $e) {
