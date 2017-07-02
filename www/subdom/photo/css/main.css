@@ -50,7 +50,7 @@ font-size: 0px; z-index: 10; display:none;}
 .photoList li a:hover img, .photoList li a:active img, .photoList li a:focus img {border-color: #ea9419;}
 .photoList li a.visible0:before {background-repeat: no-repeat; bottom: 0; content: " ";
     display: block; height: 14px; position: absolute; width: 14px;}
-.visible0:before {background-image: url('../img/nonvisible.png');}
+.visible0:before, .photoList .hidden:before {background-image: url('../img/nonvisible.png');}
 /*.visible1:before {background-image: url('../img/visible.png');}*/
 
 .left {text-align: left;}

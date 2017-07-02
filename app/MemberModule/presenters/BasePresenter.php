@@ -6,11 +6,6 @@ use Nette\Application\UI\Presenter;
 use Nette\Utils\Html;
 
 abstract class BasePresenter extends Presenter{
-    protected function beforeRender(){
-        if ($this->user->loggedIn) {
-            $this->redirect('News:');
-        }
-    }
 
     protected function afterRender(){
         parent::afterRender();
@@ -18,7 +13,6 @@ abstract class BasePresenter extends Presenter{
             parent::afterRender();
             $this->template->basePath .= '/member';
             $this->template->baseUri .= '/member';
-
         }
     }
 
@@ -43,7 +37,6 @@ abstract class BasePresenter extends Presenter{
 
     public function getNewMail(){
         $mail = new \Nette\Mail\Message;
-
         $mail->setFrom('info@vzs-jablonec.cz','VZS Jablonec')
             ->addCc('info@vzs-jablonec.cz');
 
