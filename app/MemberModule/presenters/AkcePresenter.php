@@ -389,9 +389,9 @@ class AkcePresenter extends LayerPresenter{
 			->addCondition(Form::FILLED)
 			->addRule(Form::INTEGER, '%label musí být číslo');
 
-		$form->addTextArea('perex', 'Stručný popis')
+		$form->addText('perex', 'Stručný popis', 50)
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class','texyla');
+			->setAttribute('class','perex');
 
 		$form->addTextArea('description', 'Podrobný popis')
 			->setAttribute('spellcheck', 'true')
