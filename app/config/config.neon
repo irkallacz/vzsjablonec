@@ -67,6 +67,22 @@ services:
 	- App\Model\GalleryService(@database.photogalery.context)
 	- App\Model\WordpressService(@database.wordpress.context)
 
+	googleClient:
+		factory: Google_Client
+		setup:
+			- setAuthConfig('%appDir%/config/google_api_service.json')
+			- setSubject(%google.account%)
+			- setScopes([
+				Google_Service_Drive::DRIVE_READONLY
+				Google_Service_Calendar::CALENDAR
+				Google_Service_People::CONTACTS
+			])
+			- setCache(Stash\Pool(Stash\Driver\FileSystem()))
+
+	- Google_Service_Drive
+	- Google_Service_Calendar
+	- Google_Service_People
+
 extensions:
 	console: Kdyby\Console\DI\ConsoleExtension
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
