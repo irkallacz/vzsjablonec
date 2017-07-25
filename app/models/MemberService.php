@@ -129,4 +129,16 @@ class MemberService extends DatabaseService{
         $this->database->query('DELETE FROM `password_session` WHERE `date_end` < ?', new SqlLiteral('NOW()'));
         return $this->database->table('password_session')->where('pubkey', $pubkey)->fetch();
     }
+
+	/**
+	 * @param $search
+	 * @return Selection
+	 */
+	public function searchMembers($search){
+		return $this->getMembers()
+			->where('name LIKE ? OR surname LIKE ? OR zamestnani LIKE ? OR mesto LIKE ? OR ulice LIKE ? OR mail LIKE ? OR telefon LIKE ?','%'.$search.'%','%'.$search.'%','%'.$search.'%','%'.$search.'%','%'.$search.'%','%'.$search.'%','%'.$search.'%');
+			//->where('(name, surname, zamestnani, mesto, ulice, mail, telefon, text) AGAINST (? IN BOOLEAN MODE)',$search);
+			//->order('surname, name');
+	}
+
 }
