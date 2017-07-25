@@ -25,26 +25,14 @@
 
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 <script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
-{*<script type="text/javascript">
-TODO odelílání na fomrulářích
+<script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
+<script type="text/javascript">
     $(function () {
+        $.nette.init();
+    });
+</script>
 
-    //    $.nette.init();
-
-        // odeslání na formulářích
-        $("form.ajax").submit(function () {
-                $(this).ajaxSubmit();
-                return false;
-        });
-
-        // odeslání pomocí tlačítek
-        $("form.ajax :submit").click(function () {
-                $(this).ajaxSubmit();
-                return false;
-        });
-});
-</script>*}
-{/block} 
+{/block}
 
 <h1 n:block="title">Detail akce</h1>
 
@@ -71,11 +59,12 @@ TODO odelílání na fomrulářích
     <p n:if="!$akce->confirm" class="red"><span class="icon-cancel"></span> Tato akce není schválena!</p>
 
     <div class="prev-next">
-        <a n:tag-if="$prev" class="buttonLike float-right" n:href="Akce:view, $prev->id">
-            <span n:tag-if="!$prev" class="buttonLike gray float-right">Předchozí <span class="char">»</span></span>
+        <a n:tag-if="$next" class="buttonLike float-right" n:href="Akce:view, $next->id">
+            <span n:tag-if="!$next" class="buttonLike gray">Další <span class="char">»</span></span>
         </a>
-        <a n:tag-if="$next" class="buttonLike" n:href="Akce:view, $next->id">
-            <span n:tag-if="!$next" class="buttonLike gray"><span class="char">«</span> Další</span>
+
+        <a n:tag-if="$prev" class="buttonLike" n:href="Akce:view, $prev->id">
+            <span n:tag-if="!$prev" class="buttonLike gray float-right"><span class="char">«</span> Předchozí</span>
         </a>
     </div>
 
