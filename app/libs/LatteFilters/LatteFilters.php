@@ -1,13 +1,34 @@
 <?php
 
-class Helpers{
+namespace App\Template;
 
+class LatteFilters{
+
+    static $root = '';
+
+	/**
+	 * @param $filter
+	 * @param $value
+	 * @return mixed
+	 */
+	public static function loader($filter, $value){
+		if (method_exists(__CLASS__, $filter)) {
+			$args = func_get_args();
+			array_shift($args);
+			return call_user_func_array([__CLASS__, $filter], $args);
+		}
+	}
+
+    /**
+     * @param $time
+     * @return string
+     */
     public static function timeAgoInWords($time){
         if (!$time) {
             return FALSE;
         } elseif (is_numeric($time)) {
             $time = (int) $time;
-        } elseif ($time instanceof DateTime) {
+        } elseif ($time instanceof \DateTime) {
             $time = $time->format('U');
         } else {
             $time = strtotime($time);
@@ -55,7 +76,12 @@ class Helpers{
         return $args[($n == 1) ? 1 : (($n >= 2 && $n <= 4) ? 2 : 3)];
     }
 
-    public static function durationInWords(DateTime $start, DateTime $end){
+    /**
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return string
+     */
+    public static function durationInWords(\DateTime $start, \DateTime $end){
 		$duration = $end->diff($start);
 
 		$string = '';
@@ -70,6 +96,62 @@ class Helpers{
         }
 
         return trim($string);     	
+    }
+
+
+    /**
+     * @param $s
+     * @return string
+     */
+    public static function texy($s){
+        $texy = new \Texy\Texy();
+        $texy->headingModule->balancing = \Texy\Modules\HeadingModule::FIXED;
+        return $texy->process($s);
+    }
+
+    /**
+     * @param $s
+     * @return string
+     */
+    public static function forumTexy($s){
+        $texy = new \Texy\Texy();
+
+        $texy->allowed['emoticon'] = TRUE;
+        $texy->emoticonModule->class = 'smile';
+        $texy->emoticonModule->root = self::$root . '/texyla/emoticons';
+        $texy->emoticonModule->fileRoot = WWW_DIR . '/texyla/emoticons';
+        $texy->emoticonModule->icons = [
+            ':D'        => '01.gif',
+            ':-D'       => '01.gif',
+            ':p'        => '02.gif',
+            '8)'        => '03.gif',
+            '8-)'       => '03.gif',
+            ';)'        => '04.gif',
+            ';-)'       => '04.gif',
+            ':)'        => '05.gif',
+            ':-)'       => '05.gif',
+            ':?'        => '06.gif',
+            ':-?'       => '06.gif',
+            ':|'        => '07.gif',
+            ':-|'       => '07.gif',
+            ':roll:'    => '08.gif',
+            ':cry:'     => '09.gif',
+            ':bored:'   => '10.gif',
+            ':dead:'    => '11.gif',
+            ':shock:'   => '12.gif',
+            ':evil:'    => '13.gif',
+            ':sick:'    => '14.gif',
+            ':oops:'    => '15.gif',
+            ':love:'    => '16.gif',
+            ':('        => '17.gif',
+            ':twisted:' => '18.gif',
+            ':lol:'     => '19.gif',
+            ':?:'       => '20.gif',
+            ':!:'       => '21.gif',
+            '(y)'       => '22.gif'
+        ];
+
+        return $texy->process($s);
     }
 
 }
