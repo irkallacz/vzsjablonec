@@ -66,8 +66,6 @@ class RatingControl extends Control {
 	    $this->template->ratings = $ratings;
 	    $this->template->myrating = (bool) $myrating;
 
-	    $texy = \TexyFactory::createTexy();
-	    $this->template->addFilter('texy', [$texy, 'process']);
 	    $this->template->addFilter('stars', function($count){
 		    $s = intval($count);
 		    return str_repeat('★', $count).str_repeat('☆', 5-$count);

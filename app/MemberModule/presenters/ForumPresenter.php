@@ -5,6 +5,8 @@ namespace App\MemberModule\Presenters;
 use App\MemberModule\Components\PostsListControl;
 use App\MemberModule\Components\TopicsListControl;
 use App\Model\ForumService;
+use App\Template\LatteFilters;
+use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Html;
@@ -28,7 +30,6 @@ class ForumPresenter extends LayerPresenter{
 
 	public function renderDefault(){
 		$this->template->forum = $this->forumService->getForum();
-		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
 	public function showPost($post){
@@ -114,8 +115,6 @@ class ForumPresenter extends LayerPresenter{
 		$paginator->setItemsPerPage(self::postPerPage);
 		$paginator->setItemCount($count);
 		$this->template->paginator = $paginator;
-
-    	$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 
     	$this['addPostForm']['forum_topic_id']->setDefaultValue($id);  
     	$this['addPostForm']['forum_id']->setDefaultValue($this->topic->forum_id);
@@ -224,15 +223,13 @@ class ForumPresenter extends LayerPresenter{
 	public function actionTexyPreview($class = FALSE){
 	    if ($this->isAjax()){
 
-			\TexyFactory::$root = $this->template->basePath;
-			$texy = \TexyFactory::createForumTexy();
-
+			LatteFilters::$root = $this->template->basePath;
 			$httpRequest = $this->context->getByType('Nette\Http\Request');
 
-			$div = Html::el('div')->setHtml($texy->process($httpRequest->getPost('texy')));
+			$div = Html::el('div')->setHtml(LatteFilters::forumTexy($httpRequest->getPost('texy')));
 			$div->id = 'texyPreview';
 
-			$this->sendResponse(new \Nette\Application\Responses\TextResponse($div));
+			$this->sendResponse(new TextResponse($div));
 	    }
 	}
 	

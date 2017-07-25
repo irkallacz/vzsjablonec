@@ -41,10 +41,6 @@ class AnketaControl extends Control{
             $this->template->mojeOdpoved = Arrays::get($memberList, $user_id, 0);
             $this->template->celkem = count($memberList);
 
-	        $texy = \TexyFactory::createTexy();
-            $this->template->addFilter('texy', [$texy, 'process']);
-            $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
-
             $this->template->render();
         }else{
             $this->flashMessage('Anekta nenalezena!','error');

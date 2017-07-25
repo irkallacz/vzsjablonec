@@ -92,7 +92,6 @@ class AlbumPresenter extends BasePresenter{
 		$this->template->slug = $slug;
 		$this->template->member = $member;
 
-		$this->registerTexy();
 	}
 
 	public function renderEdit($slug, $order = 'order'){

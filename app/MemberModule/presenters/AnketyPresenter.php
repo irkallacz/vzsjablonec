@@ -15,7 +15,6 @@ class AnketyPresenter extends LayerPresenter{
 	public function renderDefault(){
 		$ankety = $this->anketyService->getAnkety();
 		$this->template->ankety = $ankety;
-		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
 	public function renderView($id){

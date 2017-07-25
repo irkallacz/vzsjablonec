@@ -2,6 +2,8 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\Template\LatteFilters;
+use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Presenter;
 use Nette\Utils\Html;
 
@@ -16,22 +18,16 @@ abstract class BasePresenter extends Presenter{
         }
     }
 
-    public function registerTexy(){
-        $texy = \TexyFactory::createTexy();
-        $this->template->addFilter('texy', [$texy, 'process']);
-    }
-
     public function actionTexyPreview($class = false){
         if ($this->isAjax()){
 
-            $texy = \TexyFactory::createTexy();
             $httpRequest = $this->context->getByType('Nette\Http\Request');
 
-            $div = Html::el('div')->setHtml($texy->process($httpRequest->getPost('texy')));
+            $div = Html::el('div')->setHtml(LatteFilters::texy($httpRequest->getPost('texy')));
             $div->id = 'texyPreview';
             if ($class) $div->class = 'texy';
 
-            $this->sendResponse(new \Nette\Application\Responses\TextResponse($div));
+            $this->sendResponse(new TextResponse($div));
         }
     }
 

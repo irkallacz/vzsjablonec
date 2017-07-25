@@ -11,6 +11,7 @@ namespace App\MemberModule\Components;
 
 use Nette\Application\UI\Control;
 use Nette\Database\Table\Selection;
+use App\Template\LatteFilters;
 
 class PostsListControl extends Control{
 
@@ -38,13 +39,10 @@ class PostsListControl extends Control{
 
 
 	public function render(){
-        \TexyFactory::$root = $this->template->basePath;
-        $texy = \TexyFactory::createForumTexy();
+        LatteFilters::$root = $this->template->basePath;
 
         $this->template->setFile(__DIR__ . '/PostsListControl.latte');
-        $this->template->addFilter('texy', [$texy, 'process']);
-        $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
-	    $this->template->posts = $this->posts;
+        $this->template->posts = $this->posts;
 		$this->template->isLocked = $this->isLocked;
 		$this->template->search = $this->search;
 
