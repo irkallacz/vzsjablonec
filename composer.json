@@ -27,7 +27,8 @@
 		"nextras/mail-panel": "^2.3",
 		"joseki/webloader-filters": "^1.1",
 		"echo511/plupload": "^2.1",
-		"lsolesen/pel": "^0.9.6"
+		"lsolesen/pel": "^0.9.6",
+		"tedivm/stash": "^0.14.2"
 	},
 	"require-dev": {
 		"nette/tester": "^1.6"
