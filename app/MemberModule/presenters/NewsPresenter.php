@@ -49,8 +49,6 @@ class NewsPresenter extends LayerPresenter{
 
                 $this->template->feedbackList = $this->akceService->getFeedbackRequests($datum, $user_id);
                 $this->template->reportList = $this->akceService->getReportRequests($datum, $user_id);
-
-                $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
         }
 
 }

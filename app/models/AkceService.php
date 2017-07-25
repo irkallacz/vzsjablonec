@@ -56,10 +56,10 @@ class AkceService extends DatabaseService
      */
     public function getAkceNext($id, DateTime $date){
         return $this->getAkce()
-                ->where('enable',TRUE)
-                ->where('confirm',TRUE)
-                ->where('id != ?',$id)
-                ->where('date_start >= ?',$date)
+                ->where('enable', TRUE)
+                ->where('confirm', TRUE)
+                ->where('NOT id', $id)
+                ->where('date_start > ?', $date)
                 ->order('date_start')
                 ->limit(1)
                 ->fetch();
@@ -72,10 +72,10 @@ class AkceService extends DatabaseService
      */
     public function getAkcePrev($id, DateTime $date){
         return $this->getAkce()
-                ->where('enable',TRUE)
-                ->where('confirm',TRUE)
-                ->where('id != ?',$id)
-                ->where('date_start <= ?',$date)
+                ->where('enable', TRUE)
+                ->where('confirm', TRUE)
+                ->where('NOT id', $id)
+                ->where('date_start < ?', $date)
                 ->order('date_start DESC')
                 ->limit(1)
                 ->fetch();

@@ -116,6 +116,8 @@ div.flash.error:before {content: '✘'; margin-right: 1ex;}
 
 ul.error li {color: red;}
 
+.loader { background-image: url('../img/loading.gif'); background-repeat: no-repeat; display: inline-block; height: 24px; width: 24px; background-position: center;}
+
 .buttonLike {color: white; font-weight: bold; padding: 0.5ex 1ex; border-radius: 10px; background-color: #0089d2;
 white-space: nowrap; display: inline; display: inline-block;
 	background-image: -moz-linear-gradient(#60afe4,#0089d2); 

@@ -15,7 +15,7 @@
         </div>
 
         <div class="message">
-            {if !$search}{$post->text|texy|noescape}{else}{$post->text|replace:$search:'*'.$search.' .[highlight]*'|texy|noescape}{/if}
+            {if !$search}{$post->text|forumTexy|noescape}{else}{$post->text|replace:$search:'*'.$search.' .[highlight]*'|forumTexy|noescape}{/if}
         </div>
 
         {var $isTopic = ($post->id == $post->forum_topic_id)}

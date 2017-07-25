@@ -57,10 +57,6 @@ class FeedPresenter extends BasePresenter {
 		$this->terminate();
 	}	
 	
-	protected function beforeRender(){
-		$this->registerTexy();
-	}
-	
 	public function renderAnkety(){
 		$this->template->items = $this->anketyService->getAnkety();
 	}

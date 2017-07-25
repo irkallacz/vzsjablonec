@@ -22,7 +22,6 @@ parameters:
 		private_calendar_id: vzs-jablonec.cz_5sgkju7cluluhm9uoa86eogoi4@group.calendar.google.com
 		public_calendar_id: vzs-jablonec.cz_38dbt8t70rudqhng421phh7ru0@group.calendar.google.com
 
-
 application:
 	errorPresenter: Error
 	mapping:
@@ -44,17 +43,21 @@ database:
 		user: %photo.user%		
 		password: %photo.password%
 
-
 php:
-	date.timezone: Europe/Prague		
-	session.save_path: "%tempDir%/../session"
+	date.timezone: Europe/Prague
 	zlib.output_compression: yes
 
+session:
+    autoStart: smart
+    savePath: "%tempDir%/../session"
+    gc_maxlifetime: 21600
 
 services:
 	authenticator: App\Model\Authenticator
-
 	router: RouterFactory::createRouter
+	nette.latteFactory:
+		setup:
+			- addFilter(null, App\Template\LatteFilters::loader)
 
 	- App\Model\AkceService
 	- App\Model\ForumService
@@ -66,6 +69,22 @@ services:
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService(@database.photogalery.context)
 	- App\Model\WordpressService(@database.wordpress.context)
+
+	googleClient:
+		factory: Google_Client
+		setup:
+			- setAuthConfig('%appDir%/config/google_api_service.json')
+			- setSubject(%google.account%)
+			- setScopes([
+				Google_Service_Drive::DRIVE_READONLY
+				Google_Service_Calendar::CALENDAR
+				Google_Service_People::CONTACTS
+			])
+			- setCache(Stash\Pool(Stash\Driver\FileSystem()))
+
+	- Google_Service_Drive
+	- Google_Service_Calendar
+	- Google_Service_People
 
 extensions:
 	console: Kdyby\Console\DI\ConsoleExtension

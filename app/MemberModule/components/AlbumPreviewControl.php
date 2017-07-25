@@ -42,10 +42,7 @@ class AlbumPreviewControl extends Control{
         $photoUri = $this->presenter->link('//:Photo:News:');
 
         \LayoutHelpers::$thumbDirUri = 'albums/thumbs';
-
         $this->template->addFilter('thumb', 'LayoutHelpers::thumb');
-        $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
-
 
         $this->template->photoDir = $photoDir;
         $this->template->photoUri = $photoUri;

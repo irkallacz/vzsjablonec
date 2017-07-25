@@ -111,9 +111,7 @@ class AkcePresenter extends LayerPresenter{
 		$this->template->akceAllList = $akce;
 		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());
 		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(),TRUE);
-
-		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
-	}
+    }
 
 	public function actionView($id){
 		if (!$id) $this->redirect('default');
@@ -149,10 +147,6 @@ class AkcePresenter extends LayerPresenter{
 		if ($this->akce->forum_topic_id){
 		  $this->template->topic = $this->forumService->getTopicById($this->akce->forum_topic_id);
 		}
-
-		$this->registerTexy();
-		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
-		$this->template->addFilter('durationInWords', 'Helpers::durationInWords');
 	}
 
 	public function actionEdit($id){
@@ -275,9 +269,6 @@ class AkcePresenter extends LayerPresenter{
 
 		$member = $akce->member;
 
-        $texy = \TexyFactory::createTexy();
-        $template->addFilter('texy', [$texy, 'process']);
-
 		$mail->addReplyTo($member->mail,$member->surname.' '.$member->name);
 
 		foreach($this->memberService->getMembersByRole('Confirm') as $member)
@@ -398,9 +389,9 @@ class AkcePresenter extends LayerPresenter{
 			->addCondition(Form::FILLED)
 			->addRule(Form::INTEGER, '%label musí být číslo');
 
-		$form->addTextArea('perex', 'Stručný popis')
+		$form->addText('perex', 'Stručný popis', 50)
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class','texyla');
+			->setAttribute('class','perex');
 
 		$form->addTextArea('description', 'Podrobný popis')
 			->setAttribute('spellcheck', 'true')

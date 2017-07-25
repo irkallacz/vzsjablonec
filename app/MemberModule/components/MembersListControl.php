@@ -75,9 +75,9 @@ class MembersListControl extends Control{
     }
 
     public function createComponentLogginForm(){
-        $form = new Form;
+		$form = new Form;
 
-        //$form->getElementPrototype()->class('ajax');
+        $form->getElementPrototype()->class = 'ajax';
 
         if (!$this->list) $this->list = $this->getList();
         if (!$this->list) $this->list = [0];

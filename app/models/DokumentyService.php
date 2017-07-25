@@ -9,47 +9,50 @@ namespace App\Model;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 use Nette\Utils\DateTime;
-use Nette\Utils\Html;
 
 class DokumentyService extends DatabaseService{
 
-    const HLASOVANI = 31;
-    const ZAPISY = 6;
+	const TABLE_DOKUMENTY = 'dokumenty';
+	const TABLE_DIRECTORIES = 'dokumenty_directories';
 
-    /**
-     * @return Selection
-     */
-    public function getDokumenty(){
-        return $this->database->table('dokumenty');
-    }
+	const DOCUMENT_DIR_ID = '0Bw4dUSMcekaVdklkS0htZWxMeHM';
+	const DIR_MIME_TYPE = 'application/vnd.google-apps.folder';
 
-    /**
-     * @return Selection
-     */
-    public function getDokumentyCategory(){
-        return $this->database->table('dokumenty_category');
-    }
+	public function emptyTables(){
+    	$this->database->query('SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE '.self::TABLE_DIRECTORIES.'; TRUNCATE TABLE '.self::TABLE_DOKUMENTY.'; SET FOREIGN_KEY_CHECKS = 1;');
+	}
 
-	public function getDokumentyCategoryParent(){
-		return $this->database->table('dokumenty_category')
-			->where('parent_id IS NULL')
-			->order('id');
+	public function beginTransaction(){
+    	$this->database->beginTransaction();
+	}
+
+	public function commitTransaction(){
+		$this->database->commit();
 	}
 
 	/**
-	 * @return array
-	 */
-	public function getDokumentyCategoryList(){
-		$result = $this->database->query("SELECT `id`, `title`, LENGTH(`dirname`) - LENGTH(REPLACE(`dirname`, '/', '')) AS `level`
-		FROM `dokumenty_category`
-		ORDER BY `dirname`");
-
-		$array = [];
-		foreach($result as $row){
-			$array[$row->id] = Html::el()->setHtml(str_repeat('&nbsp;&nbsp;',$row->level).$row->title);
-		}
-	return $array;
+     * @return Selection
+     */
+    public function getDokumenty(){
+        return $this->database->table(self::TABLE_DOKUMENTY);
     }
+
+    /**
+     * @return Selection
+     */
+    public function getDirectories(){
+        return $this->database->table(self::TABLE_DIRECTORIES);
+    }
+
+	/**
+	 * @param $parent
+	 * @return Selection
+	 */
+	public function getDirectoriesByParent($parent){
+		return $this->getDirectories()
+			->where('parent_id', $parent)
+			->order('id');
+	}
 
     /**
      * @param DateTime $date
@@ -57,29 +60,30 @@ class DokumentyService extends DatabaseService{
      */
     public function getDokumentyNews(DateTime $date){
         return $this->getDokumenty()
-            ->where('date_add > ?',$date)
-            ->order('date_add DESC');
+            ->where('modifiedTime > ?',$date)
+            ->order('modifiedTime DESC');
     }
 
     /**
      * @param $id
-     * @return IRow
+     * @return bool|int|IRow
      */
-    public function getDokumentyCategoryById($id){
-        return $this->getDokumentyCategory()->get($id);
+    public function getDirectoryById($id){
+        return $this->getDirectories()->get($id);
     }
 
 	/**
 	 * @param $values
+	 * @return bool|int|IRow
 	 */
-	public function addDokumentyCategory($values){
-		$this->getDokumentyCategory()->insert($values);
+	public function addDirectory($values){
+		return $this->getDirectories()->insert($values);
 	}
 
 	/**
      * @param $id
-     * @return IRow
-     */
+	 * @return bool|int|IRow
+	 */
     public function getDokumentById($id){
         return $this->getDokumenty()->get($id);        
     }
@@ -88,20 +92,9 @@ class DokumentyService extends DatabaseService{
      * @param $values
      * @return bool|int|IRow
      */
-    public function addDokument($values){
-        $values->date_add = new DateTime();
-        return $this->getDokumenty()->insert($values);        
+    public function addFile($values){
+        return $this->getDokumenty()->insert($values);
     }
 
-	/**
-	 * @param $year
-	 * @return bool|mixed|IRow
-	 */
-	public function getZapisCategoryByYear($year){
-		return $this->database->table('dokumenty_category')
-			->where('title',$year)
-			->where('parent_id',self::ZAPISY)
-			->fetch();
-	}
 
 }

@@ -23,8 +23,6 @@ abstract class BasePresenter extends Presenter{
 
         \LayoutHelpers::$thumbDirUri = self::photoDir.'/thumbs';
         $this->template->addFilter('thumb', 'LayoutHelpers::thumb');
-        $this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
-
         $this->template->photoDir = self::photoDir;
 
 	    $mainMenu = [
@@ -61,11 +59,5 @@ abstract class BasePresenter extends Presenter{
             $backlink = $this->storeRequest();
             $this->redirect('Sign:in', ['backlink' => $backlink]);
         }
-    }
-
-
-    protected function registerTexy(){
-        $texy = \TexyFactory::createTexy();
-        $this->template->addFilter('texy', [$texy, 'process']);
     }
 }

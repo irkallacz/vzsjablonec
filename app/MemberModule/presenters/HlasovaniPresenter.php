@@ -21,7 +21,6 @@ class HlasovaniPresenter extends LayerPresenter{
 		if (!$this->user->isInRole('Board')) $ankety->where('date_deatline < NOW() OR locked = ?',1);
 
 		$this->template->ankety = $ankety;
-		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 	}
 
 	public function renderView($id){		
@@ -53,9 +52,6 @@ class HlasovaniPresenter extends LayerPresenter{
 		$memberList = $members->fetchPairs('id','hlasovani_odpoved_id');
 		$this->template->memberList = $memberList;
 		$this->template->isLogged = Arrays::get($memberList, $this->getUser()->getId(),0);
-
-		$this->registerTexy();
-		$this->template->addFilter('timeAgoInWords', 'Helpers::timeAgoInWords');
 
 		$this->template->title = $anketa->title;
 	}
@@ -280,8 +276,6 @@ class HlasovaniPresenter extends LayerPresenter{
         $template->hlasovani = $hlasovani;
         $template->odpovedi = $odpovedi;
 
-        $texy = \TexyFactory::createTexy();
-        $template->addFilter('texy', [$texy, 'process']);
         $mail = $this->getNewMail();
         $mail->addTo('predstavenstvo@vzs-jablonec.cz');
 		$mail->setSubject('[VZS Jablonec] Nové hlasování představenstva');

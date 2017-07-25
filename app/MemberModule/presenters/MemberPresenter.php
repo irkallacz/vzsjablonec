@@ -5,12 +5,13 @@ namespace App\MemberModule\Presenters;
 use App\Model\MemberService;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
+use Nette\Database\Table\Selection;
 use Nette\Mail\IMailer;
 use Nette\Security\Passwords;
-use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
+use Google_Service_People;
 use Tracy\Debugger;
 
 class MemberPresenter extends LayerPresenter{
@@ -20,6 +21,24 @@ class MemberPresenter extends LayerPresenter{
 
 	/** @var IMailer @inject*/
 	public $mailer;
+
+	/** @var Google_Service_People @inject*/
+	public $googleService;
+
+	/** @var Selection*/
+	public $members;
+
+	public function actionDefault($q = null){
+		if ($q) {
+			$members = $this->memberService->searchMembers($q);
+			$this['memberSearchForm']['search']->setDefaultValue($q);
+		}else $members = $this->memberService->getMembers();
+
+		$members->order('surname, name');
+
+		$this->members = $members;
+		$this->template->members = $members;
+	}
 
 	public function actionUpdateCsv(){
 		if (($handle = fopen('members_update.csv', 'r')) !== FALSE) {
@@ -35,27 +54,22 @@ class MemberPresenter extends LayerPresenter{
 				];
 
 				$member = $this->memberService->getMemberById($data[0]);
-				
+
 				if ($member) {
-					$member->update($array);    	
+					$member->update($array);
 					$this->flashMessage('Záznam "'.$member->surname.' '.$member->name.'" aktualizován');
 				}
 	    	}
 		}
-		
+
 		$this->redirect('default');
   	}
 
-	public function renderDefault($q = null){
-		$members = $this->memberService->getMembers()->order('surname, name');
-		
-		if ($q) {
-			$members->where('MATCH(name, surname, zamestnani, mesto, ulice, mail, telefon, text) AGAINST (? IN BOOLEAN MODE)',$q);
-			$this['memberSearchForm']['search']->setDefaultValue($q);
-		}
-		
-		$this->template->members = $members;
-  	}
+	public function actionGoogle(){
+		$people = $this->googleService->people->get('people/me', ['personFields' => 'names,emailAddresses']);
+
+		Debugger::dump($people);
+	}
 
   	public function renderView($id){
 		$member = $this->memberService->getMemberById($id);
@@ -65,15 +79,12 @@ class MemberPresenter extends LayerPresenter{
         	$this->redirect('default',$id);
         }
 
+	    $this->registerTexy();
+
 		$this->template->narozeni = $member->date_born->diff(date_create());
-
-		$this->template->member = $member;
-
-		$this->template->fileExists = file_exists(WWW_DIR.'/img/portrets/'.$id.'.jpg');
-
-		$this->registerTexy();
-
-		$this->template->title = $member->surname .' '. $member->name;
+	    $this->template->member = $member;
+	    $this->template->fileExists = file_exists(WWW_DIR.'/img/portrets/'.$id.'.jpg');
+	    $this->template->title = $member->surname .' '. $member->name;
   	}
  
 
@@ -223,13 +234,16 @@ class MemberPresenter extends LayerPresenter{
 
 	protected function createComponentMemberSearchForm(){
 		$form = new Form;
+		$form->getElementPrototype()->class('ajax');
 		$form->addText('search', null, 30)
       		->setType('search')
       		->setRequired('Vyplňte hledanou frázi')
+			->setHtmlId('member-search')
       		->getControlPrototype()
       			->title = 'Vyhledá v seznamu hledanou frázi';
 
         $form->addSubmit('ok', '')
+	        ->setHtmlId('member-search-button')
         	->setAttribute('class','myfont');
 
 		$form->onSuccess[] = [$this, 'memberSearchFormSubmitted'];
@@ -240,7 +254,10 @@ class MemberPresenter extends LayerPresenter{
 	public function memberSearchFormSubmitted(Form $form){
 		$values = $form->getValues();
 
-		$this->redirect('Member:default',$values->search);
+		$members = $this->memberService->searchMembers($values->search);
+		$this->members = $members;
+		$this->template->members = $members;
+		$this->redrawControl('searchList');
 	}
 
 	public function uniqueValidator($item){
