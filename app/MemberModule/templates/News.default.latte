@@ -38,8 +38,8 @@ Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p
 
 {if}<h3>Dokumenty</h3>
 <ol class="news" n:inner-foreach="$dokumentyList as $file">
-	<li><a n:class="$file->member_id == $user->getId() ? logged" n:href="Dokumenty:default#f$file->id"
-	title="{$file->modifiedTime|timeAgoInWords}">{$file->name}</a></li>
+	<li><a href="{$file->webViewLink}" target="_blank"
+		   title="{$file->modifiedTime|timeAgoInWords}">{$file->name}</a></li>
 </ol>
 {/if isset($file)}
 
