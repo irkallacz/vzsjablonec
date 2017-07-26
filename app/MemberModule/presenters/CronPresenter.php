@@ -9,7 +9,7 @@ use Google_Service_Calendar_Event;
 use Google_Service_Calendar_EventDateTime;
 use Google_Service_Calendar_EventAttendee;
 use Google_Service_Drive;
-use Nette\Http\Response;
+use Nette\Utils\DateTime;
 
 class CronPresenter extends BasePresenter {
 
@@ -100,50 +100,50 @@ class CronPresenter extends BasePresenter {
 	 * @return Google_Service_Calendar_Event
 	 */
 	private static function setEvent(ActiveRow $akce, Google_Service_Calendar_Event $event){
-        $event->setSummary($akce->name);
-        $event->setLocation($akce->place);
-        $event->setDescription($akce->perex);
-        $start = new Google_Service_Calendar_EventDateTime;
-        $start->setDateTime($akce->date_start->format('c'));
-        $event->setStart($start);
-        $end = new Google_Service_Calendar_EventDateTime;
-        $end->setDateTime($akce->date_end->format('c'));
-        $event->setEnd($end);
-        $event->setVisibility($akce->public ? 'public' : 'private');
+		$event->setSummary($akce->name);
+		$event->setLocation($akce->place);
+		$event->setDescription($akce->perex);
+		$start = new Google_Service_Calendar_EventDateTime;
+		$start->setDateTime($akce->date_start->format('c'));
+		$event->setStart($start);
+		$end = new Google_Service_Calendar_EventDateTime;
+		$end->setDateTime($akce->date_end->format('c'));
+		$event->setEnd($end);
+		$event->setVisibility($akce->public ? 'public' : 'private');
 
-        $attendees = [];
-        foreach ($akce->related('akce_member') as $member){
-            $attendee = new Google_Service_Calendar_EventAttendee();
-            $attendee->setDisplayName($member->surname.' '.$member->name);
-            $attendee->setEmail($member->mail);
-            $attendee->setResponseStatus('accepted');
-            $attendees[] = $attendee;
-        }
-        $event->setAttendees($attendees);
+		$attendees = [];
+		foreach ($akce->related('akce_member') as $member){
+			$attendee = new Google_Service_Calendar_EventAttendee();
+			$attendee->setDisplayName($member->surname.' '.$member->name);
+			$attendee->setEmail($member->mail);
+			$attendee->setResponseStatus('accepted');
+			$attendees[] = $attendee;
+		}
+		$event->setAttendees($attendees);
 
-        return $event;
+		return $event;
     }
   	
-  	public function actionCalendar(){
-        $privateCalendarId = $this->context->parameters['google']['private_calendar_id'];
-        $publicCalendarId = $this->context->parameters['google']['public_calendar_id'];
+	public function actionCalendar(){
+		$privateCalendarId = $this->context->parameters['google']['private_calendar_id'];
+		$publicCalendarId = $this->context->parameters['google']['public_calendar_id'];
 
-        $eventList = [];
+		$eventList = [];
 
-        $updateEvents = $this->akceService->getAkce()
-            ->where('confirm',TRUE)
-            ->where('enable',TRUE)
-            ->where('date_update > NOW() - INTERVAL 1 DAY')
-            ->where('NOT privateId',null);
+		$updateEvents = $this->akceService->getAkce()
+			->where('confirm',TRUE)
+			->where('enable',TRUE)
+			->where('date_update > NOW() - INTERVAL 1 DAY')
+			->where('NOT privateId',null);
 
-        foreach ($updateEvents as $updateEvent) {
-            $visible = $updateEvent->visible;
+		foreach ($updateEvents as $updateEvent) {
+			$visible = $updateEvent->visible;
 
-            $event = $this->calendarService->events->get($privateCalendarId, $updateEvent->privateId);
-            $event = self::setEvent($updateEvent, $event);
-            $this->calendarService->events->update($privateCalendarId, $updateEvent->privateId, $event);
+			$event = $this->calendarService->events->get($privateCalendarId, $updateEvent->privateId);
+			$event = self::setEvent($updateEvent, $event);
+			$this->calendarService->events->update($privateCalendarId, $updateEvent->privateId, $event);
 
-            if ($visible) {
+			if ($visible) {
                 if ($updateEvent->publicId) {
                     $event = $this->calendarService->events->get($publicCalendarId, $updateEvent->publicId);
                     $event = self::setEvent($updateEvent, $event);
