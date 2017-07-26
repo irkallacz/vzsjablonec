@@ -193,8 +193,8 @@ class AlbumPresenter extends BasePresenter{
 			];
 
 			$exif = exif_read_data($filepath);
-			if (array_key_exists('DateTime', $exif)) {
-				$datetime = new Datetime($exif['DateTime']);
+			if (array_key_exists('DateTimeOriginal', $exif)) {
+				$datetime = new Datetime($exif['DateTimeOriginal']);
 				if ($datetime != FALSE) $values['date_taken'] = $datetime;
 			}
 
@@ -233,8 +233,8 @@ class AlbumPresenter extends BasePresenter{
 				];
 
 				$exif = exif_read_data($filepath);
-				if (array_key_exists('DateTime', $exif)) {
-					$datetime = new Datetime($exif['DateTime']);
+				if (array_key_exists('DateTimeOriginal', $exif)) {
+					$datetime = new Datetime($exif['DateTimeOriginal']);
 					if ($datetime != FALSE) $values['date_taken'] = $datetime;
 				}
 
