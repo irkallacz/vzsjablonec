@@ -1,22 +1,23 @@
 parameters:
 	database:
-		driver: mysql
-		host: localhost
-		dbname: vzsjablonec
-		user: root
-		password:
-	photo:
-		driver: mysql
-		host: localhost
-		dbname: photo
-		user: root
-		password:
-	wordpress:
-		driver: mysql
-		host: localhost
-		dbname: wordpress
-		user: root
-		password:
+		default:
+			driver: mysql
+			host: localhost
+			dbname: vzsjablonec
+			user: root
+			password:
+		photo:
+			driver: mysql
+			host: localhost
+			dbname: photo
+			user: root
+			password:
+		wordpress:
+			driver: mysql
+			host: localhost
+			dbname: wordpress
+			user: root
+			password:
 	google:
 		account: info@vzs-jablonec.cz
 		private_calendar_id: vzs-jablonec.cz_5sgkju7cluluhm9uoa86eogoi4@group.calendar.google.com
@@ -29,19 +30,17 @@ application:
 
 database:  
 	default:  
-		dsn: '%database.driver%:host=%database.host%;dbname=%database.dbname%'
-		user: %database.user%		
-		password: %database.password%
-
-	wordpress:  
-		dsn: '%wordpress.driver%:host=%wordpress.host%;dbname=%wordpress.dbname%'
-		user: %wordpress.user%		
-		password: %wordpress.password%
-	
-	photogalery:  
-		dsn: '%photo.driver%:host=%photo.host%;dbname=%photo.dbname%'
-		user: %photo.user%		
-		password: %photo.password%
+		dsn: '%database.default.driver%:host=%database.default.host%;dbname=%database.default.dbname%'
+		user: %database.default.user%
+		password: %database.default.password%
+	photo:
+		dsn: '%database.photo.driver%:host=%database.photo.host%;dbname=%database.photo.dbname%'
+		user: %database.photo.user%
+		password: %database.photo.password%
+	wordpress:
+		dsn: '%database.wordpress.driver%:host=%database.wordpress.host%;dbname=%database.wordpress.dbname%'
+		user: %database.wordpress.user%
+		password: %database.wordpress.password%
 
 php:
 	date.timezone: Europe/Prague
@@ -67,11 +66,13 @@ services:
 	- App\Model\RatingService
 	- App\Model\TimesService
 	- App\Model\HlasovaniService
-	- App\Model\GalleryService(@database.photogalery.context)
+	- App\Model\GalleryService(@database.photo.context)
 	- App\Model\WordpressService(@database.wordpress.context)
 
+	- App\Model\ConnectionConfig(%database%)
+
 	googleClient:
-		factory: Google_Client
+		class: Google_Client
 		setup:
 			- setAuthConfig('%appDir%/config/google_api_service.json')
 			- setSubject(%google.account%)

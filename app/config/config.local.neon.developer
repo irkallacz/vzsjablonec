@@ -12,3 +12,11 @@ services:
 	nette.mailer:
 		class: Nette\Mail\IMailer
 		factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
+
+	exportDatabase:
+		class: App\Console\ExportDatabaseCommand
+		tags: [kdyby.console.command]
+
+	importDatabase:
+			class: App\Console\ImportDatabaseCommand
+			tags: [kdyby.console.command]
