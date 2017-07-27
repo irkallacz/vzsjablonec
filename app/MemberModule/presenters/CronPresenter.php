@@ -25,6 +25,11 @@ class CronPresenter extends BasePresenter {
 	/** @var Google_Service_Calendar @inject */
 	public $calendarService;
 
+	public function actionDefault(){
+		$this->actionDrive();
+		$this->actionCalendar();
+	}
+
 	public function actionDrive(){
 		$this->dokumentyService->beginTransaction();
 		$this->dokumentyService->emptyTables();
