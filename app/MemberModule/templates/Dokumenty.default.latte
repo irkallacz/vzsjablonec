@@ -44,11 +44,11 @@
 			</ol>
 	{/foreach}
 	{foreach $dir->related($TABLE_DOKUMENTY)->order('name') as $file}
-			<li id="{$file->id}" n:class="file, target, $file->modifiedTime > $user->getIdentity()->date_last->format('c') ? 'new'">
-				<img class="file-icon" height="16" width="16" src="{$file->iconLink}" alt="{$file->mimeType}">
+			<li id="{$file->id}" n:class="file, hoverLike, $file->modifiedTime > $user->getIdentity()->date_last->format('c') ? 'new'">
+				<img class="file-icon" height="16" width="16" src="{$file->iconLink}" title="{$file->mimeType}" alt="{$file->mimeType}">
 				<a class="link" title="Datum změny: {$file->modifiedTime|date:'d.m.Y H:i:s'}" href="{$file->webViewLink}">{$file->name}</a>
 				{if $file->webContentLink}
-					<a href="{$file->webContentLink}" title="stáhnout"><span class="icon-download"></span></a>
+					<a class="float-right" href="{$file->webContentLink}" title="stáhnout"><span class="icon-download"></span> stáhnout</a>
 				{else}
 					<a n:href="getPdf $file->id" title="stáhnout jako PDF"><span class="icon-download"></span></a>
 				{/if}
