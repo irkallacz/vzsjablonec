@@ -4,14 +4,17 @@ namespace App\MemberModule\Presenters;
 use App\Model;
 use App\MemberModule\Components;
 use Joseki\Webloader\JsMinFilter;
+use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\IRow;
 use Nette\Mail\IMailer;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 
-class AkcePresenter extends LayerPresenter{
+class AkcePresenter extends LayerPresenter {
 	const FORUM_AKCE_ID = 2;
 	const YEARS_START = 2007;
 	const YEARS_STEP = 3;
@@ -46,24 +49,10 @@ class AkcePresenter extends LayerPresenter{
 	/** @var array */
 	private $memberList;
 
-	public function actionSendAkceMail($id){
-		$akce = $this->akceService->getAkceById($id);
-		$this->sendConfirmMail($akce);
-		$this->redirect('view',$id);
-	}
-
-	public function renderExport($year = null){
-		$akce = $this->akceService->getAkce()->where('enable',1)->where('confirm',1)->order('date_start ASC');
-
-		if ($year) $akce->where('YEAR(date_start) = ?', $year);
-
-		$this->template->akceList = $akce;
-	}
-
-	public function renderDefault($year = NULL){
+	public function renderDefault($year = NULL) {
 		$YEARS_END = intval(date('Y'));
 
-		switch ($year){
+		switch ($year) {
 			case NULL:
 				$year = NAN;
 				break;
@@ -74,12 +63,12 @@ class AkcePresenter extends LayerPresenter{
 				$year = intval($year);
 		}
 
-		if (is_int($year)){
+		if (is_int($year)) {
 			if ($year < self::YEARS_START) $this->redirect('this', self::YEARS_START);
 			if ($year > $YEARS_END) $this->redirect('this', $YEARS_END);
 
 			$akce[0] = [];
-		}else{
+		} else {
 			$akce[0] = $this->akceService->getAkceByFuture(TRUE);
 		}
 
@@ -87,80 +76,100 @@ class AkcePresenter extends LayerPresenter{
 
 		$this->template->year = $year;
 
-        if (is_int($year)) $akce[1]->where('YEAR(date_start)', $year); else $year = $YEARS_END;
+		if (is_int($year)) $akce[1]->where('YEAR(date_start)', $year); else $year = $YEARS_END;
 
-        $count = 2*self::YEARS_STEP;
-        $start = self::YEARS_START + (($year - self::YEARS_START) - self::YEARS_STEP);
-        $end = $start + $count;
+		$count = 2 * self::YEARS_STEP;
+		$start = self::YEARS_START + (($year - self::YEARS_START) - self::YEARS_STEP);
+		$end = $start + $count;
 
-        if ($end > $YEARS_END) {
-		    $start = $YEARS_END - $count;
-		    $end = $YEARS_END;
-        }
+		if ($end > $YEARS_END) {
+			$start = $YEARS_END - $count;
+			$end = $YEARS_END;
+		}
 
-        if ($start < self::YEARS_START) {
-            $start = self::YEARS_START;
-            $end = self::YEARS_START + $count;
-        }
+		if ($start < self::YEARS_START) {
+			$start = self::YEARS_START;
+			$end = self::YEARS_START + $count;
+		}
 
-        $this->template->years = range($start, $end);
+		$this->template->years = range($start, $end);
 
-		if (is_int($this->template->year)) $this->template->prev = (($year-1) >= self::YEARS_START) ? ($year-1) : NULL; else $this->template->prev = $YEARS_END;
-		$this->template->next = (($year+1) <= $YEARS_END) ? ($year+1) : NULL;
+		if (is_int($this->template->year)) $this->template->prev = (($year - 1) >= self::YEARS_START) ? ($year - 1) : NULL; else $this->template->prev = $YEARS_END;
+		$this->template->next = (($year + 1) <= $YEARS_END) ? ($year + 1) : NULL;
 
 		$this->template->akceAllList = $akce;
 		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());
-		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(),TRUE);
-    }
+		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(), TRUE);
+	}
 
-	public function actionView($id){
+	public function actionView($id) {
 		if (!$id) $this->redirect('default');
 
 		$this->akce = $this->akceService->getAkceById($id);
 
-		if ((!$this->akce)or(!$this->akce->enable)) {
-		  $this->flashMessage('Akce nenalezena!','error');
-		  $this->redirect('default');
+		if ((!$this->akce) or (!$this->akce->enable)) {
+			throw new BadRequestException('Akce nenalezena!');
 		}
 
-		$this->orgList = $this->akceService->getMembersByAkceId($id,TRUE)->fetchPairs('id','id');
-		$this->memberList = $this->akceService->getMembersByAkceId($id,FALSE)->fetchPairs('id','id');
+		$this->orgList = $this->memberService->getMembersByAkceId($id, TRUE)->fetchPairs('id', 'id');
+		$this->memberList = $this->memberService->getMembersByAkceId($id, FALSE)->fetchPairs('id', 'id');
 	}
 
-	public function renderView($id){
+	public function renderView($id) {
 		$this->template->akce = $this->akce;
 		$this->template->title = $this->akce->name;
 		$this->template->akceIsOld = $this->akce->date_start < date_create();
 		$this->template->moreOneDay = $this->akce->date_start->format('Y-m-d') != $this->akce->date_end->format('Y-m-d');
 
-		$this->template->prev = $this->akceService->getAkcePrev($id,$this->akce->date_start);
-		$this->template->next = $this->akceService->getAkceNext($id,$this->akce->date_start);
+		$this->template->prev = $this->akceService->getAkcePrev($id, $this->akce->date_start);
+		$this->template->next = $this->akceService->getAkceNext($id, $this->akce->date_start);
 
 		$this->template->orgList = $this->orgList;
 		$this->template->memberList = $this->memberList;
 
-		if ($this->akce->anketa_id){
-		  $anketa = $this->anketyService->getAnketaById($this->akce->anketa_id);
-		  $this->template->anketa = $anketa;
+		if ($this->akce->anketa_id) {
+			$anketa = $this->anketyService->getAnketaById($this->akce->anketa_id);
+			$this->template->anketa = $anketa;
 		}
 
-		if ($this->akce->forum_topic_id){
-		  $this->template->topic = $this->forumService->getTopicById($this->akce->forum_topic_id);
+		if ($this->akce->forum_topic_id) {
+			$this->template->topic = $this->forumService->getTopicById($this->akce->forum_topic_id);
 		}
 	}
 
-	public function actionEdit($id){
+	public function actionSendAkceMail($id) {
+		$akce = $this->akceService->getAkceById($id);
+		$this->sendConfirmMail($akce);
+		$this->redirect('view', $id);
+	}
+
+	public function renderExport($year = null) {
+		$akce = $this->akceService->getAkce()->where('enable', 1)->where('confirm', 1)->order('date_start ASC');
+
+		if ($year) $akce->where('YEAR(date_start) = ?', $year);
+
+		$this->template->akceList = $akce;
+	}
+
+	/**
+	 * @param $id
+	 * @allow(member)
+	 */
+	public function actionEdit($id) {
 		if (!$id) $this->redirect('default');
 
 		$this->akce = $this->akceService->getAkceById($id);
 
-		if ((!$this->akce)or(!$this->akce->enable)) {
-			$this->flashMessage('Akce nenalezena!','error');
-			$this->redirect('default');
+		if ((!$this->akce) or (!$this->akce->enable)) {
+			throw new BadRequestException('Akce nenalezena!');
 		}
 	}
 
-	public function renderEdit($id){
+	/**
+	 * @param $id
+	 * @allow(member)
+	 */
+	public function renderEdit($id) {
 		if (!$id) $this->redirect('default');
 
 		$this->template->akce = $this->akce;
@@ -168,11 +177,10 @@ class AkcePresenter extends LayerPresenter{
 
 		$form = $this['akceForm'];
 		if (!$form->isSubmitted()) {
-			$orgList = $this->akce->related('akce_member')->where('organizator',TRUE)->fetchPairs('member_id','member_id');
+			$orgList = $this->akce->related('akce_member')->where('organizator', TRUE)->fetchPairs('member_id', 'member_id');
 
-			if ((!array_key_exists($this->getUser()->getId(),$orgList))and(!$this->getUser()->isInRole($this->name))) {
-				$this->flashMessage('Nemáte právo tuto akci editovat','error');
-				$this->redirect('Akce:view',$id);
+			if ((!array_key_exists($this->getUser()->getId(), $orgList)) and (!$this->getUser()->isInRole('admin'))) {
+				throw new ForbiddenRequestException('Nemáte právo tuto akci editovat');
 			}
 
 			$form['organizator']->getLabelPrototype()->class('hide');
@@ -185,17 +193,24 @@ class AkcePresenter extends LayerPresenter{
 		}
 	}
 
-	public function renderAdd(){
+	/**
+	 * @param $id
+	 * @allow(member)
+	 */
+	public function renderAdd() {
 		$this->template->nova = TRUE;
 		$this->setView('edit');
 	}
 
-	public function actionDelete($id){
-		$orgList = $this->akceService->getMemberListByAkceId($id,TRUE);
+	/**
+	 * @param $id
+	 * @allow(member)
+	 */
+	public function actionDelete($id) {
+		$orgList = $this->akceService->getMemberListByAkceId($id, TRUE);
 
-		if ((!array_key_exists($this->getUser()->getId(),$orgList))and(!$this->getUser()->isInRole($this->name))) {
-			$this->flashMessage('Nemáte právo tuto akci smazat','error');
-			$this->redirect('Akce:view',$id);
+		if ((!array_key_exists($this->getUser()->getId(), $orgList)) and (!$this->getUser()->isInRole('admin'))) {
+			throw new ForbiddenRequestException('Nemáte právo tuto akci smazat');
 		}
 
 		$this->akceService->getAkceById($id)->update(['enable' => 0]);
@@ -203,64 +218,56 @@ class AkcePresenter extends LayerPresenter{
 		$this->redirect('Akce:default');
 	}
 
-	public function actionAllow($id,$allow){
-		if (!$this->getUser()->isInRole('Confirm')) {
-			$this->flashMessage('Nemáte právo tuto akci povolit ani zakázat','error');
-		}else {
-			$values = ['confirm' => $allow];
+	/**
+	 * @param $id
+	 * @param $allow
+	 * @allow(confirm)
+	 */
+	public function actionAllow($id, $allow) {
+		$values = ['confirm' => $allow];
 
-			if ($allow) {
-			  $this->flashMessage('Akce byla povolena');
-			  $values['date_update'] = new DateTime();
-			}
-			else $this->flashMessage('Akce byla zakázána');
+		if ($allow) {
+			$this->flashMessage('Akce byla povolena');
+			$values['date_update'] = new DateTime();
+		} else $this->flashMessage('Akce byla zakázána');
 
-			$this->akceService->getAkceById($id)->update($values);
-		}
-		$this->redirect('view',$id);
+		$this->akceService->getAkceById($id)->update($values);
+		$this->redirect('view', $id);
 	}
 
-	public function createComponentPostsList(){
+	public function createComponentPostsList() {
 		$topic = $this->forumService->getTopicById($this->akce->forum_topic_id);
-		if ($this->forumService->checkTopic($topic)){
+		if ($this->forumService->checkTopic($topic)) {
 			$isLocked = $topic->locked;
 
 			$posts = $this->forumService->getPostsByTopicId($this->akce->forum_topic_id);
 			$posts->order('row_number DESC');
 			$posts->limit(5, 0);
 
-			return new Components\PostsListControl($posts,$isLocked);
+			return new Components\PostsListControl($posts, $isLocked);
 		}
 	}
 
-    protected function createComponentAlbum(){
-        return new Components\AlbumPreviewControl($this->galleryService);
-    }
-
-
-	protected function createComponentRating(){
-    	$userId = $this->getUser()->getId();
-    	$isOrg = in_array($userId,$this->orgList);
-    	$canComment = (in_array($userId,$this->memberList)or($isOrg));
-		return new Components\RatingControl($this->akce->id,$this->ratingService,$userId,$isOrg,$canComment);
+	protected function createComponentAlbum() {
+		return new Components\AlbumPreviewControl($this->galleryService);
 	}
 
-//    public function renderVcal($id = 0,$future = false){
-//	  if ($id) {
-//	  $akce = $this->akceService->getAkceById($id);
-//	  $this->template->akce = array($akce);
-//	}
-//	else $this->template->akce = $this->akceService->getAkceByFuture($future)->where('confirm',1);
-//
-//	  $httpResponse = $this->context->getByType('Nette\Http\Response');
-//
-//	  if ($id) $slug = Strings::truncate(Strings::webalize($akce->name),20,''); else $slug = 'akce';
-//
-//	  $httpResponse->setHeader('Content-Disposition','attachment; filename="'.$slug.'.ics"');
-//
-//	}
+	public function createComponentAnketa() {
+		return new Components\AnketaControl($this->akce->anketa_id, $this->anketyService);
+	}
 
-	public function sendConfirmMail($akce){
+	protected function createComponentRating() {
+		$userId = $this->getUser()->getId();
+		$isOrg = in_array($userId, $this->orgList);
+		$canComment = ($this->getPresenter()->getUser()->isInRole('member') and (in_array($userId, $this->memberList) or ($isOrg)));
+		return new Components\RatingControl($this->akce->id, $this->ratingService, $userId, $isOrg, $canComment);
+	}
+
+	/**
+	 * @param IRow $akce
+	 * @allow(member)
+	 */
+	public function sendConfirmMail($akce) {
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/akceConfirm.latte');
 		$template->akce = $akce;
@@ -269,27 +276,30 @@ class AkcePresenter extends LayerPresenter{
 
 		$member = $akce->member;
 
-		$mail->addReplyTo($member->mail,$member->surname.' '.$member->name);
+		$mail->addReplyTo($member->mail, $member->surname . ' ' . $member->name);
 
-		foreach($this->memberService->getMembersByRole('Confirm') as $member)
-		  $mail->addTo($member->mail,$member->surname.' '.$member->name);
+		foreach ($this->memberService->getMembersByRight('confirm') as $member)
+			$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
 
 		$mail->setSubject('[VZS Jablonec] Nová akce čeká na schválení');
 		$mail->setHTMLBody($template);
 		$this->mailer->send($mail);
 	}
 
-	protected function createComponentMembers(){
-		return new Components\MembersListControl($this->akceService,$this->akce);
+	protected function createComponentMembers() {
+		return new Components\MembersListControl($this->akceService, $this->memberService, $this->akce);
 	}
 
-	protected function createComponentOrganizators(){
-		return new Components\MembersListControl($this->akceService,$this->akce,TRUE);
+	protected function createComponentOrganizators() {
+		return new Components\MembersListControl($this->akceService, $this->memberService, $this->akce, TRUE);
 	}
 
-	public function createComponentTexylaJs(){
+	/**
+	 * @allow(member)
+	 */
+	public function createComponentTexylaJs() {
 		$files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
-		$files->addFiles(['texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js']);
+		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
 		$files->addFiles(['../plugins/table/table.js']);
 		$files->addFiles(['../plugins/color/color.js']);
 		$files->addFiles(['../plugins/symbol/symbol.js']);
@@ -303,7 +313,10 @@ class AkcePresenter extends LayerPresenter{
 		return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
 
-	protected function createComponentAkceForm(){
+	/**
+	 * @allow(member)
+	 */
+	protected function createComponentAkceForm() {
 		$datum = new Datetime();
 		$form = new Form;
 
@@ -330,35 +343,35 @@ class AkcePresenter extends LayerPresenter{
 
 		$form->addCheckbox('login_mem', 'Povoleno přihlašování účastníků')
 			->setDefaultValue(TRUE)
-			->setAttribute('onclick','doTheTrick()');
+			->setAttribute('onclick', 'doTheTrick()');
 
 		$form->addCheckbox('login_org', 'Povoleno přihlašování organizátorů')
 			->setDefaultValue(FALSE)
-			->setAttribute('onclick','doTheTrick()');
+			->setAttribute('onclick', 'doTheTrick()');
 
 		$form['date_deatline'] = new \DateTimeInput('Přihlášení do');
 		$form['date_deatline']->setRequired(FALSE);
 		$form['date_deatline']->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
-			  return $item->value <= $arg;
-			  }, 'Datum přihlášení musí být menší než datum začátku akce', $form['date_start'])
-			->addConditionOn($form['login_mem'],Form::EQUAL,TRUE)
-			->addRule(Form::FILLED,'Vyplňte datum konce přihlašování');
+				return $item->value <= $arg;
+			}, 'Datum přihlášení musí být menší než datum začátku akce', $form['date_start'])
+			->addConditionOn($form['login_mem'], Form::EQUAL, TRUE)
+			->addRule(Form::FILLED, 'Vyplňte datum konce přihlašování');
 
 		$form['date_deatline']
-			->addConditionOn($form['login_org'],Form::EQUAL,TRUE)
-				->addRule(Form::FILLED,'Vyplňte datum konce přihlašování');
+			->addConditionOn($form['login_org'], Form::EQUAL, TRUE)
+			->addRule(Form::FILLED, 'Vyplňte datum konce přihlašování');
 
-		$form->addSelect('forum_topic_id','Fórum',
-			$this->forumService->getTopicsByForumId(self::FORUM_AKCE_ID)->fetchPairs('id','title')
+		$form->addSelect('forum_topic_id', 'Fórum',
+			$this->forumService->getTopicsByForumId(self::FORUM_AKCE_ID)->fetchPairs('id', 'title')
 		)->setPrompt('');
 
-		$form->addSelect('anketa_id','Anketa',
-			$this->anketyService->getAnkety()->fetchPairs('id','title')
+		$form->addSelect('anketa_id', 'Anketa',
+			$this->anketyService->getAnkety()->fetchPairs('id', 'title')
 		)->setPrompt('');
 
-		$form->addSelect('album_id','Album',
-			$this->galleryService->getAlbums()->order('date_add DESC')->fetchPairs('id','name')
+		$form->addSelect('album_id', 'Album',
+			$this->galleryService->getAlbums()->order('date_add DESC')->fetchPairs('id', 'name')
 		)->setPrompt('');
 
 		$form->addSelect('akce_for_id', 'Určeno',
@@ -369,17 +382,17 @@ class AkcePresenter extends LayerPresenter{
 			->setDefaultValue(TRUE);
 
 		$form->addSelect('member_id', 'Zodpovědná osoba',
-				$this->akceService->getMembers()->fetchPairs('id','jmeno'))
+			$this->memberService->getMembersArray())
 			->setDefaultValue($this->getUser()->getId());
 
 		$form->addSelect('organizator', 'Organizátor',
-				$this->akceService->getMembers()->fetchPairs('id','jmeno'))
+			$this->memberService->getMembersArray())
 			->setDefaultValue($this->getUser()->getId())
 			->setPrompt('není')
-			->addConditionOn($form['login_org'],Form::EQUAL, FALSE)
-				->addRule(FORM::FILLED,'Musíte vybrat organizátora');
+			->addConditionOn($form['login_org'], Form::EQUAL, FALSE)
+			->addRule(FORM::FILLED, 'Musíte vybrat organizátora');
 
-		$form->addUpload('file','Soubor')
+		$form->addUpload('file', 'Soubor')
 			->setRequired(FALSE)
 			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 10 MB.', 10 * 1024 * 1024);
 
@@ -391,33 +404,37 @@ class AkcePresenter extends LayerPresenter{
 
 		$form->addText('perex', 'Stručný popis', 50)
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class','perex');
+			->setAttribute('class', 'perex');
 
 		$form->addTextArea('description', 'Podrobný popis')
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class','texyla')
+			->setAttribute('class', 'texyla')
 			->setRequired('Vyplňte %label akce');
 
 		$text = $this->akceService->getAkceMessageDefault();
 
-		$form->addCheckbox('addMessage','Připojit zprávu z akce')
+		$form->addCheckbox('addMessage', 'Připojit zprávu z akce')
 			->setDefaultValue(FALSE)
 			->addCondition(Form::EQUAL, TRUE)
 			->toggle('frm-akceForm-message');
 
-		$form->addTextArea('message','Zpráva z akce')
+		$form->addTextArea('message', 'Zpráva z akce')
 			->setAttribute('spellcheck', 'true')
 			->setDefaultValue($text)
-			->setAttribute('class','texyla');
+			->setAttribute('class', 'texyla');
 
 		$form->addSubmit('save', 'Ulož')->setAttribute('class', 'default');
-			$form->onSuccess[] = [$this, 'akceFormSubmitted'];
+		$form->onSuccess[] = [$this, 'akceFormSubmitted'];
 
 		return $form;
 	}
 
-	public function akceFormSubmitted(Form $form){
-		$id = (int) $this->getParameter('id');
+	/**
+	 * @param Form $form
+	 * @allow(member)
+	 */
+	public function akceFormSubmitted(Form $form) {
+		$id = (int)$this->getParameter('id');
 
 		$data = $form->getValues();
 		$datum = new Datetime();
@@ -434,59 +451,66 @@ class AkcePresenter extends LayerPresenter{
 		if (!$data->addMessage) unset($data->message);
 		unset($data->addMessage);
 
-		if (($form['file']->isFilled()) and ($data->file->isOK())){
-		  $data->file->move(WWW_DIR.'/doc/akce/'.$data->file->getSanitizedName());
-		  $data->file = $data->file->getSanitizedName();
-		}else unset($data->file);
+		if (($form['file']->isFilled()) and ($data->file->isOK())) {
+			$data->file->move(WWW_DIR . '/doc/akce/' . $data->file->getSanitizedName());
+			$data->file = $data->file->getSanitizedName();
+		} else unset($data->file);
 
 		if ($id) {
-		  $this->akceService->getAkceById($id)->update($data);
-		  $this->flashMessage('Akce byla změněna');
-		}else {
-		  $data->date_add = $datum;
+			$this->akceService->getAkceById($id)->update($data);
+			$this->flashMessage('Akce byla změněna');
+		} else {
+			$data->date_add = $datum;
 
-		  $row = $this->akceService->addAkce($data);
+			$row = $this->akceService->addAkce($data);
 
-		  if ($org) $this->akceService->addMemberToAction($org,$row->id,TRUE);
+			if ($org) $this->akceService->addMemberToAction($org, $row->id, TRUE);
 
-		  $this->sendConfirmMail($row);
+			$this->sendConfirmMail($row);
 
-		  $this->flashMessage('Akce byla přidána');
+			$this->flashMessage('Akce byla přidána');
 
-		  $id = $row->id;
+			$id = $row->id;
 		}
 
-		$this->redirect('Akce:view',$id);
-	  }
+		$this->redirect('Akce:view', $id);
+	}
 
-	protected function createComponentUploadBillForm(){
+	/**
+	 * @allow(member)
+	 */
+	protected function createComponentUploadBillForm() {
 		$form = new Form;
 
 		$form->addUpload('file');
-		  // ->addRule(Form::MIME_TYPE,'Uploadovaný soubor můsí být ve formátu .xls',
-		  //   'application/vnd.ms-office,application/vnd.ms-excel,application/msexcel,application/x-msexcel,application/x-ms-excel,application/vnd.ms-excel,application/x-excel,application/x-dos_ms_excel,application/xls'
-		  // );
+		// ->addRule(Form::MIME_TYPE,'Uploadovaný soubor můsí být ve formátu .xls',
+		//   'application/vnd.ms-office,application/vnd.ms-excel,application/msexcel,application/x-msexcel,application/x-ms-excel,application/vnd.ms-excel,application/x-excel,application/x-dos_ms_excel,application/xls'
+		// );
 
 		$form->addSubmit('ok', '')
-		  ->setAttribute('class','myfont');
+			->setAttribute('class', 'myfont');
 
 		$form->onSuccess[] = [$this, 'uploadBillFormSubmitted'];
 
 		return $form;
 	}
 
-	public function uploadBillFormSubmitted(Form $form){
-		$id = (int) $this->getParameter('id');
+	/**
+	 * @param Form $form
+	 * @allow(member)
+	 */
+	public function uploadBillFormSubmitted(Form $form) {
+		$id = (int)$this->getParameter('id');
 		$data = $form->getValues();
 
 		$akce = $this->akceService->getAkceById($id);
 
-		if (($form['file']->isFilled()) and ($data->file->isOK())){
-			$data->file->move(WWW_DIR.'/doc/vyuctovani/'.$id.'-'.Strings::webalize($akce->name).'.xls');
+		if (($form['file']->isFilled()) and ($data->file->isOK())) {
+			$data->file->move(WWW_DIR . '/doc/vyuctovani/' . $id . '-' . Strings::webalize($akce->name) . '.xls');
 
 			$akce->update(['bill' => 1]);
 			$this->flashMessage('Vyúčtování nahráno');
-			$this->redirect('Akce:view',$id);
+			$this->redirect('Akce:view', $id);
 		}
 	}
 }

@@ -2,11 +2,11 @@
 <link rel="stylesheet" href="{$basePath}/css/anketa.css" type="text/css">
 
 <style type="text/css" n:syntax="off">
-	h2 {margin-top: 1ex;}
-	#otazka {clear: right;}
-	#members .logged {color: #c22;}
-	ul#members {list-style-type: none; }
-	ol#members {margin-bottom: 1em;}
+	h2 { margin-top: 1ex;}
+	#otazka { clear: right;}
+	#members .logged { color: #c22;}
+	ul#members { list-style-type: none; }
+	ol#members { margin-bottom: 1em;}
 </style>
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 {/block}
@@ -15,7 +15,7 @@
 
 {block #content}
 
-<ul class="buttonMenu" n:if="($user->id == $anketa->member_id) or ($user->isInRole($presenter->name))">
+<ul class="buttonMenu" n:if="($user->id == $anketa->member_id) or ($user->isInRole('admin'))">
 	<li><a n:href="edit,$anketa->id" class="buttonLike"><span class="icon-pencil"></span> editovat</a></li>
 	<li><a n:href="delete,$anketa->id" class="buttonLike confirm" data-query="Opravdu chcete tuto anketu smazat?">
 		<span class="icon-trash"></span> smazat</a></li>
@@ -28,7 +28,7 @@
 
 <h2>{$anketa->title|firstUpper}</h2>
 
-{control anketa $anketa->id}
+{control anketa}
 
 {if}
 <h3>Hlasovali</h3>
@@ -51,7 +51,7 @@
 <ol id="members" n:inner-foreach="$members as $item">
 	<li>
 		<a n:class="$item->member_id == $user->getId() ? logged" n:href="Member:view,$item->member_id">
-			{$item->ref('member','member_id')->surname} {$item->ref('member','member_id')->name}
+			{$item->ref('user','member_id')->surname} {$item->ref('user','member_id')->name}
 		</a>
 	</li>
 </ol>

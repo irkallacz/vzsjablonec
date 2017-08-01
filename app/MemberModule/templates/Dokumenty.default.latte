@@ -38,6 +38,9 @@
 					<span n:class="icon, $root ? 'icon-folder-open' : 'icon-folder'"></span>
 					<strong>{$file->name}</strong>
 				</a>
+				<a n:if="$user->isInRole('board')and($root)" class="float-right" href="{$file->webViewLink}" target="_blank" title="otevřít">
+					<span class="icon-link"></span> otevřít
+				</a>
 			</li>
 			<ol id="folder-{$file->id}" n:class="!$root ? hide">
 				{include #fileList, dir => $file, root => FALSE}
@@ -47,10 +50,10 @@
 			<li id="{$file->id}" n:class="file, hoverLike, $file->modifiedTime > $user->getIdentity()->date_last->format('c') ? 'new'">
 				<img class="file-icon" height="16" width="16" src="{$file->iconLink}" title="{$file->mimeType}" alt="{$file->mimeType}">
 				<a class="link" title="Datum změny: {$file->modifiedTime|date:'d.m.Y H:i:s'}" href="{$file->webViewLink}">{$file->name}</a>
-				{if $file->webContentLink}
+				{if ($file->webContentLink)and(!Nette\Utils\Strings::startsWith($file->mimeType, 'application/vnd.google-apps'))}
 					<a class="float-right" href="{$file->webContentLink}" title="stáhnout"><span class="icon-download"></span> stáhnout</a>
 				{else}
-					<a n:href="getPdf $file->id" title="stáhnout jako PDF"><span class="icon-download"></span></a>
+					<a class="float-right" n:href="getPdf $file->id" title="stáhnout jako PDF"><span class="icon-download"></span> stáhnout</a>
 				{/if}
 				<small class="description">{$file->description}</small>
 			</li>

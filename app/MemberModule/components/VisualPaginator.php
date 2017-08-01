@@ -24,8 +24,7 @@ use Nette\Application\UI\Control,
  * @copyright  Copyright (c) 2009 David Grudl
  * @package    Nette Extras
  */
-class VisualPaginator extends Control
-{
+class VisualPaginator extends Control {
 	/** @var Paginator */
 	private $paginator;
 
@@ -33,12 +32,10 @@ class VisualPaginator extends Control
 	public $page = 1;
 
 
-
 	/**
 	 * @return Nette\Paginator
 	 */
-	public function getPaginator()
-	{
+	public function getPaginator() {
 		if (!$this->paginator) {
 			$this->paginator = new Paginator;
 		}
@@ -46,13 +43,11 @@ class VisualPaginator extends Control
 	}
 
 
-
 	/**
 	 * Renders paginator.
 	 * @return void
 	 */
-	public function render()
-	{
+	public function render() {
 		$paginator = $this->getPaginator();
 		$page = $paginator->page;
 		if ($paginator->pageCount < 2) {
@@ -76,14 +71,12 @@ class VisualPaginator extends Control
 	}
 
 
-
 	/**
 	 * Loads state informations.
 	 * @param  array
 	 * @return void
 	 */
-	public function loadState(array $params)
-	{
+	public function loadState(array $params) {
 		parent::loadState($params);
 		$this->getPaginator()->page = $this->page;
 	}

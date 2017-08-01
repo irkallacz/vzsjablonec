@@ -12,7 +12,7 @@ namespace App\MemberModule\Components;
 use App\Model\RatingService;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Control;
-use	Nette\Utils\Arrays;
+use    Nette\Utils\Arrays;
 
 class RatingControl extends Control {
 
@@ -39,7 +39,7 @@ class RatingControl extends Control {
 	 * @param bool $isOrg
 	 * @param bool $canComment
 	 */
-	public function __construct($akceId, RatingService $ratingService, $userId, $isOrg, $canComment){
+	public function __construct($akceId, RatingService $ratingService, $userId, $isOrg, $canComment) {
 		parent::__construct();
 		$this->userId = $userId;
 		$this->akceId = $akceId;
@@ -48,42 +48,42 @@ class RatingControl extends Control {
 		$this->canComment = $canComment;
 	}
 
-	public function render(){
-	    $this->template->setFile(__DIR__ . '/RatingControl.latte');
+	public function render() {
+		$this->template->setFile(__DIR__ . '/RatingControl.latte');
 		$this->template->isOrg = $this->isOrg;
 		$this->template->canComment = $this->canComment;
 
 		$rating = $this->ratingService->getRatingArrayByAkceId($this->akceId);
-	    if ($rating) {
-		    $this->template->rating_stars = round(array_sum($rating)/count($rating));
-		    $this->template->rating_count = count($rating);
- 	    }
+		if ($rating) {
+			$this->template->rating_stars = round(array_sum($rating) / count($rating));
+			$this->template->rating_count = count($rating);
+		}
 
-	    $ratings = $this->ratingService->getRatingByAkceId($this->akceId)->order('date_add')->fetchPairs('member_id');
-	    $myrating = Arrays::get($ratings, $this->userId, []);
+		$ratings = $this->ratingService->getRatingByAkceId($this->akceId)->order('date_add')->fetchPairs('member_id');
+		$myrating = Arrays::get($ratings, $this->userId, []);
 
-	    $this['ratingForm']->setDefaults($myrating);
-	    $this->template->ratings = $ratings;
-	    $this->template->myrating = (bool) $myrating;
+		$this['ratingForm']->setDefaults($myrating);
+		$this->template->ratings = $ratings;
+		$this->template->myrating = (bool)$myrating;
 
-	    $this->template->addFilter('stars', function($count){
-		    $s = intval($count);
-		    return str_repeat('★', $count).str_repeat('☆', 5-$count);
-	    });
+		$this->template->addFilter('stars', function ($count) {
+			$s = intval($count);
+			return str_repeat('★', $count) . str_repeat('☆', 5 - $count);
+		});
 
-	    $this->template->render();
-    }
+		$this->template->render();
+	}
 
-	protected function createComponentRatingForm(){
+	protected function createComponentRatingForm() {
 		$form = new Form;
 
-		$form->addRadioList('rating', 'Hvězdy:', array_combine(range(5,1),range(5,1)))
+		$form->addRadioList('rating', 'Hvězdy:', array_combine(range(5, 1), range(5, 1)))
 			->getSeparatorPrototype()->setName(NULL);
 
-		$form->addCheckbox('public','Veřejné')->setDefaultValue(TRUE);
-		$form->addCheckbox('anonymous','Anonymní')->setDefaultValue(FALSE);
+		$form->addCheckbox('public', 'Veřejné')->setDefaultValue(TRUE);
+		$form->addCheckbox('anonymous', 'Anonymní')->setDefaultValue(FALSE);
 
-		$form->addTextArea('message','Slovní hodnocení')
+		$form->addTextArea('message', 'Slovní hodnocení')
 			->addConditionOn($form['rating'], Form::BLANK)
 			->setRequired('Vyplňte slovní hodnocení nebo hvězdy');
 
@@ -94,13 +94,13 @@ class RatingControl extends Control {
 		return $form;
 	}
 
-	public function ratingFormSubmitted(Form $form){
+	public function ratingFormSubmitted(Form $form) {
 		$values = $form->getValues();
 
-		$rating = $this->ratingService->getRatingByAkceAndMemberId($this->akceId,$this->userId);
+		$rating = $this->ratingService->getRatingByAkceAndMemberId($this->akceId, $this->userId);
 
-		if ($rating) $this->ratingService->updateRatingByAkceAndMemberId($this->akceId,$this->userId,$values);
-		else $this->ratingService->addRatingByAkceAndMemberId($this->akceId,$this->userId,$values);
+		if ($rating) $this->ratingService->updateRatingByAkceAndMemberId($this->akceId, $this->userId, $values);
+		else $this->ratingService->addRatingByAkceAndMemberId($this->akceId, $this->userId, $values);
 
 		$this->flashMessage('Hodnocení bylo změněno');
 

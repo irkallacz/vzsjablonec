@@ -4,198 +4,218 @@ namespace App\MemberModule\Presenters;
 
 use App\Model\MemberService;
 use App\Model\TimesService;
+use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
 
-class TimesPresenter extends LayerPresenter{
 
-    /** @var TimesService @inject */
-    public $timesService;
+/**
+ * Class TimesPresenter
+ * @package App\MemberModule\Presenters
+ * @allow(member)
+ */
+class TimesPresenter extends LayerPresenter {
 
-    /** @var MemberService @inject */
-    public $memberService;
+	/** @var TimesService @inject */
+	public $timesService;
 
-    /** @var array $order @persistent */
-    public $order = [];
-    
-    /** @var array $where @persistent */
-    public $where = [];
+	/** @var MemberService @inject */
+	public $memberService;
 
-	  public function renderDefault(){
-        $times = $this->timesService->getDefaultTimes();
-        
-        if ($this->order) $times->order(join(',',array_keys($this->order))); else $times->order('jmeno'); 
+	/** @var array $order @persistent */
+	public $order = [];
 
-        if ($this->where) $times->where($this->where);
+	/** @var array $where @persistent */
+	public $where = [];
 
-        $this->template->items = $times;
-        $this->template->where = $this->where;
-        $this->template->order = $this->order;
+	/**
+	 *
+	 */
+	public function renderDefault() {
+		$times = $this->timesService->getDefaultTimes();
 
-        $this->template->columLabels = ['jmeno'=>'Jméno','disciplina'=>'Disciplína','time'=>'Čas','date'=>'Datum','text'=>'Poznámka'];
-        $this->template->whereValues = ['member_id'=>'jmeno','times_disciplina_id'=>'disciplina','times.text'=>'text','date'=>'date','time'=>'time'];        
-  	}
+		if ($this->order) $times->order(join(',', array_keys($this->order))); else $times->order('jmeno');
 
+		if ($this->where) $times->where($this->where);
 
-    public function actionSetOrder($key,$add = false){
-      if ($add) $this->order[$key] = true;
-      else unset($this->order[$key]);
+		$this->template->items = $times;
+		$this->template->where = $this->where;
+		$this->template->order = $this->order;
 
-      $this->redirect('default');
-    }  
-
-    public function actionSetWhere($key,$value = null){
-      if ($value) $this->where[$key] = $value;
-      else unset($this->where[$key]);
-
-      $this->redirect('default');
-    }  
-
-    public function renderCsv(){
-        if (!$this->getUser()->isInRole($this->name)){
-          $this->flashMessage('Na tuto akci máte práva','error');
-          $this->redirect('default');
-        }
-
-        $times = $this->timesService->getDefaultTimes();
-        
-        if ($this->order) $times->order(join(',',array_keys($this->order))); else $times->order('jmeno'); 
-
-        if ($this->where) $times->where($this->where);
-
-        $this->template->items = $times;
-
-        $httpResponse = $this->context->getByType('Nette\Http\Response');
-        $httpResponse->setHeader('Content-Disposition','attachment; filename="vysledky.csv"');
-    }
-
-    public function renderAdd(){
-        $this->order = [];
-        $this->where = [];
-
-        $this->template->nova = TRUE;
-
-        $this->setView('edit');
-
-        $lastTime = $this->getSession('lastTime');
-        
-        if (isset($lastTime->values)) {
-            $form = $this['timeForm'];
-            $lastTime->values->time = substr($lastTime->values->time, 3);
-            $form->setDefaults($lastTime->values);
-        }
-
-        unset($lastTime->values);        
-    }
+		$this->template->columLabels = ['jmeno' => 'Jméno', 'disciplina' => 'Disciplína', 'time' => 'Čas', 'date' => 'Datum', 'text' => 'Poznámka'];
+		$this->template->whereValues = ['user_id' => 'jmeno', 'times_disciplina_id' => 'disciplina', 'times.text' => 'text', 'date' => 'date', 'time' => 'time'];
+	}
 
 
-    public function renderEdit($id){
-        if (!$this->getUser()->isInRole($this->name)){
-          $this->flashMessage('Na tuto akci máte práva','error');
-          $this->redirect('default');
-        }
+	/**
+	 * @param string $key
+	 * @param bool $add
+	 */
+	public function actionSetOrder($key, $add = false) {
+		if ($add) $this->order[$key] = true;
+		else unset($this->order[$key]);
 
-        $form = $this['timeForm'];
-        if (!$form->isSubmitted()) {
-            $time = $this->timesService->getTimeById($id);
-            
-            if (!$time) {
-                $this->flashMessage('Záznam nenalezen!','error');
-                $this->redirect('default');                                    
-            }
+		$this->redirect('default');
+	}
 
-	        $form['member_id']->setDefaultValue($time->member_id);
-	        $form['times_disciplina_id']->setDefaultValue($time->times_disciplina_id);
-	        $form['date']->setDefaultValue($time->date);
-	        $form['text']->setDefaultValue($time->text);
+	/**
+	 * @param string $key
+	 * @param null $value
+	 */
+	public function actionSetWhere($key, $value = null) {
+		if ($value) $this->where[$key] = $value;
+		else unset($this->where[$key]);
 
-	        $form['time']->setDefaultValue($time->time->format('%I:%S'));
-        }
-    }
+		$this->redirect('default');
+	}
 
-    public function actionDelete($id){
-      if (!$this->getUser()->isInRole($this->name)) {
-          $this->flashMessage('Na tuto akci máte práva','error');
-      }else{
-        $this->timesService->getTimeById($id)->delete();
-        $this->flashMessage('Výsledek by smazán');
-      }
+	/** @allow(admin) */
+	public function renderCsv() {
+		$times = $this->timesService->getDefaultTimes();
 
-      $this->redirect('default');  
-    }
+		if ($this->order) $times->order(join(',', array_keys($this->order))); else $times->order('jmeno');
 
-    protected function createComponentTimeForm(){
-        $form = new Form();
+		if ($this->where) $times->where($this->where);
 
-        $form->addSelect('member_id','Jméno',
-            $this->memberService->getMembersArray()
-        )
-            ->setRequired('Vyplňte jméno');
-        
-        $form->addSelect('times_disciplina_id','Disciplína',
-            $this->timesService->getTimesDisciplineArray()
-        )
-            ->setRequired('Vyplňte disciplínu');
+		$this->template->items = $times;
 
-	    $form['date'] = new \DateInput('Datum');
-	    $form['date']->setRequired('Vyplňte datum')
-		    ->setDefaultValue(new DateTime());
+		$httpResponse = $this->context->getByType('Nette\Http\Response');
+		$httpResponse->setHeader('Content-Disposition', 'attachment; filename="vysledky.csv"');
+	}
 
-	    $form->addText('time','Výsledný čas',5)
-          ->setRequired('Vyplňte %label')
-          ->addRule(Form::LENGTH, 'Čas musí mít právě %d znaků',5)
-          ->addRule(Form::PATTERN, 'Čas musí být ve formátu MM:SS', '[0-5]{1}\d{1}:[0-5]{1}\d{1}')
-          ->setType('time')
-          ->setDefaultValue('00:00')
-          ->setAttribute('class','time')
-          ->getLabelPrototype()->class('hint')->title = 'Čas musí být ve formátu MM:SS';
+	/** @allow(board) */
+	public function renderAdd() {
+		$this->order = [];
+		$this->where = [];
 
-        $form->addText('text','Poznámka',30)
-            ->setAttribute('spellcheck', 'true');
+		$this->template->nova = TRUE;
 
-        $form->addCheckBox('another','Vložit další záznam')
-            ->setDefaultValue(TRUE);
+		$this->setView('edit');
 
-        $form->addSubmit('save','Uložit');
+		$lastTime = $this->getSession('lastTime');
 
-        $form->onSuccess[] = [$this, 'timeFormSubmitted'];
+		if (isset($lastTime->values)) {
+			$form = $this['timeForm'];
+			$lastTime->values->time = substr($lastTime->values->time, 3);
+			$form->setDefaults($lastTime->values);
+		}
 
-        return $form;        
-    }
+		unset($lastTime->values);
+	}
 
-    public function timeFormSubmitted(Form $form){
-        $id = (int) $this->getParameter('id');
 
-        $values = $form->getValues();
+	/**
+	 * @param $id
+	 * @allow(admin)
+	 */
+	public function renderEdit($id) {
+		$form = $this['timeForm'];
+		if (!$form->isSubmitted()) {
+			$time = $this->timesService->getTimeById($id);
 
-        if ($id) {
-          unset($values->another);
-          $values->time = '00:'.$values->time;
+			if (!$time) {
+				throw new BadRequestException('Záznam nenalezen!');
+			}
 
-          Debugger::barDump($values);
+			$form['user_id']->setDefaultValue($time->member_id);
+			$form['times_disciplina_id']->setDefaultValue($time->times_disciplina_id);
+			$form['date']->setDefaultValue($time->date);
+			$form['text']->setDefaultValue($time->text);
 
-          $this->timesService->getTimeById($id)->update($values);
-          $this->flashMessage('Výsledek byl změněn');
-        }else {
-          $values->date_add = new Datetime;
+			$form['time']->setDefaultValue($time->time->format('%I:%S'));
+		}
+	}
 
-          $lastTime = $this->getSession('lastTime');
-          
-          if ($values->another) {
-            $lastTime->values = $values;
-            $another = $values->another;
-          }else unset($lastTime->values);
+	/** @allow(admin) */
+	public function actionDelete($id) {
+		$this->timesService->getTimeById($id)->delete();
+		$this->flashMessage('Výsledek by smazán');
 
-          unset($values->another);
-          $values->time = '00:'.$values->time;
+		$this->redirect('default');
+	}
 
-          $this->timesService->addTime($values);
-          
-          $this->flashMessage('Výsledek byl v pořádku přidán'); 
-        }
-        
-        if (isset($another)) $this->redirect('add'); else $this->redirect('default');
-      }
+
+	/**
+	 * @return Form
+	 * @allow(admin)
+	 */
+	protected function createComponentTimeForm() {
+		$form = new Form();
+
+		$form->addSelect('user_id', 'Jméno',
+			$this->memberService->getMembersArray()
+		)
+			->setRequired('Vyplňte jméno');
+
+		$form->addSelect('times_disciplina_id', 'Disciplína',
+			$this->timesService->getTimesDisciplineArray()
+		)
+			->setRequired('Vyplňte disciplínu');
+
+		$form['date'] = new \DateInput('Datum');
+		$form['date']->setRequired('Vyplňte datum')
+			->setDefaultValue(new DateTime());
+
+		$form->addText('time', 'Výsledný čas', 5)
+			->setRequired('Vyplňte %label')
+			->addRule(Form::LENGTH, 'Čas musí mít právě %d znaků', 5)
+			->addRule(Form::PATTERN, 'Čas musí být ve formátu MM:SS', '[0-5]{1}\d{1}:[0-5]{1}\d{1}')
+			->setType('time')
+			->setDefaultValue('00:00')
+			->setAttribute('class', 'time')
+			->getLabelPrototype()->class('hint')->title = 'Čas musí být ve formátu MM:SS';
+
+		$form->addText('text', 'Poznámka', 30)
+			->setAttribute('spellcheck', 'true');
+
+		$form->addCheckBox('another', 'Vložit další záznam')
+			->setDefaultValue(TRUE);
+
+		$form->addSubmit('save', 'Uložit');
+
+		$form->onSuccess[] = [$this, 'timeFormSubmitted'];
+
+		return $form;
+	}
+
+	/**
+	 * @param Form $form
+	 * @allow(admin)
+	 */
+	public function timeFormSubmitted(Form $form) {
+		$id = (int)$this->getParameter('id');
+
+		$values = $form->getValues();
+
+		if ($id) {
+			unset($values->another);
+			$values->time = '00:' . $values->time;
+
+			Debugger::barDump($values);
+
+			$this->timesService->getTimeById($id)->update($values);
+			$this->flashMessage('Výsledek byl změněn');
+		} else {
+			$values->date_add = new Datetime;
+
+			$lastTime = $this->getSession('lastTime');
+
+			if ($values->another) {
+				$lastTime->values = $values;
+				$another = $values->another;
+			} else unset($lastTime->values);
+
+			unset($values->another);
+			$values->time = '00:' . $values->time;
+
+			$this->timesService->addTime($values);
+
+			$this->flashMessage('Výsledek byl v pořádku přidán');
+		}
+
+		if (isset($another)) $this->redirect('add'); else $this->redirect('default');
+	}
 
 }

@@ -1,17 +1,19 @@
+{snippet flash}
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+{/snippet}
 
 <div id="otazka" class="texy">
     {$anketa->text|texy|noescape}
 
     <p n:if="$anketa->date_add != $anketa->date_update" class="update" title="{$anketa->date_update|timeAgoInWords}">Upraveno ({$anketa->date_update|date:'%d.%m.%Y %H:%M'})</p>
 </div>
-
+{snippet odpovedi}
 <h3 n:if="$anketa->locked" class="center"><span class="char icon-lock"></span> Tato anketa je uzavřena.</h3>
- <table id="odpovedi">
+    <table id="odpovedi">
         <tr n:foreach="$odpovedi as $odpoved" n:class="$mojeOdpoved == $odpoved->id ? logged">
             {var $pocet = $odpoved->related('anketa_member')->count('member_id')}
             <th class="min">
-                <a href="{link vote $odpoved->id}" n:tag-if="!($anketa->locked or $mojeOdpoved)">
+                <a class="ajax" href="{link vote $odpoved->id}" n:tag-if="!($anketa->locked or $mojeOdpoved)and($user->isInRole('member'))">
                     {$odpoved->text|firstUpper}
                 </a>
             </th>
@@ -19,5 +21,11 @@
             <td class="no-wrap min">{$pocet} / {$celkem}</td>
         </tr>
     </table>
-    <h3 n:if="$mojeOdpoved" class="center">V této anketě jste již hlasoval</h3>
-    <p class="center" n:if="($mojeOdpoved)and(!$anketa->locked)"><a href="{link deleteVote! $anketa->id}" class="buttonLike"><span class="icon-cancel"></span> zrušit hlas</a></p>
+
+<h3 n:if="$mojeOdpoved" class="center">V této anketě jste již hlasoval</h3>
+<p class="center" n:if="($mojeOdpoved)and(!$anketa->locked)">
+    <a href="{link deleteVote! $anketa->id}" class="buttonLike ajax">
+		<span class="icon-cancel"></span> zrušit hlas
+	</a>
+</p>
+{/snippet}

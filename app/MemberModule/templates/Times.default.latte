@@ -18,8 +18,8 @@
 
 {block #content}
 
-<ul class="buttonMenu" n:if="$user->isInRole($presenter->name)">
-<li><a n:href="csv" class="buttonLike"><span class="icon-chart"></span> stáhnout exel</a></li>
+<ul class="buttonMenu" n:if="$user->isInRole('board')">
+<li><a n:href="csv" class="buttonLike"><span class="icon-file-excel"></span> stáhnout exel</a></li>
 <li><a n:href="add" class="buttonLike"><span class="icon-plus"></span> nový záznam</a></li>
 </ul>
 
@@ -34,18 +34,18 @@
  
 <table id="items">
 <tr class="first">
-	<th n:if="$user->isInRole($presenter->name)"></th>
+	<th n:if="$user->isInRole('board')"></th>
 	<th n:foreach="$columLabels as $colum => $label">
 	<a class="buttonLike" title="Řadit jako {$label}" n:href="setOrder,$colum,1"><span class="icon-sort"></span> {$label}</a>
 	</th>	
 </tr>
 	<tr n:foreach="$items as $item">
-		<td class="firstColum" n:if="$user->isInRole($presenter->name)">
+		<td class="firstColum" n:if="$user->isInRole('board')">
 			<a title="Smazat" class="buttonLike confirm" data-query="Opravdu chcete tento záznam smazat?" n:href="delete,$item->id"><span class="icon-trash"></span></a> 
 			<a title="Editovat" class="buttonLike" n:href="edit,$item->id"><span class="icon-pencil"></span></a>
 		</td>
 		{var $time = $item->time->format('%I:%S')}
-		<td><a title="Pouze {$item->jmeno}" n:href="setWhere,'member_id',$item->member_id">{$item->jmeno}</a></td>
+		<td><a title="Pouze {$item->jmeno}" n:href="setWhere,'user_id',$item->user_id">{$item->jmeno}</a></td>
 		<td><a title="Pouze {$item->disciplina}" n:href="setWhere,'times_disciplina_id',$item->times_disciplina_id">{$item->disciplina}</a></td>
 		<td class="center"><a title="Pouze {$time}" n:href="setWhere,'time',$time">{$time}</a></td>
 		<td class="center"><a title="Pouze {$item->date|date:'d.m.Y'}" n:href="setWhere,'date',$item->date->format('Y-m-d')">{$item->date|date:'d.m.Y'}</a></td>

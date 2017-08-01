@@ -41,7 +41,7 @@ class HlasovaniService extends DatabaseService{
      * @return Selection
      */
     public function getMembersByAnketaId($id){
-        return $this->database->table('member')
+        return $this->database->table('user')
             ->select('id, CONCAT(surname," ",name)AS jmeno, :hlasovani_member.hlasovani_odpoved_id')
             ->where(':hlasovani_member.hlasovani_id',$id);
     }

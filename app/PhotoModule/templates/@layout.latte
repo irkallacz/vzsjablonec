@@ -35,7 +35,12 @@
 <div id="main">
 <div id="top">
   <ul id="mainMenu" n:inner-foreach="$mainMenu as $item">
-    <li {ifCurrent $item['current']}class="current"{/ifCurrent}><a n:href="$item['link']">{$item['title']}</a></li>
+    <li n:if="(!$item->role)or($user->isInRole($item->role))" n:class="$presenter->isLinkCurrent($item->current) ? current">
+      <a n:href="$item->link">{$item->title}</a>
+    </li>
+    <li n:if="($iterator->isLast())and(!$user->isLoggedIn())">
+      <a n:href="Sign:in">Přihlášení</a>
+    </li>
   </ul>
 
   <div id="header">
@@ -54,10 +59,10 @@
 </html>
 
 {define albumMenu}
-  <li><a class="buttonLike" n:href="Album:add,$album->id.'-'.$album->slug">přidat fotky</a></li>
-  <li n:if="($album->member_id==$user->getId())or($user->isInRole($presenter->name))"><a class="buttonLike confirm" n:href="Album:deleteAlbum,$album->id" data-query="Opravdu chcete vymazat toto album?">odebrat album</a></li>
-  <li n:if="$user->isInRole($presenter->name)"><a class="buttonLike" n:href="Album:setAlbumVisibility,$album->id.'-'.$album->slug,!$album->visible">{if $album->visible}zneviditelnit{else}zviditelnit{/if}</a></li>
-  <li n:if="($album->member_id==$user->getId())or($user->isInRole($presenter->name))"><a class="buttonLike" n:href="Album:edit,$album->id.'-'.$album->slug">upravit</a></li>
+  <li n:if="$user->isInRole('member')"><a class="buttonLike" n:href="Album:add,$album->id.'-'.$album->slug">přidat fotky</a></li>
+  <li n:if="($album->member_id==$user->getId())or($user->isInRole('admin'))"><a class="buttonLike confirm" n:href="Album:deleteAlbum,$album->id" data-query="Opravdu chcete vymazat toto album?">odebrat album</a></li>
+  <li n:if="$user->isInRole('admin')"><a class="buttonLike" n:href="Album:setAlbumVisibility,$album->id.'-'.$album->slug,!$album->visible">{if $album->visible}zneviditelnit{else}zviditelnit{/if}</a></li>
+  <li n:if="($album->member_id==$user->getId())or($user->isInRole('admin'))"><a class="buttonLike" n:href="Album:edit,$album->id.'-'.$album->slug">upravit</a></li>
 {/define}
 
 {define albumPopis}
@@ -82,6 +87,7 @@
 {/define}
 
 {define photoList}
+{if}
 <a n:href="Album:view,$album->id.'-'.$album->slug"><h3>{$album->name}</h3></a>
   
   {var $photos = $album->related('photo')->order('order, date_add')->limit(8)}
@@ -94,4 +100,5 @@
   </ul></a>
   
   {include #albumPopis, album => $album, pocet => Nette\Utils\Arrays::get($pocet,$album->id,0)}
+{/if isset($image)or($user->isLoggedIn())}
 {/define}

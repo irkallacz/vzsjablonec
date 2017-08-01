@@ -1,40 +1,60 @@
 {block #head}
-<style type="text/css" n:syntax="off">
-  #text { padding-top: 1ex}
-  #members li, #members { list-style-type: none;}
-  #members { margin-left: 2em; padding-left: 0;}
-  #frm-memberSearchForm { margin-left: 2em;}
-  #frm-memberSearchForm-search { font-size: 2ex; padding: 0.5ex 1ex; vertical-align: middle;}
-  #frm-memberSearchForm-ok { height: 5ex;}
-  #frm-memberSearchForm div { display: inline;}
-  #frm-uploadMembersForm input { font-size: 2.3ex;}
-  #menu_top { margin-top: 0; text-align: right; float: right;}
-  #menu_top li { list-style-type: none; display: inline;}
-  #menu_top .buttonLike { margin-top: 1ex;}
-</style>
-<script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
-<script type="text/javascript">
-    $(function () {
-        $.nette.init();
+	<style type="text/css" n:syntax="off">
+		#text { padding-top: 1ex}
+		.userList li, #members { list-style-type: none;}
+		.userList { margin-left: 2em; padding-left: 0;}
+		#frm-memberSearchForm-search { font-size: 2ex; padding: 0.5ex 1ex; vertical-align: middle;}
+		#frm-memberSearchForm-ok { height: 5ex;}
+		#frm-memberSearchForm div { display: inline;}
+		#frm-uploadMembersForm input { font-size: 2.3ex;}
+		#menu_top { margin-top: 0; text-align: right; float: right;}
+		#menu_top li { list-style-type: none; display: inline;}
+		#menu_top .buttonLike { margin-top: 1ex;}
+		.tab { border: 1px solid gray; display: none;}
+		.active { display: block; }
+		#tabs ul { margin: 0; padding: 0; margin-top: 1em;}
+		#tabs ul li { background-color: silver; display: inline-block; padding: 1ex; border: 1px solid gray; border-bottom: none; }
+		#tabs ul li a { color: white;}
+		#tabs ul li.active { background-color: white; position: relative; top: 1px; }
+		#tabs ul li.active a { color: inherit;}
+	</style>
+	<script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
+	<script type="text/javascript">
+	$(function () {
+		$.nette.init();
 
 		$('#member-search').keyup(function(){
 			var q = document.getElementById('member-search').value;
-			history.replaceState(null, null, window.location.pathname + '?q=' + q);
-			if (q.length > 2) $('#member-search-button').submit();
+
+			if (q.length > 2) {
+				history.replaceState(null, null, window.location.pathname + '?q=' + q);
+				$('#member-search-button').submit();
+			}else history.replaceState(null, null, window.location.pathname);
 		});
 
 	});
-</script>
+	
+	function openTab(name) {
+		$('#tabs .active').removeClass('active');
+		$('.tab.active').removeClass('active');
+		$('#tab-'+name).addClass('active');
+		$('#'+name).addClass('active');
+	}
+	</script>
 
 {/block}
 
 <h1 n:block="#title">Adresář</h1>
 
+<ol n:block="#userList" class="userList">
+	<li n:foreach="$list as $item"><a n:href="Member:view, $item->id">{$item->surname} {$item->name}</a></li>
+</ol>
+
 {block #content}
 <ul class="buttonMenu">
 	<li><a n:href="vcfArchive" class="buttonLike"><span class="icon-address-card-o"></span> stáhnout vizitky</a></li>
-	<li n:if="$user->isInRole($presenter->name)"><a n:href="csv" class="buttonLike"><span class="icon-file-excel"></span> stáhnout exel</a></li>
-	<li n:if="$user->isInRole($presenter->name)"><a n:href="add" class="buttonLike"><span class="icon-user-plus"></span> nový člen</a></li>
+	<li n:if="$user->isInRole('board')"><a n:href="csv" class="buttonLike"><span class="icon-file-excel"></span> stáhnout exel</a></li>
+	<li n:if="$user->isInRole('board')"><a n:href="add" class="buttonLike"><span class="icon-user-plus"></span> nový člen</a></li>
 </ul>
 
 {form memberSearchForm}
@@ -45,11 +65,18 @@
 {/form}
 
 {snippet searchList}
-<div class="float-right">({$members->count()})</div>
+	<div id="tabs">
+		{var $titles = ['Členové', 'Uživatelé', 'Neaktivní']}
+		<ul>
+			<li n:foreach="$searchList as $name => $item" id="{$name}" n:class="$iterator->isFirst() ? active">
+				<a n:tag-if="(count($searchList) > 1)" href="javascript:openTab('{$name}')">{$titles[$iterator->getCounter()-1]} ({$searchList[$name]->count()})</a>
+			</li>
+		</ul>
 
-<ol id="members">
-	<li n:foreach="$members as $member"><a n:href="Member:view, $member->id">{$member->surname} {$member->name}</a></li>
-</ol>
+		<div n:foreach="$searchList as $name => $item" n:class="tab, $iterator->isFirst() ? active" id="tab-{$name}">
+			{include #userList list => $item}
+		</div>
+	</div>
 {/snippet}
 
 {/block}

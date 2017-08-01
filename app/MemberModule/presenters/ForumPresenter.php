@@ -6,6 +6,8 @@ use App\MemberModule\Components\PostsListControl;
 use App\MemberModule\Components\TopicsListControl;
 use App\Model\ForumService;
 use App\Template\LatteFilters;
+use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
@@ -59,6 +61,7 @@ class ForumPresenter extends LayerPresenter{
 		$this['searchForm']['q']->setDefaultValue($q);
 	}
 
+
 	protected function createComponentTopicList(){
 		$id = $this->getParameter('id');
 		$search = $this->getParameter('q');
@@ -73,13 +76,11 @@ class ForumPresenter extends LayerPresenter{
 
 	public function checkTopic($topic, $locked = FALSE){		
 		if ((!$topic)or($topic->row_number == 0)) {
-			$this->flashMessage('Téma neexistuje','error');
-			$this->redirect('default');
+			throw new BadRequestException('Téma neexistuje');
 		}
 
 		if ($locked and $topic->locked) {
-        	$this->flashMessage('Toto téma bylo uzavřeno','error');
-        	$this->redirect('topic',$topic->id);
+        	throw new BadRequestException('Toto téma bylo uzavřeno');
         } 
 	}
 
@@ -220,6 +221,10 @@ class ForumPresenter extends LayerPresenter{
 		$this->redirect('search', $values->q, $values->forum_id, $values->subject);
 	}
 
+	/**
+	 * @param bool $class
+	 * @allow(member)
+	 */
 	public function actionTexyPreview($class = FALSE){
 	    if ($this->isAjax()){
 
@@ -235,24 +240,25 @@ class ForumPresenter extends LayerPresenter{
 	
 	private function checkPost($post){		
 		if ($post->row_number == 0) {
-        	$this->flashMessage('Příspěvek neexistuje','error');
-        	$this->redirect('topic', $post->forum_topic_id->id);
+        	throw new BadRequestException('Příspěvek neexistuje');
         }
 	}
-	
+
+	/**
+	 * @param int $id
+	 * @allow(member)
+	 */
 	public function renderEdit($id){
 		if (!$id) {
-        	$this->flashMessage('Nebyl vybrán žádný příspěvek','error');
-        	$this->redirect('default');
+        	throw new BadRequestException('Nebyl vybrán žádný příspěvek');
         }
         
 		$post = $this->forumService->getPostById($id);
 		
 		$this->checkPost($post);
 
-		if ((!$this->getUser()->isInRole($this->name))and($post->member_id!=$this->getUser()->getId())) {
-            	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('topic',$post->forum_topic_id);
+		if ((!$this->getUser()->isInRole('admin'))and($post->member_id!=$this->getUser()->getId())) {
+            	throw new ForbiddenRequestException('Nemáte práva na tuto akci');
         }
 
 		$this->template->isEdit = TRUE;
@@ -273,10 +279,13 @@ class ForumPresenter extends LayerPresenter{
         $this->template->title = $topic->title;
 	}
 
+	/**
+	 * @param int $id
+	 * @allow(member)
+	 */
 	public function renderCite($id){
 		if (!$id) {
-        	$this->flashMessage('Nebyl vybrán žádný příspěvek','error');
-        	$this->redirect('default');
+        	throw new BadRequestException('Nebyl vybrán žádný příspěvek');
         }
 
         $post = $this->forumService->getPostById($id);
@@ -299,6 +308,10 @@ class ForumPresenter extends LayerPresenter{
 
 	}
 
+	/**
+	 * @param int $id
+	 * @allow(member)
+	 */
 	public function renderAdd($id){
 		$topic = $this->forumService->getTopicById($id);
 
@@ -311,19 +324,22 @@ class ForumPresenter extends LayerPresenter{
     	$this['addPostForm']['forum_id']->setDefaultValue($topic->forum_id);
 	}
 
+	/**
+	 * @param int $id
+	 * @allow(member)
+	 */
 	public function actionDelete($id){
-	 $post = $this->forumService->getPostById($id);
+		$post = $this->forumService->getPostById($id);
 
-	 if ((!$this->getUser()->isInRole($this->name))and($post->member_id!=$this->getUser()->getId())) {
-            	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('topic',$post->forum_topic_id);
-        }
+	if ((!$this->getUser()->isInRole('admin'))and($post->member_id!=$this->getUser()->getId())) {
+		throw new ForbiddenRequestException('Nemáte práva na tuto akci');
+	}
 
 	 if ($post->id != $post->forum_topic_id) {		
 		$this->forumService->getPostsByTopicId($post->forum_topic_id)
 			->where('row_number > ?', $post->row_number)
 			->update(['row_number' => new SqlLiteral('row_number - 1')]);
-	 	
+
 	 	$post->update(['row_number' => 0, 'hidden' => 1]);
 
 	 	$this->redirect('Forum:topic', $post->forum_topic_id);
@@ -334,18 +350,26 @@ class ForumPresenter extends LayerPresenter{
 	 }
 	}
 
-	public function actionLockTopic($id,$lock){
-	 $post = $this->forumService->getPostById($id);
-	 
-	 if ((!$this->getUser()->isInRole($this->name))and($post->member_id != $this->getUser()->getId())) {
-            	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('topic',$post->forum_topic_id);
-        }
+	/**
+	 * @param int $id
+	 * @param bool $lock
+	 * @allow(member)
+	 */
+	public function actionLockTopic($id, $lock){
+		$post = $this->forumService->getPostById($id);
 
-	 $post->update(['locked' => $lock]);
-	 $this->redirect('topic',$post->forum_topic_id);
+		if ((!$this->getUser()->isInRole('admin'))and($post->member_id != $this->getUser()->getId())) {
+			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
+		}
+
+		$post->update(['locked' => $lock]);
+		$this->redirect('topic',$post->forum_topic_id);
 	}
 
+	/**
+	 * @return JavaScriptLoader
+	 * @allow(member)
+	 */
 	protected function createComponentTexylaJs(){
 	    $files = new FileCollection(WWW_DIR . '/texyla/js');
 	    $files->addFiles(['texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js']);
@@ -359,6 +383,10 @@ class ForumPresenter extends LayerPresenter{
 	    return new JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
 
+	/**
+	 * @return Form
+	 * @allow(member)
+	 */
 	protected function createComponentAddTopicForm(){
 		$form = new Form;
 		
@@ -377,6 +405,10 @@ class ForumPresenter extends LayerPresenter{
 		return $form;
 	}
 
+	/**
+	 * @param Form $form
+	 * @allow(member)
+	 */
 	public function processAddTopicForm(Form $form){
 		$values = $form->getValues();
 		$datum = new DateTime();
@@ -402,7 +434,11 @@ class ForumPresenter extends LayerPresenter{
         	$this->redirect('this'); 
 		}         
 	}
-	
+
+	/**
+	 * @return Form
+	 * @allow(member)
+	 */
 	protected function createComponentAddPostForm(){
 		$form = new Form;
 		
@@ -421,6 +457,10 @@ class ForumPresenter extends LayerPresenter{
 		return $form;
 	}
 
+	/**
+	 * @param $form Form
+	 * @allow(member)
+	 */
 	public function processAddPostForm(Form $form){
 		$values = $form->values;
 		$datum = new DateTime();

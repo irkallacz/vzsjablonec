@@ -68,7 +68,7 @@ class ReportPresenter extends LayerPresenter{
 			$akce = $this->akceService->getReportById($id);
 
 			if (!$akce) {
-      			$this->flashMessage('Záznam nenalezen','error');
+      			throw new BadRequestException('Záznam nenalezen');
           		$this->redirect('Akce:view',$id);
         	}
 			

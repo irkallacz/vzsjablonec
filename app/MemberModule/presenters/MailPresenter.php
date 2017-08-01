@@ -4,9 +4,15 @@ namespace App\MemberModule\Presenters;
 
 use App\Model\AkceService;
 use App\Model\MemberService;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
 
+/**
+ * Class MailPresenter
+ * @package App\MemberModule\Presenters
+ * @allow(member)
+ */
 class MailPresenter extends LayerPresenter{
 
 	/** @var MemberService @inject */
@@ -18,13 +24,10 @@ class MailPresenter extends LayerPresenter{
 	/** @var IMailer @inject*/
 	public $mailer;
 
+	/** @allow(board) */
 	public function renderDefault(){
-		if (!$this->getUser()->isInRole($this->name)) {
-            $this->flashMessage('Nemáte práva na tuto akci','error');
-            $this->redirect('News:');
-        }
 
-        $userMails = $this->memberService->getMembers(TRUE)->fetchPairs('id','mail');
+        $userMails = $this->memberService->getMembers()->fetchPairs('id','mail');
         $this->template->userMails = $userMails;
 
 		$form = $this['mailForm'];
@@ -33,10 +36,17 @@ class MailPresenter extends LayerPresenter{
     	}
   	}
 
-	public function renderAkce($id,$organizator=FALSE){
+	/**
+	 * @param int $id
+	 * @param bool $organizator
+	 * @allow(member)
+	 */
+	public function renderAkce($id, $organizator = FALSE){
 		$form = $this['mailForm'];
 
-		$users = $this->akceService->getMembersByAkceId($id,$organizator);
+		$users = $this->memberService->getMembersByAkceId($id, $organizator);
+		$users->where('NOT role', 0);
+
         $form['to']->setDefaultValue(join(',',$users->fetchPairs('id','mail')));
 		$form['users']->setDefaultValue($users->fetchPairs('id','id'));
 
@@ -47,6 +57,10 @@ class MailPresenter extends LayerPresenter{
 
   	}
 
+	/**
+	 * @return Form
+	 * @allow(member)
+	 */
 	protected function createComponentMailForm(){
 		$form = new Form;
 		
@@ -86,7 +100,11 @@ class MailPresenter extends LayerPresenter{
     	return $form;
 	}
 
-	public function mailFormSubmitted(Form $form){	
+	/**
+	 * @param Form $form
+	 * @allow(member)
+	 */
+	public function mailFormSubmitted(Form $form){
 		$akce_id = (int) $this->getParameter('id');
 
 		$values = $form->getValues();

@@ -3,7 +3,8 @@
 namespace App\Model;
 
 use Nette\Object;
-use	Nette\Security;
+use Nette\Security;
+use Tracy\Debugger;
 
 
 /**
@@ -18,7 +19,7 @@ class Authenticator extends Object implements Security\IAuthenticator {
 	 * Authenticator constructor.
 	 * @param MemberService $memberService
 	 */
-	public function __construct(MemberService $memberService){
+	public function __construct(MemberService $memberService) {
 		$this->memberService = $memberService;
 	}
 
@@ -28,7 +29,7 @@ class Authenticator extends Object implements Security\IAuthenticator {
 	 * @return Security\Identity
 	 * @throws Security\AuthenticationException
 	 */
-	public function authenticate(array $credentials){
+	public function authenticate(array $credentials) {
 		list($email, $password) = $credentials;
 
 		$user = $this->memberService->getMemberByLogin($email);
@@ -41,9 +42,12 @@ class Authenticator extends Object implements Security\IAuthenticator {
 			throw new Security\AuthenticationException("Nesprávné heslo.", self::INVALID_CREDENTIAL);
 		}
 
-		$rights = $this->memberService->getRightsByMemberId($user->id);
+		$roleList = $this->memberService->getRoleList();
+		$rights = array_slice($roleList, 0, $user->role + 1);
+		$rights = array_merge($rights, array_values($this->memberService->getRightsByUserId($user->id)));
+
 		$data = $user->toArray();
 
-		return new Security\Identity($user->id, array_values($rights), $data);
+		return new Security\Identity($user->id, $rights, $data);
 	}
 }

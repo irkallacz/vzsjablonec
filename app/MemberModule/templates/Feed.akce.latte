@@ -10,14 +10,12 @@
 	<link>{link //Akce:view $item->id}</link>
 	<guid isPermaLink="false">{$item->id}@{link Akce:default}</guid>
 	<description>
-	{block|escape}
-	<p>
+	&lt;p&gt;
 	{$item->date_start|date:'%A %d.%m.%Y %H:%M'} -
 	{if $item->date_start->diff($item->date_end)->days}{$item->date_end|date:'%A %d.%m.%Y %H:%M'} {else}{$item->date_end|date:'%H:%M'}{/if}
-	</p>
-	<p>{$item->akce_for->text}</p>
-	<hr />
-	{/block}
+		&lt;/p&gt;
+		&lt;p&gt;{$item->akce_for->text}&lt;/p&gt;
+		&lt;hr /&gt;
 	{$item->description|texy}
 	</description>
 	<pubDate>{$item->date_add|date:DATE_RSS}</pubDate>

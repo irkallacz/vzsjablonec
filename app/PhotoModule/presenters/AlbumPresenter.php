@@ -4,6 +4,8 @@ namespace App\PhotoModule\Presenters;
 
 use App\Model\GalleryService;
 use App\Model\MemberService;
+use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
 use Nette\Utils\Image;
@@ -27,19 +29,25 @@ class AlbumPresenter extends BasePresenter {
 	/** @var \Echo511\Plupload\Control\IPluploadControlFactory @inject */
 	public $controlFactory;
 
+	/**
+	 * @param $slug
+	 * @return \Nette\Database\Table\IRow
+	 */
 	public function getAlbumById($slug) {
-		$id = $this->getIdFromSlug($slug);
+		$id = parent::getIdFromSlug($slug);
 
 		$album = $this->gallery->getAlbumById($id);
 
 		if ((!$album) or ($slug != $album->id . '-' . $album->slug)) {
-			$this->flashMessage('Zadané album neexistuje', 'error');
-			$this->redirect('default');
+			throw new BadRequestException('Zadané album neexistuje');
 		}
 
 		return $album;
 	}
 
+	/**
+	 *
+	 */
 	public function renderDefault() {
 		$albums = $this->gallery->getAlbums()->order('date DESC');
 		$pocet = $this->gallery->getAlbumsPhotosCount();
@@ -53,9 +61,10 @@ class AlbumPresenter extends BasePresenter {
 		$this->template->pocet = $pocet->fetchPairs('id', 'pocet');
 	}
 
+	/**
+	 * @allow(user)
+	 */
 	public function renderUsers() {
-		$this->checkUserLoggin();
-
 		$albums = $this->gallery->getAlbums()->order('member_id, date DESC');
 
 		$membersAlbums = $albums->fetchPairs('member_id', 'id');
@@ -74,17 +83,21 @@ class AlbumPresenter extends BasePresenter {
 		$this->template->membersAlbums = $membersAlbums;
 	}
 
+	/**
+	 * @param $slug
+	 * @param null $pubkey
+	 */
 	public function renderView($slug, $pubkey = null) {
 		$album = $this->getAlbumById($slug);
 		$this->template->album = $album;
 
 		$pubkeyCheck = $pubkey === $album->pubkey;
 
-		if ((!$album->visible) and (!(($this->getUser()->isLoggedIn()) or ($pubkeyCheck)))) $this->checkUserLoggin();
+		if ((!$album->visible) and (!(($this->getUser()->isLoggedIn()) or ($pubkeyCheck)))) $this->redirect('Sign:in');
 
 		$photos = $this->gallery->getPhotosByAlbumId($album->id)->order('order, date_add');
 
-		$member = $this->members->getMemberById($album->member_id);
+		$member = $this->members->getTable()->get($album->member_id);
 
 		if (!(($this->getUser()->isLoggedIn()) or ($pubkeyCheck))) $photos->where('visible', TRUE);
 
@@ -94,20 +107,22 @@ class AlbumPresenter extends BasePresenter {
 
 	}
 
+	/**
+	 * @param $slug
+	 * @param string $order
+	 * @allow(member)
+	 */
 	public function renderEdit($slug, $order = 'order') {
-		$this->checkUserLoggin();
-
 		$album = $this->getAlbumById($slug);
 		$this->template->album = $album;
 
-		if (!(($album->member_id == $this->getUser()->getId()) or ($this->getUser()->isInRole($this->name)))) {
-			$this->flashMessage('Nemáte právo toho album upravovat', 'error');
-			$this->redirect('view', $slug);
+		if (!(($album->member_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
+			throw new ForbiddenRequestException('Nemáte právo toho album upravovat');
 		}
 
 		$this->template->order = $order;
 
-		$order = ($order == 'order') ? $order . ', date_add' : $order;
+		if ($order == 'order') $order = $order . ', date_add';
 
 		$photos = $this->gallery->getPhotosByAlbumId($album->id)
 			->order($order);
@@ -117,35 +132,28 @@ class AlbumPresenter extends BasePresenter {
 
 		$form = $this['superForm'];
 		if (!$form->isSubmitted()) {
-//			foreach ($photos as $photo) {
-//				$form['photos'][$photo->id]['text']->setDefaultValue($photo->text);
-//				$form['photos'][$photo->id]['text']->setAttribute('data-date', $photo->date_taken ? $photo->date_taken->format('d.m.Y H:i:s') : NULL);
-//				$form['photos'][$photo->id]['text']->setAttribute('data-title', $photo->text);
-//			}
-
 			$form->setDefaults($album);
 			$form['date']->setValue($album->date->format('Y-m-d'));
 		}
 	}
 
+	/**
+	 * @param $slug
+	 * @allow(member)
+	 */
 	public function renderAdd($slug) {
-		$this->checkUserLoggin();
-
 		$album = $this->getAlbumById($slug);
 		$this->template->album = $album;
 		$this->template->slug = $slug;
 	}
 
+	/**
+	 * @param $slug
+	 * @param bool $visible
+	 * @allow(admin)
+	 */
 	public function actionSetAlbumVisibility($slug, $visible = FALSE) {
-		$this->checkUserLoggin();
-
-		$id = $this->getIdFromSlug($slug);
-
-		if (!$this->getUser()->isInRole($this->name)) {
-			$this->flashMessage('Nemáte právo měnit viditelnost alba', 'error');
-			$this->redirect('view', $slug);
-		}
-
+		$id = parent::getIdFromSlug($slug);
 		$this->gallery->getAlbumById($id)->update(['visible' => $visible]);
 
 		$text = $visible ? null : 'ne';
@@ -154,14 +162,15 @@ class AlbumPresenter extends BasePresenter {
 		$this->redirect('Album:view', $slug);
 	}
 
+	/**
+	 * @param $id
+	 * @allow(member)
+	 */
 	public function actionDeleteAlbum($id) {
-		$this->checkUserLoggin();
-
 		$album = $this->gallery->getAlbumById($id);
 
-		if (!(($album->member_id == $this->getUser()->getId()) or ($this->getUser()->isInRole($this->name)))) {
-			$this->flashMessage('Nemáte právo toto album smazat', 'error');
-			$this->redirect('view', $id . '-' . $album->slug);
+		if (!(($album->member_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
+			throw new ForbiddenRequestException('Nemáte právo toto album smazat');
 		}
 
 		$this->gallery->getPhotosByAlbumId($album->id)->delete();
@@ -171,6 +180,10 @@ class AlbumPresenter extends BasePresenter {
 		$this->redirect('Myself:default');
 	}
 
+	/**
+	 * @return Plupload\Control\PluploadControl
+	 * @allow(member)
+	 */
 	public function createComponentPlupload() {
 		$plupload = $this->controlFactory->create();
 
@@ -179,7 +192,7 @@ class AlbumPresenter extends BasePresenter {
 		$plupload->allowedExtensions = 'jpg';
 
 		$slug = (string)$this->getParameter('slug');
-		$id = $this->getIdFromSlug($slug);
+		$id = parent::getIdFromSlug($slug);
 
 		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($id) {
 			$upload = $uploadQueue->getLastUpload();
@@ -215,9 +228,12 @@ class AlbumPresenter extends BasePresenter {
 		return $plupload;
 	}
 
+	/**
+	 * @param FileUpload $file
+	 */
 	public function pluploadSubmbited(FileUpload $file) {
 		$slug = (string)$this->getParameter('slug');
-		$id = $this->getIdFromSlug($slug);
+		$id = parent::getIdFromSlug($slug);
 
 		$datum = new DateTime();
 
@@ -255,6 +271,10 @@ class AlbumPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 * @return Form
+	 * @allow(member)
+	 */
 	protected function createComponentSuperForm() {
 		$form = new Form;
 
@@ -307,9 +327,12 @@ class AlbumPresenter extends BasePresenter {
 		return $form;
 	}
 
+	/**
+	 * @allow(member)
+	 */
 	public function superFormSave() {
 		$slug = (string)$this->params['slug'];
-		$id = (int)$this->getIdFromSlug($slug);
+		$id = parent::getIdFromSlug($slug);
 
 		$values = $this['superForm']->getValues();
 		$values->date_update = new Datetime();
@@ -340,6 +363,10 @@ class AlbumPresenter extends BasePresenter {
 		$this->redirect('view', $id . '-' . $values->slug);
 	}
 
+	/**
+	 * @return array
+	 * @allow(member)
+	 */
 	private function getSuperFromSelected() {
 		$photos = $values = $this['superForm']->getValues()->photos;
 
@@ -363,6 +390,9 @@ class AlbumPresenter extends BasePresenter {
 		return $selected;
 	}
 
+	/**
+	 * @allow(member)
+	 */
 	public function superFormDelete() {
 		$selected = $this->getSuperFromSelected();
 
@@ -373,6 +403,11 @@ class AlbumPresenter extends BasePresenter {
 		$this->redirect('view', $slug);
 	}
 
+	/**
+	 * @param $angle
+	 * @return array
+	 * @allow(member)
+	 */
 	private function superFormImagesTurn($angle) {
 		$selected = $this->getSuperFromSelected();
 
@@ -399,6 +434,9 @@ class AlbumPresenter extends BasePresenter {
 		return $selected;
 	}
 
+	/**
+	 * @allow(member)
+	 */
 	public function superFormTurnLeft() {
 		$selected = $this->superFormImagesTurn(90);
 
@@ -407,6 +445,9 @@ class AlbumPresenter extends BasePresenter {
 		$this->redirect('edit', $slug);
 	}
 
+	/**
+	 * @allow(member)
+	 */
 	public function superFormTurnRight() {
 		$selected = $this->superFormImagesTurn(-90);
 
@@ -415,6 +456,9 @@ class AlbumPresenter extends BasePresenter {
 		$this->redirect('edit', $slug);
 	}
 
+	/**
+	 * @allow(member)
+	 */
 	public function superFormVisible() {
 		$selected = $this->getSuperFromSelected();
 

@@ -18,7 +18,7 @@ table .first td { padding-top: 0.5ex; }
 
 {block #content}
 
-<ul class="buttonMenu"><li><a class="buttonLike" n:href="add"><span class="icon-plus"></span> nová akce</a></li></ul>
+<ul n:if="$user->isInRole('member')" class="buttonMenu"><li><a class="buttonLike" n:href="add"><span class="icon-plus"></span> nová akce</a></li></ul>
 
 <p>
 	<span class="buttonLike gray" n:tag-if="!$prev"><a n:tag-if="$prev" class="buttonLike" n:href="default, $prev"><span class="char">«</span> Předchozí</a></span>
@@ -34,7 +34,7 @@ table .first td { padding-top: 0.5ex; }
 
 {foreach $akceList as $akce}
 
-{if $akce->confirm or in_array($akce->id,$orgList) or $user->isInRole('Confirm')}
+{if $akce->confirm or in_array($akce->id,$orgList) or $user->isInRole('confirm')}
 
 <a n:href="Akce:view, $akce->id" n:class="borderLike,hoverLike, in_array($akce->id,$orgList)||in_array($akce->id,$memberList) ? logged, 
 $akce->date_add > $user->getIdentity()->date_last ? 'new',
@@ -94,7 +94,7 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 {block}        
 {foreach $akce->related('akce_member','akce_id')->where('organizator',TRUE) as $org}
 
-{var $organizator = $org->ref('member','member_id')}
+{var $organizator = $org->ref('user','member_id')}
 {if $organizator}{$organizator->surname} {$organizator->name}{sep}, {/sep}{/if}
 {/foreach}{/block}</td><td></td></tr>
 </table>

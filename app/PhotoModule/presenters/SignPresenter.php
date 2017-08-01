@@ -8,22 +8,28 @@ use Nette\Utils\DateTime;
 use Nette\Security;
 
 
-class SignPresenter extends BasePresenter{
+class SignPresenter extends BasePresenter {
 	/** @persistent */
 	public $backlink = '';
 
 	/**
 	 * @var GalleryService @inject
-     */
+	 */
 	public $galleryService;
 
-	public function actionOut(){
+	/**
+	 *
+	 */
+	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste odhlášen');
 		$this->redirect('Album:default');
 	}
 
-	public function renderIn(){
+	/**
+	 *
+	 */
+	public function renderIn() {
 		$this->template->backlink = $this->backlink;
 	}
 
@@ -31,7 +37,7 @@ class SignPresenter extends BasePresenter{
 	 * Sign in form component factory.
 	 * @return Form
 	 */
-	protected function createComponentSignInForm(){
+	protected function createComponentSignInForm() {
 		$form = new Form;
 		$form->addText('mail', 'Email:', 30)
 			->setRequired('Vyplňte váš email')
@@ -48,7 +54,10 @@ class SignPresenter extends BasePresenter{
 		return $form;
 	}
 
-	public function signInFormSubmitted(Form $form){
+	/**
+	 * @param Form $form
+	 */
+	public function signInFormSubmitted(Form $form) {
 		try {
 			$values = $form->getValues();
 
@@ -61,11 +70,11 @@ class SignPresenter extends BasePresenter{
 			$this->galleryService->addMemberLogin($user_id, new DateTime());
 
 			$this->restoreRequest($this->backlink);
-			$this->redirect('Myself:');
+			$this->getUser()->isInRole('member') ? $this->redirect('Myself:') : $this->redirect('News:');
 
 		} catch (Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
 	}
-	
+
 }

@@ -41,19 +41,19 @@ $(function () {
 	{control searchForm}
 </div>
 
-<h2><span clas="no-wrap"><span class="icon-lock" title="Toto téma bylo uzavřeno" n:if="$topic->locked"></span> {$topic->title|firstUpper}</span></h2>
+<h2><span class="no-wrap"><span class="icon-lock" title="Toto téma bylo uzavřeno" n:if="$topic->locked"></span> {$topic->title|firstUpper}</span></h2>
 
 {control postsList}
 
 <div class="right">{control vp}</div>
 
 <p class="right">
-	<a n:href="Feed:forum, tid => $topic->id" class="buttonLike"><span class="icon-rss"></span> RSS tohoto tématu</a>
+	<a n:href="Feed:forum, topic => $topic->id" class="buttonLike"><span class="icon-rss"></span> RSS tohoto tématu</a>
 </p>
 
-{if !$topic->locked}
-<h2>Rychlá odpověď</h2>
-{control addPostForm}
+{if (!$topic->locked) and ($user->isInRole('member'))}
+	<h2>Rychlá odpověď</h2>
+	{control addPostForm}
 {/if}
 
 {/block}

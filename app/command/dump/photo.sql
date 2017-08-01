@@ -1,4 +1,4 @@
--- 2017-07-27T19:39:12+02:00 - mysql:host=localhost;dbname=photo
+-- 2017-08-01T13:33:15+02:00 - mysql:host=localhost;dbname=photo
 
 -- Table structure for table `album`
 
@@ -52,4 +52,4 @@ SET NEW.pubkey = MD5(UUID())
 //
 DELIMITER ;
 
--- Completed on: 2017-07-27T19:39:12+02:00
+-- Completed on: 2017-08-01T13:33:15+02:00

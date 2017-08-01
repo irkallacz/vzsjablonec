@@ -43,13 +43,16 @@ $(function () {
 <div class="right">{control vp}</div>
 
 <p class="float-right">
-	<a n:href="Feed:forum, fid => $forum->id" class="buttonLike"><span class="icon-rss"></span> RSS této kategorie</a>
+	<a n:href="Feed:forum, category => $forum->id" class="buttonLike"><span class="icon-rss"></span> RSS této kategorie</a>
 </p>
 
 <p>
 	<a n:href="search,null,$forum->id" class="buttonLike"><span class="icon-search"></span> Hledat ve fóru</a>
 </p>
 
-<h2>Nové téma</h2>
-{control addTopicForm}
+{if $user->isInRole('member')}
+	<h2>Nové téma</h2>
+	{control addTopicForm}
+{/if}
+
 {/block}

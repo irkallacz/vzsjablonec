@@ -8,95 +8,169 @@
 
 namespace App\MemberModule\Components;
 
+use App\Model\MemberService;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Control;
 use Nette\Database\Table\ActiveRow;
 use App\Model\AkceService;
 
-class MembersListControl extends Control{
-    /** @var AkceService */
-    private $model;
-     
-    /** @var ActiveRow */
-    private $akce;
-    private $list;
-    private $org;
-    
-    public function __construct(AkceService $model, $akce, $org = false){
-        parent::__construct();
-        $this->model = $model;
-        $this->akce = $akce;
-        $this->org = $org;
-    }
+class MembersListControl extends Control {
+	/** @var AkceService */
+	private $akceService;
 
-    public function render(){
-        $this->template->setFile(__DIR__ . '/MembersListControl.latte');
-        $this->list = $this->getList();
+	/** @var MemberService */
+	private $memberService;
 
-        $this->template->members = $this->list;
+	/** @var ActiveRow */
+	private $akce;
 
-        if (!$this->list) $this->list = [0];
-        
-        if ($this->org) $orgList = $this->list; else 
-            $orgList = $this->model->getMembersByAkceId($this->akce->id,TRUE)->fetchPairs('id','id');
-        
-        $this->template->isLogged = array_key_exists($this->presenter->user->getId(),$this->list);
-        $this->template->akce = $this->akce;
-        $this->template->isOrg = $this->org;
+	/** @var $list */
+	private $list;
 
-        $this->template->isAllow = $this->presenter->user->isInRole(get_class($this)) || in_array($this->presenter->user->id,array_keys($orgList));
+	/** @var bool $isOrgList */
+	private $isOrgList;
 
-        $this->template->isAllowLogin = $this->org ? $this->akce->login_org : $this->akce->login_mem;
-        if ($this->akce->date_deatline < date_create()) $this->template->isAllowLogin = false;
+	/**
+	 * MembersListControl constructor.
+	 * @param AkceService $akceService
+	 * @param MemberService $memberService
+	 * @param ActiveRow $akce
+	 * @param $isOrgList
+	 */
+	public function __construct(AkceService $akceService, MemberService $memberService, ActiveRow $akce, $isOrgList = FALSE) {
+		parent::__construct();
+		$this->akceService = $akceService;
+		$this->memberService = $memberService;
+		$this->akce = $akce;
+		$this->isOrgList = $isOrgList;
+	}
 
-        $this->template->render();
-    }
-    
-    public function getList(){
-        return $this->model->getMemberListForAkceComponent($this->akce->id,$this->org);
-    }
-    
-    public function handleUnlogSelf(){
-        $this->model->deleteMemberFromAction($this->presenter->user->getId(), $this->akce->id,$this->org);
-        $this->flashMessage('Byl jste odhlášen z akce');
-        $this->redrawControl();
-    }
+	/**
+	 *
+	 */
+	public function render() {
+		$userId = $this->getPresenter()->getUser()->getId();
+		$this->template->setFile(__DIR__ . '/MembersListControl.latte');
 
-    public function handleLogSelf(){
-        $this->model->addMemberToAction($this->presenter->user->getId(), $this->akce->id,$this->org);
-        $this->flashMessage('Byl jste přihlášen na akci');
-        $this->redrawControl();
-    }
-    
-    public function handleUnlog($member_id){
-        $this->model->deleteMemberFromAction($member_id, $this->akce->id,$this->org);
-        $this->flashMessage('Osoba byla odebrána z akce');
-        $this->redrawControl();
-    }
+		$members = $this->memberService->getMembersByAkceId($this->akce->id, $this->isOrgList)->order(':akce_member.date_add');
+		$this->template->members = clone $members;
 
-    public function createComponentLogginForm(){
+		$this->list = $members->select('id,CONCAT(surname," ",name)AS jmeno')
+			->fetchPairs('id', 'jmeno');
+
+		if (!$this->list) $this->list = [0];
+
+		if ($this->isOrgList) $orgList = $this->list; else
+			$orgList = $this->memberService->getMembersByAkceId($this->akce->id, TRUE)->fetchPairs('id', 'id');
+
+		$this->template->isLogged = array_key_exists($userId, $this->list);
+		$this->template->akce = $this->akce;
+		$this->template->org = $this->isOrgList;
+
+		$this->template->userIsOrg = in_array($userId, array_keys($orgList));
+
+		$this->template->isAllowLogin = $this->isOrgList ? $this->akce->login_org : $this->akce->login_mem;
+		if ($this->akce->date_deatline < date_create()) $this->template->isAllowLogin = false;
+
+		$this->template->render();
+	}
+
+	/**
+	 *
+	 */
+	public function handleUnlogSelf() {
+		$this->akceService->deleteMemberFromAction($this->getPresenter()->getUser()->getId(), $this->akce->id, $this->isOrgList);
+		$this->flashMessage('Byl jste odhlášen z akce');
+		$this->redrawControl();
+	}
+
+	/**
+	 *
+	 */
+	public function handleLogSelf() {
+		$this->akceService->addMemberToAction($this->getPresenter()->getUser()->getId(), $this->akce->id, $this->isOrgList);
+		$this->flashMessage('Byl jste přihlášen na akci');
+		$this->redrawControl();
+	}
+
+	/**
+	 * @return Form
+	 */
+	public function createComponentLogginForm() {
 		$form = new Form;
 
-        $form->getElementPrototype()->class = 'ajax';
+		$form->getElementPrototype()->class = 'ajax';
 
-        if (!$this->list) $this->list = $this->getList();
-        if (!$this->list) $this->list = [0];
+		if (!$this->list) $this->list = $this->memberService->getMemberListForAkceComponent($this->akce->id, $this->isOrgList);
+		if (!$this->list) $this->list = [0];
 
-        $list = $this->model->getMembers()->where('NOT id',array_keys($this->list));
-        $form->addSelect('member', null, $list->fetchPairs('id','jmeno'));
-        $form->addSubmit('send','+');//->setAttribute('class','myfont');
-        $form->onSuccess[] = [$this, 'processLogginForm'];
+		$list = ($this->getPresenter()->getUser()->isInRole('admin')) ? $this->memberService->getUsers() : $this->memberService->getMembers();
+		$list->select('id,CONCAT(surname," ",name)AS jmeno')->order('surname, name');
+		$list->where('NOT id', array_keys($this->list));
+		$form->addSelect('member', null, $list->fetchPairs('id', 'jmeno'));
+		$form->addSubmit('send', '+');//->setAttribute('class','myfont');
+		$form->onSuccess[] = [$this, 'processLogginForm'];
 
-        return $form;            
-    }
-    
-    public function processLogginForm(Form $form){
-        $values = $form->getValues();
-        $this->model->addMemberToAction($values['member'], $this->akce->id,$this->org);
-        $this->flashMessage('Na akci byla přidána další osoba');
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['controls']['container'] = NULL;
+		$renderer->wrappers['pair']['container'] = NULL;
+		$renderer->wrappers['label']['container'] = NULL;
+		$renderer->wrappers['control']['container'] = NULL;
 
-        $this->redrawControl();
+		return $form;
+	}
 
-    }
+	/**
+	 * @param Form $form
+	 */
+	public function processLogginForm(Form $form) {
+		$values = $form->getValues();
+		$this->akceService->addMemberToAction($values->member, $this->akce->id, $this->isOrgList);
+		$this->flashMessage('Na akci byla přidána další osoba');
+
+		$this->redrawControl();
+
+	}
+
+	/**
+	 * @param $member_id
+	 */
+	public function handleUnlog($member_id) {
+		$this->akceService->deleteMemberFromAction($member_id, $this->akce->id, $this->isOrgList);
+		$this->flashMessage('Osoba byla odebrána z akce');
+		$this->redrawControl();
+	}
+
+	/**
+	 * @return Form
+	 */
+	public function createComponentUnLogginForm() {
+		$form = new Form;
+
+		$form->getElementPrototype()->class = 'ajax';
+
+		if (!$this->list) $this->list = $this->memberService->getMemberListForAkceComponent($this->akce->id, $this->isOrgList);
+		$form->addSelect('member', null, $this->list);
+		$form->addSubmit('send', '-');//->setAttribute('class','myfont');
+		$form->onSuccess[] = [$this, 'processUnLogginForm'];
+
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['controls']['container'] = NULL;
+		$renderer->wrappers['pair']['container'] = NULL;
+		$renderer->wrappers['label']['container'] = NULL;
+		$renderer->wrappers['control']['container'] = NULL;
+
+		return $form;
+	}
+
+	/**
+	 * @param Form $form
+	 */
+	public function processUnLogginForm(Form $form) {
+		$values = $form->getValues();
+		$this->akceService->deleteMemberFromAction($values->member, $this->akce->id, $this->isOrgList);
+		$this->flashMessage('Osoba byla odebrána z akce');
+		$this->redrawControl();
+	}
 
 }

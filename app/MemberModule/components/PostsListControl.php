@@ -13,16 +13,16 @@ use Nette\Application\UI\Control;
 use Nette\Database\Table\Selection;
 use App\Template\LatteFilters;
 
-class PostsListControl extends Control{
+class PostsListControl extends Control {
 
-    /** @var Selection */
-    private $posts;
+	/** @var Selection */
+	private $posts;
 
-    /** @var boolean */
-    private $isLocked;
+	/** @var boolean */
+	private $isLocked;
 
-    /**@var string */
-    private $search;
+	/**@var string */
+	private $search;
 
 	/**
 	 * PostsListControl constructor.
@@ -30,7 +30,7 @@ class PostsListControl extends Control{
 	 * @param bool $isLocked
 	 * @param string $search
 	 */
-	public function __construct(Selection $posts, $isLocked, $search = NULL){
+	public function __construct(Selection $posts, $isLocked, $search = NULL) {
 		parent::__construct();
 		$this->posts = $posts;
 		$this->isLocked = $isLocked;
@@ -38,15 +38,15 @@ class PostsListControl extends Control{
 	}
 
 
-	public function render(){
-        LatteFilters::$root = $this->template->basePath;
+	public function render() {
+		LatteFilters::$root = $this->template->basePath;
 
-        $this->template->setFile(__DIR__ . '/PostsListControl.latte');
-        $this->template->posts = $this->posts;
+		$this->template->setFile(__DIR__ . '/PostsListControl.latte');
+		$this->template->posts = $this->posts;
 		$this->template->isLocked = $this->isLocked;
 		$this->template->search = $this->search;
 
 		$this->template->render();
-    }
+	}
 
 }

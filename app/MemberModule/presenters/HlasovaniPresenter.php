@@ -4,6 +4,8 @@ namespace App\MemberModule\Presenters;
 
 use App\Model\HlasovaniService;
 use Joseki\Webloader\JsMinFilter;
+use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
@@ -30,13 +32,11 @@ class HlasovaniPresenter extends LayerPresenter{
 		if ($anketa->date_deatline < date_create()) $locked = 1;
 
 		if (!$anketa) {
-      		$this->flashMessage('Hlasování nenalezeno!','error');
-      		$this->redirect('default');                                    
+      		throw new BadRequestException('Hlasování nenalezeno!');
     	}
 
-		if ((!$locked)and(!$this->user->isInRole('Board'))) {
-      		$this->flashMessage('Nemáte právo prohlížet toto hlasování!','error');
-      		$this->redirect('default');                                    
+		if ((!$locked)and(!$this->getUser()->isInRole('board'))) {
+			throw new ForbiddenRequestException('Nemáte právo prohlížet toto hlasování!');
     	}
 
 		$this->template->anketa = $anketa;
@@ -74,18 +74,16 @@ class HlasovaniPresenter extends LayerPresenter{
 	        $anketa = $this->hlasovani->getAnketaById($id);
 	        
 	        if (!$anketa) {
-      			$this->flashMessage('Hlasování nenalezeno!','error');
+      			throw new BadRequestException('Hlasování nenalezeno!');
       			$this->redirect('default');                                    
     		}
 
-			if (!$this->user->isInRole('Board')) {
-				$this->flashMessage('Nemáte právo editovat toto hlasování!','error');
-				$this->redirect('default');                                    
+			if (!$this->getUser()->isInRole('board')) {
+				throw new ForbiddenRequestException('Nemáte právo editovat toto hlasování!');
 			}
 
-		    if ((!$this->getUser()->isInRole($this->name))and($anketa->member_id!=$this->getUser()->getId())) {
-            	$this->flashMessage('Nemáte právo editovat toto hlasování','error');
-            	$this->redirect('default');
+		    if ((!$this->getUser()->isInRole('admin'))and($anketa->member_id!=$this->getUser()->getId())) {
+				throw new ForbiddenRequestException('Nemáte právo editovat toto hlasování!');
         	}
 
 		    $odpovedi = $this->hlasovani->getOdpovediByAnketaId($id);
@@ -105,15 +103,13 @@ class HlasovaniPresenter extends LayerPresenter{
 		$anketa = $this->hlasovani->getAnketaById($id);
 
 		if ((!$anketa)or($anketa->locked)or(!$this->user->isInRole('Board'))) {
-            $this->flashMessage('V tomto hlasovaní nemůžete hlasovat','error');
-            $this->redirect('default');
+            throw new BadRequestException('V tomto hlasovaní nemůžete hlasovat');
         }
 
 		$odpovedi = $anketa->related('hlasovani_odpoved')->fetchPairs('id','id');
 		
 		if (!in_array($odpoved, $odpovedi)) {
-            $this->flashMessage('Pro tuto odpověď nemůžete hlasovat','error');
-            $this->redirect('view',$id);
+            throw new BadRequestException('Pro tuto odpověď nemůžete hlasovat');
         }
 
 		$values = [
@@ -130,14 +126,12 @@ class HlasovaniPresenter extends LayerPresenter{
 	public function actionDelete($id){
 		$anketa = $this->hlasovani->getAnketaById($id);
 		
-		if (!$this->user->isInRole('Board')) {
-      		$this->flashMessage('Nemáte právo smazat toto hlasování!','error');
-      		$this->redirect('default');                                    
+		if (!$this->user->isInRole('board')) {
+			throw new ForbiddenRequestException('Nemáte právo smazat toto hlasování!');
     	}
 
-		if ((!$this->getUser()->isInRole($this->name))and($anketa->member_id!=$this->getUser()->getId())) {
-            $this->flashMessage('Nemáte práva na tuto akci','error');
-            $this->redirect('view',$id);
+		if ((!$this->getUser()->isInRole('admin'))and($anketa->member_id!=$this->getUser()->getId())) {
+			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
         }
 		
 		$this->hlasovani->deleteAnketaById($id);
@@ -148,14 +142,12 @@ class HlasovaniPresenter extends LayerPresenter{
 	public function actionLock($id,$lock){
 		$anketa = $this->hlasovani->getAnketaById($id);
 		
-		if (!$this->user->isInRole('Board')) {
-      		$this->flashMessage('Nemáte právo měnit toto hlasování!','error');
-      		$this->redirect('default');                                    
+		if (!$this->user->isInRole('board')) {
+			throw new ForbiddenRequestException('Nemáte právo měnit toto hlasování!');
     	}
 
-		if ((!$this->getUser()->isInRole($this->name))and($anketa->member_id!=$this->getUser()->getId())) {
-            $this->flashMessage('Nemáte práva na tuto akci','error');
-            $this->redirect('view',$id);
+		if ((!$this->getUser()->isInRole('admin'))and($anketa->member_id!=$this->getUser()->getId())) {
+			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
         }
 
 		$anketa->update(['locked' => $lock, 'date_update' => new Datetime]);

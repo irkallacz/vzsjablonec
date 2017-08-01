@@ -3,6 +3,8 @@
 namespace App\MemberModule\Presenters;
 
 use App\Model\MemberService;
+use Nette\Application\BadRequestException;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\Selection;
@@ -14,275 +16,290 @@ use Nette\Utils\DateTime;
 use Google_Service_People;
 use Tracy\Debugger;
 
-class MemberPresenter extends LayerPresenter{
+class MemberPresenter extends LayerPresenter {
 
 	/** @var MemberService @inject */
 	public $memberService;
 
-	/** @var IMailer @inject*/
+	/** @var IMailer @inject */
 	public $mailer;
 
-	/** @var Google_Service_People @inject*/
+	/** @var Google_Service_People @inject */
 	public $googleService;
 
-	/** @var Selection*/
-	public $members;
-
-	public function actionDefault($q = null){
+	public function actionDefault($q = null) {
+		$searchList = [];
 		if ($q) {
-			$members = $this->memberService->searchMembers($q);
+			$searchList['members'] = $this->memberService->searchUsers($q);
 			$this['memberSearchForm']['search']->setDefaultValue($q);
-		}else $members = $this->memberService->getMembers();
+		} else {
+			$searchList['members'] = $this->memberService->getUsers(FALSE);
+		}
 
-		$members->order('surname, name');
+		$searchList['members']->order('surname, name');
 
-		$this->members = $members;
-		$this->template->members = $members;
+		if ($this->getUser()->isInRole('board')) {
+			$searchList['users'] = clone $searchList['members'];
+			$searchList['users']->where('role', 0);
+
+			$searchList['deleted'] = clone $searchList['members'];
+			$searchList['deleted']->where('role IS NULL');
+		}
+
+		$searchList['members']->where('NOT role', 0);
+		$this->template->searchList = $searchList;
 	}
 
-	public function actionUpdateCsv(){
+	protected function createComponentMemberSearchForm() {
+		$form = new Form;
+		$form->getElementPrototype()->class('ajax');
+		$form->addText('search', null, 30)
+			->setType('search')
+			->setRequired('Vyplňte hledanou frázi')
+			->setHtmlId('member-search')
+			->getControlPrototype()
+			->title = 'Vyhledá v seznamu hledanou frázi';
+
+		$form->addSubmit('ok', '')
+			->setHtmlId('member-search-button')
+			->setAttribute('class', 'myfont');
+
+		$form->onSuccess[] = [$this, 'memberSearchFormSubmitted'];
+
+		return $form;
+	}
+
+	public function memberSearchFormSubmitted(Form $form) {
+		$values = $form->getValues();
+
+		$searchList = [];
+		$searchList['members'] = $this->memberService->searchUsers($values->search)->order('surname, name');
+
+		if ($this->getUser()->isInRole('members')) {
+			$searchList['users'] = clone $searchList['members'];
+			$searchList['users']->where('role', 0);
+
+			$searchList['deleted'] = clone $searchList['members'];
+			$searchList['deleted']->where('role IS NULL');
+		}
+
+		$searchList['members']->where('NOT role', 0);
+		$this->template->searchList = $searchList;
+
+		$this->redrawControl('searchList');
+	}
+
+	/** @allow(admin) */
+	public function actionUpdateCsv() {
 		if (($handle = fopen('members_update.csv', 'r')) !== FALSE) {
-			while (($data = fgetcsv($handle, 0, ",",'"')) !== FALSE) {
+			while (($data = fgetcsv($handle, 0, ",", '"')) !== FALSE) {
 				$array = [
-					'surname'	=> $data[1],
-					'name' 		=> $data[2],
-					'date_born'	=> date_create($data[3]),
-					'mesto' 	=> $data[4],
-					'ulice' 	=> $data[5],
-					'mail' 		=> $data[6],
-					'telefon' 	=> $data[7]
+					'surname' => $data[1],
+					'name' => $data[2],
+					'date_born' => date_create($data[3]),
+					'mesto' => $data[4],
+					'ulice' => $data[5],
+					'mail' => $data[6],
+					'telefon' => $data[7]
 				];
 
 				$member = $this->memberService->getMemberById($data[0]);
 
 				if ($member) {
 					$member->update($array);
-					$this->flashMessage('Záznam "'.$member->surname.' '.$member->name.'" aktualizován');
+					$this->flashMessage('Záznam "' . $member->surname . ' ' . $member->name . '" aktualizován');
 				}
-	    	}
+			}
 		}
 
 		$this->redirect('default');
-  	}
+	}
 
-	public function actionGoogle(){
+	/** @allow(admin) */
+	public function actionGoogle() {
 		$people = $this->googleService->people->get('people/me', ['personFields' => 'names,emailAddresses']);
 
 		Debugger::dump($people);
 	}
 
-  	public function renderView($id){
-		$member = $this->memberService->getMemberById($id);
+	public function renderView($id) {
+		$member = $this->memberService->getUsers(FALSE)->get($id);
 
 		if (!$member) {
-			$this->flashMessage('Záznam nenalezen','error');
-        	$this->redirect('default',$id);
-        }
-
-	    $this->registerTexy();
+			throw new BadRequestException('Uživatel nenalezen');
+		}
 
 		$this->template->narozeni = $member->date_born->diff(date_create());
-	    $this->template->member = $member;
-	    $this->template->fileExists = file_exists(WWW_DIR.'/img/portrets/'.$id.'.jpg');
-	    $this->template->title = $member->surname .' '. $member->name;
-  	}
- 
+		$this->template->member = $member;
+		$this->template->fileExists = file_exists(WWW_DIR . '/img/portrets/' . $id . '.jpg');
+		$this->template->title = $member->surname . ' ' . $member->name;
+	}
 
-	public function actionVcfArchive(){
+	public function actionVcfArchive() {
 		$zip = new \ZipArchive;
-		$zip->open(WWW_DIR.'/archive.zip', \ZIPARCHIVE::CREATE | \ZIPARCHIVE::OVERWRITE);
+		$zip->open(WWW_DIR . '/archive.zip', \ZIPARCHIVE::CREATE | \ZIPARCHIVE::OVERWRITE);
 
 		$template = $this->createTemplate();
-		$template->setFile(APP_DIR .'/MemberModule/templates/Member.vcf.latte');
+		$template->setFile(APP_DIR . '/MemberModule/templates/Member.vcf.latte');
 		$template->archive = TRUE;
 
 		foreach ($this->memberService->getMembers()->order('surname, name') as $member) {
 			$template->member = $member;
-			$s = (string) $template;
+			$s = (string)$template;
 			//$s = iconv('utf-8','cp1250',$s);
-			$zip->addFromString(Strings::toAscii($member->surname).' '.Strings::toAscii($member->name).'.vcf',$s);
+			$zip->addFromString(Strings::toAscii($member->surname) . ' ' . Strings::toAscii($member->name) . '.vcf', $s);
 		}
-		
+
 		$zip->close();
 
 		$response = new FileResponse(
-            WWW_DIR.'/archive.zip',
-            'member-archive.zip',
-            'application/zip'
-        );
+			WWW_DIR . '/archive.zip',
+			'member-archive.zip',
+			'application/zip'
+		);
 
-        $this->sendResponse($response);
+		$this->sendResponse($response);
 	}
-	
-	public function renderCsv(){
+
+	public function renderCsv() {
 		$this->template->members = $this->memberService->getMembers()->order('surname, name');
 
 		$httpResponse = $this->context->getByType('Nette\Http\Response');
-		$httpResponse->setHeader('Content-Disposition','attachment; filename="members.csv"');
+		$httpResponse->setHeader('Content-Disposition', 'attachment; filename="members.csv"');
 	}
-	
-	public function actionDelete($id){
-		if (!$this->getUser()->isInRole($this->name)) {
-            	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('view',$id);
-        }
 
+	/**
+	 * @param int $id
+	 * @allow(admin)
+	 */
+	public function actionActivate($id) {
 		$member = $this->memberService->getMemberById($id);
-		
+
 		if (!$member) {
-			$this->flashMessage('Záznam nenalezen','error');
-        	$this->redirect('default',$id);
-        }
+			throw new BadRequestException('Uživatel nenalezen');
+		}
 
-		$member->update(['active' => 0]);
+		$member->update(['role' => 1]);
 
-		$this->flashMessage('Člen byl úspěšně smazán');
+		$this->flashMessage('Uživatel byl úspěšně přidán mezi členy');
+		$this->redirect('view', $id);
+	}
+
+	/**
+	 * @param int $id
+	 * @allow(board)
+	 */
+	public function actionDelete($id) {
+		$member = $this->memberService->getMemberById($id);
+
+		if (!$member) {
+			throw new BadRequestException('Uživatel nenalezen');
+		}
+
+		$member->update(['role' => NULL]);
+
+		$this->flashMessage('Člen byl úspěšně přidán mezi neaktivní');
 		$this->redirect('default');
-  	}
+	}
 
-	public function renderVcf($id){
-    	$member = $this->memberService->getMemberById($id);	
-		
+	public function renderVcf($id) {
+		$member = $this->memberService->getMemberById($id);
+
 		if (!$member) {
-			$this->flashMessage('Záznam nenalezen','error');
-        	$this->redirect('default',$id);
-        }
+			throw new BadRequestException('Uživatel nenalezen');
+		}
 
-  		$this->template->member = $member;
+		$this->template->member = $member;
 
 		$httpResponse = $this->context->getByType('Nette\Http\Response');
-        $httpResponse->setContentType('text/x-vcard');
-		$httpResponse->setHeader('Content-Disposition','attachment; filename="'.$member->surname.' '.$member->name.'.vcf"');
+		$httpResponse->setContentType('text/x-vcard');
+		$httpResponse->setHeader('Content-Disposition', 'attachment; filename="' . $member->surname . ' ' . $member->name . '.vcf"');
 	}
 
-	public function renderEdit($id){
-    	$form = $this['memberForm'];
-    	$member = $this->memberService->getMemberById($id);
+	/**
+	 * @param int $id
+	 * @allow(user)
+	 */
+	public function renderEdit($id) {
+		$form = $this['memberForm'];
+		$member = $this->memberService->getUserById($id);
 
-    	if (!$member) {
-			$this->flashMessage('Záznam nenalezen','error');
-        	$this->redirect('default',$id);
-        }
-        
-    	if ((!$this->getUser()->isInRole($this->name))and($member->id!=$this->getUser()->getId())) {
-            	$this->flashMessage('Nemáte práva na tuto akci','error');
-            	$this->redirect('view',$id);
-        }	
+		if (!$member) {
+			throw new BadRequestException('Uživatel nenalezen');
+		}
 
- 		$form['name']->setAttribute('readonly');
-  		$form['surname']->setAttribute('readonly');
+		if ((!$this->getUser()->isInRole('admin')) and ($member->id != $this->getUser()->getId())) {
+			throw new ForbiddenRequestException('Nemáte právo editovat tohoto uživatele');
+		}
 
-  		if (!$this->getUser()->isInRole($this->getName())) unset($form['date_add']);
+		$form['name']->setAttribute('readonly');
+		$form['surname']->setAttribute('readonly');
 
-  		$form->setDefaults($member);
+		if (!$this->getUser()->isInRole('board')) unset($form['date_add']);
+		if (!$this->getUser()->isInRole('admin')) unset($form['role']);
 
-  		unset($this['memberForm']['sendMail']);
-  		$this->template->title = $member->surname .' '. $member->name;
-  	}
+		$form->setDefaults($member);
 
-	public function renderAdd(){
-    	if (!$this->getUser()->isInRole($this->name)) {
-            $this->flashMessage('Nemáte práva na tuto akci','error');
-            $this->redirect($this->name.':');
-        }
+		unset($this['memberForm']['sendMail']);
+		//$this->template->title = $member->surname .' '. $member->name;
+	}
 
-    	unset($this['memberForm']['password']);
-    	unset($this['memberForm']['confirm']);
+
+	/** @allow(board) */
+	public function renderAdd() {
+		unset($this['memberForm']['password']);
+		unset($this['memberForm']['confirm']);
 		unset($this['memberForm']['image']);
 		unset($this['memberForm']['text']);
+		unset($this['memberForm']['role']);
 
 		$this->setView('edit');
 	}
 
-	public function actionProfile(){
+	/** @allow(user) */
+	public function actionProfile() {
 		$id = $this->getUser()->getId();
-		$this->redirect('Member:view',$id);
+		$this->redirect('Member:edit', $id);
 	}
 
-	public function sendLogginMail($member, $session){
-	    $template = $this->createTemplate();
-	    $template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
+	/** @allow(board) */
+	public function sendLogginMail($member, $session) {
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
 		$template->session = $session;
 
 		$mail = $this->getNewMail();
 
-		$mail->addTo($member->mail, $member->surname.' '.$member->name);
-	    $mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
-	    $mail->setHTMLBody($template);
+		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
+		$mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
+		$mail->setHTMLBody($template);
 
-	    $this->mailer->send($mail);
-  	}
+		$this->mailer->send($mail);
+	}
 
-	protected function createComponentUploadMembersForm(){
+	public function uniqueValidator($item) {
+		$id = (int)$this->getParameter('id');
+		return (bool)!($this->memberService->getMembers(FALSE)->select('id')->where($item->name, $item->value)->where('id != ?', $id)->fetch());
+	}
+
+	public function currentPassValidator($item, $arg) {
+		return Passwords::verify($item->value, $arg);
+	}
+
+	protected function createComponentMemberForm() {
 		$form = new Form;
-		
-        $form->addUpload('file')
-        	->addRule(Form::MIME_TYPE,'Uploadovaný soubor můsí být ve formátu .csv',
-        	'text/comma-separated-values, text/csv, application/csv, application/excel, application/vnd.ms-excel, application/vnd.msexcel, text/anytext');
-        $form->addSubmit('ok', '')->setAttribute('class','iconic');
 
-		$form->onSuccess[] = [$this, 'uploadMembersFormSubmitted'];
-
-    return $form;
-	}
-
-	public function uploadMembersFormSubmitted(Form $form){
-		$values = $form->getValues();
-
-		$this->redirect('Member:default',$values->search);
-	}
-
-	protected function createComponentMemberSearchForm(){
-		$form = new Form;
-		$form->getElementPrototype()->class('ajax');
-		$form->addText('search', null, 30)
-      		->setType('search')
-      		->setRequired('Vyplňte hledanou frázi')
-			->setHtmlId('member-search')
-      		->getControlPrototype()
-      			->title = 'Vyhledá v seznamu hledanou frázi';
-
-        $form->addSubmit('ok', '')
-	        ->setHtmlId('member-search-button')
-        	->setAttribute('class','myfont');
-
-		$form->onSuccess[] = [$this, 'memberSearchFormSubmitted'];
-
-    return $form;
-	}
-
-	public function memberSearchFormSubmitted(Form $form){
-		$values = $form->getValues();
-
-		$members = $this->memberService->searchMembers($values->search);
-		$this->members = $members;
-		$this->template->members = $members;
-		$this->redrawControl('searchList');
-	}
-
-	public function uniqueValidator($item){
-		$id = (int) $this->getParameter('id');
-		return (bool) !($this->memberService->getMembers(FALSE)->select('id')->where($item->name, $item->value)->where('id != ?',$id)->fetch());
-	}
-	
-	public function currentPassValidator($item,$arg){
-		return Passwords::verify($item->value,$arg);
-	}
-
-	protected function createComponentMemberForm(){		
-		$form = new Form;
-		
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
 		$form->addGroup('Osobní data');
 
 		$form->addText('name', 'Jméno', 30)
-			->setAttribute('spellcheck', 'true')      		
-      		->setRequired('Vyplňte %label');
+			->setAttribute('spellcheck', 'true')
+			->setRequired('Vyplňte %label');
 
 		$form->addText('surname', 'Příjmení', 30)
-			->setAttribute('spellcheck', 'true')	
-      		->setRequired('Vyplňte %label');
+			->setAttribute('spellcheck', 'true')
+			->setRequired('Vyplňte %label');
 
 		$form['date_born'] = new \DateInput('Datum narození');
 		$form['date_born']->setRequired('Vyplňte datum narození')
@@ -290,22 +307,22 @@ class MemberPresenter extends LayerPresenter{
 
 		$form->addText('zamestnani', 'Zaměstnání/Škola', 30)
 			->setAttribute('spellcheck', 'true')
-      		->setRequired('Vyplňte %label');
+			->setRequired('Vyplňte %label');
 
-        $form->addGroup('Přihlašovací údaje');
+		$form->addGroup('Přihlašovací údaje');
 
 		$form->addPassword('password', 'Nové heslo', 20)
-      		->addCondition(Form::FILLED)
-      			->addRule(Form::PATTERN,'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena','^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
-      			->addRule([$this, 'currentPassValidator'],'Nesmíte použít svoje staré heslo',$this->getUser()->getIdentity()->hash);
+			->addCondition(Form::FILLED)
+			->addRule(Form::PATTERN, 'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena', '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
+			->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo', $this->getUser()->getIdentity()->hash);
 
 		$form->addPassword('confirm', 'Potvrzení', 20)
-	        ->setRequired(FALSE)
-      		->addRule(Form::EQUAL,'Zadaná hesla se neschodují',$form['password'])
-      		->addCondition(Form::FILLED)
-      			->addRule(Form::MIN_LENGTH,'Heslo musí mít alespoň %d znaků',8);
+			->setRequired(FALSE)
+			->addRule(Form::EQUAL, 'Zadaná hesla se neschodují', $form['password'])
+			->addCondition(Form::FILLED)
+			->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků', 8);
 
-		$form->addCheckbox('sendMail','Poslat novému členu mail s přihlašovacími údaji')
+		$form->addCheckbox('sendMail', 'Poslat novému členu mail s přihlašovacími údaji')
 			->setDefaultValue(TRUE);
 
 		$form->addGroup('Kontakty');
@@ -317,44 +334,48 @@ class MemberPresenter extends LayerPresenter{
 
 		$form->addText('telefon', 'Telefon', 30)
 			->setRequired('Vyplňte %label')
-			->addRule(Form::LENGTH,'%label musí mít %d znaků',9);
+			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 
 		$form->addGroup('Adresa');
 
-        $form->addText('ulice', 'Ulice', 30)
-			->setAttribute('spellcheck', 'true')	
-      		->setRequired('Vyplňte ulici');
+		$form->addText('ulice', 'Ulice', 30)
+			->setAttribute('spellcheck', 'true')
+			->setRequired('Vyplňte ulici');
 
-      	$form->addText('mesto', 'Město', 30)
-			->setAttribute('spellcheck', 'true')	
-      		->setRequired('Vyplňte %label');
+		$form->addText('mesto', 'Město', 30)
+			->setAttribute('spellcheck', 'true')
+			->setRequired('Vyplňte %label');
 
-    	$form->setCurrentGroup(null);
+		$form->setCurrentGroup(null);
 
 		$form['date_add'] = new \DateInput('Datum registrace');
 		$form['date_add']->setRequired('Vyplňte datum registrace')
 			->setDefaultValue(new DateTime());
 
-		$form->addUpload('image','Nový obrázek')
-    		->addCondition(Form::FILLED)    			
-        		->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 5 MB.',5 * 1024 * 1024 /* v bytech */)
-        		->addRule(Form::IMAGE, 'Fotografie musí být ve formátu JPEG')
-        	->endCondition();
+		$form->addSelect('role', 'Role',
+			$this->memberService->getRoleList()
+		);
 
-    	$form->addTextArea('text', 'Poznámka', 30)
+		$form->addUpload('image', 'Nový obrázek')
+			->addCondition(Form::FILLED)
+			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 5 MB.', 5 * 1024 * 1024 /* v bytech */)
+			->addRule(Form::IMAGE, 'Fotografie musí být ve formátu JPEG')
+			->endCondition();
+
+		$form->addTextArea('text', 'Poznámka', 30)
 			->setAttribute('spellcheck', 'true');
 
-        $form->addSubmit('ok', 'Ulož');
+		$form->addSubmit('ok', 'Ulož');
 		$form->onSuccess[] = [$this, 'memberFormSubmitted'];
 
-    	return $form;
+		return $form;
 	}
 
-	public function memberFormSubmitted(Form $form){
-		$id = (int) $this->getParameter('id');
+	public function memberFormSubmitted(Form $form) {
+		$id = (int)$this->getParameter('id');
 
 		$values = $form->getValues();
-		
+
 		$sendMail = $values->sendMail;
 		unset($values['sendMail']);
 
@@ -363,39 +384,39 @@ class MemberPresenter extends LayerPresenter{
 		}
 
 		unset($values['password']);
-		unset($values['confirm']);	
+		unset($values['confirm']);
 
 		$values['mail'] = Strings::lower($values['mail']);
 
-		if (($form['image']->isFilled()) and ($values->image->isOK())){
+		if (($form['image']->isFilled()) and ($values->image->isOK())) {
 			$image = $values->image->toImage();
 			$image->resize(250, NULL, Image::SHRINK_ONLY);
-			$image->save(WWW_DIR.'/img/portrets/'.$id.'.jpg', 80, Image::JPEG);
-        } 
-        
-        unset($values->image);
+			$image->save(WWW_DIR . '/img/portrets/' . $id . '.jpg', 80, Image::JPEG);
+		}
 
-        if (!$values->text) unset($values->text);
+		unset($values->image);
 
-        $values->date_update = new DateTime();
+		if (!$values->text) unset($values->text);
+
+		$values->date_update = new DateTime();
 
 		if ($id) {
-          	$this->memberService->getMemberById($id)->update($values);
-          	$this->flashMessage('Osobní profil byl změněn');
-          	$this->redirect('Member:view',$id);
-        }else {
+			$this->memberService->getMemberById($id)->update($values);
+			$this->flashMessage('Osobní profil byl změněn');
+			$this->redirect('Member:view', $id);
+		} else {
 			$values->hash = '';
-			$member = $this->memberService->addMember($values);
+			$member = $this->memberService->addUser($values);
 
 			if ($sendMail) {
 				$session = $this->memberService->addPasswordSession($member->id, '24 HOUR');
 				$this->sendLogginMail($member, $session);
 			}
 
-			$this->memberService->addMemberLogin($member->id, new DateTime());
+			$this->memberService->addUserLogin($member->id, new DateTime());
 
-          	$this->flashMessage('Byl přidán nový člen');
-          	$this->redirect('Member:view',$member->id);
-		}		
+			$this->flashMessage('Byl přidán nový člen');
+			$this->redirect('Member:view', $member->id);
+		}
 	}
 }

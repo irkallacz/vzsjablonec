@@ -8,86 +8,102 @@
 
 namespace App\MemberModule\Components;
 
+use Nette\Application\BadRequestException;
 use Nette\Utils\Arrays;
 use Nette\Application\UI\Control;
 use Nette\Utils\DateTime;
 use App\Model\AnketyService;
 
-class AnketaControl extends Control{
-    /** @var AnketyService  */
-    private $anketyService;
+class AnketaControl extends LayerControl {
+	/** @var AnketyService */
+	private $anketyService;
 
-    /**
-     * AnketaControl constructor.
-     * @param AnketyService $anketyService
-     */
-    public function __construct(AnketyService $anketyService){
-        parent::__construct();
-        $this->anketyService = $anketyService;
-    }
+	private $id;
 
-    public function render($id){
-        $this->template->setFile(__DIR__ . '/AnketaControl.latte');
+	/**
+	 * AnketaControl constructor.
+	 * @param AnketyService $anketyService
+	 * @param $id
+	 */
+	public function __construct($id, AnketyService $anketyService) {
+		parent::__construct();
+		$this->anketyService = $anketyService;
+		$this->id = $id;
+	}
 
-        $anketa = $this->anketyService->getAnketaById($id);
-        $user_id = $this->presenter->getUser()->getId();
 
-        if ($anketa){
-            $this->template->anketa = $anketa;
-            $this->template->odpovedi = $anketa->related('anketa_odpoved')->order('text');
+	public function render() {
+		$this->template->setFile(__DIR__ . '/AnketaControl.latte');
 
-            $memberList = $this->anketyService->getMemberListByAnketaId($id);
+		$anketa = $this->anketyService->getAnketaById($this->id);
+		$userId = $this->presenter->getUser()->getId();
 
-            $this->template->mojeOdpoved = Arrays::get($memberList, $user_id, 0);
-            $this->template->celkem = count($memberList);
+		if ($anketa) {
+			$this->template->anketa = $anketa;
+			$this->template->odpovedi = $anketa->related('anketa_odpoved')->order('text');
 
-            $this->template->render();
-        }else{
-            $this->flashMessage('Anekta nenalezena!','error');
-        }
-    }
+			$memberList = $this->anketyService->getMemberListByAnketaId($this->id);
 
-    public function handleDeleteVote($id){
-        $anketa = $this->anketyService->getAnketaById($id);
-        $user_id = $this->presenter->getUser()->getId();
+			$this->template->mojeOdpoved = Arrays::get($memberList, $userId, 0);
+			$this->template->celkem = count($memberList);
 
-        if ((!$anketa)or($anketa->locked)) {
-            $this->flashMessage('V této anketě nemůžete zrušit hlas','error');
-        }else{
-            $vote = $this->anketyService->getMemberVote($id,$user_id);
+			$this->template->render();
+		} else {
+			throw new BadRequestException('Anekta nenalezena!');
+		}
+	}
 
-            if ($vote) {
-                $this->anketyService->deleteMemberVote($id,$user_id);
-                $this->flashMessage('Váš hlas byl smazán');
-            }else {
-                $this->flashMessage('V této anketě jste nehlasoval','error');
-            }
-        }
-//        $this->redrawControl();
-        $this->presenter->redirect('this');
-    }
+	/**
+	 * @param int $id
+	 * @allow(member)
+	 */
+	public function handleDeleteVote($id) {
+		$anketa = $this->anketyService->getAnketaById($id);
+		$userId = $this->presenter->getUser()->getId();
 
-    public function handleVote($odpoved){
-        $odpoved_id = (int) $odpoved;
+		if ((!$anketa) or ($anketa->locked)) {
+			throw new BadRequestException('V této anketě nemůžete zrušit hlas');
+		} else {
+			$vote = $this->anketyService->getMemberVote($id, $userId);
 
-        $user_id = $this->presenter->getUser()->getId();
-        $odpoved = $this->anketyService->getOdpovedById($odpoved_id);
-        $anketa = $this->anketyService->getAnketaById($odpoved->anketa_id);
+			if ($vote) {
+				$this->anketyService->deleteMemberVote($id, $userId);
+				$this->flashMessage('Váš hlas byl smazán');
+			} else {
+				throw new BadRequestException('V této anketě jste nehlasoval');
+			}
+		}
+		$this->redrawControl('flash');
+		$this->redrawControl('odpovedi');
+//        $this->presenter->redirect('this');
+	}
 
-        if ((!$anketa)or($anketa->locked)) {
-            $this->flashMessage('V této anketě nemůžete hlasovat','error');
-        }else {
-            $odpovedi = $anketa->related('anketa_odpoved')->fetchPairs('id', 'id');
+	/**
+	 * @param int $odpoved
+	 * @allow(member)
+	 */
+	public function handleVote($odpoved) {
+		$odpovedId = (int)$odpoved;
 
-            if (in_array($odpoved_id, $odpovedi)) {
-                $this->anketyService->addVote([
-                    'member_id' => $user_id, 'anketa_id' => $odpoved->anketa_id, 'anketa_odpoved_id' => $odpoved_id, 'date_add' => new Datetime
-                ]);
-                $this->flashMessage('Váš hlas byl zaznamenán');
-            }else $this->flashMessage('Pro tuto odpověď nemůžete hlasovat', 'error');
-        }
-//        $this->redrawControl();
-        $this->presenter->redirect('this');
-    }
+		$userId = $this->presenter->getUser()->getId();
+		$odpoved = $this->anketyService->getOdpovedById($odpovedId);
+		$anketa = $this->anketyService->getAnketaById($odpoved->anketa_id);
+
+		if ((!$anketa) or ($anketa->locked)) {
+			throw new BadRequestException('V této anketě nemůžete hlasovat');
+		} else {
+			$odpovedi = $anketa->related('anketa_odpoved')->fetchPairs('id', 'id');
+
+			if (in_array($odpovedId, $odpovedi)) {
+				$this->anketyService->addVote([
+					'member_id' => $userId, 'anketa_id' => $odpoved->anketa_id, 'anketa_odpoved_id' => $odpovedId, 'date_add' => new Datetime
+				]);
+				$this->flashMessage('Váš hlas byl zaznamenán');
+			} else throw new BadRequestException('Pro tuto odpověď nemůžete hlasovat');
+		}
+		$this->redrawControl('flash');
+		$this->redrawControl('odpovedi');
+		//$this->presenter->redirect('this');
+	}
 
 }

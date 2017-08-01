@@ -41,7 +41,11 @@
 </div>
 
 <ul id="menu" n:inner-foreach="$mainMenu as $item">
-  <li {ifCurrent $item['current']}class="current"{/ifCurrent}><a n:href="$item['link']" {if $iterator->last}target="_blank"{/if}><span class="icon icon-{$item['icon']}" ></span> {$item['title']}</a></li>
+	<li n:if="$user->isInRole($item->role)" n:class="$presenter->isLinkCurrent($item->current) ? current">
+		<a n:href="$item->link" {if $iterator->last}target="_blank"{/if}>
+			<span class="icon icon-{$item->icon}" ></span> {$item->title}
+		</a>
+	</li>
 </ul>
 
 <div id="text">

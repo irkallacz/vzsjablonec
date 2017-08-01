@@ -24,7 +24,7 @@ class TimesService extends DatabaseService
     public function getDefaultTimes(){
         return $this->getTimes()
         	->select('times.id, times_disciplina_id, times_disciplina.name AS disciplina, time, date, 
-	           times.text, member_id, CONCAT(member.surname," ",member.name)AS jmeno')->where('member.active = 1');
+	           times.text, user_id, CONCAT(user.surname," ",user.name)AS jmeno')->where('NOT user.role = 0');
     }
 
     /**

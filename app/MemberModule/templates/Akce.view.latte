@@ -1,14 +1,13 @@
 {block #head}
-<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
 <link rel="stylesheet" href="{$basePath}/css/rating.css" type="text/css" n:if="$akceIsOld">
 <link rel="stylesheet" href="{$basePath}/css/album.preview.css" type="text/css" n:if="$akce->album_id">
 <link rel="stylesheet" href="{$basePath}/css/anketa.css" type="text/css" n:if="$akce->anketa_id">
 <link rel="stylesheet" href="{$basePath}/css/forum.posts.css" type="text/css" n:if="$akce->forum_topic_id">
-
 <style type="text/css" n:syntax="off">
     .member_list a.char { text-decoration: none; vertical-align: top; }
-    .member_list { list-style-type: none; padding-left: 1em; font-size: 1em;}
+    .member_list { list-style-type: decimal; font-size: 1em;}
     .member_list .logged { color: #C22;}
+
     .head { margin-bottom: 1em;}
     #mail .buttonLike { margin-top: 1em;}
     #list td { vertical-align: top; padding-right: 1ex}
@@ -22,14 +21,17 @@
     hr { border: none; border-top: 1px solid #ccc; }
 
 </style>
-
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
-<script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
 <script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
 <script type="text/javascript">
     $(function () {
         $.nette.init();
     });
+
+    function unfold(id) {
+		$('#'+id+'-form').show();
+		$('#'+id+'-button').hide();
+	}
 </script>
 
 {/block}
@@ -38,14 +40,14 @@
 
 {block #content}
 
-<ul class="buttonMenu" n:snippet="menuOnTop">
-    {if $user->isInRole($presenter->name) or array_key_exists($user->id,$orgList)}
+<ul n:if="$user->isInRole('member')" class="buttonMenu" n:snippet="menuOnTop">
+    {if $user->isInRole('admin') or array_key_exists($user->id,$orgList)}
     <li><a class="buttonLike" n:href="edit, $akce->id"><span class="icon-pencil"></span> editovat</a></li>
     <li><a class="buttonLike confirm" data-query="Opravdu chcete akci smazat?" n:href="delete, $akce->id">
     <span class="icon-trash"></span> smazat</a></li>
     {/if}
 
-    {if $user->isInRole('Confirm')}
+    {if $user->isInRole('confirm')}
         {if !$akce->confirm}
         <li><a class="buttonLike" n:href="allow, $akce->id, TRUE"><span class="icon-ok"></span> povolit</a></li>
         {else}
@@ -60,11 +62,11 @@
 
     <div class="prev-next">
         <a n:tag-if="$next" class="buttonLike float-right" n:href="Akce:view, $next->id">
-            <span n:tag-if="!$next" class="buttonLike gray">Další <span class="char">»</span></span>
+            <span n:tag-if="!$next" class="buttonLike float-right gray">Další <span class="char">»</span></span>
         </a>
 
         <a n:tag-if="$prev" class="buttonLike" n:href="Akce:view, $prev->id">
-            <span n:tag-if="!$prev" class="buttonLike gray float-right"><span class="char">«</span> Předchozí</span>
+            <span n:tag-if="!$prev" class="buttonLike gray"><span class="char">«</span> Předchozí</span>
         </a>
     </div>
 
@@ -111,7 +113,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
 
 <div class="clearfix"></div>
 
-    <div n:if="$user->isInRole('Member:Mail') or array_key_exists($user->id,$orgList)" id="mail">
+    <div n:if="$user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))" id="mail">
         <a class="buttonLike" n:href="Mail:akce $akce->id"><span class="icon-mail"></span> poslat mail účastníkům</a>
         <a class="buttonLike" n:href="Mail:akce $akce->id, TRUE"><span class="icon-mail"></span> poslat mail organizátorům</a>
     </div>
@@ -121,7 +123,7 @@ class="hint">Čas na přihlášení vypršel</span></p>
             <h3>Záznam o akci</h3>
             <p>
                 <a class="buttonLike" n:href="Report:view $akce->id"> <span class="icon-table"></span> náhled</a>
-                {if $user->isInRole($presenter->name) or array_key_exists($user->id,$orgList)} <a class="buttonLike" n:href="Report:edit $akce->id"><span class="icon-pencil"></span> editovat</a>{/if}
+                {if $user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))} <a class="buttonLike" n:href="Report:edit $akce->id"><span class="icon-pencil"></span> editovat</a>{/if}
             </p>
         {/if}
 
@@ -135,20 +137,23 @@ class="hint">Čas na přihlášení vypršel</span></p>
 
         {control rating}
 
-        {if ($akce->bill)or(array_key_exists($user->id,$orgList))}
+        {if (($user->isInRole('member'))and(($akce->bill)or(array_key_exists($user->id,$orgList))))}
         <h3>Vyúčtování <span class="icon-dollar"></span></h3>
-
         {form uploadBillForm}
             <ul class="error" n:if="$form->hasErrors()">
                 <li n:foreach="$form->errors as $error">{$error}</li>
             </ul>
 
             <p>
-                {if $akce->bill} <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->id}-{$akce->name|webalize}.xls"><span class="icon-download"></span> stáhnout</a>{/if}
                 {if array_key_exists($user->id,$orgList)} {input file} {input ok} {/if}
             </p>
         {/form}
-        {/if}
+
+			<p n:if="($akce->bill)and($user->isInRole('member'))">
+                <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->id}-{$akce->name|webalize}.xls"><span class="icon-download"></span> stáhnout</a>
+            </p>
+
+		{/if}
     {/if}
 
 {if $akce->album_id}
@@ -161,16 +166,16 @@ class="hint">Čas na přihlášení vypršel</span></p>
 <hr>
 <h3>Anketa <span class="icon-list-bullet"></span></h3>
 
-<p><a n:href="Ankety:view $akce->anketa_id">{$anketa->title|firstUpper}</a><p>
+<p><a n:href="Ankety:view $akce->anketa_id" n:tag-if="$user->isInRole('member')">{$anketa->title|firstUpper}</a><p>
 
-{control anketa $akce->anketa_id}
+{control anketa}
 {/if}
 
 {if $akce->forum_topic_id}
 <hr>
 <h3>Poslední příspěvky <span class="icon-chat-empty"></h3>
 
-<a n:if="!$topic->locked" class="buttonLike float-right" n:href="Forum:add $topic->id"><span class="icon-plus"></span> nový příspěvěk</a>
+<a n:if="(!$topic->locked)and($user->isInRole('member'))" class="buttonLike float-right" n:href="Forum:add $topic->id"><span class="icon-plus"></span> nový příspěvěk</a>
 
 <ul class="inline-nav">
 <li><a n:href="Forum:">Fórum</a></li>
