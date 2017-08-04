@@ -1,0 +1,14 @@
+# This is a sample build configuration for all languages.
+# Check our guides at https://confluence.atlassian.com/x/5Q4SMw for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: samueldebruyn/debian-git
+
+pipelines:
+  default:
+    - step:
+        script:
+          - apt-get update
+          - apt-get -qq install git-ftp
+          - git ftp init --user $FTP_USER_TEST --passwd $FTP_PASSWD_TEST ftsp://117041.w41.wedos.net
