@@ -42,7 +42,7 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 <table>
 <tr class="headerLike">
 <th>
-	<div class="left"><a n:href="Akce:view, $akce->id">{$akce->name|firstUpper}</a></div>
+	<div class="left">{$akce->name|firstUpper}</div>
 </th>
 <th class="right">
 	<div title="{$akce->date_start|timeAgoInWords}">
