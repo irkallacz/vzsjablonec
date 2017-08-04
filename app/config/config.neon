@@ -74,14 +74,14 @@ services:
 	googleClient:
 		class: Google_Client
 		setup:
-			- setAuthConfig('%appDir%/config/google_api_service.json')
+			- setAuthConfig("%appDir%/config/google_api_service.json")
 			- setSubject(%google.account%)
 			- setScopes([
 				Google_Service_Drive::DRIVE_READONLY
 				Google_Service_Calendar::CALENDAR
 				Google_Service_People::CONTACTS
 			])
-			- setCache(Stash\Pool(Stash\Driver\FileSystem()))
+			- setCache(Stash\Pool(Stash\Driver\FileSystem([path: "%tempDir%/stash"])))
 
 	- Google_Service_Drive
 	- Google_Service_Calendar
@@ -91,6 +91,3 @@ extensions:
 	console: Kdyby\Console\DI\ConsoleExtension
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	- Echo511\Plupload\DI\PluploadExtension
-
-console:
-    url: http://www.kdyby.org
