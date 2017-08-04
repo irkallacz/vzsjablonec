@@ -1,0 +1,48 @@
+{define #userList}
+	<p n:if="$akce->date_deatline > date_create()">
+		{if $isAllowLogin}
+			{if !$isLogged}
+				<a n:href="logSelf! $isOrg" class="buttonLike ajax"><span class="icon-ok"></span> Přihlásit se</a>
+			{else}
+				<a n:href="unlogSelf! $isOrg" class="buttonLike ajax"><span class="icon-cancel"></span> Odhlásit se</a>
+			{/if}
+		{else}
+			{if !$isLogged}
+				<span class="buttonLike gray"><span class="icon-ok"></span> Přihlásit se</span>
+			{else}
+				<span class="buttonLike gray"><span class="icon-cancel"></span> Odhlásit se</span>
+			{/if}
+		{/if}
+	</p>
+
+	<ol n:if="$items" class="member_list">
+		<li n:foreach="$items->where('organizator', $isOrg)->order('date_add') as $item" title="Přihlášen {$item->date_add|date:'d.m.Y'}">
+			<a n:tag-if="($item->member->role)or($user->isInRole('board'))" n:class="$item->member->id == $user->id ? logged" href="{plink Member:view, $item->member->id}">{$item->member->surname} {$item->member->name}</a>
+		</li>
+	</ol>
+{/define}
+
+{snippet signEventControl}
+<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+
+<div class="float-left list-component">
+	<h3>Účastníci <span class="icon icon-user"></span></h3>
+	{include #userList isOrg => FALSE, isAllowLogin => $isUserAllow, isLogged => $userIsInUserList, items => clone $items}
+</div>
+
+<div class="float-left list-component">
+	<h3>Organizátoři <span class="icon icon-user-o"></span></h3>
+	{include #userList isOrg => TRUE, isAllowLogin => $isOrgAllow, isLogged => $userIsInOrgList}
+</div>
+
+<div class="clearfix"></div>
+
+{if $user->isInRole('member')and(($userIsInOrgList)or($user->isInRole('admin')))}
+	<a id="change-button" href="javascript:change()" class="buttonLike"><span class="icon-pencil"> upravit účastníky</a>
+	<div id="change-form" class="hide">
+		<h3>Upravit účastníky</h3>
+		<p>{control logginForm}</p>
+		<p n:if="$hasUsers">{control unLogginForm}</p>
+	</div>
+{/if}
+{/snippet}

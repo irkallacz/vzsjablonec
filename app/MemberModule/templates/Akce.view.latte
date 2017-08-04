@@ -14,7 +14,7 @@
     #desc { text-align: left; }
     #desc th { padding-right: 1em; }
 
-    .list_component { width: 250px; }
+    .list-component { min-width: 250px; }
     a.head { display: inline-block;}
     .inline-nav { margin-bottom: 2em;}
     .prev-next { margin-bottom: 1em;}
@@ -28,10 +28,15 @@
         $.nette.init();
     });
 
-    function unfold(id) {
-		$('#'+id+'-form').show();
-		$('#'+id+'-button').hide();
+//    function unfold(id) {
+//		$('#'+id+'-form').show();
+//		$('#'+id+'-button').hide();
+//	}
+	function change() {
+		$('#change-form').show();
+		$('#change-button').hide();
 	}
+
 </script>
 
 {/block}
@@ -109,9 +114,12 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
 <span title="Přihlášení/odhlášení do: {$akce->date_deatline|date:'%A %d.%m.%Y'}" 
 class="hint">Čas na přihlášení vypršel</span></p>
 
-<div class="float-left">{control members}</div><div class="float-left">{control organizators}</div>
+{*<div class="float-left">{control members}</div><div class="float-left">{control organizators}</div>*}
 
-<div class="clearfix"></div>
+{*<div class="clearfix"></div>*}
+
+{control signEvent}
+
 
     <div n:if="$user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))" id="mail">
         <a class="buttonLike" n:href="Mail:akce $akce->id"><span class="icon-mail"></span> poslat mail účastníkům</a>

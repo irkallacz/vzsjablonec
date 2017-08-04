@@ -1,0 +1,251 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Jakub
+ * Date: 4.8.2017
+ * Time: 10:16
+ */
+
+namespace App\MemberModule\Components;
+
+
+use App\Model\AkceService;
+use App\Model\MemberService;
+use Nette\Application\ForbiddenRequestException;
+use Nette\Application\UI\Control;
+use Nette\Application\UI\Form;
+use Nette\Database\Table\ActiveRow;
+use Tracy\Debugger;
+
+class SignEventControl extends Control {
+
+	/** @var AkceService */
+	private $akceService;
+
+	/** @var MemberService */
+	private $memberService;
+
+	/** @var ActiveRow */
+	private $akce;
+
+	/** @var array */
+	private $userList = [];
+
+	/** @var array */
+	private $orgList = [];
+
+	/**
+	 * SignEventControl constructor.
+	 * @param AkceService $akceService
+	 * @param MemberService $memberService
+	 * @param ActiveRow $akce
+	 */
+	public function __construct(AkceService $akceService, MemberService $memberService, ActiveRow $akce) {
+		parent::__construct();
+		$this->akceService = $akceService;
+		$this->memberService = $memberService;
+		$this->akce = $akce;
+
+		$this->userList = $this->getMemberList(FALSE)->fetchPairs('member_id', 'member_id');
+		$this->orgList = $this->getMemberList(TRUE)->fetchPairs('member_id', 'member_id');
+	}
+
+	public function render() {
+		$this->template->setFile(__DIR__ . '/SignEventControl.latte');
+
+		$this->template->items = $this->getMemberList();
+		$this->template->akce = $this->akce;
+
+		$this->template->hasUsers = !empty($this->getLocalMemberList());
+
+		$this->template->userIsInUserList = $this->userIsInList(FALSE);
+		$this->template->userIsInOrgList = $this->userIsInList(TRUE);
+
+		$this->template->isUserAllow = $this->userIsAllowToLog(FALSE);
+		$this->template->isOrgAllow = $this->userIsAllowToLog(TRUE);
+
+		$this->template->render();
+	}
+
+	private function getLocalMemberList(){
+		return array_merge($this->userList, $this->orgList);
+	}
+
+	/**
+	 * @param bool $isOrg
+	 */
+	private function getMemberList($isOrg = NULL) {
+		$list = $this->akce->related(AkceService::TABLE_AKCE_MEMBER_NAME);
+		if (!is_null($isOrg)) $list->where('organizator', $isOrg);
+		return $list;
+	}
+
+	/**
+	 * @param bool $isOrg
+	 */
+	private function userIsInList($isOrg = NULL) {
+		$userId = $this->getPresenter()->getUser()->getId();
+		if (is_null($isOrg)) {
+			return in_array($userId, $this->getLocalMemberList());
+		} else {
+			if ($isOrg == TRUE) return in_array($userId, $this->orgList);
+			else return in_array($userId, $this->userList);
+		}
+	}
+
+	/**
+	 * @param bool $toOrg
+	 */
+	private function userIsAllowToLog($toOrg) {
+		return (
+			($this->getPresenter()->getUser()->isInRole('member'))
+			and
+			(date_create() <= $this->akce->date_end)
+			and
+			(date_create() <= $this->akce->date_deatline)
+			and
+			(
+				(($toOrg == TRUE) and ($this->akce->login_org))
+				or
+				(($toOrg == FALSE)) and ($this->akce->login_mem)
+			)
+		);
+	}
+
+	/**
+	 * @param int $userId
+	 * @param bool $isOrg
+	 */
+	private function logUser($userId, $isOrg) {
+		$this->akceService->addMemberToAction($userId, $this->akce->id, $isOrg);
+		if ($isOrg) $this->orgList[$userId] = $userId;
+		else $this->userList[$userId] = $userId;
+	}
+
+	/**
+	 * @param int $userId
+	 */
+	private function unlogUser($userId) {
+		$this->akceService->deleteMemberFromAction($userId, $this->akce->id);
+		unset($this->orgList[$userId]);
+		unset($this->userList[$userId]);
+	}
+
+	/**
+	 * @param bool $isOrg
+	 */
+	public function handleLogSelf($isOrg) {
+		$userId = $this->getPresenter()->getUser()->getId();
+
+		if ($this->userIsAllowToLog($isOrg)) {
+			if ($this->userIsInList()) $this->unlogUser($userId);
+			$this->logUser($userId, $isOrg);
+			$this->flashMessage('Byl jste přihlášen na akci');
+			$this->redrawControl('signEventControl');
+		} else {
+			throw new ForbiddenRequestException('Na tuto akci se nemůžete přihlásit');
+		}
+	}
+
+	/**
+	 * @param bool $isOrg
+	 */
+	public function handleUnlogSelf($isOrg) {
+		$userId = $this->getPresenter()->getUser()->getId();
+
+		if ($this->userIsAllowToLog($isOrg)) {
+			$this->unlogUser($userId);
+			$this->flashMessage('Byl jste odhlášen z akce');
+			$this->redrawControl('signEventControl');
+		} else {
+			throw new ForbiddenRequestException('Z této akce se nemůžete odhlásit');
+		}
+	}
+
+	/**
+	 * @return Form
+	 */
+	public function createComponentLogginForm() {
+		$form = new Form;
+
+		$form->getElementPrototype()->class = 'ajax';
+
+		$logList = $this->getLocalMemberList();
+
+		$list = ($this->getPresenter()->getUser()->isInRole('admin')) ? $this->memberService->getUsers() : $this->memberService->getMembers();
+		$list->select('id, CONCAT(surname," ",name)AS jmeno')->order('surname, name');
+		if ($logList) $list->where('NOT id', $logList);
+
+		$form->addSelect('member', null, $list->fetchPairs('id', 'jmeno'));
+		$form->addCheckbox('organizator', 'Organizátor')
+			->setDefaultValue(FALSE);
+		$form->addSubmit('send', '+');
+		$form->onSuccess[] = [$this, 'processLogginForm'];
+
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['controls']['container'] = NULL;
+		$renderer->wrappers['pair']['container'] = NULL;
+		$renderer->wrappers['label']['container'] = NULL;
+		$renderer->wrappers['control']['container'] = NULL;
+
+		return $form;
+	}
+
+	/**
+	 * @param Form $form
+	 */
+	public function processLogginForm(Form $form) {
+		if (($this->getPresenter()->getUser()->isInRole('admin')) or ($this->userIsInList(TRUE))) {
+			$values = $form->getValues();
+
+			if ($this->userIsInList()) $this->unlogUser($values->member);
+			$this->logUser($values->member, $values->organizator);
+
+			$this->flashMessage('Na akci byla přidána další osoba');
+
+			$this->redrawControl('signEventControl');
+		} else {
+			throw new ForbiddenRequestException('Na tuto akci nemůžete přidávat další osoby');
+		}
+	}
+
+	/**
+	 * @return Form
+	 */
+	public function createComponentUnLogginForm() {
+		$form = new Form;
+
+		$form->getElementPrototype()->class = 'ajax';
+
+		$list = $this->memberService->getMemberListForAkceComponent($this->akce->id);
+
+		$form->addSelect('member', null, $list);
+		$form->addSubmit('send', '-');
+		$form->onSuccess[] = [$this, 'processUnLogginForm'];
+
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['controls']['container'] = NULL;
+		$renderer->wrappers['pair']['container'] = NULL;
+		$renderer->wrappers['label']['container'] = NULL;
+		$renderer->wrappers['control']['container'] = NULL;
+
+		return $form;
+	}
+
+	/**
+	 * @param Form $form
+	 */
+	public function processUnLogginForm(Form $form) {
+		if (($this->getPresenter()->getUser()->isInRole('admin')) or ($this->userIsInList(TRUE))) {
+			$values = $form->getValues();
+
+			$this->unlogUser($values->member);
+
+			$this->flashMessage('Osoba byla odebrána z akce');
+			$this->redrawControl('signEventControl');
+		} else {
+			throw new ForbiddenRequestException('Na tuto akci nemůžete přidávat další osoby');
+		}
+	}
+
+}

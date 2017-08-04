@@ -142,10 +142,10 @@ class MemberService extends DatabaseService {
 	 * @param $org
 	 * @return mixed
 	 */
-	public function getMemberListForAkceComponent($id, $org) {
-		return $this->getMembersByAkceId($id, $org)
+	public function getMemberListForAkceComponent($id) {
+		return $this->getMembersByAkceId($id)
 			->select('id,CONCAT(surname," ",name)AS jmeno')
-			->order(':akce_member.date_add')
+			->order('surname, name')
 			->fetchPairs('id', 'jmeno');
 	}
 

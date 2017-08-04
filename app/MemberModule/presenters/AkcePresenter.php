@@ -286,12 +286,8 @@ class AkcePresenter extends LayerPresenter {
 		$this->mailer->send($mail);
 	}
 
-	protected function createComponentMembers() {
-		return new Components\MembersListControl($this->akceService, $this->memberService, $this->akce);
-	}
-
-	protected function createComponentOrganizators() {
-		return new Components\MembersListControl($this->akceService, $this->memberService, $this->akce, TRUE);
+	protected function createComponentSignEvent() {
+		return new Components\SignEventControl($this->akceService, $this->memberService, $this->akce);
 	}
 
 	/**
