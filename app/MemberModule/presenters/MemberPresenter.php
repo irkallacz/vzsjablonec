@@ -173,7 +173,7 @@ class MemberPresenter extends LayerPresenter {
 	 * @allow(admin)
 	 */
 	public function actionActivate($id) {
-		$member = $this->memberService->getMemberById($id);
+		$member = $this->memberService->getTable()->get($id);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
@@ -279,7 +279,7 @@ class MemberPresenter extends LayerPresenter {
 
 	public function uniqueValidator($item) {
 		$id = (int)$this->getParameter('id');
-		return (bool)!($this->memberService->getMembers(FALSE)->select('id')->where($item->name, $item->value)->where('id != ?', $id)->fetch());
+		return (bool)!($this->memberService->getTable()->select('id')->where($item->name, $item->value)->where('id != ?', $id)->fetch());
 	}
 
 	public function currentPassValidator($item, $arg) {
