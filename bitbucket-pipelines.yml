@@ -13,4 +13,4 @@ pipelines:
           - apt-get -qq install git-ftp
           - git ftp push --user $FTP_USER_TEST --passwd $FTP_PASSWD_TEST ftpes://117041.w41.wedos.net
           - apt-get -qq install lftp
-          - lftp -e 'rm -r /tmp/cache; bye' -u $FTP_USER_TEST,$FTP_PASSWD_TEST 117041.w41.wedos.net
+          - lftp -e 'rm -r /tmp/cache; quit' -u $FTP_USER_TEST,$FTP_PASSWD_TEST ftp://117041.w41.wedos.net
