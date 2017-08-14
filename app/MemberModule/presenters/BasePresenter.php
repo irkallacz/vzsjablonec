@@ -7,6 +7,9 @@ use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Presenter;
 use Nette\Utils\Html;
 
+/**
+ * @property-read \Nette\Bridges\ApplicationLatte\Template|\stdClass $template
+ */
 abstract class BasePresenter extends Presenter {
 
 	protected function afterRender() {

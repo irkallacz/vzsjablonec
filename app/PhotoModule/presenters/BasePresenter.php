@@ -6,6 +6,9 @@ use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Presenter;
 use Nette\Utils\ArrayHash;
 
+/**
+ * @property-read \Nette\Bridges\ApplicationLatte\Template|\stdClass $template
+ */
 abstract class BasePresenter extends Presenter {
 
 	const photoDir = 'albums';
