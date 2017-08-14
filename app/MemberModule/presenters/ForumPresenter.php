@@ -228,9 +228,9 @@ class ForumPresenter extends LayerPresenter{
 	public function actionTexyPreview($class = FALSE){
 	    if ($this->isAjax()){
 
-			LatteFilters::$root = $this->template->basePath;
 			$httpRequest = $this->context->getByType('Nette\Http\Request');
 
+			LatteFilters::$root = $this->template->basePath;
 			$div = Html::el('div')->setHtml(LatteFilters::forumTexy($httpRequest->getPost('texy')));
 			$div->id = 'texyPreview';
 
