@@ -109,8 +109,10 @@ class MemberService extends DatabaseService {
 	 * @param bool $org
 	 * @return Selection
 	 */
-	public function getMembersByAkceId($id, $org = false) {
-		return $this->getTable()->where(':akce_member.akce_id', $id)->where('organizator', $org);
+	public function getMembersByAkceId($id, $org = NULL) {
+		$members = $this->getTable()->where(':akce_member.akce_id', $id);
+		if ($org) $members->where('organizator', $org);
+		return $members;
 	}
 
 	/**

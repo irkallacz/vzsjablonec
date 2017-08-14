@@ -41,8 +41,9 @@
 	<a id="change-button" href="javascript:change()" class="buttonLike"><span class="icon-pencil"> upravit účastníky</a>
 	<div id="change-form" class="hide">
 		<h3>Upravit účastníky</h3>
-		<p>{control logginForm}</p>
-		<p n:if="$hasUsers">{control unLogginForm}</p>
+		<div>Přidat: {control logginForm}</div>
+		<p>
+		<div n:if="$hasUsers">Odebrat: {control unLogginForm}</div>
 	</div>
 {/if}
 {/snippet}

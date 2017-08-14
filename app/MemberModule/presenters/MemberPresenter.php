@@ -123,10 +123,14 @@ class MemberPresenter extends LayerPresenter {
 	}
 
 	public function renderView($id) {
-		$member = $this->memberService->getUsers(FALSE)->get($id);
+		$member = $this->memberService->getTable()->get($id);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
+		}
+
+		if ((!$member->role)and($this->getUser()->getId() != $id)and(!$this->getUser()->isInRole('board'))){
+			throw new ForbiddenRequestException('Nemáte práva prohlížete tohoto uživatele');
 		}
 
 		$this->template->narozeni = $member->date_born->diff(date_create());

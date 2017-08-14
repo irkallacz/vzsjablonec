@@ -162,6 +162,16 @@ class SignEventControl extends Control {
 		}
 	}
 
+
+	private function getLogginList(){
+		$logList = $this->getLocalMemberList();
+
+		$list = ($this->getPresenter()->getUser()->isInRole('admin')) ? $this->memberService->getUsers() : $this->memberService->getMembers();
+		$list->select('id, CONCAT(surname," ",name)AS jmeno')->order('surname, name');
+		if ($logList) $list->where('NOT id', $logList);
+
+		return $list->fetchPairs('id', 'jmeno');
+	}
 	/**
 	 * @return Form
 	 */
@@ -170,13 +180,9 @@ class SignEventControl extends Control {
 
 		$form->getElementPrototype()->class = 'ajax';
 
-		$logList = $this->getLocalMemberList();
+		$list = $this->getLogginList();
 
-		$list = ($this->getPresenter()->getUser()->isInRole('admin')) ? $this->memberService->getUsers() : $this->memberService->getMembers();
-		$list->select('id, CONCAT(surname," ",name)AS jmeno')->order('surname, name');
-		if ($logList) $list->where('NOT id', $logList);
-
-		$form->addSelect('member', null, $list->fetchPairs('id', 'jmeno'));
+		$form->addSelect('member', null, $list);
 		$form->addCheckbox('organizator', 'Organizátor')
 			->setDefaultValue(FALSE);
 		$form->addSubmit('send', '+');
@@ -200,6 +206,10 @@ class SignEventControl extends Control {
 
 			if ($this->userIsInList()) $this->unlogUser($values->member);
 			$this->logUser($values->member, $values->organizator);
+
+			$list = $form['member']->getItems();
+			unset($list[$values->member]);
+			$form['member']->setItems($list);
 
 			$this->flashMessage('Na akci byla přidána další osoba');
 
@@ -242,6 +252,11 @@ class SignEventControl extends Control {
 			$this->unlogUser($values->member);
 
 			$this->flashMessage('Osoba byla odebrána z akce');
+
+			$list = $form['member']->getItems();
+			unset($list[$values->member]);
+			$form['member']->setItems($list);
+
 			$this->redrawControl('signEventControl');
 		} else {
 			throw new ForbiddenRequestException('Na tuto akci nemůžete přidávat další osoby');
