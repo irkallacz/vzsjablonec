@@ -77,8 +77,8 @@ class LatteFilters{
     }
 
     /**
-     * @param DateTime $start
-     * @param DateTime $end
+     * @param \DateTime $start
+     * @param \DateTime $end
      * @return string
      */
     public static function durationInWords(\DateTime $start, \DateTime $end){
