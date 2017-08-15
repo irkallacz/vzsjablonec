@@ -2,7 +2,6 @@
 namespace App\Console;
 
 use App\Model\ConnectionConfig;
-use Ifsnop\Mysqldump\Mysqldump;
 use Rah\Danpu\Dump;
 use Rah\Danpu\Export;
 use Symfony\Component\Console\Command\Command;
