@@ -39,7 +39,8 @@ class ImportDatabaseCommand extends Command{
 				$dump->dsn($config['driver'] . ':host=' . $config['host'] . ';dbname=' . $config['dbname'])
 					->user($config['user'])
 					->pass($config['password'])
-					->file($fileName);
+					->file($fileName)
+					->disableForeignKeyChecks(TRUE);
 
 				$bar->setMessage($name . '.sql');
 
