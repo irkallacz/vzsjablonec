@@ -1,3 +1,5 @@
 .gitignore
+.git-ftp-ignore
 .htaccess
 bitbucket-pipelines.yml
+config.local.neon.developer
