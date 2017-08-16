@@ -46,8 +46,8 @@
 <h3>Kontakty:</h3>
 
 	<ul>
-		<li><b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a></li>
-		<li><b>Telefon:</b> {$member->telefon|number:0:'.':' '}</li>
+		<li n:if="$member->mail"><b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a></li>
+		<li n:if="$member->telefon"><b>Telefon:</b> {$member->telefon|number:0:'.':' '}</li>
 	</ul>
 
 <div id="poznamka">
