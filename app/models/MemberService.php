@@ -91,8 +91,8 @@ class MemberService extends DatabaseService {
 	 * @param $mail
 	 * @return bool|mixed|IRow
 	 */
-	public function getMemberByEmail($mail) {
-		return $this->getMembers()->where('mail', $mail)->fetch();
+	public function getUserByEmail($mail) {
+		return $this->getUsers()->where('mail', $mail)->fetch();
 	}
 
 	/**

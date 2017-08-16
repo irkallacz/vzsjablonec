@@ -183,9 +183,9 @@ class MemberPresenter extends LayerPresenter {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		$member->update(['role' => 1]);
+		$member->update(['role' => 0]);
 
-		$this->flashMessage('Uživatel byl úspěšně přidán mezi členy');
+		$this->flashMessage('Uživatel byl úspěšně přidán mezi aktivní');
 		$this->redirect('view', $id);
 	}
 
@@ -194,7 +194,7 @@ class MemberPresenter extends LayerPresenter {
 	 * @allow(board)
 	 */
 	public function actionDelete($id) {
-		$member = $this->memberService->getMemberById($id);
+		$member = $this->memberService->getUserById($id);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
@@ -283,11 +283,13 @@ class MemberPresenter extends LayerPresenter {
 
 	public function uniqueValidator($item) {
 		$id = (int)$this->getParameter('id');
-		return (bool)!($this->memberService->getTable()->select('id')->where($item->name, $item->value)->where('id != ?', $id)->fetch());
+		return (bool)!($this->memberService->getTable()->select('id')->where($item->name, $item->value)->where('NOT id', $id)->fetch());
 	}
 
-	public function currentPassValidator($item, $arg) {
-		return Passwords::verify($item->value, $arg);
+	public function currentPassValidator($item) {
+		$id = $this->getParameter('id');
+		$user = $this->memberService->getUserById($id);
+		return !Passwords::verify($item->value, $user->hash);
 	}
 
 	protected function createComponentMemberForm() {
@@ -318,7 +320,7 @@ class MemberPresenter extends LayerPresenter {
 		$form->addPassword('password', 'Nové heslo', 20)
 			->addCondition(Form::FILLED)
 			->addRule(Form::PATTERN, 'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena', '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
-			->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo', $this->getUser()->getIdentity()->hash);
+			->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo');
 
 		$form->addPassword('confirm', 'Potvrzení', 20)
 			->setRequired(FALSE)
@@ -405,7 +407,7 @@ class MemberPresenter extends LayerPresenter {
 		$values->date_update = new DateTime();
 
 		if ($id) {
-			$this->memberService->getMemberById($id)->update($values);
+			$this->memberService->getUserById($id)->update($values);
 			$this->flashMessage('Osobní profil byl změněn');
 			$this->redirect('Member:view', $id);
 		} else {

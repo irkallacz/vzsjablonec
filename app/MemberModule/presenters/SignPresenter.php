@@ -95,7 +95,7 @@ class SignPresenter extends BasePresenter {
 		$values = $form->getValues();
 		$values->mail = Strings::lower($values->mail);
 
-		$member = $this->memberService->getMemberByEmail($values->mail);
+		$member = $this->memberService->getUserByEmail($values->mail);
 
 		if (!$member) $form->addError('E-mail nenalezen');
 		else {
@@ -114,13 +114,13 @@ class SignPresenter extends BasePresenter {
 			throw new BadRequestException('Neplatný identifikator session');
 		}
 
-		$member = $this->memberService->getMemberById($session->member_id);
+		$member = $this->memberService->getUserById($session->member_id);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		if (!$member->role == NULL) {
+		if (!is_null($member->role)) {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
@@ -163,8 +163,8 @@ class SignPresenter extends BasePresenter {
 			if (!$session) {
 				throw new BadRequestException('Neplatný identifikator session');
 			} else {
-				$member = $this->memberService->getMemberById($session->member_id);
-				if ((!$member) or ($member->role == NULL)) {
+				$member = $this->memberService->getUserById($session->member_id);
+				if ((!$member) or (is_null($member->role))) {
 					throw new BadRequestException('Uživatel nenalezen');
 				} else {
 					$hash = NS\Passwords::hash($values->password);
