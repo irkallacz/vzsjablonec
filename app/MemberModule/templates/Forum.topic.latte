@@ -11,6 +11,8 @@
 {control texylaJs}
 
 <script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
+<script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
+
 <script type="text/javascript">
 //<![CDATA[
 $.texyla.setDefaults({
@@ -19,6 +21,7 @@ $.texyla.setDefaults({
 });
 
 $(function () {
+	$('.texyla').textareaAutoSize();
 	$('.texyla').texyla(forum);
 });
 //]]>

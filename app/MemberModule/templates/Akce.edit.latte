@@ -18,12 +18,16 @@
 {control texylaJs}
 
 <script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+<script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
 <script type="text/javascript" src="{$basePath}/js/akce.js"></script>
 
 <script type="text/javascript">
 	$.texyla.setDefaults({
 		baseDir: {$basePath}+'/texyla',
 		previewPath: {link texyPreview, TRUE}
+	});
+	$(function () {
+		$('#frm-akceForm-description').textareaAutoSize();
 	});
 </script>
 
