@@ -28,12 +28,13 @@ class HlasovaniPresenter extends LayerPresenter{
 	public function renderView($id){		
 		$anketa = $this->hlasovani->getAnketaById($id);
 
+		if (!$anketa) {
+			throw new BadRequestException('Hlasování nenalezeno!');
+		}
+
 		$locked = $anketa->locked;
 		if ($anketa->date_deatline < date_create()) $locked = 1;
 
-		if (!$anketa) {
-      		throw new BadRequestException('Hlasování nenalezeno!');
-    	}
 
 		if ((!$locked)and(!$this->getUser()->isInRole('board'))) {
 			throw new ForbiddenRequestException('Nemáte právo prohlížet toto hlasování!');
