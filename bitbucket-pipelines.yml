@@ -17,7 +17,7 @@ pipelines:
             - mkdir ~/.lftp
             - touch ~/.lftp/rc
             - echo -n "set ssl:verify-certificate no" > ~/.lftp/rc
-            - lftp -e 'rm -r /tmp/cache; mkdir -p /tmp/cache; bye' -u $FTP_USER_TEST,$FTP_PASSWD $FTP_SERVER
+            - lftp -e 'rm -r /tmp/cache; mkdir -p /tmp/cache; bye' -u $FTP_USER,$FTP_PASSWD $FTP_SERVER
 
     deploy_to_testing:
       - step:
