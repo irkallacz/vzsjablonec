@@ -120,7 +120,7 @@ class CronPresenter extends BasePresenter {
 		$end = new Google_Service_Calendar_EventDateTime;
 		$end->setDateTime($akce->date_end->format('c'));
 		$event->setEnd($end);
-		$event->setVisibility($akce->public ? 'public' : 'private');
+		$event->setVisibility($akce->visible ? 'public' : 'private');
 
 		$attendees = [];
 		foreach ($akce->related('akce_member') as $member) {
