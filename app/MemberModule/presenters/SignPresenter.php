@@ -116,11 +116,7 @@ class SignPresenter extends BasePresenter {
 
 		$member = $this->memberService->getUserById($session->member_id);
 
-		if (!$member) {
-			throw new BadRequestException('Uživatel nenalezen');
-		}
-
-		if (!is_null($member->role)) {
+		if ((!$member)or(is_null($member->role))) {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
