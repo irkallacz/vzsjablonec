@@ -123,10 +123,10 @@ class CronPresenter extends BasePresenter {
 		$event->setVisibility($akce->visible ? 'public' : 'private');
 
 		$attendees = [];
-		foreach ($akce->related('akce_member') as $member) {
+		foreach ($akce->related('akce_member') as $akce_member) {
 			$attendee = new Google_Service_Calendar_EventAttendee();
-			$attendee->setDisplayName($member->surname . ' ' . $member->name);
-			$attendee->setEmail($member->mail);
+			$attendee->setDisplayName($akce_member->member->surname . ' ' . $akce_member->member->name);
+			$attendee->setEmail($akce_member->member->mail);
 			$attendee->setResponseStatus('accepted');
 			$attendees[] = $attendee;
 		}
