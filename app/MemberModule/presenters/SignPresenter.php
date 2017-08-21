@@ -21,7 +21,8 @@ class SignPresenter extends BasePresenter {
 	/** @persistent */
 	public $backlink = '';
 
-	protected function beforeRender() {
+	public function startup() {
+		parent::startup();
 		if ($this->getUser()->isLoggedIn()) {
 			if ($this->backlink) $this->restoreRequest($this->backlink);
 			$this->redirect('News:');
