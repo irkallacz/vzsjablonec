@@ -28,16 +28,12 @@
 <script type="text/javascript">
     $(function () {
         $.nette.init();
-    });
 
-//    function unfold(id) {
-//		$('#'+id+'-form').show();
-//		$('#'+id+'-button').hide();
-//	}
-	function change() {
-		$('#change-form').show();
-		$('#change-button').hide();
-	}
+    	$('#change-button').click(function() {
+			$('#change-form').show();
+			$('#change-button').hide();
+		})
+    });
 
 </script>
 

@@ -11,21 +11,20 @@
 		li.dir .icon { font-size: 16px}
 	</style>
 	<script type="text/javascript">
-		function changeIcon(id) {
-			el = $('#'+id+'>span.icon');
-			if (el.hasClass('icon-folder')){
-				el.removeClass('icon-folder');
-				el.addClass('icon-folder-open');
-			}else{
-				el.removeClass('icon-folder-open');
-				el.addClass('icon-folder');
-			}
-		}
+		$(function() {
+			$('.toogleDir').click(function () {
+				$('#folder-'+this.id).toggle();
 
-		function toogleDir(id) {
-			$('#folder-'+id).toggle();
-			changeIcon(id);
-		}
+				el = $('#'+this.id+'>span.icon');
+				if (el.hasClass('icon-folder')){
+					el.removeClass('icon-folder');
+					el.addClass('icon-folder-open');
+				}else{
+					el.removeClass('icon-folder-open');
+					el.addClass('icon-folder');
+				}
+			})
+		});
 	</script>
 {/block}
 
@@ -34,7 +33,7 @@
 {block #fileList}
 	{foreach $dir->related($TABLE_DIRECTORIES)->order('name') as $file}
 			<li class="dir">
-				<a id="{$file->id}" href="javascript:toogleDir('{$file->id}')">
+				<a id="{$file->id}" class="toogleDir">
 					<span n:class="icon, $root ? 'icon-folder-open' : 'icon-folder'"></span>
 					<strong>{$file->name}</strong>
 				</a>
