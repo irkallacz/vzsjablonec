@@ -42,8 +42,7 @@ class NewsPresenter extends LayerPresenter{
                 $this->template->forumList = $this->forumService->getTopicNews($datum);
                 $this->template->dokumentyList = $this->dokumentyService->getDokumentyNews($datum);
                 $this->template->anketyList = $this->anketyService->getAnketyNews($datum);
-                $this->template->hlasovaniList = $this->hlasovaniService->getHlasovaniNews($datum,
-                    $this->user->isInRole('Board'));
+                $this->template->hlasovaniList = $this->hlasovaniService->getHlasovaniNews($datum, $this->user->isInRole('Board'));
 
                 $this->template->ratingList = $this->akceService->getRatingNews($datum, $user_id);
 
