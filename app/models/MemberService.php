@@ -111,7 +111,7 @@ class MemberService extends DatabaseService {
 	 */
 	public function getMembersByAkceId($id, $org = NULL) {
 		$members = $this->getTable()->where(':akce_member.akce_id', $id);
-		if ($org) $members->where('organizator', $org);
+		if (!is_null($org)) $members->where('organizator', $org);
 		return $members;
 	}
 
