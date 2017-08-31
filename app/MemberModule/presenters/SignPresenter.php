@@ -23,7 +23,7 @@ class SignPresenter extends BasePresenter {
 
 	public function startup() {
 		parent::startup();
-		if ($this->getUser()->isLoggedIn()) {
+		if ($this->getUser()->isLoggedIn()and($this->getAction() != 'out')) {
 			if ($this->backlink) $this->restoreRequest($this->backlink);
 			$this->redirect('News:');
 		}
