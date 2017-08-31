@@ -34,6 +34,7 @@
 	<h3>Organizátoři <span class="icon icon-user-o"></span></h3>
 	{include #userList isOrg => TRUE, isAllowLogin => $isOrgAllow, isLogged => $userIsInOrgList}
 </div>
+{/snippet}
 
 <div class="clearfix"></div>
 
@@ -41,9 +42,8 @@
 	<a id="change-button" class="buttonLike"><span class="icon-pencil"> upravit účastníky</a>
 	<div id="change-form" class="hide">
 		<h3>Upravit účastníky</h3>
-		<div>Přidat: {control logginForm}</div>
+		<div n:snippet="logginForm">Přidat: {control logginForm}</div>
 		<p>
-		<div n:if="$hasUsers">Odebrat: {control unLogginForm}</div>
+		<div n:snippet="unLogginForm" n:if="$hasUsers">Odebrat: {control unLogginForm}</div>
 	</div>
 {/if}
-{/snippet}

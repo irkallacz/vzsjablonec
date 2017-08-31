@@ -141,7 +141,7 @@ class SignEventControl extends Control {
 			if ($this->userIsInList()) $this->unlogUser($userId);
 			$this->logUser($userId, $isOrg);
 			$this->flashMessage('Byl jste přihlášen na akci');
-			$this->redrawControl('signEventControl');
+			$this->redrawControl();
 		} else {
 			throw new ForbiddenRequestException('Na tuto akci se nemůžete přihlásit');
 		}
@@ -156,7 +156,7 @@ class SignEventControl extends Control {
 		if ($this->userIsAllowToLog($isOrg)) {
 			$this->unlogUser($userId);
 			$this->flashMessage('Byl jste odhlášen z akce');
-			$this->redrawControl('signEventControl');
+			$this->redrawControl();
 		} else {
 			throw new ForbiddenRequestException('Z této akce se nemůžete odhlásit');
 		}
@@ -213,7 +213,7 @@ class SignEventControl extends Control {
 
 			$this->flashMessage('Na akci byla přidána další osoba');
 
-			$this->redrawControl('signEventControl');
+			$this->redrawControl();
 		} else {
 			throw new ForbiddenRequestException('Na tuto akci nemůžete přidávat další osoby');
 		}
@@ -257,7 +257,7 @@ class SignEventControl extends Control {
 			unset($list[$values->member]);
 			$form['member']->setItems($list);
 
-			$this->redrawControl('signEventControl');
+			$this->redrawControl();
 		} else {
 			throw new ForbiddenRequestException('Na tuto akci nemůžete přidávat další osoby');
 		}
