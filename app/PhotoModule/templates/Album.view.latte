@@ -1,40 +1,30 @@
 {block #head}
-<link rel="stylesheet" href="{$baseUri}/css/jquery.fancybox.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="{$baseUri}/css/jquery.fancybox-thumbs.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="{$baseUri}/css/jquery.fancybox.min.css" type="text/css" media="screen" />
 
 <style type="text/css" n:syntax="off">
 	#photoBottom { clear: both; padding-top: 1em; }
-	.popis span b { color: #ea9419; }
 	.popis span.member { font-size: 1.1em; }
 	.photoList li { position: relative; }
 	.icon { vertical-align: bottom; }
 </style>
 
-<script src="{$baseUri}/js/jquery.fancybox.pack.js" type="text/javascript"></script>
-<script src="{$baseUri}/js/jquery.fancybox-thumbs.js" type="text/javascript"></script>  
 <script src="{$baseUri}/js/confirm.js" type="text/javascript"></script>
-<script src="{$baseUri}/js/detectmobilebrowser.js" type="text/javascript"></script>
-<script src="{$baseUri}/js/openhash.js" type="text/javascript"></script>    
-
-<script type="text/javascript" n:syntax="off">
-	$(document).ready(function() {
-		if (!window.mobilecheck()){
-      $('.fancybox').fancybox({
-        afterLoad: function(current) {
-          history.replaceState(null, null, window.location.href.split("#")[0]+'#'+current.element[0].id);
-        },
-        afterClose: function(current) {
-          history.replaceState(null, null, window.location.pathname);
-        },
-        helpers: { title:{ type:'over'}, //thumbs: { width: 50, height: 50}
-      }
-  		});
-      openHash(function(hash){
-        var id = document.getElementById(hash.slice(1)).getAttribute('data-id')-1;
-        $(".fancybox").eq(id).trigger('click');
-      });
-    }
-	});
+	<script src="{$baseUri}/js/jquery.fancybox.min.js" type="text/javascript"></script>
+	<script type="text/javascript" n:syntax="off">
+		$(document).ready(function() {
+			$().fancybox({
+				selector: '[data-fancybox="images"]',
+				loop    : true,
+				hash	: false,
+				afterShow: function(fancybox, element) {
+					var filename = element.src.substring(element.src.lastIndexOf('/')+1);
+					history.replaceState(null, null, window.location.href.split("#")[0]+'#'+filename);
+				},
+				afterClose: function() {
+					history.replaceState(null, null, window.location.pathname);
+				}
+			});
+		});
 </script>
 {/block}
 
@@ -49,9 +39,11 @@
 <p n:if="$album->text">{$album->text|texy|noescape}</p>
 
 <ul class="photoList" n:inner-foreach="$photos as $image">
-	<li><a id="{$image->filename}" data-id="{$iterator->counter}" n:class="fancybox, ($album->visible and $user->isLoggedIn()) ? 'visible'.$image->visible" href="{$baseUri}/{$photoDir}/{$image->album_id}/{$image->filename}" rel="group" title="{$image->text}">
-	{include #image, image => $image}
-	</a></li>
+	<li>
+		<a id="{$image->filename}" data-fancybox="images" data-type="image" data-caption="{$image->text}" n:class="($album->visible and $user->isLoggedIn()) ? 'visible'.$image->visible" href="{$baseUri}/{$photoDir}/{$image->album_id}/{$image->filename}" title="{$image->text}">
+			{include #image, image => $image}
+		</a>
+	</li>
 </ul>
 
 <div id="photoBottom">

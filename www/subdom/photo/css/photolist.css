@@ -4,5 +4,4 @@
 #albumList li.row a:hover h3 {text-decoration: underline;}
 .photoList {display: block; overflow: hidden; white-space: nowrap;}
 .photoList li {float: none; display: inline;}
-.popis span b {color: #ea9419;}
 .popis span.member {font-size: 1.1em;}
