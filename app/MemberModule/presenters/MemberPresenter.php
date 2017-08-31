@@ -87,6 +87,7 @@ class MemberPresenter extends LayerPresenter {
 		$this->template->searchList = $searchList;
 
 		$this->redrawControl('searchList');
+		$this->redrawControl('searchTab');
 	}
 
 	/** @allow(admin) */
