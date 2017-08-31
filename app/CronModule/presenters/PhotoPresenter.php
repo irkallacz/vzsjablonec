@@ -1,11 +1,11 @@
 <?php
 
-namespace App\PhotoModule\Presenters;
+namespace App\CronModule\Presenters;
 
 use App\Model\GalleryService;
 use Nette\Utils\Finder;
 
-class CliPresenter extends BasePresenter{
+class PhotoPresenter extends BasePresenter{
 
      /** @var GalleryService @inject*/
     public $gallery;

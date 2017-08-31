@@ -23,8 +23,12 @@ class LocalRouterFactory{
 		$photo[] = new Route('photo/album/<slug \d+-.+>/<action view|edit|add>','Album:view');
 		$photo[] = new Route('photo/<presenter>/<action>[/<id>]', 'News:default');
 
+		$cron = new RouteList('Cron');
+		$cron[] = new Route('cron/<presenter>/<action>[/<id>]', 'Cron:default');
+
 		$router[] = $member;
 		$router[] = $photo;
+		$router[] = $cron;
 
 		return $router;
 	}

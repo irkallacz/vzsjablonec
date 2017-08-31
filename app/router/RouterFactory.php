@@ -26,8 +26,12 @@ class RouterFactory{
 		$photo[] = new Route('//photo.%domain%/album/<slug \d+-.+>/<action view|edit|add>','Album:view');
 		$photo[] = new Route('//photo.%domain%/<presenter>/<action>[/<id>]', 'News:default');
 
+		$cron = new RouteList('Cron');
+		$cron[] = new Route('//cron.%domain%/<presenter>/<action>[/<id>]', 'Cron:default');
+
 		$router[] = $member;
 		$router[] = $photo;
+		$router[] = $cron;
 
 		return $router;
 	}
