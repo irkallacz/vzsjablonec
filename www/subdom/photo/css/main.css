@@ -40,7 +40,7 @@ border-bottom: 1px solid #89520c; border-bottom: 1px solid black;  background-co
 
 #content {margin-left: 0; padding-top: 1em; float: none;}
 
-#ajax-spinner{margin:15px 0 0 15px; padding:13px; background:transparent url('../img/fancybox_loading.gif') no-repeat 50% 50%;
+#ajax-spinner{margin: 15px 0 0 15px; padding:13px; background:transparent url('../img/fancybox_loading.gif') no-repeat 50% 50%;
 font-size: 0; z-index: 10; display:none;}
 
 .photoList { list-style-type: none; padding: 0; }

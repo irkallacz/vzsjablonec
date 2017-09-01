@@ -1,22 +1,30 @@
 {block #head}
 <link rel="stylesheet" href="{$baseUri}/css/photolist.css" type="text/css">
+<script src="{$baseUri}/js/nette.ajax.js"></script>
+<script type="text/javascript" n:syntax="off">
+	$(function () {
+		$.nette.init();
+	});
+</script>
 {/block}
-
 
 {block #content}
 
-<ul class="menu float_right" n:if="$user->isLoggedIn()">
-	<li><a n:href="default" class="buttonLike white">podle data</a></li>
-	<li><a n:href="users" class="buttonLike">podle uživatele</a></li>
-</ul>
+	<ul class="menu float_right" n:if="$user->isLoggedIn()">
+		<li><a n:href="default" class="buttonLike white">podle data</a></li>
+		<li><a n:href="users" class="buttonLike">podle uživatele</a></li>
+	</ul>
 
-<h2 n:block="title">Alba</h2>
+	<h2 n:block="title">Alba</h2>
 
-<ul id="albumList" n:inner-foreach="$albums as $album">
-<li class="row">
-{include #photoList, album => $album}
-</li>
+	<div n:snippet="albums" data-ajax-append="true">
+	<ul id="albumList" n:inner-foreach="$albums as $album">
+		<li class="row">
+		{include #photoList, album => $album}
+		</li>
+	</ul>
+	</div>
 
-</ul>
+	<p n:snippet="button" class="center"><a class="ajax" n:href="loadMore! $offset">nahrát další alba</a></p>
 
 {/block}

@@ -29,6 +29,9 @@ class AlbumPresenter extends BasePresenter {
 	/** @var \Echo511\Plupload\Control\IPluploadControlFactory @inject */
 	public $controlFactory;
 
+	private $offset = 0;
+
+	const LOAD_COUNT = 30;
 	/**
 	 * @param $slug
 	 * @return \Nette\Database\Table\IRow
@@ -57,8 +60,18 @@ class AlbumPresenter extends BasePresenter {
 			$pocet->where('album.visible', TRUE)->where(':photo.visible', TRUE);
 		} else $this->template->member = $this->members->getMembersArray(FALSE);
 
+		$albums->limit(self::LOAD_COUNT, $this->offset);
+
+		$this->template->offset = $this->offset + self::LOAD_COUNT;
+
 		$this->template->albums = $albums;
 		$this->template->pocet = $pocet->fetchPairs('id', 'pocet');
+	}
+
+
+	public function handleLoadMore($offset){
+		$this->offset = $offset;
+		$this->redrawControl();
 	}
 
 	/**
