@@ -25,6 +25,6 @@
 	</ul>
 	</div>
 
-	<p n:snippet="button" class="center"><a class="ajax" n:href="loadMore! $offset">nahrát další alba</a></p>
+	<p n:snippet="button" class="center"><a n:if="$needMore" class="ajax" n:href="loadMore! $offset">nahrát další alba</a></p>
 
 {/block}

@@ -60,9 +60,9 @@ class AlbumPresenter extends BasePresenter {
 
 		$albums->limit(self::LOAD_COUNT, $this->offset);
 
-		$this->template->offset = $this->offset + self::LOAD_COUNT;
-
 		$this->template->albums = $albums;
+		$this->template->offset = $this->offset + self::LOAD_COUNT;
+		$this->template->needMore = ($albums->count() == self::LOAD_COUNT);
 	}
 
 
