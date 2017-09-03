@@ -155,11 +155,12 @@ class AkceService extends DatabaseService {
 	 * @return Selection
 	 */
 	public function getFeedbackRequests(DateTime $date, $user_id) {
-		return $this->getAkceByFuture(FALSE)
+		return $this->getAkce()
+			->where('enable', TRUE)
 			->where('confirm', TRUE)
 			->where(':akce_member.member_id', $user_id)
 			->where(':akce_member.organizator', FALSE)
-			->where('date_end > ?', $date);
+			->where('date_end BETWEEN ? AND NOW()', $date);
 	}
 
 
@@ -183,12 +184,13 @@ class AkceService extends DatabaseService {
 	 * @return Selection
 	 */
 	public function getReportRequests(DateTime $date, $user_id) {
-		return $this->getAkceByFuture(FALSE)
+		return $this->getAkce()
+			->where('enable', TRUE)
 			->where('confirm', TRUE)
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.member_id', $user_id)
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.organizator', TRUE)
-			->where('report', FALSE)
-			->where('date_end > ?', $date);
+			->where('message', NULL)
+			->where('date_end BETWEEN ? AND NOW()', $date);
 	}
 
 	/**
