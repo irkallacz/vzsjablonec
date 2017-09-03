@@ -44,6 +44,13 @@
 	</ol>
 	{/if isset($file)}
 
+	{if}<h3>Alba</h3>
+		<ol class="news" n:inner-foreach="$albumList as $album">
+			<li><a n:class="$album->member_id == $user->getId() ? logged" n:href=":Photo:Album:view, $album->id.'-'.$album->slug"
+						title="{$album->date_add|timeAgoInWords}">{$album->name}</a></li>
+		</ol>
+	{/if isset($album)}
+
 	{if $user->isInRole('member')}
 
 		{if}<h3>Ankety</h3>

@@ -22,6 +22,9 @@ class NewsPresenter extends LayerPresenter{
         /** @var Model\AnketyService @inject */
         public $anketyService;
 
+		/** @var Model\GalleryService @inject */
+		public $galleryService;
+
         /** @var Model\HlasovaniService @inject */
         public $hlasovaniService;
 
@@ -48,6 +51,8 @@ class NewsPresenter extends LayerPresenter{
 
                 $this->template->feedbackList = $this->akceService->getFeedbackRequests($datum, $user_id);
                 $this->template->reportList = $this->akceService->getReportRequests($datum, $user_id);
+
+                $this->template->albumList = $this->galleryService->getAlbumNews($datum);
         }
 
 }
