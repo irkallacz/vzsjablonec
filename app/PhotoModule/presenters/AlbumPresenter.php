@@ -53,11 +53,9 @@ class AlbumPresenter extends BasePresenter {
 	 */
 	public function renderDefault() {
 		$albums = $this->gallery->getAlbums()->order('date DESC');
-		$pocet = $this->gallery->getAlbumsPhotosCount();
 
 		if (!$this->getUser()->isLoggedIn()) {
 			$albums->where('visible', TRUE);
-			$pocet->where('album.visible', TRUE)->where(':photo.visible', TRUE);
 		} else $this->template->member = $this->members->getMembersArray(FALSE);
 
 		$albums->limit(self::LOAD_COUNT, $this->offset);
@@ -65,7 +63,6 @@ class AlbumPresenter extends BasePresenter {
 		$this->template->offset = $this->offset + self::LOAD_COUNT;
 
 		$this->template->albums = $albums;
-		$this->template->pocet = $pocet->fetchPairs('id', 'pocet');
 	}
 
 
@@ -87,11 +84,7 @@ class AlbumPresenter extends BasePresenter {
 
 		$membersAlbums = array_intersect_key($member, $membersAlbums);
 
-		$pocet = $this->gallery->getAlbumsPhotosCount();
-		$pocet = $pocet->fetchPairs('id', 'pocet');
-
 		$this->template->albums = $albums;
-		$this->template->pocet = $pocet;
 		$this->template->member = $member;
 		$this->template->membersAlbums = $membersAlbums;
 	}
