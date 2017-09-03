@@ -97,7 +97,7 @@ class AlbumPresenter extends BasePresenter {
 		$album = $this->getAlbumById($slug);
 		$this->template->album = $album;
 
-		$pubkeyCheck = $pubkey === $album->pubkey;
+		$pubkeyCheck = ($pubkey === $album->pubkey);
 
 		if ((!$album->visible) and (!(($this->getUser()->isLoggedIn()) or ($pubkeyCheck)))) $this->redirect('Sign:in');
 
@@ -145,7 +145,7 @@ class AlbumPresenter extends BasePresenter {
 
 	/**
 	 * @param $slug
-	 * @allow(member)
+	 * @allow(user)
 	 */
 	public function renderAdd($slug) {
 		$album = $this->getAlbumById($slug);
@@ -188,7 +188,7 @@ class AlbumPresenter extends BasePresenter {
 
 	/**
 	 * @return Plupload\Control\PluploadControl
-	 * @allow(member)
+	 * @allow(user)
 	 */
 	public function createComponentPlupload() {
 		$plupload = $this->controlFactory->create();
