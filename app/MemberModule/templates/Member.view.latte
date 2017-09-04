@@ -28,8 +28,24 @@
 	{if $user->isInRole('board')}
 		<p><b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$narozeni->format('%y')} let)</p>
 		<ul>
-			<li n:if="$member->date_add"><b>Datum registrace:</b> <span title="{$member->date_add|timeAgoInWords}">{$member->date_add|date:'d.m.Y'}</span></li>
-			<li n:if="$member->date_update"><b>Datum úpravy:</b> <span title="{$member->date_update|timeAgoInWords}">{$member->date_update|date:'d.m.Y'}</span></li>
+			<li n:if="$member->date_add">
+				<b>Datum registrace:</b>
+				<span title="{$member->date_add|timeAgoInWords}">
+					{$member->date_add|date:'d.m.Y'}
+				</span>
+			</li>
+			<li n:if="$member->date_update">
+				<b>Datum úpravy:</b>
+				<span title="{$member->date_update|timeAgoInWords}">
+					{$member->date_update|date:'d.m.Y'}
+				</span>
+			</li>
+			<li n:if="$last_login">
+				<b>Datum posledního přihlášení:</b>
+				<span title="{$last_login->date_add|timeAgoInWords}">
+					{$last_login->date_add|date:'d.m.Y H:i'}
+				</span>
+			</li>
 		</ul>
 	{else}
 		<p><b>Věk:</b> {$narozeni->format('%y')}</p>

@@ -136,6 +136,7 @@ class MemberPresenter extends LayerPresenter {
 
 		$this->template->narozeni = $member->date_born->diff(date_create());
 		$this->template->member = $member;
+		$this->template->last_login = $member->related('user_log')->order('date_add DESC')->fetch();
 		$this->template->fileExists = file_exists(WWW_DIR . '/img/portrets/' . $id . '.jpg');
 		$this->template->title = $member->surname . ' ' . $member->name;
 	}
