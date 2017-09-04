@@ -4,6 +4,12 @@
 <script type="text/javascript" n:syntax="off">
 	$(function () {
 		$.nette.init();
+
+		window.onscroll = function(ev) {
+			if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
+				$('#load-more-button').click();
+			}
+		};
 	});
 </script>
 {/block}
@@ -25,6 +31,6 @@
 	</ul>
 	</div>
 
-	<p n:snippet="button" class="center"><a n:if="$needMore" class="ajax" n:href="loadMore! $offset">nahrát další alba</a></p>
+	<p n:snippet="button" class="center"><a n:if="$needMore" class="ajax" id="load-more-button" n:href="loadMore! $offset">nahrát další alba</a></p>
 
 {/block}
