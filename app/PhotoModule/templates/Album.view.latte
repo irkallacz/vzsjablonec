@@ -31,7 +31,7 @@
 {block #content}
 
 <ul class="menu float_right" n:if="$user->isLoggedIn()">
-{include #albumMenu, album => $album}
+{include #albumMenu album => $album}
 </ul>
 
 <h2 n:block="title">{$album->name}</h2>
@@ -51,8 +51,8 @@
 </div>
 
 <p n:if="$album->visible">
-	<a title="Sdílet na Facebook" href="http://www.facebook.com/sharer.php?u={link //Album:view,$slug}"><img class="icon" src="{$baseUri}/img/facebook.png" alt="Facebook"></a>
-	<a title="Sdílet na Google+" href="https://plus.google.com/share?url={link //Album:view,$slug}"><img class="icon" src="{$baseUri}/img/gplus-32.png" alt="Google+"></a>
+	<a title="Sdílet na Facebook" href="http://www.facebook.com/sharer.php?u={link //Album:view $slug}"><img class="icon" src="{$baseUri}/img/facebook.png" alt="Facebook"></a>
+	<a title="Sdílet na Google+" href="https://plus.google.com/share?url={link //Album:view $slug}"><img class="icon" src="{$baseUri}/img/google+.png" alt="Google+"></a>
 </p>
 
 <p n:if="$user->isLoggedIn()">
