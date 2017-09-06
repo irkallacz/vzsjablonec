@@ -64,7 +64,7 @@ class SignPresenter extends BasePresenter {
 			$this->memberService->addUserLogin($userId, new DateTime());
 
 			if ($this->backlink) $this->restoreRequest($this->backlink);
-			$this->redirect('News:default');
+			else $this->redirect('News:default');
 
 		} catch (NS\AuthenticationException $e) {
 			$form->addError($e->getMessage());
