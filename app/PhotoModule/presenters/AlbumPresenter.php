@@ -99,7 +99,10 @@ class AlbumPresenter extends BasePresenter {
 
 		$pubkeyCheck = ($pubkey === $album->pubkey);
 
-		if ((!$album->visible) and (!(($this->getUser()->isLoggedIn()) or ($pubkeyCheck)))) $this->redirect('Sign:in');
+		if ((!$album->visible) and (!(($this->getUser()->isLoggedIn()) or ($pubkeyCheck)))) {
+			$backlink = $this->storeRequest();
+			$this->redirect('Sign:in', ['backlink' => $backlink]);
+		}
 
 		$photos = $this->gallery->getPhotosByAlbumId($album->id)->order('order, date_add');
 

@@ -69,8 +69,13 @@ class SignPresenter extends BasePresenter {
 			$this->getUser()->getIdentity()->date_last = $this->galleryService->getLastLoginByMemberId($user_id);
 			$this->galleryService->addMemberLogin($user_id, new DateTime());
 
-			$this->restoreRequest($this->backlink);
-			$this->getUser()->isInRole('member') ? $this->redirect('Myself:') : $this->redirect('News:');
+			if ($this->backlink) {
+				$this->restoreRequest($this->backlink);
+			}elseif ($this->getUser()->isInRole('member')) {
+				$this->redirect('Myself:');
+			}else {
+				$this->redirect('News:');
+			}
 
 		} catch (Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
