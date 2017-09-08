@@ -35,7 +35,7 @@ class CalendarPresenter extends Presenter {
 			->where('confirm', TRUE)
 			->where('enable', TRUE)
 			->where('date_update > NOW() - INTERVAL 1 DAY')
-			->where('NOT calenderId', NULL);
+			->where('NOT calendarId', NULL);
 
 		foreach ($updateEvents as $updateEvent) {
 			$event = $this->calendarService->events->get(self::CALENDAR_ID, $updateEvent->calendarId);
@@ -49,13 +49,13 @@ class CalendarPresenter extends Presenter {
 		$newEvents = $this->akceService->getAkce()
 			->where('confirm', TRUE)
 			->where('enable', TRUE)
-			->where('calenderId', NULL);
+			->where('calendarId', NULL);
 
 		foreach ($newEvents as $newEvent) {
 			$event = $this->setEvent($newEvent, new Google_Service_Calendar_Event);
 
 			$createdEvent = $this->calendarService->events->insert(self::CALENDAR_ID, $event);
-			$newEvent->update(['calenderId' => $createdEvent->getId()]);
+			$newEvent->update(['calendarId' => $createdEvent->getId()]);
 			
 			$eventList[] = $newEvent->id;
 		}
