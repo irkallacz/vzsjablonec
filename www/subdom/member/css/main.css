@@ -3,6 +3,8 @@ body, body table {font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-
 #main {min-width: 22em; width: 90%; max-width: 70em; margin: 0 auto; position: relative; padding-bottom: 2em;}
 
 #top {border-bottom: 4px solid #e1001a;}
+#top img {padding: 3px;}
+
 
 #top #top_right {border: solid #e1001a 4px; padding: 1ex; position: relative; top: -1ex;
 border-radius: 0 0 15px 15px; float: right; color: #12397e; font-weight: bold; font-size: 1.2em;}

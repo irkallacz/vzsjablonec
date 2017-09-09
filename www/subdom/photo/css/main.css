@@ -3,6 +3,8 @@ body, body table {font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-
 #main {min-width: 22em; width: 90%; max-width: 89em; margin: 0 auto; padding: 0 2em 2em 2em;}
 
 #top #header {margin-top: 5em; position: relative;}
+#top #header img {margin-left: 1ex;}
+#top #header a:hover {text-decoration: none;}
 
 #top h1 {text-transform: uppercase; color: #ffdc00; display: inline; vertical-align: top; left: 0.5em; top: 0; position: relative;}
 
@@ -10,7 +12,7 @@ body, body table {font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-
   position: absolute; display: block; left: 0; top: 0; width: 100%; height: 31px;
   background: -webkit-linear-gradient(black, rgba(0,0,0,0));
   background: -moz-linear-gradient(black, rgba(0,0,0,0));
-  background: linear-gradient(black,rgba(0,0,0,0));
+  background: linear-gradient(black, rgba(0,0,0,0));
 }
 
 #top h1:before, #top h1:after {display: block; position: absolute; z-index: 3; bottom: -1em; left: 0; right: 0;}
@@ -21,7 +23,7 @@ body, body table {font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-
     transform: scaleY(-1);
 }
 
-#top h1:after { content: ' '; height: 1em; z-index: 3;
+#top h1:after {content: ' '; height: 1em; z-index: 3;
     background: -webkit-linear-gradient(rgba(0,0,0,0.5), black);
     background: -moz-linear-gradient(rgba(0,0,0,0.5), black);
     background: linear-gradient(rgba(0,0,0,0.5), black);
@@ -40,18 +42,16 @@ border-bottom: 1px solid #89520c; border-bottom: 1px solid black;  background-co
 
 #content {margin-left: 0; padding-top: 1em; float: none;}
 
-#ajax-spinner{margin: 15px 0 0 15px; padding:13px; background:transparent url('../img/fancybox_loading.gif') no-repeat 50% 50%;
-font-size: 0; z-index: 10; display:none;}
+#ajax-spinner{margin: 15px 0 0 15px; padding: 13px; background: transparent url('../img/fancybox_loading.gif') no-repeat 50% 50%;
+font-size: 0; z-index: 10; display: none;}
 
 .photoList { list-style-type: none; padding: 0; }
-.photoList li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 150px; height: 100px; font-size: 4em; text-align: center; font-size: 1em;}
+.photoList li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 150px; height: 100px; text-align: center; font-size: 1em;}
 .photoList li a {display: block;}
 .photoList li img {border: 1px solid gray; width: 150px; height: 100px;}
 .photoList li a:hover img, .photoList li a:active img, .photoList li a:focus img {border-color: #ffdc00;}
-.photoList li a.visible0:before {background-repeat: no-repeat; bottom: 0; content: " ";
-    display: block; height: 14px; position: absolute; width: 14px;}
+.photoList li a.visible0:before {background-repeat: no-repeat; bottom: 0; content: " ";  display: block; height: 14px; position: absolute; width: 14px;}
 .visible0:before, .photoList .hidden:before {background-image: url('../img/nonvisible.png');}
-/*.visible1:before {background-image: url('../img/visible.png');}*/
 
 .popis span b {color: #ffdc00;}
 
