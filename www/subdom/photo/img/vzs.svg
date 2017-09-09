@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="600" viewBox="0 0 600 600">
+<style>
+.b{fill:#ffdc00;}
+.c{stroke:#ffdc00;}
+.w{fill:#000;}
+.n{fill:none;}
+</style>
+<defs>
+	<clipPath id="c">
+		<circle cy="300" cx="300" r="284"/>
+	</clipPath>
+	<clipPath id="r">
+		<rect x="0" y="362" width="600" height="300"/>
+	</clipPath>
+	<path id="t" d="M70,330 A233,230 0 1,1 525,360"/>
+	<path id="s" d="M200,530 c30,30 170,30 200,0"/>
+</defs>
+<circle cy="300" cx="300" r="292" class="c w" style="stroke-width:16;"/>
+
+<circle cy="300" cx="300" r="300" class="b" clip-path="url(#r)" />
+
+<path id="p" style="fill:none;stroke:#000;stroke-width:16;" d="M0,360 c50,0 50,10 100,10 50,0 50,-10 100,-10 50,0 50,10 100,10 50,0 50,-10 100,-10 50,0 50,10 100,10 50,0 50,-10 100,-10" clip-path="url(#c)"/>
+
+<g class="b">
+	<rect width="72" height="220" x="264" y="130" />
+	<rect width="220" height="72" x="190" y="204" />
+</g>
+
+<circle cy="300" cx="300" r="220" class="c n" style="stroke-width:6;"/>
+
+<g clip-path="url(#c)">
+	<use xlink:href="#p" transform="translate(0 32)"/>
+	<use xlink:href="#p" transform="translate(0 64)"/>
+</g>
+
+<text font-family="Arial, sans-serif" font-weight="900" class="b" font-size="50">
+	<textPath xlink:href="#t">
+		VODNÍ ZÁCHRANNÁ SLUŽBA
+	</textPath>
+</text>
+	
+<text font-family="Arial, sans-serif" font-weight="900" class="w" font-size="70">
+	<textPath xlink:href="#s">
+		Č Č K
+ 	</textPath>	
+</text>
+
+</svg>
