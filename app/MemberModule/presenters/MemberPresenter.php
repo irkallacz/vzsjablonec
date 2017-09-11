@@ -10,6 +10,7 @@ use Nette\Application\UI\Form;
 use Nette\Database\Table\Selection;
 use Nette\Mail\IMailer;
 use Nette\Security\Passwords;
+use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
@@ -226,6 +227,31 @@ class MemberPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(user)
 	 */
+	public function actionEdit($id) {
+		$form = $this['memberForm'];
+		$form['name']->setAttribute('readonly');
+		$form['surname']->setAttribute('readonly');
+
+		$form->setCurrentGroup($form->getGroups()[' ']);
+
+		if ($this->getUser()->isInRole('board')) {
+			$form['date_add'] = new \DateInput('Datum registrace');
+			$form['date_add']->setRequired('Vyplňte datum registrace');
+			//$form['date_add']->setDefaultValue(new DateTime());
+		}
+
+		if ($this->getUser()->isInRole('admin')) {
+			$form->addSelect('role', 'Role',
+				$this->memberService->getRoleList()
+			);
+		}
+
+		unset($form['sendMail']);
+	}
+		/**
+	 * @param int $id
+	 * @allow(user)
+	 */
 	public function renderEdit($id) {
 		$form = $this['memberForm'];
 		$member = $this->memberService->getUserById($id);
@@ -238,34 +264,37 @@ class MemberPresenter extends LayerPresenter {
 			throw new ForbiddenRequestException('Nemáte právo editovat tohoto uživatele');
 		}
 
-		$form['name']->setAttribute('readonly');
-		$form['surname']->setAttribute('readonly');
-
-		if (!$this->getUser()->isInRole('board')) unset($form['date_add']);
-		if (!$this->getUser()->isInRole('admin')) unset($form['role']);
-
 		$form->setDefaults($member);
 
-		unset($this['memberForm']['sendMail']);
 		//$this->template->title = $member->surname .' '. $member->name;
 	}
 
 
 	/** @allow(board) */
-	public function renderAdd() {
-		unset($this['memberForm']['password']);
-		unset($this['memberForm']['confirm']);
-		unset($this['memberForm']['image']);
-		unset($this['memberForm']['text']);
-		unset($this['memberForm']['role']);
+	public function actionAdd() {
+		$form = $this['memberForm'];
+		unset($form['password']);
+		unset($form['confirm']);
+		unset($form['image']);
+		unset($form['text']);
 
+		$form->setCurrentGroup($form->getGroups()[' ']);
+		$form['date_add'] = new \DateInput('Datum registrace');
+		$form['date_add']->setRequired('Vyplňte datum registrace');
+		$form['date_add']->setDefaultValue(new DateTime());
+
+	}
+
+	/** @allow(board) */
+	public function renderAdd() {
 		$this->setView('edit');
 	}
+
 
 	/** @allow(user) */
 	public function actionProfile() {
 		$id = $this->getUser()->getId();
-		$this->redirect('Member:edit', $id);
+		$this->redirect('edit', $id);
 	}
 
 	/** @allow(board) */
@@ -354,15 +383,9 @@ class MemberPresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Vyplňte %label');
 
+		$form->addGroup(' ');
+
 		$form->setCurrentGroup(null);
-
-		$form['date_add'] = new \DateInput('Datum registrace');
-		$form['date_add']->setRequired('Vyplňte datum registrace')
-			->setDefaultValue(new DateTime());
-
-		$form->addSelect('role', 'Role',
-			$this->memberService->getRoleList()
-		);
 
 		$form->addUpload('image', 'Nový obrázek')
 			->addCondition(Form::FILLED)
@@ -384,19 +407,19 @@ class MemberPresenter extends LayerPresenter {
 
 		$values = $form->getValues();
 
-		$sendMail = $values->sendMail;
-		unset($values['sendMail']);
+		$sendMail = (isset($values->sendMail)) ? $values->sendMail : NULL;
+		unset($values->sendMail);
 
-		if ($values->password) {
+		if ((isset($values->password))and($values->password)) {
 			$values->hash = Passwords::hash($values->password);
 		}
 
-		unset($values['password']);
-		unset($values['confirm']);
+		unset($values->password);
+		unset($values->confirm);
 
-		$values['mail'] = Strings::lower($values['mail']);
+		$values->mail = Strings::lower($values->mail);
 
-		if (($form['image']->isFilled()) and ($values->image->isOK())) {
+		if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
 			$image = $values->image->toImage();
 			$image->resize(250, NULL, Image::SHRINK_ONLY);
 			$image->save(WWW_DIR . '/img/portrets/' . $id . '.jpg', 80, Image::JPEG);
@@ -404,16 +427,17 @@ class MemberPresenter extends LayerPresenter {
 
 		unset($values->image);
 
-		if (!$values->text) unset($values->text);
+		if ((isset($values->text))and(!$values->text)) unset($values->text);
 
 		$values->date_update = new DateTime();
 
 		if ($id) {
 			$this->memberService->getUserById($id)->update($values);
 			$this->flashMessage('Osobní profil byl změněn');
-			$this->redirect('Member:view', $id);
+			$this->redirect('view', $id);
 		} else {
 			$values->hash = '';
+			$values->role = 1;
 			$member = $this->memberService->addUser($values);
 
 			if ($sendMail) {
@@ -424,7 +448,7 @@ class MemberPresenter extends LayerPresenter {
 			$this->memberService->addUserLogin($member->id, new DateTime());
 
 			$this->flashMessage('Byl přidán nový člen');
-			$this->redirect('Member:view', $member->id);
+			$this->redirect('view', $member->id);
 		}
 	}
 }
