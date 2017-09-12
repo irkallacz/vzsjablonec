@@ -19,7 +19,25 @@ use Tracy\Debugger;
 
 abstract class LayerPresenter extends BasePresenter {
 
+	protected function startup() {
+		parent::startup();
+
+		$this->checkLogin();
+	}
+
+	protected function checkLogin(){
+		if (!$this->user->isLoggedIn()) {
+			if ($this->user->getLogoutReason() === IUserStorage::INACTIVITY) {
+				$this->flashMessage('Byl jste odhlášen z důvodu neaktivity. Přihlaste se prosím znovu.');
+			}
+			$backlink = $this->storeRequest();
+			$this->redirect('Sign:in', ['backlink' => $backlink]);
+		}
+	}
+
 	public function checkRequirements($element) {
+		$this->checkLogin();
+
 		if ($element->hasAnnotation('allow')) {
 			$role = $element->getAnnotation('allow');
 			if (!$this->getUser()->isInRole($role)) {
@@ -45,17 +63,5 @@ abstract class LayerPresenter extends BasePresenter {
 		];
 
 		$this->template->mainMenu = ArrayHash::from($mainMenu);
-	}
-
-	protected function startup() {
-		parent::startup();
-
-		if (!$this->user->isLoggedIn()) {
-			if ($this->user->getLogoutReason() === IUserStorage::INACTIVITY) {
-				$this->flashMessage('Byl jste odhlášen z důvodu neaktivity. Přihlaste se prosím znovu.');
-			}
-			$backlink = $this->storeRequest();
-			$this->redirect('Sign:in', ['backlink' => $backlink]);
-		}
 	}
 }
