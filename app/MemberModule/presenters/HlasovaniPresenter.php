@@ -10,6 +10,7 @@ use Nette\Application\UI\Form;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 
+/** @allow(member) */
 class HlasovaniPresenter extends LayerPresenter{
 
 	/** @var HlasovaniService @inject */
