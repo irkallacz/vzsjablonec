@@ -117,6 +117,7 @@ class CalendarPresenter extends Presenter {
 
 	private static function createAclRule(ActiveRow $member){
 		$aclRule = new \Google_Service_Calendar_AclRule();
+		$aclRule->setRole('reader');
 		$scope = new \Google_Service_Calendar_AclRuleScope();
 		$scope->setType('user');
 		$scope->setValue($member->mail);
