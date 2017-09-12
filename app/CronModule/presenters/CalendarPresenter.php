@@ -35,7 +35,8 @@ class CalendarPresenter extends Presenter {
 			->where('confirm', TRUE)
 			->where('enable', TRUE)
 			->where('date_update > NOW() - INTERVAL 1 DAY')
-			->where('NOT calendarId', NULL);
+			->where('NOT calendarId', NULL)
+			->order('date_add DESC');
 
 		foreach ($updateEvents as $updateEvent) {
 			$event = $this->calendarService->events->get(self::CALENDAR_ID, $updateEvent->calendarId);
@@ -49,7 +50,8 @@ class CalendarPresenter extends Presenter {
 		$newEvents = $this->akceService->getAkce()
 			->where('confirm', TRUE)
 			->where('enable', TRUE)
-			->where('calendarId', NULL);
+			->where('calendarId', NULL)
+			->order('date_add DESC');
 
 		foreach ($newEvents as $newEvent) {
 			$event = $this->setEvent($newEvent, new Google_Service_Calendar_Event);
@@ -63,7 +65,8 @@ class CalendarPresenter extends Presenter {
 		//Remove deleted events
 		$deleteEvents = $this->akceService->getAkce()
 			->where('confirm = ? OR enable = ?', FALSE, FALSE)
-			->where('NOT calendarId', NULL);
+			->where('NOT calendarId', NULL)
+			->order('date_add DESC');
 
 		foreach ($deleteEvents as $deleteEvent) {
 			$this->calendarService->events->delete(self::CALENDAR_ID, $deleteEvent->calendarId);
