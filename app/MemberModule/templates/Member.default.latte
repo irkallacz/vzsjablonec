@@ -32,7 +32,7 @@
 			}else history.replaceState(null, null, window.location.pathname);
 		});
 
-		$('.tab-link').click(function(){
+		$(document).on('click', '.tab-link', function(){
 			openTab(this.id);
 		});
 	});
@@ -66,21 +66,17 @@
 </ul>
 <span class="no-wrap">{input search autofocus => TRUE} {input ok}</span>
 {/form}
-{snippet searchTab}
+{snippet searchList}
 	<div id="tabs">
 		{var $titles = ['Členové', 'Uživatelé', 'Neaktivní']}
 		<ul>
-			<li n:foreach="$searchList as $name => $item" id="tab-button-{$name}" n:class="$iterator->isFirst() ? active">
-				<a id="{$name}" class="tab-link" n:tag-if="(count($searchList) > 1)">{$titles[$iterator->getCounter()-1]} <span n:snippet="$name">({$searchList[$name]->count()})</span></a>
+			<li n:foreach="$searchList as $name => $item" id="tab-button-{$name}" n:if="$searchList[$name]->count()" n:class="$iterator->isFirst() ? active">
+				<a id="{$name}" class="tab-link">{$titles[$iterator->getCounter()-1]} ({$searchList[$name]->count()})</a>
 			</li>
 		</ul>
-{/snippet}
-{snippet searchList}
 		<div n:foreach="$searchList as $name => $item" n:class="tab, $iterator->isFirst() ? active" id="tab-{$name}">
 			{include #userList list => $item}
 		</div>
-{/snippet}
-
 	</div>
-
+{/snippet}
 {/block}

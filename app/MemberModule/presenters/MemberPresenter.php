@@ -76,7 +76,7 @@ class MemberPresenter extends LayerPresenter {
 		$searchList = [];
 		$searchList['members'] = $this->memberService->searchUsers($values->search)->order('surname, name');
 
-		if ($this->getUser()->isInRole('members')) {
+		if ($this->getUser()->isInRole('board')) {
 			$searchList['users'] = clone $searchList['members'];
 			$searchList['users']->where('role', 0);
 
@@ -85,10 +85,10 @@ class MemberPresenter extends LayerPresenter {
 		}
 
 		$searchList['members']->where('NOT role', 0);
+
 		$this->template->searchList = $searchList;
 
-		$this->redrawControl('searchList');
-		$this->redrawControl('searchTab');
+		$this->redrawControl();
 	}
 
 	/** @allow(admin) */
