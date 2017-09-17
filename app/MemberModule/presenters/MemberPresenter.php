@@ -437,7 +437,6 @@ class MemberPresenter extends LayerPresenter {
 			$this->redirect('view', $id);
 		} else {
 			$values->hash = '';
-			$values->role = 1;
 			$member = $this->memberService->addUser($values);
 
 			if ($sendMail) {

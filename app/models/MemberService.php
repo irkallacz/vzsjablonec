@@ -9,6 +9,7 @@ namespace App\Model;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 use Nette\Security\Passwords;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 use Nette\Database\SqlLiteral;
 
@@ -119,8 +120,8 @@ class MemberService extends DatabaseService {
 	 * @param $values
 	 * @return bool|int|IRow
 	 */
-	public function addUser($values) {
-		$values['role'] = 0;
+	public function addUser(ArrayHash $values) {
+		$values->role = 1;
 		return $this->getTable()->insert($values);
 	}
 
