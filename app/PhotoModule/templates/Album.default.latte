@@ -24,13 +24,17 @@
 	<h2 n:block="title">Alba</h2>
 
 	<div n:snippet="albums" data-ajax-append="true">
-	<ul id="albumList" n:inner-foreach="$albums as $album">
-		<li class="row">
-		{include #photoList, album => $album}
-		</li>
-	</ul>
+		<ul id="albumList" n:inner-foreach="$albums as $album">
+			<li class="row">
+			{include #photoList, album => $album}
+			</li>
+		</ul>
 	</div>
 
-	<p n:snippet="button" class="center"><a n:if="$needMore" class="ajax" id="load-more-button" n:href="loadMore! $offset">nahrát další alba</a></p>
+	<p n:snippet="button" class="center">
+		<a n:if="$needMore" class="ajax" id="load-more-button" n:href="loadMore! $offset">
+			<span class="spinner"></span>nahrát další alba
+		</a>
+	</p>
 
 {/block}

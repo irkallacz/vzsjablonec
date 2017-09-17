@@ -41,7 +41,7 @@
 	</ul>
 
 	<ul id="js-slides" class="slides-container" n:inner-foreach="$photos as $image">
-	<li><div class="slide">
+	<li><div class="slide spinner">
 		{var $album = $image->ref('album')}
 		<a n:href="Album:view#$image->filename,$album->id.'-'.$album->slug" title="{$album->name}">
 		<img src="{$baseUri}/{$photoDir.'/'.$image->album_id.'/'.$image->filename}" alt="{$image->filename}">
