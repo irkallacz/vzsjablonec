@@ -1,5 +1,5 @@
 {define #userList}
-	<p n:if="$akce->date_deatline > date_create()">
+	<p n:if="($akce->date_deatline > date_create())and($user->isInRole('member'))">
 		{if $isAllowLogin}
 			{if !$isLogged}
 				<a n:href="logSelf! $isOrg" class="buttonLike ajax"><span class="icon-ok"></span> Přihlásit se</a>
