@@ -51,12 +51,12 @@
 </div>
 
 <p n:if="$album->visible">
-	<a title="Sdílet na Facebook" href="http://www.facebook.com/sharer.php?u={link //Album:view $slug}"><img class="icon" src="{$baseUri}/img/facebook.png" alt="Facebook"></a>
-	<a title="Sdílet na Google+" href="https://plus.google.com/share?url={link //Album:view $slug}"><img class="icon" src="{$baseUri}/img/google+.png" alt="Google+"></a>
+	<a title="Sdílet na Facebook" href="http://www.facebook.com/sharer.php?u={link //Album:view $slug}"><img class="icon" src="{$baseUri}/img/facebook.svg" alt="Facebook"></a>
+	<a title="Sdílet na Google+" href="https://plus.google.com/share?url={link //Album:view $slug}"><img class="icon" src="{$baseUri}/img/google+.svg" alt="Google+"></a>
 </p>
 
 <p n:if="$user->isLoggedIn()">
-    <a title="Sdílet" n:href="Album:view,$slug,$album->pubkey"><img class="icon" src="{$baseUri}/img/link.png"> Odkaz pro sdílení</a>
+    <a title="Sdílet" n:href="Album:view,$slug,$album->pubkey"><img class="icon" src="{$baseUri}/img/link.svg"> Odkaz pro sdílení</a>
 </p>
 
 {/block}

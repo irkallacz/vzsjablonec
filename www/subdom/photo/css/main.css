@@ -51,8 +51,8 @@ border-bottom: 1px solid #89520c; border-bottom: 1px solid black;  background-co
 .photoList li a {display: block;}
 .photoList li img {border: 1px solid gray; width: 150px; height: 100px;}
 .photoList li a:hover img, .photoList li a:active img, .photoList li a:focus img {border-color: #ffdc00;}
-.photoList li a.visible0:before {background-repeat: no-repeat; bottom: 0; content: " ";  display: block; height: 14px; position: absolute; width: 14px;}
-.visible0:before, .photoList .hidden:before {background-image: url('../img/nonvisible.png');}
+.photoList li a.visible0:before, .photoList .hidden:before {background-repeat: no-repeat; bottom: 0; content: " ";  display: block; position: absolute; z-index: 5;
+	height: 15px; width: 15px; background-image: url('../img/eye-close.svg');}
 
 .popis span b {color: #ffdc00;}
 
