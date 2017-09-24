@@ -101,6 +101,7 @@ class SignPresenter extends BasePresenter {
 		if (!$member) $form->addError('E-mail nenalezen');
 		else {
 			$session = $this->memberService->addPasswordSession($member->id);
+			$this->backlink = '';
 			$this->sendRestoreMail($member, $session);
 			$this->flashMessage('Na Váši e-mailovou adresu byly odeslány údaje pro změnu hesla');
 
@@ -173,22 +174,6 @@ class SignPresenter extends BasePresenter {
 		}
 
 		$this->redirect('in');
-	}
-
-	public function sendRestoreMail($member, $session) {
-		$this->backlink = '';
-
-		$template = $this->createTemplate();
-		$template->setFile(__DIR__ . '/../templates/Mail/restorePassword.latte');
-		$template->session = $session;
-
-		$mail = $this->getNewMail();
-
-		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-		$mail->setSubject('[VZS Jablonec] Obnova hesla');
-		$mail->setHTMLBody($template);
-
-		$this->mailer->send($mail);
 	}
 
 	public function actionOut() {

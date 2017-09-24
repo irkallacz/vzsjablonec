@@ -196,6 +196,23 @@ class MemberPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(board)
 	 */
+	public function actionResetPassword($id) {
+		$member = $this->memberService->getUserById($id);
+
+		if (!$member) throw new BadRequestException('Uživatel nenalezen');
+
+		$session = $this->memberService->addPasswordSession($member->id, '12 HOUR');
+
+		$this->sendRestoreMail($member, $session);
+
+		$this->flashMessage('Uživateli byl odelán email pro změnu hesla');
+		$this->redirect('view', $member->id);
+	}
+
+	/**
+	 * @param int $id
+	 * @allow(board)
+	 */
 	public function actionDelete($id) {
 		$member = $this->memberService->getUserById($id);
 
@@ -244,6 +261,11 @@ class MemberPresenter extends LayerPresenter {
 			$form->addSelect('role', 'Role',
 				$this->memberService->getRoleList()
 			);
+		}
+
+		if ($this->getUser()->getId()!=$id) {
+			unset($form['password']);
+			unset($form['confirm']);
 		}
 
 		unset($form['sendMail']);

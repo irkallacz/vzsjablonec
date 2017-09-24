@@ -14,6 +14,7 @@
 	<li><a n:if="(($user->isInRole('admin')or($member->id == $user->getId()))and(!is_null($member->role)))" class="buttonLike" n:href="edit,$member->id"><span class="icon-pencil"></span> editovat</a></li>
 	<li><a n:if="($user->isInRole('board'))and(!is_null($member->role))" class="buttonLike confirm" data-query="Opravdu chcete tohoto člena smazat? Tento krok může vrátit jen admin." n:href="delete,$member->id"><span class="icon-trash"></span> smazat</a></li>
 	<li><a n:if="($user->isInRole('admin'))and(is_null($member->role))" class="buttonLike confirm" data-query="Opravdu chcete tohoto uživatele aktivovat?" n:href="activate,$member->id"><span class="icon-ok"></span> aktivovat</a></li>
+	<li><a n:if="($user->isInRole('board'))and(!is_null($member->role))" class="buttonLike" n:href="resetPassword, $member->id"><span class="icon-lock-open-alt"></span> resetovat heslo</a></li>
 </ul>
 
 <div n:if="$fileExists" class="float-left" id="photo"><img src="{$basePath}/img/portrets/{$member->id}.jpg" alt="fotografie"></div>
