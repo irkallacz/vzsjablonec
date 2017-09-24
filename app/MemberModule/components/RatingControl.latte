@@ -1,14 +1,18 @@
 <script type="application/javascript">
-    function more(id) {
-        document.getElementById('rating-preview-'+id).classList.add('hide');
-        document.getElementById('rating-message-'+id).classList.remove('hide');
-    }
-    function editRating(id) {
-        document.getElementById('rating-edit-sign').classList.add('hide');
-        document.getElementById('rating-edit-area').classList.remove('hide');
+	$(function () {
+		$(document).on('click', '.more', function(){
+			id = this.dataset.member;
+			document.getElementById('rating-preview-'+id).classList.add('hide');
+			document.getElementById('rating-message-'+id).classList.remove('hide');
+		});
+		$(document).on('click', '#editRating', function(){
+			id = this.dataset.member;
+			document.getElementById('rating-edit-sign').classList.add('hide');
+			document.getElementById('rating-edit-area').classList.remove('hide');
 
-        document.getElementById('rating-'+id).classList.add('hide');
-    }
+			document.getElementById('rating-'+id).classList.add('hide');
+		});
+	});
 </script>
 
 {if isset($ratings)and($ratings)}
@@ -30,10 +34,10 @@
 
                     {if $rating->message}
                         <div id="rating-preview-{$memberId}" class="preview">
-                            <a n:tag-if="mb_strlen($rating->message) > $limit" href="javascript:more({$memberId})" class="noLink">
+                            <a n:tag-if="mb_strlen($rating->message) > $limit" data-member="{$memberId}" class="more noLink">
                                 {$rating->message|breaklines|noescape|truncate:$limit}
                             </a>
-                            <a n:if="mb_strlen($rating->message) > $limit" class="more" href="javascript:more({$memberId})">Více</a>
+                            <a n:if="mb_strlen($rating->message) > $limit" data-member="{$memberId}" class="more">Více</a>
                         </div>
                         <div n:if="mb_strlen($rating->message) > $limit" id="rating-message-{$memberId}" class="hide message">{$rating->message|texy|noescape}</div>
                     {/if}
@@ -48,7 +52,7 @@
 
     <h3 id="rating-edit">Moje hodnocení <span class="icon icon-star-empty"></span></h3>
 
-    <p id="rating-edit-sign" n:if="$myrating"><a class="buttonLike" href="javascript:editRating({$user->id})"><span class="icon-pencil"></span> editovat</a></p>
+    <p id="rating-edit-sign" n:if="$myrating"><a id="editRating" class="buttonLike" data-member="{$user->id}"><span class="icon-pencil"></span> editovat</a></p>
 
     <div id="rating-edit-area" n:class="$myrating ? hide">
     {form ratingForm}
