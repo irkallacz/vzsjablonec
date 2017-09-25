@@ -3,13 +3,14 @@
  * @param Paginator $paginator
  * @param array     $steps
  *}
+{import '../templates/@svg.latte'}
 
 {if $paginator->pageCount > 1}
 <div class="paginator"> 
 	<b>Stránky:</b>
 	
 	{if !$paginator->isFirst()}
-	<a class="buttonLike" href="{link this, 'page' => $paginator->page - 1}"><span class="char">«</span> Předchozí</a>
+	<a class="buttonLike" href="{link this, 'page' => $paginator->page - 1}">{include svg name => backward} Předchozí</a>
 	{/if}
 
 	{foreach $steps as $step}
@@ -22,7 +23,7 @@
 	{/foreach}
 
 	{if !$paginator->isLast()}
-	<a class="buttonLike" href="{link this, 'page' => $paginator->page + 1}">Další <span class="char">»</span></a>
+	<a class="buttonLike" href="{link this, 'page' => $paginator->page + 1}">Další {include svg name => forward}</a>
 	{/if}
 </div>
 {/if}

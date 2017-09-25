@@ -16,12 +16,12 @@
 {block #content}
 
 <ul class="buttonMenu" n:if="($user->id == $anketa->member_id) or ($user->isInRole('admin'))">
-	<li><a n:href="edit,$anketa->id" class="buttonLike"><span class="icon-pencil"></span> editovat</a></li>
+	<li><a n:href="edit,$anketa->id" class="buttonLike">{include svg name => pencil} editovat</a></li>
 	<li><a n:href="delete,$anketa->id" class="buttonLike confirm" data-query="Opravdu chcete tuto anketu smazat?">
-		<span class="icon-trash"></span> smazat</a></li>
+		{include svg name => trash} smazat</a></li>
 	<li>
-	{if $anketa->locked}<a n:href="lock,$anketa->id,0" class="buttonLike"><span class="icon-lock-open-alt"></span> odemknout</a>
-	{else}<a n:href="lock,$anketa->id,1" class="buttonLike"><span class="icon-lock"></span> zamknout</a>
+	{if $anketa->locked}<a n:href="lock,$anketa->id,0" class="buttonLike">{include svg name => unlock-alt} odemknout</a>
+	{else}<a n:href="lock,$anketa->id,1" class="buttonLike">{include svg name => lock} zamknout</a>
 	{/if}
 	</li>
 </ul>

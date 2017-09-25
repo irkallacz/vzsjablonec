@@ -479,12 +479,9 @@ class AkcePresenter extends LayerPresenter {
 		$form = new Form;
 
 		$form->addUpload('file');
-		// ->addRule(Form::MIME_TYPE,'Uploadovaný soubor můsí být ve formátu .xls',
-		//   'application/vnd.ms-office,application/vnd.ms-excel,application/msexcel,application/x-msexcel,application/x-ms-excel,application/vnd.ms-excel,application/x-excel,application/x-dos_ms_excel,application/xls'
-		// );
+		$form->addSubmit('ok')
+			->getControlPrototype()->setName('button')->setHtml('<svg class="icon icon-upload"><use xlink:href="'.$this->template->basePath.'/img/symbols.svg#icon-upload"></use></svg>');
 
-		$form->addSubmit('ok', '')
-			->setAttribute('class', 'myfont');
 
 		$form->onSuccess[] = [$this, 'uploadBillFormSubmitted'];
 

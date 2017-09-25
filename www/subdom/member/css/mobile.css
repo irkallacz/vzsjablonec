@@ -4,7 +4,8 @@
   #text {margin-left: 0;}
   #text h1 {top: 0; left: 1ex;}
   #top img {display: none;}
-  #top h1 {margin-top: 1ex;}
   #top #profile {display: none;}
+  #top h1 {display: block; vertical-align: baseline;}
+  #top #top-right {border-radius: 1ex;}
 
   table#items .post, table#items .count {display: none}

@@ -23,13 +23,13 @@
 
 <ul class="menu_right" n:if="($user->id == $anketa->member_id) or ($user->isInRole('admin'))">
 	<li><a n:href="edit,$anketa->id" class="buttonLike">
-		<span class="icon-pencil"></span> editovat</a>
+		{include svg name => pencil} editovat</a>
 	</li>
 	<li><a n:href="delete,$anketa->id" class="buttonLike confirm" data-query="Opravdu chcete tuto anketu smazat?">
-		<span class="icon-trash"></span> smazat</a></li>
+		{include svg name => trash} smazat</a></li>
 	<li n:if="$anketa->date_deatline > date_create()">
-	{if $locked}<a n:href="lock,$anketa->id,0" class="buttonLike"><span class="icon-lock-open-alt"></span> odemknout</a>
-	{else}<a n:href="lock,$anketa->id,1" class="buttonLike"><span class="icon-lock"></span> zamknout</a>
+	{if $locked}<a n:href="lock,$anketa->id,0" class="buttonLike">{include svg name => unlock-alt} odemknout</a>
+	{else}<a n:href="lock,$anketa->id,1" class="buttonLike">{include svg name => lock} zamknout</a>
 	{/if}
 	</li>
 </ul>
@@ -44,7 +44,7 @@ title="{$anketa->date_update|timeAgoInWords}">Upraveno ({$anketa->date_update|da
 </div>
 
 {if $locked}
-<h3 class="center"><span class="icon-lock"></span> Toto hlasování je uzavřeno</h3>
+<h3 class="center">{include svg name => lock} Toto hlasování je uzavřeno</h3>
 {else}
 <h3 class="center">Toto hlasování bude uzavřeno <span class="hint" title="{$anketa->date_deatline|date:'%d.%m.%Y'}">
 {$anketa->date_deatline|timeAgoInWords}</span></h3>

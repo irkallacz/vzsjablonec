@@ -1,3 +1,5 @@
+{import '../templates/@svg.latte'}
+
 {snippet flash}
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 {/snippet}
@@ -25,7 +27,7 @@
 <h3 n:if="$mojeOdpoved" class="center">V této anketě jste již hlasoval</h3>
 <p class="center" n:if="($mojeOdpoved)and(!$anketa->locked)">
     <a href="{link deleteVote! $anketa->id}" class="buttonLike ajax">
-		<span class="icon-cancel"></span> zrušit hlas
+		{include svg name => close} zrušit hlas
 	</a>
 </p>
 {/snippet}

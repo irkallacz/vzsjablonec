@@ -1,16 +1,18 @@
+{import '../templates/@svg.latte'}
+
 {define #userList}
 	<p n:if="($akce->date_deatline > date_create())and($user->isInRole('member'))">
 		{if $isAllowLogin}
 			{if !$isLogged}
-				<a n:href="logSelf! $isOrg" class="buttonLike ajax"><span class="icon-ok"></span> Přihlásit se</a>
+				<a n:href="logSelf! $isOrg" class="buttonLike ajax">{include svg name => check} Přihlásit se</a>
 			{else}
-				<a n:href="unlogSelf! $isOrg" class="buttonLike ajax"><span class="icon-cancel"></span> Odhlásit se</a>
+				<a n:href="unlogSelf! $isOrg" class="buttonLike ajax">{include svg name => close} Odhlásit se</a>
 			{/if}
 		{else}
 			{if !$isLogged}
-				<span class="buttonLike gray"><span class="icon-ok"></span> Přihlásit se</span>
+				<span class="buttonLike gray">{include svg name => check} Přihlásit se</span>
 			{else}
-				<span class="buttonLike gray"><span class="icon-cancel"></span> Odhlásit se</span>
+				<span class="buttonLike gray">{include svg name => close} Odhlásit se</span>
 			{/if}
 		{/if}
 	</p>
@@ -26,12 +28,12 @@
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 <div class="float-left list-component">
-	<h3>Účastníci <span class="icon icon-user"></span></h3>
+	<h3>Účastníci {include svg name => user}</h3>
 	{include #userList isOrg => FALSE, isAllowLogin => $isUserAllow, isLogged => $userIsInUserList, items => clone $items}
 </div>
 
 <div class="float-left list-component">
-	<h3>Organizátoři <span class="icon icon-user-o"></span></h3>
+	<h3>Organizátoři {include svg name => user-o}</span></h3>
 	{include #userList isOrg => TRUE, isAllowLogin => $isOrgAllow, isLogged => $userIsInOrgList}
 </div>
 {/snippet}
@@ -39,7 +41,7 @@
 <div class="clearfix"></div>
 
 {if $user->isInRole('member')and(($userIsInOrgList)or($user->isInRole('admin')))}
-	<a id="change-button" class="buttonLike"><span class="icon-pencil"> upravit účastníky</a>
+	<a id="change-button" class="buttonLike">{include svg name => group} upravit účastníky</a>
 	<div id="change-form" class="hide">
 		<h3>Upravit účastníky</h3>
 		<div n:snippet="logginForm">Přidat: {control logginForm}</div>

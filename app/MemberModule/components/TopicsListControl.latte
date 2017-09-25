@@ -1,3 +1,5 @@
+{import '../templates/@svg.latte'}
+
 <table id="items">
     <tr class="first"><th>{*Téma*}</th><th class="post">Poslední příspěvek</th><th>Autor</th><th class="count"></th></tr>
     {foreach $topics as $topic}
@@ -10,7 +12,7 @@
             <td class="col title">
                 <div class="headerLike">
                     <a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" href="{plink Forum:topic,$topic->id}">
-                        <strong>{if $topic->locked}<span class="icon-lock"></span>{/if}
+                        <strong>{if $topic->locked}{include svg name => lock}{/if}
                             {if !$search}{$topic->title|firstUpper}{else}{$topic->title|replace:$search:'<em class="highlight">'.$search.'</em>'|firstUpper|noescape}{/if}
                         </strong>
                     </a>
@@ -24,14 +26,12 @@
             <td class="col post right">
                 {if $post}
                     <div class="no-wrap">
-                        {*<a title="profil uživatele" n:href="Member:view $post->member_id">*}
-                        {*<span class="icon-user"><span>*} {$post->member->surname} {$post->member->name}
-                        {*<a>*}
+                        {$post->member->surname} {$post->member->name}
                     </div>
                     <div class="no-wrap">
                         <a title="{$post->date_add|timeAgoInWords}" href="{plink Forum:post, $post->id}">
-					<span class="icon-chat-empty"><span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
-                            <a>
+							{include svg name => comments-o} {$post->date_add|date:'%d.%m.%Y %H:%M'}
+						<a>
                     </div>
                 {/if}
             </td>
@@ -39,11 +39,11 @@
             <td class="col author right">
                 <div class="no-wrap">
                     <a title="profil uživatele" href="{plink Member:view $topic->member_id}">
-					<span class="icon-user-o"><span> {$topic->member->surname} {$topic->member->name}
+						{include svg name => user-o} {$topic->member->surname} {$topic->member->name}
                     </a>
                 </div>
                 <div class="no-wrap">
-                    {*<span class="icon-chat"><span>*} {$topic->date_add|date:'%d.%m.%Y %H:%M'}
+                    {$topic->date_add|date:'%d.%m.%Y %H:%M'}
                 </div>
             </td>
 

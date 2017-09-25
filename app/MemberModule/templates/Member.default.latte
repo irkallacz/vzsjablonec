@@ -55,9 +55,9 @@
 
 {block #content}
 <ul class="buttonMenu">
-	<li><a n:href="vcfArchive" class="buttonLike"><span class="icon-address-card-o"></span> stáhnout vizitky</a></li>
-	<li n:if="$user->isInRole('board')"><a n:href="csv" class="buttonLike"><span class="icon-file-excel"></span> stáhnout exel</a></li>
-	<li n:if="$user->isInRole('board')"><a n:href="add" class="buttonLike"><span class="icon-user-plus"></span> nový člen</a></li>
+	<li><a n:href="vcfArchive" class="buttonLike">{include svg name => address-card-o} stáhnout vizitky</a></li>
+	<li n:if="$user->isInRole('board')"><a n:href="csv" class="buttonLike">{include svg name => file-excel-o} stáhnout exel</a></li>
+	<li n:if="$user->isInRole('board')"><a n:href="add" class="buttonLike">{include svg name => user-plus} nový člen</a></li>
 </ul>
 
 {form memberSearchForm}

@@ -36,7 +36,7 @@ $(function () {
 
 <ul class="inline-nav">
 	<li><a n:href="Forum:">Fórum</a></li>
-	<li>» <a n:href="Forum:category,$topic->forum->id">{$topic->forum->title|firstUpper}</a></li>
+	<li>» <a n:href="Forum:category $topic->forum->id">{$topic->forum->title|firstUpper}</a></li>
 	<li>» {$topic->title|firstUpper}</li>
 </ul>
 
@@ -44,14 +44,14 @@ $(function () {
 	{control searchForm}
 </div>
 
-<h2><span class="no-wrap"><span class="icon-lock" title="Toto téma bylo uzavřeno" n:if="$topic->locked"></span> {$topic->title|firstUpper}</span></h2>
+<h2><span class="no-wrap" title="Toto téma bylo uzavřeno" n:if="$topic->locked">{include svg name => lock}</span> {$topic->title|firstUpper}</h2>
 
 {control postsList}
 
 <div class="right">{control vp}</div>
 
 <p class="right">
-	<a n:href="Feed:forum, topic => $topic->id" class="buttonLike"><span class="icon-rss"></span> RSS tohoto tématu</a>
+	<a n:href="Feed:forum topic => $topic->id" class="buttonLike">{include svg name => feed} RSS tohoto tématu</a>
 </p>
 
 {if (!$topic->locked) and ($user->isInRole('member'))}

@@ -46,11 +46,11 @@ $(function () {
 <div class="right">{control vp}</div>
 
 <p class="float-right">
-	<a n:href="Feed:forum, category => $forum->id" class="buttonLike"><span class="icon-rss"></span> RSS této kategorie</a>
+	<a n:href="Feed:forum category => $forum->id" class="buttonLike">{include svg name => feed} RSS této kategorie</a>
 </p>
 
 <p>
-	<a n:href="search,null,$forum->id" class="buttonLike"><span class="icon-search"></span> Hledat ve fóru</a>
+	<a n:href="search,null,$forum->id" class="buttonLike">{include svg name => search} Hledat ve fóru</a>
 </p>
 
 {if $user->isInRole('member')}

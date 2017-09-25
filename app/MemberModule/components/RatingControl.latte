@@ -1,3 +1,5 @@
+{import '../templates/@svg.latte'}
+
 <script type="application/javascript">
 	$(function () {
 		$(document).on('click', '.more', function(){
@@ -16,7 +18,7 @@
 </script>
 
 {if isset($ratings)and($ratings)}
-    <h3 id="rating">Hodnocení <span class="icon icon-star"></span></h3>
+    <h3 id="rating">Hodnocení {include svg name => star}</span></h3>
     <div n:if="isset($rating_stars)"><span class="stars">{$rating_stars|stars}</span> ({$rating_count})</div>
     <div id="ratings">
         {var $limit = 100}
@@ -25,7 +27,7 @@
                 {if ($rating->rating)or($rating->message)}
                     <h4>
                         {if !$rating->anonymous}
-                            <a href="{plink Member:view $memberId}"><span class="icon-user"></span> {$rating->member->surname} {$rating->member->name}</a>
+                            <a href="{plink Member:view $memberId}">{include svg name => user} {$rating->member->surname} {$rating->member->name}</a>
                         {else}
                             Anonymní:
                         {/if}
@@ -50,9 +52,9 @@
 {if $canComment}
     <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
-    <h3 id="rating-edit">Moje hodnocení <span class="icon icon-star-empty"></span></h3>
+    <h3 id="rating-edit">Moje hodnocení {include svg name => star-o}</span></h3>
 
-    <p id="rating-edit-sign" n:if="$myrating"><a id="editRating" class="buttonLike" data-member="{$user->id}"><span class="icon-pencil"></span> editovat</a></p>
+    <p id="rating-edit-sign" n:if="$myrating"><a id="editRating" class="buttonLike" data-member="{$user->id}">{include svg name => pencil} editovat</a></p>
 
     <div id="rating-edit-area" n:class="$myrating ? hide">
     {form ratingForm}

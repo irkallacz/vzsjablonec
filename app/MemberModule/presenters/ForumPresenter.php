@@ -179,8 +179,7 @@ class ForumPresenter extends LayerPresenter{
 			->setType('search')
 			->setAttribute('class','search');
 
-		$form->addSubmit('ok', '')
-			->setAttribute('class','myfont');
+		$form->addSubmit('ok', 'OK');
 
 		$form->onSuccess[] = [$this, 'processSearchForm'];
 

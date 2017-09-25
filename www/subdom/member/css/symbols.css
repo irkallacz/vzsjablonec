@@ -1,0 +1,268 @@
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+/* ==========================================
+Single-colored icons can be modified like so:
+.icon-name {
+  font-size: 32px;
+  color: red;
+}
+========================================== */
+
+.icon-plus {
+  width: 0.7857142857142857em;
+}
+
+.icon-search {
+  width: 0.9285714285714285em;
+}
+
+.icon-star {
+  width: 0.9285714285714285em;
+}
+
+.icon-star-o {
+  width: 0.9285714285714285em;
+}
+
+.icon-user {
+  width: 0.7142857142857142em;
+}
+
+.icon-close {
+  width: 0.7857142857142857em;
+}
+
+.icon-trash-o {
+  width: 0.7857142857142857em;
+}
+
+.icon-home {
+  width: 0.9285714285714285em;
+}
+
+.icon-file-o {
+  width: 0.8571428571428571em;
+}
+
+.icon-clock-o {
+  width: 0.8571428571428571em;
+}
+
+.icon-download {
+  width: 0.9285714285714285em;
+}
+
+.icon-repeat {
+  width: 0.8571428571428571em;
+}
+
+.icon-refresh {
+  width: 0.8571428571428571em;
+}
+
+.icon-lock {
+  width: 0.6428571428571428em;
+}
+
+.icon-tag {
+  width: 0.8454285714285714em;
+}
+
+.icon-book {
+  width: 0.9302142857142857em;
+}
+
+.icon-image {
+  width: 1.0714285714285714em;
+}
+
+.icon-pencil {
+  width: 0.8454285714285714em;
+}
+.icon-phone {
+	width: 0.7857142857142857em;
+}
+
+
+.icon-map-marker {
+  width: 0.5714285714285714em;
+}
+
+.icon-backward {
+  width: 0.9932857142857143em;
+}
+
+.icon-forward {
+  width: 0.8638571428571428em;
+}
+
+.icon-times-circle {
+  width: 0.8571428571428571em;
+}
+
+.icon-check-circle {
+  width: 0.8571428571428571em;
+}
+
+.icon-times-circle-o {
+  width: 0.8571428571428571em;
+}
+
+.icon-check-circle-o {
+  width: 0.8571428571428571em;
+}
+
+.icon-ban {
+  width: 0.8571428571428571em;
+}
+
+.icon-calendar {
+  width: 0.9285714285714285em;
+}
+
+.icon-folder {
+  width: 0.9285714285714285em;
+}
+
+.icon-folder-open {
+  width: 1.0485714285714285em;
+}
+
+.icon-upload {
+  width: 0.9285714285714285em;
+}
+
+.icon-unlock {
+  width: 0.9285714285714285em;
+}
+
+.icon-feed {
+  width: 0.7862857142857141em;
+}
+
+.icon-group {
+  width: 1.0714285714285714em;
+}
+
+.icon-chain {
+  width: 0.9285714285714285em;
+}
+
+.icon-paperclip {
+  width: 0.7857142857142857em;
+}
+
+.icon-file-text-o {
+  width: 0.8571428571428571em;
+}
+
+.icon-building-o {
+  width: 0.7857142857142857em;
+}
+
+.icon-quote-left {
+  width: 0.9285714285714285em;
+}
+
+.icon-quote-right {
+  width: 0.9285714285714285em;
+}
+
+.icon-folder-o {
+  width: 0.9285714285714285em;
+}
+
+.icon-folder-open-o {
+  width: 1.0652857142857142em;
+}
+
+.icon-chain-broken {
+  width: 0.9285714285714285em;
+}
+
+.icon-calendar-o {
+  width: 0.9285714285714285em;
+}
+
+.icon-unlock-alt {
+  width: 0.6428571428571428em;
+}
+
+.icon-dollar {
+  width: 0.5697857142857142em;
+}
+
+.icon-file {
+  width: 0.8571428571428571em;
+}
+
+.icon-file-text {
+  width: 0.8571428571428571em;
+}
+
+.icon-building {
+  width: 0.7857142857142857em;
+}
+
+.icon-file-excel-o {
+  width: 0.8571428571428571em;
+}
+
+.icon-trash {
+  width: 0.7857142857142857em;
+}
+
+.icon-user-plus {
+  width: 1.1428571428571428em;
+}
+
+.icon-user-times {
+  width: 1.1378571428571427em;
+}
+
+.icon-balance-scale {
+  width: 1.2142857142857142em;
+}
+
+.icon-calendar-plus-o {
+  width: 0.9285714285714285em;
+}
+
+.icon-calendar-minus-o {
+  width: 0.9285714285714285em;
+}
+
+.icon-calendar-times-o {
+  width: 0.9285714285714285em;
+}
+
+.icon-calendar-check-o {
+  width: 0.9285714285714285em;
+}
+
+.icon-address-book {
+  width: 0.9285714285714285em;
+}
+
+.icon-address-book-o {
+  width: 0.9285714285714285em;
+}
+
+.icon-address-card {
+  width: 1.1428571428571428em;
+}
+
+.icon-address-card-o {
+  width: 1.1428571428571428em;
+}
+
+.icon-user-o {
+  width: 0.8571428571428571em;
+}

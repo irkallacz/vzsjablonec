@@ -1,15 +1,17 @@
+{import '../templates/@svg.latte'}
+
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 <div id="posts" n:inner-foreach="$posts as $post">
     <div id="post/{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
         <div class="top headerLike">
             <a class="float-right" href="{plink Forum:post $post->id}" title="{$post->date_add|timeAgoInWords}">
-                <span class="icon-chat"></span> {$post->date_add|date:'%d.%m.%Y %H:%M'}
+                {include svg name => comments-o} {$post->date_add|date:'%d.%m.%Y %H:%M'}
             </a>
             <a href="{plink Member:view,$post->member_id}" title="profil uživatele">
                 <strong>
                     {$post->member->surname} {$post->member->name}
-                    <span class="icon-user"></span>
+                    {include svg name => user}
                 </strong>
             </a>
         </div>
@@ -28,21 +30,21 @@
             {if $isTopic and $isAllow}
                 {if $isLocked}
                     <a class="buttonLike" href="{plink Forum:lockTopic $post->id,0}">
-                        <span class="icon-lock-open-alt"></span> odemknout
+                        {include svg name => unlock-alt} odemknout
                     </a>
                 {else}
                     <a class="buttonLike" href="{plink Forum:lockTopic $post->id,1}">
-                        <span class="icon-lock"></span> zamknout
+                        {include svg name => lock} zamknout
                     </a>
                 {/if}
             {/if}
 
             {if !$isLocked}
                 {if $isAllow}
-                    <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete $post->id}"><span class="icon-trash"></span> smazat</a>
-                    <a class="buttonLike" href="{plink Forum:edit $post->id}"><span class="icon-pencil"></span> editovat</a>
+                    <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete $post->id}">{include svg name => trash} smazat</a>
+                    <a class="buttonLike" href="{plink Forum:edit $post->id}">{include svg name => pencil} editovat</a>
                 {/if}
-                <a class="buttonLike" href="{plink Forum:cite $post->id}"><span class="icon-quote-left"></span> citace</a>
+                <a class="buttonLike" href="{plink Forum:cite $post->id}">{include svg name => quote-left} citace</a>
             {/if}
             </div>
 

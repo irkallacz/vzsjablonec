@@ -1,5 +1,5 @@
 {contentType text/csv}
-ID,Příjmení,Jméno,Datum narození,Město,Ulice,E-mail
+ID,Příjmení,Jméno,"Datum narození",Ulice,Město,E-mail,Telefon,Zaměstnání,"Datum registrace"
 {foreach $members as $member}
-{$member->id},{$member->surname},{$member->name},{$member->date_born|date:'d. m. Y'},{$member->mesto},{$member->ulice},{$member->mail}
+{$member->id},{$member->surname},{$member->name},"{$member->date_born|date:'d. m. Y'}",{$member->ulice},{$member->mesto},{$member->mail},{$member->telefon},"{$member->zamestnani}","{$member->date_add|date:'d. m. Y'}"
 {/foreach}

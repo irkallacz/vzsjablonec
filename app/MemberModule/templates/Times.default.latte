@@ -19,16 +19,16 @@
 {block #content}
 
 <ul class="buttonMenu" n:if="$user->isInRole('board')">
-<li><a n:href="csv" class="buttonLike"><span class="icon-file-excel"></span> stáhnout exel</a></li>
-<li><a n:href="add" class="buttonLike"><span class="icon-plus"></span> nový záznam</a></li>
+<li><a n:href="csv" class="buttonLike">{include svg name => file-excel} stáhnout exel</a></li>
+<li><a n:href="add" class="buttonLike">{include svg name => plus} nový záznam</a></li>
 </ul>
 
 <p n:if="$order or $where" id="menuOnTop"> 
 <span n:if="$order"><b>Řazení:</b> 
-	<a n:foreach="$order as $key => $value" class="buttonLike" title="Zrušit" n:href="setOrder,$key"><span class="icon-cancel char"></span> {$columLabels[$key]}</a> 
+	<a n:foreach="$order as $key => $value" class="buttonLike" title="Zrušit" n:href="setOrder,$key">{include svg name => cancel} {$columLabels[$key]}</a>
 </span> 
 <span n:if="$where"><b>Filter:</b> 
-	<a n:foreach="$where as $key => $value" class="buttonLike" title="Zrušit" n:href="setWhere,$key"><span class="icon-cancel char"></span> {$columLabels[$whereValues[$key]]}</a> 
+	<a n:foreach="$where as $key => $value" class="buttonLike" title="Zrušit" n:href="setWhere,$key">{include svg name => cancel} {$columLabels[$whereValues[$key]]}</a>
 </span> 
 </p>
  
@@ -36,13 +36,13 @@
 <tr class="first">
 	<th n:if="$user->isInRole('board')"></th>
 	<th n:foreach="$columLabels as $colum => $label">
-	<a class="buttonLike" title="Řadit jako {$label}" n:href="setOrder,$colum,1"><span class="icon-sort"></span> {$label}</a>
+	<a class="buttonLike" title="Řadit jako {$label}" n:href="setOrder,$colum,1">{include svg name => sort} {$label}</a>
 	</th>	
 </tr>
 	<tr n:foreach="$items as $item">
 		<td class="firstColum" n:if="$user->isInRole('board')">
-			<a title="Smazat" class="buttonLike confirm" data-query="Opravdu chcete tento záznam smazat?" n:href="delete,$item->id"><span class="icon-trash"></span></a> 
-			<a title="Editovat" class="buttonLike" n:href="edit,$item->id"><span class="icon-pencil"></span></a>
+			<a title="Smazat" class="buttonLike confirm" data-query="Opravdu chcete tento záznam smazat?" n:href="delete,$item->id">{include svg name => trash}</a>
+			<a title="Editovat" class="buttonLike" n:href="edit,$item->id">{include svg name => pencil}</a>
 		</td>
 		{var $time = $item->time->format('%I:%S')}
 		<td><a title="Pouze {$item->jmeno}" n:href="setWhere,'user_id',$item->user_id">{$item->jmeno}</a></td>

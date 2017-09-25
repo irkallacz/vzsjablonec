@@ -17,7 +17,7 @@ table#items .first { font-size: 1.1em;}
 
 {block #content}
 
-<p n:if="$user->isInRole('Board')" class="right"><a class="buttonLike" n:href="add"><span class="icon-plus"></span> nové hlasování</a></p>
+<p n:if="$user->isInRole('Board')" class="right"><a class="buttonLike" n:href="add">{include svg name => plus} nové hlasování</a></p>
 
 <table id="items">
 <tr class="first"><th>Hlasování</th><th>Počet hlasů</th><th>Poslední hlas</th></tr>
@@ -32,9 +32,9 @@ table#items .first { font-size: 1.1em;}
 	$item->member_id == $user->getId() ? logged">
 	<td class="col"><a class="noLink" title="{$item->title}{if $locked} (uzamčeno){/if}" n:href="view,$item->id"><div>
 	<strong class="headerLike">
-		{if $locked}<span class="icon-lock"></span>{/if} {$item->title|firstUpper}
+		{if $locked}{include svg name => lock}{/if} {$item->title|firstUpper}
 	</strong>
-	<span class="no-wrap"><span class="char">⇨</span> od <b>{$item->member->surname} {$item->member->name}</b></span>
+	<span class="no-wrap">{include svg name => user} <b>{$item->member->surname} {$item->member->name}</b></span>
 	</div></a></td>
 	<td class="center">{$item->related('hlasovani_member','hlasovani_id')->count('member_id')}</td>
 	<td class="col">
@@ -42,9 +42,9 @@ table#items .first { font-size: 1.1em;}
 	<div class="right" n:if="$post">
 	<strong class="headerLike" title="{$post->date_add|timeAgoInWords}">{$post->date_add|date:'%H:%M %d.%m.%Y'}</strong>
 	
-	<span n:if="$member" class="no-wrap"><span class="char">⇨</span> od <b>
-	{$member->surname} {$member->name}	
-	</b></span>
+	<span n:if="$member" class="no-wrap">
+		{include svg name => user} <b>{$member->surname} {$member->name}</b>
+	</span>
 
 	</div>
 	</td>
@@ -53,7 +53,7 @@ table#items .first { font-size: 1.1em;}
 </table>
 
 <p class="right">
-<a n:href="Feed:hlasovani" class="buttonLike"><span class="icon-rss"></span> RSS Hlasováni</a>
+<a n:href="Feed:hlasovani" class="buttonLike">{include svg name => feed} RSS Hlasováni</a>
 </p>
 
 {/block}
