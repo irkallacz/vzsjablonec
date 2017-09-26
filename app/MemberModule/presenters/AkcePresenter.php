@@ -482,7 +482,6 @@ class AkcePresenter extends LayerPresenter {
 		$form->addSubmit('ok')
 			->getControlPrototype()->setName('button')->setHtml('<svg class="icon icon-upload"><use xlink:href="'.$this->template->basePath.'/img/symbols.svg#icon-upload"></use></svg>');
 
-
 		$form->onSuccess[] = [$this, 'uploadBillFormSubmitted'];
 
 		return $form;

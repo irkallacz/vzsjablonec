@@ -6,9 +6,9 @@
     <div id="post/{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
         <div class="top headerLike">
             <a class="float-right" href="{plink Forum:post $post->id}" title="{$post->date_add|timeAgoInWords}">
-                {include svg name => comments-o} {$post->date_add|date:'%d.%m.%Y %H:%M'}
+                {include svg name => comments} {$post->date_add|date:'%d.%m.%Y %H:%M'}
             </a>
-            <a href="{plink Member:view,$post->member_id}" title="profil uživatele">
+            <a href="{plink Member:view $post->member_id}" title="profil uživatele">
                 <strong>
                     {$post->member->surname} {$post->member->name}
                     {include svg name => user}
@@ -24,8 +24,7 @@
         {var $isUpdated = ($post->date_add != $post->date_update)}
         {var $isAllow = (($user->id == $post->member_id) or ($user->isInRole('admin')))}
 
-        <div class="bottom" {*n:if="(!$isLocked)or($isLocked and $isUpdated)"*}>
-            {*<div n:if="$isUpdated" n:class="update, (($isTopic and ($post->member_id == $user->id)) or !$isLocked) ? float-left" title="{$post->date_update|timeAgoInWords}">*}
+        <div class="bottom">
             <div class="buttons float-right" n:if="(!$isLocked or $isTopic)and($user->isInRole('member'))">
             {if $isTopic and $isAllow}
                 {if $isLocked}

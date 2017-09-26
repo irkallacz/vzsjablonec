@@ -14,6 +14,7 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Html;
 use Nette\Database\SqlLiteral;
 use Nette\Utils\DateTime;
+use Tracy\Debugger;
 use WebLoader\Compiler;
 use WebLoader\FileCollection;
 use WebLoader\Nette\JavaScriptLoader;
@@ -179,7 +180,10 @@ class ForumPresenter extends LayerPresenter{
 			->setType('search')
 			->setAttribute('class','search');
 
-		$form->addSubmit('ok', 'OK');
+		Debugger::barDump($this->template->baseUri);
+
+		$form->addSubmit('ok')
+			->getControlPrototype()->setName('button')->setHtml('<svg class="icon icon-search"><use xlink:href="'.$this->template->baseUri.'/img/symbols.svg#icon-search"></use></svg>');
 
 		$form->onSuccess[] = [$this, 'processSearchForm'];
 
