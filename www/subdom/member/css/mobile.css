@@ -1,11 +1,11 @@
   #menu {float: none;  line-height: 2.5em; margin-top: 1em}
-  #menu li a {display: inline; display: inline-block; line-height: 1.2em; margin-right: 1ex; width: auto;}
-  #menu li {display: inline; display: inline-block; line-height: 1.2em; width: auto; margin-top: 1ex;}
+  #menu li a {display: inline-block; line-height: 1.2em; margin-right: 1ex; width: auto;}
+  #menu li {display: inline-block; line-height: 1.2em; width: auto; margin-top: 1ex;}
   #text {margin-left: 0;}
   #text h1 {top: 0; left: 1ex;}
   #top img {display: none;}
   #top #profile {display: none;}
   #top h1 {display: block; vertical-align: baseline;}
-  #top #top-right {border-radius: 1ex;}
+  #top #top-right {top: -1.25em;}
 
   table#items .post, table#items .count {display: none}
