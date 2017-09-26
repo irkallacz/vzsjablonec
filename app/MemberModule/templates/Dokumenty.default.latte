@@ -12,17 +12,13 @@
 	</style>
 	<script type="text/javascript">
 		$(function() {
+			open = document.querySelector('.icon-folder-open').outerHTML;
+			close = document.querySelector('.icon-folder').outerHTML;
+
 			$('.toogleDir').click(function () {
 				$('#folder-'+this.id).toggle();
-
-				el = $('#'+this.id+'>svg.icon');
-				if (el.hasClass('icon-folder')){
-					el.removeClass('icon-folder');
-					el.addClass('icon-folder-open');
-				}else{
-					el.removeClass('icon-folder-open');
-					el.addClass('icon-folder');
-				}
+				var isOpen = this.querySelector('svg').classList.contains('icon-folder-open');
+				this.querySelector('span').innerHTML = isOpen ? close : open;
 			})
 		});
 	</script>
@@ -34,7 +30,7 @@
 	{foreach $dir->related($TABLE_DIRECTORIES)->order('name') as $file}
 			<li class="dir">
 				<a id="{$file->id}" class="toogleDir">
-					{include svg name => $root ? 'folder-open' : 'folder'}
+					<span>{include svg name => $root ? 'folder-open' : 'folder'}</span>
 					<strong>{$file->name}</strong>
 				</a>
 				<a n:if="$user->isInRole('board')and($root)" class="float-right" href="{$file->webViewLink}" target="_blank" title="otevřít">
