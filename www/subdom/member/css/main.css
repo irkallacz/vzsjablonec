@@ -112,7 +112,7 @@ ul.error li {color: red;}
 .loader { background-image: url('../img/loading.gif'); background-repeat: no-repeat; display: inline-block; height: 24px; width: 24px; background-position: center;}
 
 .buttonLike {color: white; font-weight: bold; padding: 0.5ex 1ex; border-radius: 10px; background-color: #0089d2;
-white-space: nowrap; display: inline-block;
+white-space: nowrap; display: inline-block; border: none;
 	background-image: -moz-linear-gradient(#60afe4,#0089d2); 
 	background-image: -webkit-linear-gradient(#60afe4,#0089d2);
 	background-image: linear-gradient(#60afe4,#0089d2);  
@@ -126,7 +126,7 @@ a.head {background-color: #12397e; font-size: 2ex; border: 1px solid black;
 
 #text a.buttonLike {text-decoration: none;}
 
-#text a.buttonLike:hover, #text a.buttonLike:active, #text a.buttonLike:focus 
+#text .buttonLike:hover, #text .buttonLike:active, #text .buttonLike:focus
 {background-color: #e1001a; color: white; background-image: none;}
 
 #text span.gray.buttonLike {background-color: gray; 

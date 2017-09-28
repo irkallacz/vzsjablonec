@@ -44,8 +44,23 @@
 	<a id="change-button" class="buttonLike">{include svg name => group} upravit účastníky</a>
 	<div id="change-form" class="hide">
 		<h3>Upravit účastníky</h3>
-		<div n:snippet="logginForm">{control logginForm}</div>
-		<p>
-		<div n:snippet="unLogginForm" n:if="$hasUsers">{control unLogginForm}</div>
+		<div n:snippet="logginForm">
+			{form logginForm class => ajax}
+				{input member}
+				{input organizator}
+				<button n:name="ok" class="buttonLike">
+					{include svg name => user-plus} přidat
+				</button>
+			{/form}
+		</div>
+		<p></p>
+		<div n:snippet="unLogginForm" n:if="$hasUsers">
+			{form unLogginForm class => ajax}
+			{input member}
+			<button n:name="ok" class="buttonLike">
+				{include svg name => user-times} odebrat
+			</button>
+			{/form}
+		</div>
 	</div>
 {/if}

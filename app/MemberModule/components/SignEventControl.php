@@ -180,25 +180,13 @@ class SignEventControl extends Control {
 	public function createComponentLogginForm() {
 		$form = new Form;
 
-		$form->getElementPrototype()->class = 'ajax';
-
 		$list = $this->getLogginList();
 
 		$form->addSelect('member', null, $list);
 		$form->addCheckbox('organizator', 'Organizátor')
 			->setDefaultValue(FALSE);
-		$form->addSubmit('ok')
-			->getControlPrototype()
-				->setName('button')
-				->setHtml('<svg class="icon icon-user-plus"><use xlink:href="'.$this->template->baseUri.'/img/symbols.svg#icon-user-plus"></use></svg> přidat');
-
+		$form->addSubmit('ok');
 		$form->onSuccess[] = [$this, 'processLogginForm'];
-
-		$renderer = $form->getRenderer();
-		$renderer->wrappers['controls']['container'] = NULL;
-		$renderer->wrappers['pair']['container'] = NULL;
-		$renderer->wrappers['label']['container'] = NULL;
-		$renderer->wrappers['control']['container'] = NULL;
 
 		return $form;
 	}
@@ -231,23 +219,11 @@ class SignEventControl extends Control {
 	public function createComponentUnLogginForm() {
 		$form = new Form;
 
-		$form->getElementPrototype()->class = 'ajax';
-
 		$list = $this->memberService->getMemberListForAkceComponent($this->akce->id);
 
 		$form->addSelect('member', null, $list);
-		$form->addSubmit('ok')
-			->getControlPrototype()
-				->setName('button')
-				->setHtml('<svg class="icon icon-user-times"><use xlink:href="'.$this->template->baseUri.'/img/symbols.svg#icon-user-times"></use></svg> odebrat');
-
+		$form->addSubmit('ok');
 		$form->onSuccess[] = [$this, 'processUnLogginForm'];
-
-		$renderer = $form->getRenderer();
-		$renderer->wrappers['controls']['container'] = NULL;
-		$renderer->wrappers['pair']['container'] = NULL;
-		$renderer->wrappers['label']['container'] = NULL;
-		$renderer->wrappers['control']['container'] = NULL;
 
 		return $form;
 	}
