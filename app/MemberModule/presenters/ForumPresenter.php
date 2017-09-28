@@ -180,8 +180,6 @@ class ForumPresenter extends LayerPresenter{
 			->setType('search')
 			->setAttribute('class','search');
 
-		Debugger::barDump($this->template->baseUri);
-
 		$form->addSubmit('ok')
 			->getControlPrototype()->setName('button')->setHtml('<svg class="icon icon-search"><use xlink:href="'.$this->template->baseUri.'/img/symbols.svg#icon-search"></use></svg>');
 
