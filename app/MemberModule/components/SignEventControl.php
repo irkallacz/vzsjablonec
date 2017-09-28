@@ -19,6 +19,9 @@ use Tracy\Debugger;
 
 class SignEventControl extends Control {
 
+	const ORG = 1;
+	const USER = 0;
+
 	/** @var AkceService */
 	private $akceService;
 
@@ -46,8 +49,8 @@ class SignEventControl extends Control {
 		$this->memberService = $memberService;
 		$this->akce = $akce;
 
-		$this->userList = $this->getMemberList(FALSE)->fetchPairs('member_id', 'member_id');
-		$this->orgList = $this->getMemberList(TRUE)->fetchPairs('member_id', 'member_id');
+		$this->userList = $this->getMemberList(self::USER)->fetchPairs('member_id', 'member_id');
+		$this->orgList = $this->getMemberList(self::ORG)->fetchPairs('member_id', 'member_id');
 	}
 
 	public function render() {
@@ -58,11 +61,11 @@ class SignEventControl extends Control {
 
 		$this->template->hasUsers = !empty($this->getLocalMemberList());
 
-		$this->template->userIsInUserList = $this->userIsInList(FALSE);
-		$this->template->userIsInOrgList = $this->userIsInList(TRUE);
+		$this->template->userIsInUserList = $this->userIsInList(self::USER);
+		$this->template->userIsInOrgList = $this->userIsInList(self::ORG);
 
-		$this->template->isUserAllow = $this->userIsAllowToLog(FALSE);
-		$this->template->isOrgAllow = $this->userIsAllowToLog(TRUE);
+		$this->template->isUserAllow = $this->userIsAllowToLog(self::USER);
+		$this->template->isOrgAllow = $this->userIsAllowToLog(self::ORG);
 
 		$this->template->render();
 	}
@@ -88,8 +91,7 @@ class SignEventControl extends Control {
 		if (is_null($isOrg)) {
 			return in_array($userId, $this->getLocalMemberList());
 		} else {
-			if ($isOrg == TRUE) return in_array($userId, $this->orgList);
-			else return in_array($userId, $this->userList);
+			return $isOrg ? in_array($userId, $this->orgList) : in_array($userId, $this->userList);
 		}
 	}
 
@@ -105,9 +107,9 @@ class SignEventControl extends Control {
 			(date_create() <= $this->akce->date_deatline)
 			and
 			(
-				(($toOrg == TRUE) and ($this->akce->login_org))
+				(($toOrg == self::ORG) and ($this->akce->login_org))
 				or
-				(($toOrg == FALSE)) and ($this->akce->login_mem)
+				(($toOrg == self::USER)) and ($this->akce->login_mem)
 			)
 		);
 	}
