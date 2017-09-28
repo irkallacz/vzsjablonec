@@ -63,7 +63,9 @@ class MemberPresenter extends LayerPresenter {
 
 		$form->addSubmit('ok')
 			->setHtmlId('member-search-button')
-			->getControlPrototype()->setName('button')->setHtml('<svg class="icon icon-search"><use xlink:href="'.$this->template->baseUri.'/img/symbols.svg#icon-search"></use></svg>');
+			->getControlPrototype()
+				->setName('button')
+				->setHtml('<svg class="icon icon-search"><use xlink:href="'.$this->template->baseUri.'/img/symbols.svg#icon-search"></use></svg>');
 
 		$form->onSuccess[] = [$this, 'memberSearchFormSubmitted'];
 
