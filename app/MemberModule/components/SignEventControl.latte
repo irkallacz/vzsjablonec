@@ -44,8 +44,8 @@
 	<a id="change-button" class="buttonLike">{include svg name => group} upravit účastníky</a>
 	<div id="change-form" class="hide">
 		<h3>Upravit účastníky</h3>
-		<div n:snippet="logginForm">Přidat: {control logginForm}</div>
+		<div n:snippet="logginForm">{control logginForm}</div>
 		<p>
-		<div n:snippet="unLogginForm" n:if="$hasUsers">Odebrat: {control unLogginForm}</div>
+		<div n:snippet="unLogginForm" n:if="$hasUsers">{control unLogginForm}</div>
 	</div>
 {/if}

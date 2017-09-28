@@ -185,7 +185,11 @@ class SignEventControl extends Control {
 		$form->addSelect('member', null, $list);
 		$form->addCheckbox('organizator', 'Organizátor')
 			->setDefaultValue(FALSE);
-		$form->addSubmit('send', '+');
+		$form->addSubmit('ok')
+			->getControlPrototype()
+				->setName('button')
+				->setHtml('<svg class="icon icon-user-plus"><use xlink:href="'.$this->template->baseUri.'/img/symbols.svg#icon-user-plus"></use></svg> přidat');
+
 		$form->onSuccess[] = [$this, 'processLogginForm'];
 
 		$renderer = $form->getRenderer();
@@ -230,7 +234,11 @@ class SignEventControl extends Control {
 		$list = $this->memberService->getMemberListForAkceComponent($this->akce->id);
 
 		$form->addSelect('member', null, $list);
-		$form->addSubmit('send', '-');
+		$form->addSubmit('ok')
+			->getControlPrototype()
+				->setName('button')
+				->setHtml('<svg class="icon icon-user-times"><use xlink:href="'.$this->template->baseUri.'/img/symbols.svg#icon-user-times"></use></svg> odebrat');
+
 		$form->onSuccess[] = [$this, 'processUnLogginForm'];
 
 		$renderer = $form->getRenderer();
