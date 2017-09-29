@@ -52,7 +52,7 @@
 
     {if $user->isInRole('confirm')}
         {if !$akce->confirm}
-        <li><a class="buttonLike" n:href="allow, $akce->id, TRUE">{include svg name => ok} povolit</a></li>
+        <li><a class="buttonLike" n:href="allow, $akce->id, TRUE">{include svg name => check} povolit</a></li>
         {else}
         <li><a class="buttonLike" n:href="allow, $akce->id, 0">{include svg name => ban} zakázat</a></li>
         {/if}
