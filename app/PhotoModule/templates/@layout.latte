@@ -88,15 +88,16 @@
 
 {define photoList}
 {if}
-<a n:href="Album:view $album->id.'-'.$album->slug"><h3>{$album->name}</h3></a>
+<a n:href="//Album:view $album->id.'-'.$album->slug" title="{$album->text|truncate:70}" class="round">
+	<h3>{$album->name}</h3>
 	{var $photos = $album->related('photo')}
 	{if ($album->visible) and (!$user->isLoggedIn())}{php $photos->where('visible', TRUE)}{/if}
 	{var $images = clone $photos}
 
-  <a n:href="Album:view $album->id.'-'.$album->slug" title="{$album->text|truncate:70}" class="round">
-  <ul n:inner-foreach="$images->order('order, date_add')->limit(8) as $image" class="photoList">
-    <li>{include #image}</li>
-  </ul></a>
+	<ul n:inner-foreach="$images->order('order, date_add')->limit(8) as $image" class="photoList">
+		<li>{include #image}</li>
+	</ul>
+</a>
 
   {include #albumPopis album => $album, pocet => $photos->count('id')}
 {/if isset($image)or($user->isLoggedIn())}
