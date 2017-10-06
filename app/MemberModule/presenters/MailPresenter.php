@@ -69,9 +69,7 @@ class MailPresenter extends LayerPresenter{
       		->setAttribute('class', 'max')
       		->setRequired('Musíte vybrat alespoň jednoho příjemce');
 		
-		$form->addButton('open', '+')
-    		->setAttribute('class', 'buttonLike')
-    		->setAttribute('onclick', 'adresy()');
+		$form->addButton('open');
 
 		$form->addCheckboxList('users', 'Příjemci')
 			->setItems($this->memberService->getMembersArray());

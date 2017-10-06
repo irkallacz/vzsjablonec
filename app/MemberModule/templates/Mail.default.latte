@@ -24,18 +24,17 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
     		}
 	});
 
-	function adresy(){		
-		if($('#adresati').is(":visible")) {
-			$('#frm-mailForm-to').val('');
-			$('#adresati .label input:checked').each(function(index) {
-	  			$('#frm-mailForm-to').val($('#frm-mailForm-to').val()+this.getAttribute('data-mail')+',');
-			});
-		}
-		$('#adresati').slideToggle('fast');
-	}
-
 	$(function() {
         $.Shortcuts.start();
+        $('#openButton').click(function(){
+			if($('#adresati').is(":visible")) {
+				$('#frm-mailForm-to').val('');
+				$('#adresati .label input:checked').each(function(index) {
+					$('#frm-mailForm-to').val($('#frm-mailForm-to').val()+this.getAttribute('data-mail')+',');
+				});
+			}
+			$('#adresati').slideToggle('fast');
+		})
     });    
 </script>
 {/block}
@@ -51,7 +50,7 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 </ul>
 
 <table id="mail">
-<tr><th>{label to /}</th><td class="no-wrap">{input to} {if !isset($isAkce)}{input open}{/if}</td></tr>
+	<tr><th>{label to /}</th><td class="no-wrap">{input to} {if !isset($isAkce)}<button id="openButton" class="buttonLike" n:name="open">{include svg name => group}</button>{/if}</td></tr>
 <tr><td colspan="2">
 <fieldset id="adresati" class="hide" n:inner-foreach="$form[users]->items as $id => $label">
     {if $iterator->isFirst()}<div class="float-left">{/if}
