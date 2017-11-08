@@ -47,7 +47,7 @@ php:
 	zlib.output_compression: yes
 
 session:
-    autoStart: smart
+    autoStart: true
     savePath: "%tempDir%/../session"
     gc_maxlifetime: 21600
 
