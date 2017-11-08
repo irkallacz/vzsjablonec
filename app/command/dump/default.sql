@@ -1,4 +1,4 @@
--- 2017-08-01T13:33:15+02:00 - mysql:host=localhost;dbname=vzsjablonec
+-- 2017-11-08T21:28:54+01:00 - mysql:host=localhost;dbname=vzsjablonec
 
 -- Table structure for table `akce`
 
@@ -11,7 +11,7 @@ CREATE TABLE `akce` (
   `message` text CHARACTER SET utf8 COLLATE utf8_czech_ci,
   `date_start` datetime NOT NULL,
   `date_end` datetime NOT NULL,
-  `date_deatline` date NOT NULL,
+  `date_deatline` datetime NOT NULL,
   `date_add` datetime NOT NULL,
   `date_update` datetime NOT NULL,
   `price` smallint(5) unsigned DEFAULT NULL,
@@ -26,8 +26,7 @@ CREATE TABLE `akce` (
   `anketa_id` smallint(5) unsigned DEFAULT NULL,
   `forum_topic_id` smallint(5) unsigned DEFAULT NULL,
   `album_id` smallint(5) unsigned DEFAULT NULL,
-  `privateId` varchar(32) DEFAULT NULL,
-  `publicId` varchar(32) DEFAULT NULL,
+  `calendarId` varchar(32) DEFAULT NULL,
   `report` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `bill` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `file` varchar(60) DEFAULT NULL,
@@ -41,7 +40,7 @@ CREATE TABLE `akce` (
   CONSTRAINT `akce_ibfk_2` FOREIGN KEY (`akce_for_id`) REFERENCES `akce_for` (`id`),
   CONSTRAINT `akce_ibfk_3` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `akce_ibfk_4` FOREIGN KEY (`anketa_id`) REFERENCES `anketa` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=582 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=618 DEFAULT CHARSET=utf8;
 
 -- Table structure for table `akce_for`
 
@@ -77,7 +76,7 @@ CREATE TABLE `akce_rating_member` (
   `rating` tinyint(3) unsigned DEFAULT NULL,
   `message` text COLLATE utf8_czech_ci,
   `anonymous` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `public` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `public` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `date_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`akce_id`,`member_id`),
   KEY `akce_id` (`akce_id`),
@@ -100,7 +99,7 @@ CREATE TABLE `anketa` (
   PRIMARY KEY (`id`),
   KEY `member_id` (`member_id`),
   CONSTRAINT `anketa_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `anketa_member`
 
@@ -128,7 +127,7 @@ CREATE TABLE `anketa_odpoved` (
   PRIMARY KEY (`id`),
   KEY `anketa_id` (`anketa_id`),
   CONSTRAINT `anketa_odpoved_ibfk_1` FOREIGN KEY (`anketa_id`) REFERENCES `anketa` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=207 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `dokumenty`
 
@@ -198,7 +197,7 @@ CREATE TABLE `forum_post` (
   CONSTRAINT `forum_post_ibfk_4` FOREIGN KEY (`forum_id`) REFERENCES `forum` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `forum_post_ibfk_5` FOREIGN KEY (`forum_topic_id`) REFERENCES `forum_post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `forum_post_ibfk_6` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4236 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4152 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `hlasovani`
 
@@ -214,8 +213,8 @@ CREATE TABLE `hlasovani` (
   `member_id` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `member_id` (`member_id`),
-  CONSTRAINT `hlasovani_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+  CONSTRAINT `hlasovani_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `hlasovani_member`
 
@@ -243,7 +242,7 @@ CREATE TABLE `hlasovani_odpoved` (
   PRIMARY KEY (`id`),
   KEY `hlasovani_id` (`hlasovani_id`),
   CONSTRAINT `hlasovani_odpoved_ibfk_2` FOREIGN KEY (`hlasovani_id`) REFERENCES `hlasovani` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8;
 
 -- Table structure for table `kvalifikace`
 
@@ -265,12 +264,52 @@ CREATE TABLE `kvalifikace_member` (
   PRIMARY KEY (`kvalifikace_id`,`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
+-- Table structure for table `message`
+
+DROP TABLE IF EXISTS `message`;
+CREATE TABLE `message` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `message_type_id` int(11) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
+  `date_add` datetime NOT NULL,
+  `date_send` datetime DEFAULT NULL,
+  `subject` text COLLATE utf8_czech_ci NOT NULL,
+  `text` text COLLATE utf8_czech_ci NOT NULL,
+  `param` text COLLATE utf8_czech_ci,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `message_type_id` (`message_type_id`),
+  CONSTRAINT `message_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `message_ibfk_2` FOREIGN KEY (`message_type_id`) REFERENCES `message_type` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
+-- Table structure for table `message_type`
+
+DROP TABLE IF EXISTS `message_type`;
+CREATE TABLE `message_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(50) COLLATE utf8_czech_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
+-- Table structure for table `message_user`
+
+DROP TABLE IF EXISTS `message_user`;
+CREATE TABLE `message_user` (
+  `message_id` int(10) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
+  KEY `message_id` (`message_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `message_user_ibfk_1` FOREIGN KEY (`message_id`) REFERENCES `message` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `message_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
 -- Table structure for table `password_session`
 
 DROP TABLE IF EXISTS `password_session`;
 CREATE TABLE `password_session` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `member_id` smallint(5) unsigned NOT NULL,
+  `member_id` smallint(5) unsigned NOT NULL DEFAULT '0',
   `pubkey` varchar(32) DEFAULT NULL,
   `date_end` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -312,7 +351,7 @@ CREATE TABLE `report` (
   CONSTRAINT `report_ibfk_1` FOREIGN KEY (`report_type_id`) REFERENCES `report_type` (`id`) ON DELETE CASCADE,
   CONSTRAINT `report_ibfk_2` FOREIGN KEY (`zos_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `report_ibfk_3` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=554 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=537 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `report_member`
 
@@ -355,7 +394,7 @@ CREATE TABLE `roles` (
   `id` tinyint(4) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) COLLATE utf8_czech_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `times`
 
@@ -373,7 +412,7 @@ CREATE TABLE `times` (
   KEY `member_id` (`user_id`),
   CONSTRAINT `times_ibfk_1` FOREIGN KEY (`times_disciplina_id`) REFERENCES `times_disciplina` (`id`) ON DELETE CASCADE,
   CONSTRAINT `times_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=584 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=573 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `times_disciplina`
 
@@ -392,8 +431,8 @@ CREATE TABLE `user` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(40) COLLATE utf8_czech_ci NOT NULL,
   `surname` varchar(40) COLLATE utf8_czech_ci NOT NULL,
+  `login` varchar(20) COLLATE utf8_czech_ci NOT NULL,
   `hash` varchar(60) COLLATE utf8_czech_ci NOT NULL,
-  `role` tinyint(4) DEFAULT '0',
   `date_born` date NOT NULL,
   `zamestnani` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
   `mesto` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
@@ -401,13 +440,16 @@ CREATE TABLE `user` (
   `mail` varchar(50) COLLATE utf8_czech_ci NOT NULL,
   `telefon` varchar(9) COLLATE utf8_czech_ci DEFAULT NULL,
   `text` text COLLATE utf8_czech_ci,
+  `role` tinyint(4) DEFAULT '0',
   `date_add` date DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `login` (`login`),
   UNIQUE KEY `mail` (`mail`),
   KEY `role` (`role`),
-  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+  FULLTEXT KEY `name_surname_zamestnani_mesto_ulice_mail_telefon_text` (`name`,`surname`,`zamestnani`,`mesto`,`ulice`,`mail`,`telefon`,`text`),
+  CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=135 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `user_log`
 
@@ -427,8 +469,8 @@ CREATE TABLE `user_rights` (
   `rights_id` tinyint(4) NOT NULL,
   PRIMARY KEY (`member_id`,`rights_id`),
   KEY `rights_id` (`rights_id`),
-  CONSTRAINT `user_rights_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `user_rights_ibfk_3` FOREIGN KEY (`rights_id`) REFERENCES `rights` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `user_rights_ibfk_1` FOREIGN KEY (`rights_id`) REFERENCES `rights` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `user_rights_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Trigger structure `password_session_bi`
@@ -440,4 +482,4 @@ SET NEW.pubkey = MD5(UUID())
 //
 DELIMITER ;
 
--- Completed on: 2017-08-01T13:33:15+02:00
+-- Completed on: 2017-11-08T21:28:54+01:00

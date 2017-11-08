@@ -65,6 +65,7 @@ services:
 	- App\Model\AnketyService
 	- App\Model\RatingService
 	- App\Model\TimesService
+	- App\Model\MessageService
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService(@database.photo.context)
 	- App\Model\WordpressService(@database.wordpress.context)

@@ -1,22 +1,31 @@
 {block #head}
-<script type="text/javascript" src="{$baseUri}/js/jquery.shortcuts.min.js"></script>
+<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+
 <style type="text/css" n:syntax="off">
 #text { padding-top: 1ex;}
 #mail { width: 95%; border-collapse: collapse;}
+#mail .texyla { width: 96%;}
 #mail .max { width: 90%;}
 #mail th { text-align: left;}
 #frm-mailForm-open { font-size: 1em; height: 2em; padding: 0px 1ex; vertical-align: middle;}
 
 input.buttonLike { border: none; cursor: pointer; font-size: 1.1em}
-input.buttonLike:hover, input.buttonLike:focus, 
+input.buttonLike:hover, input.buttonLike:focus,
 input.buttonLike:active { background-color: #da251c; color: white; background-image: none;}
 
 #adresati div.label { width: 15em; }
 #adresati { background-color: #EEE; border: 1px solid gray; border-radius: 2px; color: rgb(64,64,64); margin: 1ex 0px;}
 #adresati p { clear: both; padding-top: 1em; margin-bottom: 0px;}
 </style>
+<script type="text/javascript" src="{$baseUri}/js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{$baseUri}/js/jquery.shortcuts.min.js"></script>
 
-<script type="text/javascript" n:syntax="off">
+{control texylaJs}
+
+<script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
+<script type="text/javascript">
 	$.Shortcuts.add({
 	    	mask: 'Ctrl+A',
 	    	handler: function() {
@@ -24,9 +33,18 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
     		}
 	});
 
+	$.texyla.setDefaults({
+		baseDir: {$basePath}+'/texyla',
+		previewPath: {link texyPreview}
+	});
+
 	$(function() {
         $.Shortcuts.start();
-        $('#openButton').click(function(){
+
+		$('.texyla').textareaAutoSize();
+		$('.texyla').texyla(forum);
+
+		$('#openButton').click(function(){
 			if($('#adresati').is(":visible")) {
 				$('#frm-mailForm-to').val('');
 				$('#adresati .label input:checked').each(function(index) {
@@ -64,7 +82,7 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 <tr><th colspan="2">{label text /}</th></tr>
 <tr><td colspan="2">{input text}</td></tr>
 </table>
-<p>{input ok}</p>
+{*<p>{input ok}</p>*}
 {/form}
 
 {/block}

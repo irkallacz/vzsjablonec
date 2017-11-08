@@ -4,16 +4,23 @@ namespace App\MemberModule\Presenters;
 
 use App\Model\AkceService;
 use App\Model\MemberService;
+use App\Model\MessageService;
+use Joseki\Webloader\JsMinFilter;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
+use Nette\Utils\Json;
+use Tracy\Debugger;
+use WebLoader\Compiler;
+use WebLoader\FileCollection;
+use WebLoader\Nette\JavaScriptLoader;
 
 /**
  * Class MailPresenter
  * @package App\MemberModule\Presenters
  * @allow(member)
  */
-class MailPresenter extends LayerPresenter{
+class MailPresenter extends LayerPresenter {
 
 	/** @var MemberService @inject */
 	public $memberService;
@@ -21,94 +28,100 @@ class MailPresenter extends LayerPresenter{
 	/** @var AkceService @inject */
 	public $akceService;
 
-	/** @var IMailer @inject*/
+	/** @var MessageService @inject */
+	public $messageService;
+
+	/** @var IMailer @inject */
 	public $mailer;
 
 	/** @allow(board) */
-	public function renderDefault(){
-
-        $userMails = $this->memberService->getMembers()->fetchPairs('id','mail');
-        $this->template->userMails = $userMails;
+	public function renderDefault() {
+		$userMails = $this->memberService->getMembers()->fetchPairs('id', 'mail');
+		$this->template->userMails = $userMails;
 
 		$form = $this['mailForm'];
-    	if (!$form->isSubmitted()) {
-    		$this->template->pocet = ceil(count($userMails)/3);
-    	}
-  	}
+		if (!$form->isSubmitted()) {
+			$this->template->pocet = ceil(count($userMails) / 3);
+		}
+	}
 
 	/**
 	 * @param int $id
 	 * @param bool $organizator
 	 * @allow(member)
 	 */
-	public function renderAkce($id, $organizator = FALSE){
+	public function actionAkce($id) {
 		$form = $this['mailForm'];
+		$akce = $this->akceService->getAkceById($id);
+		$users = $this->memberService->getMembersByAkceId($id)->where('NOT role', NULL);
 
-		$users = $this->memberService->getMembersByAkceId($id, $organizator);
-		$users->where('NOT role', 0);
+		$form['to']->setDefaultValue(join(',', $users->fetchPairs('id', 'mail')));
+		$form['subject']->setDefaultValue($akce->name . ': ');
 
-        $form['to']->setDefaultValue(join(',',$users->fetchPairs('id','mail')));
-		$form['users']->setDefaultValue($users->fetchPairs('id','id'));
+		$this->template->isAkce = TRUE;
 
-        $this->template->isAkce = TRUE;
-
-        $this->template->pocet = ceil(count($users)/3);
-        $this->setView('default');
-
-  	}
+		$this->template->pocet = ceil(count($users) / 3);
+		$this->setView('default');
+	}
 
 	/**
 	 * @return Form
 	 * @allow(member)
 	 */
-	protected function createComponentMailForm(){
+	protected function createComponentMailForm() {
 		$form = new Form;
-		
+
 		$form->addText('to', 'Příjemci', 50)
-      		->setAttribute('readonly')
-      		->setAttribute('class', 'max')
-      		->setRequired('Musíte vybrat alespoň jednoho příjemce');
-		
+			->setAttribute('readonly')
+			->setAttribute('class', 'max')
+			->setRequired('Musíte vybrat alespoň jednoho příjemce');
+
 		$form->addButton('open');
 
 		$form->addCheckboxList('users', 'Příjemci')
 			->setItems($this->memberService->getMembersArray());
 
 		$form->addText('subject', 'Předmět', 50)
-      		->setRequired('Vyplňte %label')
-      		->setAttribute('spellcheck', 'true')
-      		->setAttribute('class', 'max');
+			->setRequired('Vyplňte %label')
+			->setAttribute('spellcheck', 'true')
+			->setAttribute('class', 'max');
 
 
-    	$form->addUpload('file','Příloha')
-    		->setAttribute('class', 'max')
-    		->addCondition(Form::FILLED)    			
-        		->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 16 MB.',16 * 1024 * 1024 /* v bytech */);
+		$form->addUpload('file', 'Příloha')
+			->setAttribute('class', 'max')
+			->addCondition(Form::FILLED)
+			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 16 MB.', 16 * 1024 * 1024 /* v bytech */);
 
-    	$form->addTextArea('text', 'Text e-mailu:', 45)
-      		->setRequired('Vyplňte %label')
-      		->setAttribute('spellcheck', 'true')
-      		->setAttribute('class', 'max');
-      		
-      		//->setAttribute('class','texyla');	
+		$form->addTextArea('text', 'Text e-mailu', 45)
+			->setRequired('Vyplňte %label')
+			->setAttribute('spellcheck', 'true')
+			->setAttribute('class', 'texyla');
 
-        $form->addSubmit('ok', 'Odeslat');
+		//$form->addSubmit('ok', 'Odeslat');
 		$form->onSuccess[] = [$this, 'mailFormSubmitted'];
 
-    	return $form;
+		return $form;
 	}
 
 	/**
 	 * @param Form $form
 	 * @allow(member)
 	 */
-	public function mailFormSubmitted(Form $form){
-		$akce_id = (int) $this->getParameter('id');
-
+	public function mailFormSubmitted(Form $form) {
 		$values = $form->getValues();
+		$param = [];
 
 		$sender = $this->memberService->getMemberById($this->getUser()->getId());
-		$members = $this->memberService->getMembers()->where('id', $values->users);
+
+		if ($this->getAction() == 'akce') {
+			$akceId = (int)$this->getParameter('id');
+			$members = $this->memberService->getMembersByAkceId($akceId)->where('NOT role', NULL);
+			$param['akce_id'] = $akceId;
+		} else {
+			$members = $this->memberService->getMembers()->where('id', $values->users);
+		}
+
+		$members->where('NOT id', $sender->id);
 
 		if (($form['file']->isFilled()) and (!$values->file->isOK())) {
 			$form->addError('Chyba při nahrávání souboru');
@@ -116,26 +129,54 @@ class MailPresenter extends LayerPresenter{
 		}
 
 		$mail = $this->getNewMail();
-		$mail->addReplyTo($sender->mail, $sender->surname.' '.$sender->name);
-		$mail->addBcc($sender->mail, $sender->surname.' '.$sender->name);
+		$mail->addReplyTo($sender->mail, $sender->surname . ' ' . $sender->name);
+		$mail->addBcc($sender->mail, $sender->surname . ' ' . $sender->name);
 
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/newMail.latte');
 		$template->text = $values->text;
 
-		$mail->setSubject('[VZS Jablonec] '.$values->subject)
-			->setBody($template);
+		$mail->setSubject('[VZS Jablonec] ' . $values->subject)
+			->setHtmlBody($template);
 
 		foreach ($members as $member)
-			$mail->addTo($member->mail, $member->surname.' '.$member->name);
+			$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
 
-		if (($form['file']->isFilled()) and ($values->file->isOK()))
-			$mail->addAttachment($values->file->getSanitizedName(),$values->file->getContents());
+		if (($form['file']->isFilled()) and ($values->file->isOK())){
+			$filename = $values->file->getSanitizedName();
+			$mail->addAttachment($filename, $values->file->getContents());
+			$values->file->move(WWW_DIR.'/doc/message/'.$filename);
+			$param['filename'] = $filename;
+		}
 
 		$this->mailer->send($mail);
 
+		$this->messageService->addMessage(
+			$values->subject,
+			$values->text,
+			$this->getUser()->getId(),
+			$members->fetchPairs('id'),
+			$param ? Json::encode($param) : NULL
+ 		);
+
 		$this->flashMessage('Váš mail byl v pořádku odeslán');
 
-		if ($akce_id) $this->redirect('Akce:view',$akce_id); else $this->redirect('Mail:default');
+		if (isset($akceId)) $this->redirect('Akce:view', $akceId); else $this->redirect('Mail:default');
 	}
+
+	/**
+	 * @return JavaScriptLoader
+	 * @allow(member)
+	 */
+	protected function createComponentTexylaJs() {
+		$files = new FileCollection(WWW_DIR . '/texyla/js');
+		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
+		$files->addFiles([WWW_DIR . '/js/texyla_mail.js']);
+
+		$compiler = Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
+		$compiler->addFileFilter(new JsMinFilter());
+
+		return new JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+	}
+
 }
