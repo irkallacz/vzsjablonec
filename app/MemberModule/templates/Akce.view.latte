@@ -9,7 +9,6 @@
     .member_list .logged { color: #C22;}
 
     .head { margin-bottom: 1em;}
-    #mail .buttonLike { margin-top: 1em;}
     #list td { vertical-align: top; padding-right: 1ex}
     #desc { text-align: left; }
     #desc th { padding-right: 1em; }
@@ -113,11 +112,9 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
 
 {control signEvent}
 
-
-    <div n:if="$user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))" id="mail">
+    <p n:if="$user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))" id="mail">
         <a class="buttonLike" n:href="Mail:akce $akce->id">{include svg name => envelope} poslat mail účastníkům</a>
-        <a class="buttonLike" n:href="Mail:akce $akce->id, TRUE">{include svg name => envelope} poslat mail organizátorům</a>
-    </div>
+    </p>
 
     {if $akceIsOld}
         {if $akce->report}
