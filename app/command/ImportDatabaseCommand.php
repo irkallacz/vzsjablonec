@@ -10,28 +10,45 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tracy\Debugger;
 
-class ImportDatabaseCommand extends Command{
+/**
+ * Class ImportDatabaseCommand
+ * @package App\Console
+ */
+class ImportDatabaseCommand extends Command {
 
-	/** @var ConnectionConfig @inject*/
-	public $databaseConfig;
+	/** @var ConnectionConfig */
+	private $databaseConfig;
 
-	protected function configure(){
-        $this->setName('database:import')
-	        ->setDescription('Import database structure from .sql file');
-    }
+	/**
+	 * ImportDatabaseCommand constructor.
+	 * @param ConnectionConfig $databaseConfig
+	 */
+	public function __construct(ConnectionConfig $databaseConfig) {
+		parent::__construct();
+		$this->databaseConfig = $databaseConfig;
+	}
 
+	protected function configure() {
+		$this->setName('database:import')
+			->setDescription('Import database structure from .sql file');
+	}
+
+	/**
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
+	 * @return int
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		Debugger::enable(Debugger::DEVELOPMENT);
-
-		$count = count($this->databaseConfig->getConnections());
+		$connections = $this->databaseConfig->getConnections();
+		$count = count($connections);
 
 		$bar = new ProgressBar($output, $count);
 		$bar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %message%');
 		$bar->setMessage('');
 		$bar->start();
 
-		foreach ($this->databaseConfig->getConnections() as $name => $config){
-			$fileName = __DIR__ .'/dump/'.$name.'.sql';
+		foreach ($connections as $name => $config) {
+			$fileName = __DIR__ . '/dump/' . $name . '.sql';
 
 			if (file_exists($fileName)) {
 				$dump = new Dump();
@@ -45,8 +62,8 @@ class ImportDatabaseCommand extends Command{
 				$bar->setMessage($name . '.sql');
 
 				new Import($dump);
-			}else{
-				$output->writeln('<error>Chyba. Soubor '.$fileName.' nebyl nalezen</error>');
+			} else {
+				$output->writeln('<error>Chyba. Soubor ' . $fileName . ' nebyl nalezen</error>');
 			}
 			$bar->advance();
 		}
@@ -54,8 +71,8 @@ class ImportDatabaseCommand extends Command{
 		$bar->finish();
 
 		$output->writeln('');
-	    $output->writeln('<info>Finished importing '.$count.' database(s) from files</info>');
+		$output->writeln('<info>Finished importing ' . $count . ' database(s) from files</info>');
 
-        return 0; // zero return code means everything is ok
-    }
+		return 0; // zero return code means everything is ok
+	}
 }

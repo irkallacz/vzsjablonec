@@ -10,36 +10,44 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tracy\Debugger;
 
-class ExportDatabaseCommand extends Command{
+class ExportDatabaseCommand extends Command {
 
-	/** @var ConnectionConfig @inject*/
-	public $databaseConfig;
+	/** @var ConnectionConfig */
+	private $databaseConfig;
 
-	protected function configure(){
-        $this->setName('database:export')
-	        ->setDescription('Export database structure into .sql file');
-    }
+	/**
+	 * ExportDatabaseCommand constructor.
+	 * @param ConnectionConfig $databaseConfig
+	 */
+	public function __construct(ConnectionConfig $databaseConfig) {
+		parent::__construct();
+		$this->databaseConfig = $databaseConfig;
+	}
+
+	protected function configure() {
+		$this->setName('database:export')
+			->setDescription('Export database structure into .sql file');
+	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		Debugger::enable(Debugger::DEVELOPMENT);
-
-		$count = count($this->databaseConfig->getConnections());
+		$connections = $this->databaseConfig->getConnections();
+		$count = count($connections);
 
 		$bar = new ProgressBar($output, $count);
 		$bar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %message%');
 		$bar->setMessage('');
 		$bar->start();
 
-		foreach ($this->databaseConfig->getConnections() as $name => $config){
+		foreach ($connections as $name => $config) {
 			$dump = new Dump();
 
-			$dump->dsn($config['driver'].':host='.$config['host'].';dbname='.$config['dbname'])
+			$dump->dsn($config['driver'] . ':host=' . $config['host'] . ';dbname=' . $config['dbname'])
 				->user($config['user'])
 				->pass($config['password'])
-				->file(__DIR__ .'/dump/'.$name.'.sql')
+				->file(__DIR__ . '/dump/' . $name . '.sql')
 				->data(FALSE);
 
-			$bar->setMessage($name.'.sql');
+			$bar->setMessage($name . '.sql');
 
 			new Export($dump);
 
@@ -49,8 +57,8 @@ class ExportDatabaseCommand extends Command{
 		$bar->finish();
 
 		$output->writeln('');
-	    $output->writeln('<info>Finished exporting '.$count.' database(s)</info>');
+		$output->writeln('<info>Finished exporting ' . $count . ' database(s)</info>');
 
-        return 0; // zero return code means everything is ok
-    }
+		return 0; // zero return code means everything is ok
+	}
 }

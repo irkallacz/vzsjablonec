@@ -20,8 +20,6 @@ parameters:
 			password:
 	google:
 		account: info@vzs-jablonec.cz
-		private_calendar_id: vzs-jablonec.cz_5sgkju7cluluhm9uoa86eogoi4@group.calendar.google.com
-		public_calendar_id: vzs-jablonec.cz_38dbt8t70rudqhng421phh7ru0@group.calendar.google.com
 
 application:
 	errorPresenter: Error
@@ -64,13 +62,10 @@ services:
 	- App\Model\DokumentyService
 	- App\Model\AnketyService
 	- App\Model\RatingService
-	- App\Model\TimesService
 	- App\Model\MessageService
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService(@database.photo.context)
 	- App\Model\WordpressService(@database.wordpress.context)
-
-	- App\Model\ConnectionConfig(%database%)
 
 	googleClient:
 		class: Google_Client
@@ -89,6 +84,5 @@ services:
 	- Google_Service_People
 
 extensions:
-	console: Kdyby\Console\DI\ConsoleExtension
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	- Echo511\Plupload\DI\PluploadExtension
