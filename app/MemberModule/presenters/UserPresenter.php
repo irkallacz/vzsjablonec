@@ -7,10 +7,8 @@ use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
-use Nette\Database\Table\Selection;
 use Nette\Mail\IMailer;
 use Nette\Security\Passwords;
-use Nette\Utils\Arrays;
 use Nette\Utils\Strings;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
@@ -202,7 +200,7 @@ class UserPresenter extends LayerPresenter {
 	}
 
 	public function renderVcf($id) {
-		$member = $this->userService->getMemberById($id);
+		$member = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
