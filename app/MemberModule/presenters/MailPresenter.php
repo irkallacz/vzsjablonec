@@ -111,11 +111,11 @@ class MailPresenter extends LayerPresenter {
 		$values = $form->getValues();
 		$param = [];
 
-		$sender = $this->userService->getMemberById($this->getUser()->getId());
+		$sender = $this->userService->getUserById($this->getUser()->getId());
 
 		if ($this->getAction() == 'akce') {
 			$akceId = (int)$this->getParameter('id');
-			$members = $this->userService->getMembersByAkceId($akceId)->where('NOT role', NULL);
+			$members = $this->userService->getUsersByAkceId($akceId)->where('NOT role', NULL);
 			$param['akce_id'] = $akceId;
 		} else {
 			$members = $this->userService->getUsers()->where('id', $values->users);
