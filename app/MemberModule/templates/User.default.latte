@@ -50,7 +50,7 @@
 <h1 n:block="#title">Adresář</h1>
 
 <ol n:block="#userList" class="userList">
-	<li n:foreach="$list as $item"><a n:href="Member:view, $item->id">{$item->surname} {$item->name}</a></li>
+	<li n:foreach="$list as $item"><a n:href="view, $item->id">{$item->surname} {$item->name}</a></li>
 </ol>
 
 {block #content}

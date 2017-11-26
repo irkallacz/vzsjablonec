@@ -8,7 +8,7 @@
             <a class="float-right" href="{plink Forum:post $post->id}" title="{$post->date_add|timeAgoInWords}">
                 {include svg name => comments} {$post->date_add|date:'%d.%m.%Y %H:%M'}
             </a>
-            <a href="{plink Member:view $post->member_id}" title="profil uživatele">
+            <a href="{plink User:view $post->member_id}" title="profil uživatele">
                 <strong>
                     {$post->member->surname} {$post->member->name}
                     {include svg name => user}

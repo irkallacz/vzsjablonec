@@ -53,11 +53,11 @@ abstract class LayerPresenter extends BasePresenter {
 			['title' => 'novinky',  	'link' => 'News:',      	'current' => 'News:*',      	'role'=> 'user', 	'icon' => 'home'            ],
 			['title' => 'akce',     	'link' => 'Akce:',      	'current' => 'Akce:*',      	'role'=> 'user', 	'icon' => 'calendar'        ],
 			['title' => 'forum',    	'link' => 'Forum:',     	'current' => 'Forum:*',     	'role'=> 'user', 	'icon' => 'comments-o'      ],
-			['title' => 'adresář',  	'link' => 'Member:',    	'current' => 'Member:*',    	'role'=> 'user', 	'icon' => 'address-book-o'  ],
-			['title' => 'dokumenty',	'link' => 'Dokumenty:', 	'current' => 'Dokumenty:*', 	'role'=> 'user', 	'icon' => 'file-text-o'        ],
-			['title' => 'ankety',   	'link' => 'Ankety:',    	'current' => 'Ankety:*',    	'role'=> 'member', 	'icon' => 'list-ul'     ],
-			['title' => 'hlasovani',	'link' => 'Hlasovani:', 	'current' => 'Hlasovani:*', 	'role'=> 'member', 	'icon' => 'balance-scale'   ],
-			['title' => 'email', 		'link' => 'Mail:', 			'current' => 'Mail:*', 			'role'=> 'board',	'icon' => 'envelope-o'			],
+			['title' => 'adresář',  	'link' => 'User:',    		'current' => 'User:*',    		'role'=> 'user', 	'icon' => 'address-book-o'  ],
+			['title' => 'dokumenty',	'link' => 'Dokumenty:', 	'current' => 'Dokumenty:*', 	'role'=> 'user', 	'icon' => 'file-text-o'		],
+			['title' => 'ankety',   	'link' => 'Ankety:',    	'current' => 'Ankety:*',    	'role'=> 'member', 	'icon' => 'list-ul'			],
+			['title' => 'hlasovani',	'link' => 'Hlasovani:', 	'current' => 'Hlasovani:*', 	'role'=> 'member', 	'icon' => 'balance-scale'	],
+			['title' => 'email', 		'link' => 'Mail:', 			'current' => 'Mail:*', 			'role'=> 'board',	'icon' => 'envelope-o'		],
 			['title' => 'galerie', 		'link' => ':Photo:Myself:', 'current' => ':Photo:Myself:*', 'role'=> 'member',	'icon' => 'image'			],
 		];
 

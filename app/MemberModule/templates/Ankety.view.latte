@@ -39,7 +39,7 @@
 	<li>{$odpoved->text|firstUpper}
 	<ol id="members" n:inner-foreach="$odpoved->related('anketa_member','anketa_odpoved_id') as $item">
 		<li>
-			<a n:class="$item->member_id == $user->getId() ? logged" n:href="Member:view,$item->member_id">
+			<a n:class="$item->member_id == $user->getId() ? logged" n:href="User:view,$item->member_id">
 				{$item->ref('member')->surname} {$item->ref('member')->name}
 			</a>
 		</li>
@@ -50,7 +50,7 @@
 {else}
 <ol id="members" n:inner-foreach="$members as $item">
 	<li>
-		<a n:class="$item->member_id == $user->getId() ? logged" n:href="Member:view,$item->member_id">
+		<a n:class="$item->member_id == $user->getId() ? logged" n:href="User:view,$item->member_id">
 			{$item->ref('user','member_id')->surname} {$item->ref('user','member_id')->name}
 		</a>
 	</li>

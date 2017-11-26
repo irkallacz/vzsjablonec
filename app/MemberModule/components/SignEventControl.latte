@@ -19,7 +19,7 @@
 
 	<ol n:if="$items" class="member_list">
 		<li n:foreach="$items->where('organizator', $isOrg)->order('date_add') as $item" title="Přihlášen {$item->date_add|date:'d.m.Y'}">
-			<a n:tag-if="($item->member->role)or($user->isInRole('board'))" n:class="$item->member->id == $user->id ? logged" href="{plink Member:view, $item->member->id}">{$item->member->surname} {$item->member->name}</a>
+			<a n:tag-if="($item->member->role)or($user->isInRole('board'))" n:class="$item->member->id == $user->id ? logged" href="{plink User:view, $item->member->id}">{$item->member->surname} {$item->member->name}</a>
 		</li>
 	</ol>
 {/define}

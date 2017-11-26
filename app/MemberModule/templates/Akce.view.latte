@@ -84,7 +84,7 @@
 
     <p title="Místo">{include svg name => map-marker} {$akce->place}</p>
 
-    <p n:if="$akce->member_id" title="Zodpovědná osoba">{include svg name => user-o} <a n:href="Member:view $akce->member_id">{$akce->member->surname} {$akce->member->name}</a></p>
+    <p n:if="$akce->member_id" title="Zodpovědná osoba">{include svg name => user-o} <a n:href="User:view $akce->member_id">{$akce->member->surname} {$akce->member->name}</a></p>
 
     <p>{include svg name => tag} {$akce->akce_for->text}{if $akce->visible}, viditelná veřejnosti{else}, viditelná pouze členům{/if}</p>
 

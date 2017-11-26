@@ -17,7 +17,7 @@ use Nette\Utils\DateTime;
 use Google_Service_People;
 use Tracy\Debugger;
 
-class MemberPresenter extends LayerPresenter {
+class UserPresenter extends LayerPresenter {
 
 	/** @var UserService @inject */
 	public $userService;
@@ -122,7 +122,7 @@ class MemberPresenter extends LayerPresenter {
 		$zip->open(WWW_DIR . '/archive.zip', \ZIPARCHIVE::CREATE | \ZIPARCHIVE::OVERWRITE);
 
 		$template = $this->createTemplate();
-		$template->setFile(APP_DIR . '/MemberModule/templates/Member.vcf.latte');
+		$template->setFile(APP_DIR . '/MemberModule/templates/User.vcf.latte');
 		$template->archive = TRUE;
 
 		foreach ($this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name') as $member) {

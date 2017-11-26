@@ -74,14 +74,14 @@ title="{$anketa->date_update|timeAgoInWords}">Upraveno ({$anketa->date_update|da
 <li n:if="in_array($item->id,$memberList)">{$item->text|firstUpper}
 	<ol id="members" n:inner-foreach="$members as $member">
 	<li n:if="$member->hlasovani_odpoved_id ==$item->id">
-		<a n:class="$member->id == $user->getId() ? logged" n:href="Member:view,$member->id">{$member->jmeno}</a>
+		<a n:class="$member->id == $user->getId() ? logged" n:href="User:view,$member->id">{$member->jmeno}</a>
 	</li>	
 	</ol>
 </li>
 </ul>
 {else}
 <ol id="members" n:inner-foreach="$members as $member">
-<li><a n:class="$member->id == $user->getId() ? logged" n:href="Member:view,$member->id">{$member->jmeno}</a></li>
+<li><a n:class="$member->id == $user->getId() ? logged" n:href="User:view,$member->id">{$member->jmeno}</a></li>
 </ol>
 {/if}
 
