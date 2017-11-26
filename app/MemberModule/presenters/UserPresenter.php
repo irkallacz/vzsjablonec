@@ -33,20 +33,20 @@ class UserPresenter extends LayerPresenter {
 			$this['memberSearchForm']['search']->setDefaultValue($q);
 
 			if ($this->getUser()->isInRole('board')) {
-				$searchList['users'] = $this->userService->searchUsers($q)->where('role', 0);
-				$searchList['deleted'] = $this->userService->searchUsers($q)->where('role IS NULL');
+				$searchList['users'] = $this->userService->searchUsers($q)
+					->where('role', 0);
+				$searchList['deleted'] = $this->userService->searchUsers($q)
+					->where('role IS NULL');
 			}
 		}else{
-			$searchList['members'] = $this->userService->getUsers(UserService::MEMBER_LEVEL)
-				->order('surname, name');
+			$searchList['members'] = $this->userService->getUsers(UserService::MEMBER_LEVEL);
 			if ($this->getUser()->isInRole('board')) {
 				$searchList['users'] = $this->userService->getUsers()
-					->where('role', 0)
-					->order('surname, name');
+					->where('role', 0);
 				$searchList['deleted'] = $this->userService->getUsers(UserService::DELETED_LEVEL)
-					->where('role IS NULL')
-					->order('surname, name');
+					->where('role IS NULL');
 			}
+			foreach ($searchList as $list) $list->order('surname, name');
 		}
 
 		$this->template->searchList = $searchList;
@@ -81,7 +81,6 @@ class UserPresenter extends LayerPresenter {
 
 		if ($this->getUser()->isInRole('board')) {
 			$searchList['users'] = $this->userService->searchUsers($search)->where('role', 0);
-
 			$searchList['deleted'] = $this->userService->searchUsers($search)->where('role IS NULL');
 		}
 
