@@ -10,7 +10,7 @@ namespace App\MemberModule\Components;
 
 
 use App\Model\AkceService;
-use App\Model\MemberService;
+use App\Model\UserService;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Control;
 use Nette\Application\UI\Form;
@@ -25,8 +25,8 @@ class SignEventControl extends Control {
 	/** @var AkceService */
 	private $akceService;
 
-	/** @var MemberService */
-	private $memberService;
+	/** @var UserService */
+	private $userService;
 
 	/** @var ActiveRow */
 	private $akce;
@@ -40,13 +40,13 @@ class SignEventControl extends Control {
 	/**
 	 * SignEventControl constructor.
 	 * @param AkceService $akceService
-	 * @param MemberService $memberService
+	 * @param UserService $userService
 	 * @param ActiveRow $akce
 	 */
-	public function __construct(AkceService $akceService, MemberService $memberService, ActiveRow $akce) {
+	public function __construct(AkceService $akceService, UserService $userService, ActiveRow $akce) {
 		parent::__construct();
 		$this->akceService = $akceService;
-		$this->memberService = $memberService;
+		$this->userService = $userService;
 		$this->akce = $akce;
 
 		$this->userList = $this->getMemberList(self::USER)->fetchPairs('member_id', 'member_id');
@@ -168,7 +168,7 @@ class SignEventControl extends Control {
 	private function getLogginList(){
 		$logList = $this->getLocalMemberList();
 
-		$list = ($this->getPresenter()->getUser()->isInRole('admin')) ? $this->memberService->getUsers() : $this->memberService->getMembers();
+		$list = ($this->getPresenter()->getUser()->isInRole('admin')) ? $this->userService->getUsers() : $this->userService->getUsers(UserService::MEMBER_LEVEL);
 		$list->select('id, CONCAT(surname," ",name)AS jmeno')->order('surname, name');
 		if ($logList) $list->where('NOT id', $logList);
 
@@ -219,7 +219,10 @@ class SignEventControl extends Control {
 	public function createComponentUnLogginForm() {
 		$form = new Form;
 
-		$list = $this->memberService->getMemberListForAkceComponent($this->akce->id);
+		$list = $this->userService->getUsersByAkceId($this->akce->id)
+				->select('id,CONCAT(surname," ",name)AS jmeno')
+				->order('surname, name')
+				->fetchPairs('id', 'jmeno');
 
 		$form->addSelect('member', null, $list);
 		$form->addSubmit('ok');

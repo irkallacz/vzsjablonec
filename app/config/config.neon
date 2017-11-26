@@ -58,7 +58,7 @@ services:
 
 	- App\Model\AkceService
 	- App\Model\ForumService
-	- App\Model\MemberService
+	- App\Model\UserService
 	- App\Model\DokumentyService
 	- App\Model\AnketyService
 	- App\Model\RatingService

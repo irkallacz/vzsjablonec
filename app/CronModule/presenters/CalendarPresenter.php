@@ -1,7 +1,7 @@
 <?php
 namespace App\CronModule\Presenters;
 
-use App\Model\MemberService;
+use App\Model\UserService;
 use Nette\Application\UI\Presenter;
 use Nette\Database\Table\ActiveRow;
 use App\Model\AkceService;
@@ -15,14 +15,14 @@ use Google_Service_Calendar_EventAttendee;
  * @package App\MemberModule\presenters
  */
 class CalendarPresenter extends Presenter {
-	
+
 	const CALENDAR_ID = 'primary';
-	
+
 	/** @var AkceService @inject */
 	public $akceService;
 
-	/** @var MemberService @inject */
-	public $memberService;
+	/** @var UserService @inject */
+	public $userService;
 
 	/** @var Google_Service_Calendar @inject */
 	public $calendarService;
@@ -42,7 +42,7 @@ class CalendarPresenter extends Presenter {
 			$event = $this->calendarService->events->get(self::CALENDAR_ID, $updateEvent->calendarId);
 			$event = $this->setEvent($updateEvent, $event);
 			$this->calendarService->events->update(self::CALENDAR_ID, $updateEvent->calendarId, $event);
-			
+
 			$eventList[] = $updateEvent->id;
 		}
 
@@ -58,7 +58,7 @@ class CalendarPresenter extends Presenter {
 
 			$createdEvent = $this->calendarService->events->insert(self::CALENDAR_ID, $event);
 			$newEvent->update(['calendarId' => $createdEvent->getId()]);
-			
+
 			$eventList[] = $newEvent->id;
 		}
 
@@ -71,18 +71,18 @@ class CalendarPresenter extends Presenter {
 		foreach ($deleteEvents as $deleteEvent) {
 			$this->calendarService->events->delete(self::CALENDAR_ID, $deleteEvent->calendarId);
 			$deleteEvent->update(['calendarId' => NULL]);
-			
+
 			$eventList[] = $deleteEvent->id;
 		}
 
 		//Add members to calendar
-		 $members = $this->memberService->getMembers()
-			 ->where('mail LIKE ?','%@gmail.com');
+		$members = $this->userService->getUsers(UserService::MEMBER_LEVEL)
+			->where('mail LIKE ?', '%@gmail.com');
 
-		foreach ($members as $member){
-			$aclRule = self::createAclRule($member);
-			$this->calendarService->acl->insert(self::CALENDAR_ID, $aclRule);
-		}
+//		foreach ($members as $member){
+//			$aclRule = self::createAclRule($member);
+//			$this->calendarService->acl->insert(self::CALENDAR_ID, $aclRule);
+//		}
 	}
 
 	/**
@@ -103,7 +103,7 @@ class CalendarPresenter extends Presenter {
 		$event->setVisibility($akce->visible ? 'public' : 'private');
 
 		$attendees = [];
-		foreach ($this->memberService->getMembersByAkceId($akce->id)->where('NOT role', NULL) as $member) {
+		foreach ($this->userService->getUsersByAkceId($akce->id)->where('NOT role', NULL) as $member) {
 			$attendee = new Google_Service_Calendar_EventAttendee();
 			$attendee->setDisplayName($member->surname . ' ' . $member->name);
 			$attendee->setEmail($member->mail);
@@ -115,7 +115,7 @@ class CalendarPresenter extends Presenter {
 		return $event;
 	}
 
-	private static function createAclRule(ActiveRow $member){
+	private static function createAclRule(ActiveRow $member) {
 		$aclRule = new \Google_Service_Calendar_AclRule();
 		$aclRule->setRole('reader');
 		$scope = new \Google_Service_Calendar_AclRuleScope();

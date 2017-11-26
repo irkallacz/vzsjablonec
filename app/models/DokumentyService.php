@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MemberService base class.
+ * DokumentyService base class.
  */
 
 namespace App\Model;

@@ -12,15 +12,15 @@ use Tracy\Debugger;
  */
 class Authenticator extends Object implements Security\IAuthenticator {
 
-	/**@var MemberService */
-	private $memberService;
+	/**@var UserService */
+	private $userService;
 
 	/**
 	 * Authenticator constructor.
-	 * @param MemberService $memberService
+	 * @param UserService $userService
 	 */
-	public function __construct(MemberService $memberService) {
-		$this->memberService = $memberService;
+	public function __construct(UserService $userService) {
+		$this->userService = $userService;
 	}
 
 	/**
@@ -32,7 +32,7 @@ class Authenticator extends Object implements Security\IAuthenticator {
 	public function authenticate(array $credentials) {
 		list($email, $password) = $credentials;
 
-		$user = $this->memberService->getMemberByLogin($email);
+		$user = $this->userService->getUsersByLogin($email);
 
 		if (!$user) {
 			throw new Security\AuthenticationException("Uživatel s e-mailem '$email' nenalezen.", self::IDENTITY_NOT_FOUND);
@@ -42,9 +42,9 @@ class Authenticator extends Object implements Security\IAuthenticator {
 			throw new Security\AuthenticationException("Nesprávné heslo.", self::INVALID_CREDENTIAL);
 		}
 
-		$roleList = $this->memberService->getRoleList();
+		$roleList = $this->userService->getRoleList();
 		$rights = array_slice($roleList, 0, $user->role + 1);
-		$rights = array_merge($rights, array_values($this->memberService->getRightsByUserId($user->id)));
+		$rights = array_merge($rights, array_values($this->userService->getRightsByUserId($user->id)));
 
 		$data = $user->toArray();
 

@@ -34,8 +34,8 @@ class AkcePresenter extends LayerPresenter {
 	/** @var Model\GalleryService @inject */
 	public $galleryService;
 
-	/** @var Model\MemberService @inject */
-	public $memberService;
+	/** @var Model\UserService @inject */
+	public $userService;
 
 	/** @var IMailer @inject */
 	public $mailer;
@@ -111,8 +111,8 @@ class AkcePresenter extends LayerPresenter {
 			throw new BadRequestException('Akce nenalezena!');
 		}
 
-		$this->orgList = $this->memberService->getMembersByAkceId($id, TRUE)->fetchPairs('id', 'id');
-		$this->memberList = $this->memberService->getMembersByAkceId($id, FALSE)->fetchPairs('id', 'id');
+		$this->orgList = $this->userService->getUsersByAkceId($id, TRUE)->fetchPairs('id', 'id');
+		$this->memberList = $this->userService->getUsersByAkceId($id, FALSE)->fetchPairs('id', 'id');
 	}
 
 	public function renderView($id) {
@@ -278,7 +278,7 @@ class AkcePresenter extends LayerPresenter {
 
 		$mail->addReplyTo($member->mail, $member->surname . ' ' . $member->name);
 
-		foreach ($this->memberService->getMembersByRight('confirm') as $member)
+		foreach ($this->userService->getUsersByRight('confirm') as $member)
 			$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
 
 		$mail->setSubject('[VZS Jablonec] Nová akce čeká na schválení');
@@ -287,7 +287,7 @@ class AkcePresenter extends LayerPresenter {
 	}
 
 	protected function createComponentSignEvent() {
-		return new Components\SignEventControl($this->akceService, $this->memberService, $this->akce);
+		return new Components\SignEventControl($this->akceService, $this->userService, $this->akce);
 	}
 
 	/**
@@ -378,11 +378,11 @@ class AkcePresenter extends LayerPresenter {
 			->setDefaultValue(TRUE);
 
 		$form->addSelect('member_id', 'Zodpovědná osoba',
-			$this->memberService->getMembersArray())
+			$this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
 			->setDefaultValue($this->getUser()->getId());
 
 		$form->addSelect('organizator', 'Organizátor',
-			$this->memberService->getMembersArray())
+			$this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
 			->setDefaultValue($this->getUser()->getId())
 			->setPrompt('není')
 			->addConditionOn($form['login_org'], Form::EQUAL, FALSE)
@@ -480,7 +480,7 @@ class AkcePresenter extends LayerPresenter {
 
 		$form->addUpload('file');
 		$form->addSubmit('ok')
-			->getControlPrototype()->setName('button')->setHtml('<svg class="icon icon-upload"><use xlink:href="'.$this->template->basePath.'/img/symbols.svg#icon-upload"></use></svg>');
+			->getControlPrototype()->setName('button')->setHtml('<svg class="icon icon-upload"><use xlink:href="' . $this->template->basePath . '/img/symbols.svg#icon-upload"></use></svg>');
 
 		$form->onSuccess[] = [$this, 'uploadBillFormSubmitted'];
 

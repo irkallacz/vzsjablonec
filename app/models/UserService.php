@@ -1,7 +1,7 @@
 <?php
 
 /**
- * MemberService base class.
+ * UserService base class.
  */
 
 namespace App\Model;
@@ -13,7 +13,13 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 use Nette\Database\SqlLiteral;
 
-class MemberService extends DatabaseService {
+class UserService extends DatabaseService {
+
+	const DELETED_LEVEL = 0;
+	const USER_LEVEL = 1;
+	const MEMBER_LEVEL = 2;
+	const BOARD_LEVEL = 3;
+	const ADMIN_LEVEL = 4;
 
 	/**
 	 * @return Selection
@@ -23,30 +29,18 @@ class MemberService extends DatabaseService {
 	}
 
 	/**
-	 * @param bool $activeOnly
+	 * @param int $userLevel
 	 * @return Selection
 	 */
-	public function getUsers($activeOnly = TRUE) {
+	public function getUsers($userLevel = self::USER_LEVEL) {
 		$users = $this->getTable();
-		if ($activeOnly) $users->where('role IS NOT NULL');
+		if ($userLevel) $users->where('role >= ?', $userLevel - 1);
 		return $users;
 	}
 
-	/**
-	 * @param int $level
-	 * @return Selection
-	 */
-	public function getMembers($level = 0) {
-		return $this->getTable()->where('role > ?', $level);
-	}
-
-	/**
-	 * @param bool $activeOnly
-	 * @return array
-	 */
-	public function getMembersArray($activeOnly = TRUE) {
-		$members = ($activeOnly) ? $this->getMembers() : $this->getUsers(FALSE);
-		return $members->select('id, CONCAT(surname, " ", name)AS jmeno')
+	public function getUsersArray($userLevel = self::USER_LEVEL) {
+		$users = $this->getUsers($userLevel);
+		return $users->select('id, CONCAT(surname, " ", name)AS jmeno')
 			->order('surname, name')
 			->fetchPairs('id', 'jmeno');
 	}
@@ -55,16 +49,8 @@ class MemberService extends DatabaseService {
 	 * @param $id
 	 * @return IRow
 	 */
-	public function getUserById($id) {
-		return $this->getUsers()->get($id);
-	}
-
-	/**
-	 * @param $id
-	 * @return IRow
-	 */
-	public function getMemberById($id) {
-		return $this->getMembers()->get($id);
+	public function getUserById($id, $userLevel = self::USER_LEVEL) {
+		return $this->getUsers($userLevel)->get($id);
 	}
 
 	/**
@@ -72,7 +58,7 @@ class MemberService extends DatabaseService {
 	 * @param $password
 	 * @return bool|mixed|IRow
 	 */
-	public function getMemberByAutentication($id, $password) {
+	public function getUserByAutentication($id, $password) {
 		$member = $this->getUsers()
 			->select('mail, hash')
 			->get($id);
@@ -84,8 +70,8 @@ class MemberService extends DatabaseService {
 	 * @param $role
 	 * @return Selection
 	 */
-	public function getMembersByRight($right) {
-		return $this->getMembers()->where(':user_rights.rights_id', $this->database->table('rights')->where('name', $right));
+	public function getUsersByRight($right) {
+		return $this->getUsers()->where(':user_rights.rights_id', $this->database->table('rights')->where('name', $right));
 	}
 
 	/**
@@ -100,7 +86,7 @@ class MemberService extends DatabaseService {
 	 * @param $login
 	 * @return bool|mixed|IRow
 	 */
-	public function getMemberByLogin($login) {
+	public function getUsersByLogin($login) {
 		return $this->getUsers()->select('id, hash, name, surname, mail, role')->where('mail', $login)->fetch();
 	}
 
@@ -110,7 +96,7 @@ class MemberService extends DatabaseService {
 	 * @param bool $org
 	 * @return Selection
 	 */
-	public function getMembersByAkceId($id, $org = NULL) {
+	public function getUsersByAkceId($id, $org = NULL) {
 		$members = $this->getTable()->where(':akce_member.akce_id', $id);
 		if (!is_null($org)) $members->where('organizator', $org);
 		return $members;
@@ -139,19 +125,6 @@ class MemberService extends DatabaseService {
 	public function getRoleList() {
 		return $this->database->table('roles')->order('id')->fetchPairs('id', 'name');
 	}
-
-	/**
-	 * @param $id
-	 * @param $org
-	 * @return mixed
-	 */
-	public function getMemberListForAkceComponent($id) {
-		return $this->getMembersByAkceId($id)
-			->select('id,CONCAT(surname," ",name)AS jmeno')
-			->order('surname, name')
-			->fetchPairs('id', 'jmeno');
-	}
-
 
 	/**
 	 * @param $id
@@ -191,11 +164,10 @@ class MemberService extends DatabaseService {
 	 * @param $search
 	 * @return Selection
 	 */
-	public function searchUsers($search) {
-		return $this->getUsers(FALSE)
-			->where('name LIKE ? OR surname LIKE ? OR zamestnani LIKE ? OR mesto LIKE ? OR ulice LIKE ? OR mail LIKE ? OR telefon LIKE ?', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%');
-		//->where('(name, surname, zamestnani, mesto, ulice, mail, telefon, text) AGAINST (? IN BOOLEAN MODE)',$search);
-		//->order('surname, name');
+	public function searchUsers($search, $userLevel = self::DELETED_LEVEL) {
+		return $this->getUsers($userLevel)
+			->where('name LIKE ? OR surname LIKE ? OR zamestnani LIKE ? OR mesto LIKE ? OR ulice LIKE ? OR mail LIKE ? OR telefon LIKE ?', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%')
+			->order('surname, name');
 	}
 
 }

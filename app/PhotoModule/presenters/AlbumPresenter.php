@@ -3,7 +3,7 @@
 namespace App\PhotoModule\Presenters;
 
 use App\Model\GalleryService;
-use App\Model\MemberService;
+use App\Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
@@ -23,8 +23,8 @@ class AlbumPresenter extends BasePresenter {
 	/** @var GalleryService @inject */
 	public $gallery;
 
-	/** @var MemberService @inject */
-	public $members;
+	/** @var UserService @inject */
+	public $userService;
 
 	/** @var \Echo511\Plupload\Control\IPluploadControlFactory @inject */
 	public $controlFactory;
@@ -32,6 +32,7 @@ class AlbumPresenter extends BasePresenter {
 	private $offset = 0;
 
 	const LOAD_COUNT = 30;
+
 	/**
 	 * @param $slug
 	 * @return \Nette\Database\Table\IRow
@@ -56,7 +57,7 @@ class AlbumPresenter extends BasePresenter {
 
 		if (!$this->getUser()->isLoggedIn()) {
 			$albums->where('visible', TRUE);
-		} else $this->template->member = $this->members->getMembersArray(FALSE);
+		} else $this->template->member = $this->userService->getUsersArray(UserService::DELETED_LEVEL);
 
 		$albums->limit(self::LOAD_COUNT, $this->offset);
 
@@ -66,7 +67,7 @@ class AlbumPresenter extends BasePresenter {
 	}
 
 
-	public function handleLoadMore($offset){
+	public function handleLoadMore($offset) {
 		$this->offset = $offset;
 		$this->redrawControl();
 	}
@@ -79,7 +80,7 @@ class AlbumPresenter extends BasePresenter {
 
 		$membersAlbums = $albums->fetchPairs('member_id', 'id');
 
-		$member = $this->members->getMembersArray(FALSE);
+		$member = $this->userService->getUsersArray(UserService::DELETED_LEVEL);
 		asort($member);
 
 		$membersAlbums = array_intersect_key($member, $membersAlbums);
@@ -106,7 +107,7 @@ class AlbumPresenter extends BasePresenter {
 
 		$photos = $this->gallery->getPhotosByAlbumId($album->id)->order('order, date_add');
 
-		$member = $this->members->getTable()->get($album->member_id);
+		$member = $this->userService->getTable()->get($album->member_id);
 
 		if (!(($this->getUser()->isLoggedIn()) or ($pubkeyCheck))) $photos->where('visible', TRUE);
 
@@ -297,7 +298,7 @@ class AlbumPresenter extends BasePresenter {
 			->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
 			->setAttribute('class', 'date');
 
-		$form->addSelect('member_id', 'Uživatel', $this->members->getMembersArray(FALSE));
+		$form->addSelect('member_id', 'Uživatel', $this->userService->getUsersArray(UserService::DELETED_LEVEL));
 
 		$form->addCheckBox('show_date', 'Upravit datum pořízení')
 			->setDefaultValue(FALSE)

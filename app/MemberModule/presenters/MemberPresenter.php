@@ -2,7 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
-use App\Model\MemberService;
+use App\Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\FileResponse;
@@ -19,8 +19,8 @@ use Tracy\Debugger;
 
 class MemberPresenter extends LayerPresenter {
 
-	/** @var MemberService @inject */
-	public $memberService;
+	/** @var UserService @inject */
+	public $userService;
 
 	/** @var IMailer @inject */
 	public $mailer;
@@ -31,23 +31,26 @@ class MemberPresenter extends LayerPresenter {
 	public function actionDefault($q = null) {
 		$searchList = [];
 		if ($q) {
-			$searchList['members'] = $this->memberService->searchUsers($q);
+			$searchList['members'] = $this->userService->searchUsers($q, UserService::MEMBER_LEVEL);
 			$this['memberSearchForm']['search']->setDefaultValue($q);
-		} else {
-			$searchList['members'] = $this->memberService->getUsers(FALSE);
+
+			if ($this->getUser()->isInRole('board')) {
+				$searchList['users'] = $this->userService->searchUsers($q)->where('role', 0);
+				$searchList['deleted'] = $this->userService->searchUsers($q)->where('role IS NULL');
+			}
+		}else{
+			$searchList['members'] = $this->userService->getUsers(UserService::MEMBER_LEVEL)
+				->order('surname, name');
+			if ($this->getUser()->isInRole('board')) {
+				$searchList['users'] = $this->userService->getUsers()
+					->where('role', 0)
+					->order('surname, name');
+				$searchList['deleted'] = $this->userService->getUsers(UserService::DELETED_LEVEL)
+					->where('role IS NULL')
+					->order('surname, name');
+			}
 		}
 
-		$searchList['members']->order('surname, name');
-
-		if ($this->getUser()->isInRole('board')) {
-			$searchList['users'] = clone $searchList['members'];
-			$searchList['users']->where('role', 0);
-
-			$searchList['deleted'] = clone $searchList['members'];
-			$searchList['deleted']->where('role IS NULL');
-		}
-
-		$searchList['members']->where('NOT role', 0);
 		$this->template->searchList = $searchList;
 	}
 
@@ -73,50 +76,20 @@ class MemberPresenter extends LayerPresenter {
 	}
 
 	public function memberSearchFormSubmitted(Form $form) {
-		$values = $form->getValues();
+		$search = $form->getValues()->search;
 
 		$searchList = [];
-		$searchList['members'] = $this->memberService->searchUsers($values->search)->order('surname, name');
+		$searchList['members'] = $this->userService->searchUsers($search, UserService::MEMBER_LEVEL);
 
 		if ($this->getUser()->isInRole('board')) {
-			$searchList['users'] = clone $searchList['members'];
-			$searchList['users']->where('role', 0);
+			$searchList['users'] = $this->userService->searchUsers($search)->where('role', 0);
 
-			$searchList['deleted'] = clone $searchList['members'];
-			$searchList['deleted']->where('role IS NULL');
+			$searchList['deleted'] = $this->userService->searchUsers($search)->where('role IS NULL');
 		}
-
-		$searchList['members']->where('NOT role', 0);
 
 		$this->template->searchList = $searchList;
 
 		$this->redrawControl();
-	}
-
-	/** @allow(admin) */
-	public function actionUpdateCsv() {
-		if (($handle = fopen('members_update.csv', 'r')) !== FALSE) {
-			while (($data = fgetcsv($handle, 0, ",", '"')) !== FALSE) {
-				$array = [
-					'surname' => $data[1],
-					'name' => $data[2],
-					'date_born' => date_create($data[3]),
-					'mesto' => $data[4],
-					'ulice' => $data[5],
-					'mail' => $data[6],
-					'telefon' => $data[7]
-				];
-
-				$member = $this->memberService->getMemberById($data[0]);
-
-				if ($member) {
-					$member->update($array);
-					$this->flashMessage('Záznam "' . $member->surname . ' ' . $member->name . '" aktualizován');
-				}
-			}
-		}
-
-		$this->redirect('default');
 	}
 
 	/** @allow(admin) */
@@ -127,7 +100,7 @@ class MemberPresenter extends LayerPresenter {
 	}
 
 	public function renderView($id) {
-		$member = $this->memberService->getTable()->get($id);
+		$member = $this->userService->getTable()->get($id);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
@@ -152,7 +125,7 @@ class MemberPresenter extends LayerPresenter {
 		$template->setFile(APP_DIR . '/MemberModule/templates/Member.vcf.latte');
 		$template->archive = TRUE;
 
-		foreach ($this->memberService->getMembers()->order('surname, name') as $member) {
+		foreach ($this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name') as $member) {
 			$template->member = $member;
 			$s = (string)$template;
 			//$s = iconv('utf-8','cp1250',$s);
@@ -171,7 +144,7 @@ class MemberPresenter extends LayerPresenter {
 	}
 
 	public function renderCsv() {
-		$this->template->members = $this->memberService->getMembers()->order('surname, name');
+		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name');
 
 		$httpResponse = $this->context->getByType('Nette\Http\Response');
 		$httpResponse->setHeader('Content-Disposition', 'attachment; filename="members.csv"');
@@ -182,7 +155,7 @@ class MemberPresenter extends LayerPresenter {
 	 * @allow(admin)
 	 */
 	public function actionActivate($id) {
-		$member = $this->memberService->getTable()->get($id);
+		$member = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
@@ -199,11 +172,11 @@ class MemberPresenter extends LayerPresenter {
 	 * @allow(board)
 	 */
 	public function actionResetPassword($id) {
-		$member = $this->memberService->getUserById($id);
+		$member = $this->userService->getUserById($id);
 
 		if (!$member) throw new BadRequestException('Uživatel nenalezen');
 
-		$session = $this->memberService->addPasswordSession($member->id, '12 HOUR');
+		$session = $this->userService->addPasswordSession($member->id, '12 HOUR');
 
 		$this->sendRestoreMail($member, $session);
 
@@ -216,7 +189,7 @@ class MemberPresenter extends LayerPresenter {
 	 * @allow(board)
 	 */
 	public function actionDelete($id) {
-		$member = $this->memberService->getUserById($id);
+		$member = $this->userService->getUserById($id);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
@@ -229,7 +202,7 @@ class MemberPresenter extends LayerPresenter {
 	}
 
 	public function renderVcf($id) {
-		$member = $this->memberService->getMemberById($id);
+		$member = $this->userService->getMemberById($id);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
@@ -256,12 +229,11 @@ class MemberPresenter extends LayerPresenter {
 		if ($this->getUser()->isInRole('board')) {
 			$form['date_add'] = new \DateInput('Datum registrace');
 			$form['date_add']->setRequired('Vyplňte datum registrace');
-			//$form['date_add']->setDefaultValue(new DateTime());
 		}
 
 		if ($this->getUser()->isInRole('admin')) {
 			$form->addSelect('role', 'Role',
-				$this->memberService->getRoleList()
+				$this->userService->getRoleList()
 			);
 		}
 
@@ -278,7 +250,7 @@ class MemberPresenter extends LayerPresenter {
 	 */
 	public function renderEdit($id) {
 		$form = $this['memberForm'];
-		$member = $this->memberService->getUserById($id);
+		$member = $this->userService->getUserById($id);
 
 		if (!$member) {
 			throw new BadRequestException('Uživatel nenalezen');
@@ -290,7 +262,6 @@ class MemberPresenter extends LayerPresenter {
 
 		$form->setDefaults($member);
 
-		//$this->template->title = $member->surname .' '. $member->name;
 	}
 
 
@@ -338,12 +309,12 @@ class MemberPresenter extends LayerPresenter {
 
 	public function uniqueValidator($item) {
 		$id = (int)$this->getParameter('id');
-		return (bool)!($this->memberService->getTable()->select('id')->where($item->name, $item->value)->where('NOT id', $id)->fetch());
+		return (bool)!($this->userService->getTable()->select('id')->where($item->name, $item->value)->where('NOT id', $id)->fetch());
 	}
 
 	public function currentPassValidator($item) {
 		$id = $this->getParameter('id');
-		$user = $this->memberService->getUserById($id);
+		$user = $this->userService->getUserById($id);
 		return !Passwords::verify($item->value, $user->hash);
 	}
 
@@ -427,7 +398,7 @@ class MemberPresenter extends LayerPresenter {
 	}
 
 	public function memberFormSubmitted(Form $form) {
-		$id = (int)$this->getParameter('id');
+		$id = $this->getParameter('id');
 
 		$values = $form->getValues();
 
@@ -456,19 +427,19 @@ class MemberPresenter extends LayerPresenter {
 		$values->date_update = new DateTime();
 
 		if ($id) {
-			$this->memberService->getUserById($id)->update($values);
+			$this->userService->getUserById($id)->update($values);
 			$this->flashMessage('Osobní profil byl změněn');
 			$this->redirect('view', $id);
 		} else {
 			$values->hash = '';
-			$member = $this->memberService->addUser($values);
+			$member = $this->userService->addUser($values);
 
 			if ($sendMail) {
-				$session = $this->memberService->addPasswordSession($member->id, '24 HOUR');
+				$session = $this->userService->addPasswordSession($member->id, '24 HOUR');
 				$this->sendLogginMail($member, $session);
 			}
 
-			$this->memberService->addUserLogin($member->id, new DateTime());
+			$this->userService->addUserLogin($member->id, new DateTime());
 
 			$this->flashMessage('Byl přidán nový člen');
 			$this->redirect('view', $member->id);

@@ -8,12 +8,12 @@ use Nette\Mail\IMailer;
 use Nette\Utils\DateTime;
 use Nette\Security as NS;
 use Nette\Utils\Strings;
-use App\Model\MemberService;
+use App\Model\UserService;
 
 class SignPresenter extends BasePresenter {
 
-	/** @var MemberService  @inject */
-	public $memberService;
+	/** @var UserService  @inject */
+	public $userService;
 
 	/** @var IMailer @inject */
 	public $mailer;
@@ -23,7 +23,7 @@ class SignPresenter extends BasePresenter {
 
 	public function startup() {
 		parent::startup();
-		if ($this->getUser()->isLoggedIn()and($this->getAction() != 'out')) {
+		if ($this->getUser()->isLoggedIn() and ($this->getAction() != 'out')) {
 			if ($this->backlink) $this->restoreRequest($this->backlink);
 			$this->redirect('News:');
 		}
@@ -60,8 +60,8 @@ class SignPresenter extends BasePresenter {
 
 			$userId = $this->getUser()->getId();
 
-			$this->getUser()->getIdentity()->date_last = $this->memberService->getLastLoginByUserId($userId);
-			$this->memberService->addUserLogin($userId, new DateTime());
+			$this->getUser()->getIdentity()->date_last = $this->userService->getLastLoginByUserId($userId);
+			$this->userService->addUserLogin($userId, new DateTime());
 
 			if ($this->backlink) $this->restoreRequest($this->backlink);
 			else $this->redirect('News:default');
@@ -96,11 +96,11 @@ class SignPresenter extends BasePresenter {
 		$values = $form->getValues();
 		$values->mail = Strings::lower($values->mail);
 
-		$member = $this->memberService->getUserByEmail($values->mail);
+		$member = $this->userService->getUserByEmail($values->mail);
 
 		if (!$member) $form->addError('E-mail nenalezen');
 		else {
-			$session = $this->memberService->addPasswordSession($member->id);
+			$session = $this->userService->addPasswordSession($member->id);
 			$this->backlink = '';
 			$this->sendRestoreMail($member, $session);
 			$this->flashMessage('Na Váši e-mailovou adresu byly odeslány údaje pro změnu hesla');
@@ -110,15 +110,15 @@ class SignPresenter extends BasePresenter {
 	}
 
 	public function renderRestorePassword($pubkey) {
-		$session = $this->memberService->getPasswordSession($pubkey);
+		$session = $this->userService->getPasswordSession($pubkey);
 
 		if (!$session) {
 			throw new BadRequestException('Neplatný identifikator session');
 		}
 
-		$member = $this->memberService->getUserById($session->member_id);
+		$member = $this->userService->getUserById($session->member_id);
 
-		if ((!$member)or(is_null($member->role))) {
+		if ((!$member) or (is_null($member->role))) {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
@@ -157,11 +157,11 @@ class SignPresenter extends BasePresenter {
 		if (!$pubkey) {
 			throw new BadRequestException('Neplatný identifikator session');
 		} else {
-			$session = $this->memberService->getPasswordSession($pubkey);
+			$session = $this->userService->getPasswordSession($pubkey);
 			if (!$session) {
 				throw new BadRequestException('Neplatný identifikator session');
 			} else {
-				$member = $this->memberService->getUserById($session->member_id);
+				$member = $this->userService->getUserById($session->member_id);
 				if ((!$member) or (is_null($member->role))) {
 					throw new BadRequestException('Uživatel nenalezen');
 				} else {

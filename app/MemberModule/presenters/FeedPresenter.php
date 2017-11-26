@@ -2,7 +2,13 @@
 
 namespace App\MemberModule\Presenters;
 
-use App\Model;
+use App\Model\AkceService;
+use App\Model\AnketyService;
+use App\Model\DokumentyService;
+use App\Model\ForumService;
+use App\Model\GalleryService;
+use App\Model\HlasovaniService;
+use App\Model\UserService;
 use Nette\Http\Response;
 
 class FeedPresenter extends BasePresenter {
@@ -10,25 +16,25 @@ class FeedPresenter extends BasePresenter {
 	/** @var \Nette\Http\Response @inject */
 	public $httpResponse;
 
-	/** @var Model\AkceService @inject */
+	/** @var AkceService @inject */
 	public $akceService;
 
-	/** @var Model\ForumService @inject */
+	/** @var ForumService @inject */
 	public $forumService;
 
-	/** @var Model\DokumentyService @inject */
+	/** @var DokumentyService @inject */
 	public $dokumentyService;
 
-	/** @var Model\AnketyService @inject */
+	/** @var AnketyService @inject */
 	public $anketyService;
 
-	/** @var Model\HlasovaniService @inject */
+	/** @var HlasovaniService @inject */
 	public $hlasovaniService;
 
-	/** @var Model\MemberService @inject */
-	public $memberService;
+	/** @var UserService @inject */
+	public $userService;
 
-	/** @var Model\GalleryService @inject */
+	/** @var GalleryService @inject */
 	public $galleryService;
 
 	protected function startup() {
@@ -40,9 +46,9 @@ class FeedPresenter extends BasePresenter {
 	}
 
 	protected function zkontroluj() {
-		$member = $this->memberService->getMemberByAutentication($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+		$user = $this->userService->getUserByAutentication($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 
-		if (!$member) {
+		if (!$user) {
 			$this->httpResponse->setCode(Response::S401_UNAUTHORIZED);
 
 			echo 'Chyba přihlášení';
@@ -91,12 +97,12 @@ class FeedPresenter extends BasePresenter {
 
 	public function renderAlbums() {
 		$albums = $this->galleryService->getAlbums()->order('date_add DESC');
-		$members = $this->memberService->getMembers(FALSE)->select('id,name,surname,mail')
+		$users = $this->userService->getUsers(UserService::DELETED_LEVEL)->select('id,name,surname,mail')
 			->where('id', array_keys($albums->fetchPairs('member_id', 'id')))
 			->fetchPairs('id');
 
 		$this->template->items = $albums;
-		$this->template->members = $members;
+		$this->template->users = $users;
 	}
 
 }
