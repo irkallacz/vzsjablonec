@@ -3,7 +3,7 @@
 namespace App\MemberModule\Presenters;
 
 use App\Model\AkceService;
-use App\Model\MemberService;
+use App\Model\UserService;
 use App\Model\MessageService;
 use Joseki\Webloader\JsMinFilter;
 use Nette\Application\ForbiddenRequestException;
@@ -22,8 +22,8 @@ use WebLoader\Nette\JavaScriptLoader;
  */
 class MailPresenter extends LayerPresenter {
 
-	/** @var MemberService @inject */
-	public $memberService;
+	/** @var UserService @inject */
+	public $userService;
 
 	/** @var AkceService @inject */
 	public $akceService;
@@ -36,12 +36,12 @@ class MailPresenter extends LayerPresenter {
 
 	/** @allow(board) */
 	public function renderDefault() {
-		$userMails = $this->memberService->getMembers()->fetchPairs('id', 'mail');
-		$this->template->userMails = $userMails;
+		$users = $this->userService->getUsers()->order('surname,name');
+		$this->template->members = $users;
 
 		$form = $this['mailForm'];
 		if (!$form->isSubmitted()) {
-			$this->template->pocet = ceil(count($userMails) / 3);
+			$this->template->pocet = ceil(count($users) / 3);
 		}
 	}
 
@@ -53,7 +53,7 @@ class MailPresenter extends LayerPresenter {
 	public function actionAkce($id) {
 		$form = $this['mailForm'];
 		$akce = $this->akceService->getAkceById($id);
-		$users = $this->memberService->getMembersByAkceId($id)->where('NOT role', NULL);
+		$users = $this->userService->getUsersByAkceId($id)->where('NOT role', NULL);
 
 		$form['to']->setDefaultValue(join(',', $users->fetchPairs('id', 'mail')));
 		$form['subject']->setDefaultValue($akce->name . ': ');
@@ -79,7 +79,7 @@ class MailPresenter extends LayerPresenter {
 		$form->addButton('open');
 
 		$form->addCheckboxList('users', 'Příjemci')
-			->setItems($this->memberService->getMembersArray());
+			->setItems($this->userService->getUsersArray(UserService::USER_LEVEL));
 
 		$form->addText('subject', 'Předmět', 50)
 			->setRequired('Vyplňte %label')
@@ -111,14 +111,14 @@ class MailPresenter extends LayerPresenter {
 		$values = $form->getValues();
 		$param = [];
 
-		$sender = $this->memberService->getMemberById($this->getUser()->getId());
+		$sender = $this->userService->getMemberById($this->getUser()->getId());
 
 		if ($this->getAction() == 'akce') {
 			$akceId = (int)$this->getParameter('id');
-			$members = $this->memberService->getMembersByAkceId($akceId)->where('NOT role', NULL);
+			$members = $this->userService->getMembersByAkceId($akceId)->where('NOT role', NULL);
 			$param['akce_id'] = $akceId;
 		} else {
-			$members = $this->memberService->getMembers()->where('id', $values->users);
+			$members = $this->userService->getUsers()->where('id', $values->users);
 		}
 
 		$members->where('NOT id', $sender->id);

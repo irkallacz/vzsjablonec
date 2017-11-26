@@ -70,9 +70,9 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 <table id="mail">
 	<tr><th>{label to /}</th><td class="no-wrap">{input to} {if !isset($isAkce)}<button id="openButton" class="buttonLike" n:name="open">{include svg name => group}</button>{/if}</td></tr>
 <tr><td colspan="2">
-<fieldset id="adresati" class="hide" n:inner-foreach="$form[users]->items as $id => $label">
+<fieldset id="adresati" class="hide" n:inner-foreach="$members as $member">
     {if $iterator->isFirst()}<div class="float-left">{/if}
-		<div class="label"><input n:name="users:$id" class="member" {if !isset($isAkce)}data-mail="{$userMails[$id]}"{/if}> <label n:name="users:$id">{$label}</label></div>
+		<div class="label"><input n:name="users:$member->id" class="member" {if !isset($isAkce)}data-mail="{$member->mail}"{/if}> <label n:name="users:$member->id">{$member->surname} {$member->name}</label></div>
     {if !($iterator->getCounter()%$pocet)} </div><div class="float-left"> {/if}
 	{if $iterator->isLast()}</div><p><i>Pro výběr všech položek využijte klávesovou zkratku Ctrl + A</i></p>{/if}
 </fieldset>
