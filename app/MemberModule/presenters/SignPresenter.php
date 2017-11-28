@@ -2,6 +2,8 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\Authenticator\CredentialsAuthenticator;
+use App\Authenticator\EmailAuthenticator;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
@@ -9,11 +11,26 @@ use Nette\Utils\DateTime;
 use Nette\Security as NS;
 use Nette\Utils\Strings;
 use App\Model\UserService;
+use Vencax\FacebookLogin;
+use Vencax\GoogleLogin;
+use Tracy\Debugger;
 
 class SignPresenter extends BasePresenter {
 
-	/** @var UserService  @inject */
+	/** @var UserService @inject */
 	public $userService;
+
+	/** @var GoogleLogin @inject */
+	public $googleLogin;
+
+	/** @var FacebookLogin @inject */
+	public $facebookLogin;
+
+	/** @var CredentialsAuthenticator @inject */
+	public $credentialsAuthenticator;
+
+	/** @var EmailAuthenticator @inject */
+	public $emailAuthenticator;
 
 	/** @var IMailer @inject */
 	public $mailer;
@@ -21,11 +38,47 @@ class SignPresenter extends BasePresenter {
 	/** @persistent */
 	public $backlink = '';
 
+
 	public function startup() {
 		parent::startup();
 		if ($this->getUser()->isLoggedIn() and ($this->getAction() != 'out')) {
 			if ($this->backlink) $this->restoreRequest($this->backlink);
 			$this->redirect('News:');
+		}
+	}
+
+	public function renderIn(){
+		$this->template->googleLoginUrl = $this->googleLogin->getLoginUrl();
+		$this->template->googleLastLogin = $this->googleLogin->isThisServiceLastLogin();
+
+		$this->template->facebookLoginUrl = $this->facebookLogin->getLoginUrl();
+		$this->template->facebookLastLogin = $this->facebookLogin->isThisServiceLastLogin();
+	}
+
+
+	/**
+	 * @param $code
+	 */
+	public function actionGoogleLogin($code) {
+		try {
+			$me = $this->googleLogin->getMe($code);
+			$this->emailAuthenticator->login($me->email);
+			$this->afterLogin();
+		}
+		catch(NS\AuthenticationException $e) {
+			$this->flashMessage($e->getMessage(), 'error');
+			$this->redirect("Sign:in");
+		}
+	}
+
+	public function actionFacebookLogin() {
+		try {
+			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
+			$this->emailAuthenticator->login($me['email']);
+		}
+		catch(NS\AuthenticationException $e) {
+			$this->flashMessage($e->getMessage(), 'error');
+			$this->redirect("Sign:default");
 		}
 	}
 
@@ -51,26 +104,34 @@ class SignPresenter extends BasePresenter {
 		return $form;
 	}
 
+	/**
+	 * @param Form $form
+	 */
 	public function signInFormSubmitted(Form $form) {
 		try {
 			$values = $form->getValues();
-
-			$this->getUser()->setExpiration('6 hours', TRUE);
-			$this->getUser()->login($values->mail, $values->password);
-
-			$userId = $this->getUser()->getId();
-
-			$this->getUser()->getIdentity()->date_last = $this->userService->getLastLoginByUserId($userId);
-			$this->userService->addUserLogin($userId, new DateTime());
-
-			if ($this->backlink) $this->restoreRequest($this->backlink);
-			else $this->redirect('News:default');
+			$this->credentialsAuthenticator->login($values->mail, $values->password);
+			$this->afterLogin();
 
 		} catch (NS\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
 	}
 
+	protected function afterLogin(){
+		$userId = $this->getUser()->getId();
+		$this->getUser()->setExpiration('6 hours', TRUE);
+
+		$this->getUser()->getIdentity()->date_last = $this->userService->getLastLoginByUserId($userId);
+		$this->userService->addUserLogin($userId, new DateTime());
+
+		if ($this->backlink) $this->restoreRequest($this->backlink);
+		else $this->redirect('News:default');
+	}
+
+	/**
+	 * @return Form
+	 */
 	protected function createComponentForgotPassForm() {
 		$form = new Form;
 		$form->addText('mail', 'Email:', 30)
@@ -92,6 +153,9 @@ class SignPresenter extends BasePresenter {
 		return $form;
 	}
 
+	/**
+	 * @param Form $form
+	 */
 	public function forgotPassFormSubmitted(Form $form) {
 		$values = $form->getValues();
 		$values->mail = Strings::lower($values->mail);
@@ -109,6 +173,10 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 * @param $pubkey
+	 * @throws BadRequestException
+	 */
 	public function renderRestorePassword($pubkey) {
 		$session = $this->userService->getPasswordSession($pubkey);
 
@@ -129,6 +197,9 @@ class SignPresenter extends BasePresenter {
 		$this['restorePasswordForm']->setDefaults($member);
 	}
 
+	/**
+	 * @return Form
+	 */
 	protected function createComponentRestorePasswordForm() {
 		$form = new Form;
 
@@ -150,6 +221,10 @@ class SignPresenter extends BasePresenter {
 		return $form;
 	}
 
+	/**
+	 * @param Form $form
+	 * @throws BadRequestException
+	 */
 	public function restorePasswordFormSubmitted(Form $form) {
 		$values = $form->getValues();
 		$pubkey = $this->getParameter('pubkey');
@@ -181,5 +256,4 @@ class SignPresenter extends BasePresenter {
 		$this->flashMessage('Byl jste odhlášen');
 		$this->redirect('in');
 	}
-
 }

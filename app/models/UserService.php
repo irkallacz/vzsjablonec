@@ -127,6 +127,18 @@ class UserService extends DatabaseService {
 	}
 
 	/**
+	 * @param IRow $user
+	 * @return array
+	 */
+	public function getRightsForUser(IRow $user) {
+		$roleList = $this->getRoleList();
+		$rights = array_slice($roleList, 0, $user->role + 1);
+		$rights = array_merge($rights, array_values($this->getRightsByUserId($user->id)));
+
+		return $rights;
+	}
+
+	/**
 	 * @param $id
 	 * @return int
 	 */

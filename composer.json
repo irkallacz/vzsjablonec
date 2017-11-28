@@ -29,10 +29,12 @@
 		"lsolesen/pel": "^0.9.6",
 		"tedivm/stash": "^0.14.2",
 		"rah/danpu": "^2.6",
-		"contributte/console": "^0.2.0"
+		"contributte/console": "^0.2.0",
+		"nette/tester": "^2.0",
+		"kertz/twitteroauth": "dev-master",
+		"venca-x/social-login": "^1.0"
 	},
 	"require-dev": {
-		"nette/tester": "^1.6"
 	},
 	"minimum-stability": "stable"
 }

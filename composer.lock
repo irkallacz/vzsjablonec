@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "2e18223ecd2bc73a332ed77e65d33730",
+    "content-hash": "58b5b78feb410471ed9fa382ac665e83",
     "packages": [
         {
             "name": "contributte/console",
@@ -105,6 +105,64 @@
                 "plupload"
             ],
             "time": "2017-01-16T19:18:46+00:00"
+        },
+        {
+            "name": "facebook/graph-sdk",
+            "version": "5.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facebook/php-graph-sdk.git",
+                "reference": "2f9639c15ae043911f40ffe44080b32bac2c5280"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facebook/php-graph-sdk/zipball/2f9639c15ae043911f40ffe44080b32bac2c5280",
+                "reference": "2f9639c15ae043911f40ffe44080b32bac2c5280",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4|^7.0"
+            },
+            "require-dev": {
+                "guzzlehttp/guzzle": "~5.0",
+                "mockery/mockery": "~0.8",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "guzzlehttp/guzzle": "Allows for implementation of the Guzzle HTTP client",
+                "paragonie/random_compat": "Provides a better CSPRNG option in PHP 5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Facebook\\": "src/Facebook/"
+                },
+                "files": [
+                    "src/Facebook/polyfills.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Facebook Platform"
+            ],
+            "authors": [
+                {
+                    "name": "Facebook",
+                    "homepage": "https://github.com/facebook/php-graph-sdk/contributors"
+                }
+            ],
+            "description": "Facebook SDK for PHP",
+            "homepage": "https://github.com/facebook/php-graph-sdk",
+            "keywords": [
+                "facebook",
+                "sdk"
+            ],
+            "time": "2017-08-16T17:28:07+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -611,6 +669,33 @@
             ],
             "description": "This is an extension of janmarek/webloader. This extension contains filters to minify js and css.",
             "time": "2015-10-11T23:02:22+00:00"
+        },
+        {
+            "name": "kertz/twitteroauth",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kertz/twitteroauth.git",
+                "reference": "97b677ca030e7de7dcade797aabb4af8a3aa463f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kertz/twitteroauth/zipball/97b677ca030e7de7dcade797aabb4af8a3aa463f",
+                "reference": "97b677ca030e7de7dcade797aabb4af8a3aa463f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "twitteroauth"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "time": "2014-02-23 11:27:58"
         },
         {
             "name": "latte/latte",
@@ -1796,6 +1881,68 @@
             "time": "2017-07-11T09:41:59+00:00"
         },
         {
+            "name": "nette/tester",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nette/tester.git",
+                "reference": "ee0ad514d66409037a0e72fe798112fd8cdae92e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nette/tester/zipball/ee0ad514d66409037a0e72fe798112fd8cdae92e",
+                "reference": "ee0ad514d66409037a0e72fe798112fd8cdae92e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0"
+            },
+            "bin": [
+                "src/tester"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause",
+                "GPL-2.0",
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "David Grudl",
+                    "homepage": "https://davidgrudl.com"
+                },
+                {
+                    "name": "Nette Community",
+                    "homepage": "https://nette.org/contributors"
+                }
+            ],
+            "description": "Nette Tester: enjoyable unit testing in PHP with code coverage reporter. 🍏🍏🍎🍏",
+            "homepage": "https://tester.nette.org",
+            "keywords": [
+                "Xdebug",
+                "assertions",
+                "clover",
+                "code coverage",
+                "nette",
+                "phpdbg",
+                "phpunit",
+                "testing",
+                "unit"
+            ],
+            "time": "2017-08-22T06:46:57+00:00"
+        },
+        {
             "name": "nette/utils",
             "version": "v2.4.7",
             "source": {
@@ -2638,6 +2785,57 @@
             "time": "2017-07-14T06:38:56+00:00"
         },
         {
+            "name": "venca-x/social-login",
+            "version": "v1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/venca-x/social-login.git",
+                "reference": "d9c8f5eea64d3a8ca2959a2e47aafc201c6d31f0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/venca-x/social-login/zipball/d9c8f5eea64d3a8ca2959a2e47aafc201c6d31f0",
+                "reference": "d9c8f5eea64d3a8ca2959a2e47aafc201c6d31f0",
+                "shasum": ""
+            },
+            "require": {
+                "facebook/graph-sdk": "^5.6",
+                "google/apiclient": "^2.2",
+                "kertz/twitteroauth": "dev-master",
+                "latte/latte": ">=2.2.0",
+                "nette/application": ">=2.2.0",
+                "nette/tester": "^2.0",
+                "php": ">= 5.6"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "vEnCa-X",
+                    "email": "venca-x@seznam.cz",
+                    "homepage": "http://www.venca-x.cz"
+                }
+            ],
+            "description": "Nette addon. Login with social networks ( Faceboook, Google, Twitter )",
+            "keywords": [
+                "Facebook login",
+                "Google login",
+                "Social Login",
+                "Twitter login",
+                "nette",
+                "php"
+            ],
+            "time": "2017-08-24T12:21:08+00:00"
+        },
+        {
             "name": "webchemistry/forms-multiplier",
             "version": "2.0.1",
             "source": {
@@ -2679,67 +2877,12 @@
             "time": "2017-07-29T18:16:58+00:00"
         }
     ],
-    "packages-dev": [
-        {
-            "name": "nette/tester",
-            "version": "v1.7.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nette/tester.git",
-                "reference": "d97534578e8cf66eabe081e7d5eaa4dd527ab0c8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nette/tester/zipball/d97534578e8cf66eabe081e7d5eaa4dd527ab0c8",
-                "reference": "d97534578e8cf66eabe081e7d5eaa4dd527ab0c8",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.0"
-            },
-            "bin": [
-                "src/tester"
-            ],
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.7-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause",
-                "GPL-2.0",
-                "GPL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "David Grudl",
-                    "homepage": "https://davidgrudl.com"
-                },
-                {
-                    "name": "Nette Community",
-                    "homepage": "https://nette.org/contributors"
-                }
-            ],
-            "description": "An easy-to-use PHP unit testing framework.",
-            "homepage": "https://tester.nette.org",
-            "keywords": [
-                "nette",
-                "testing",
-                "unit"
-            ],
-            "time": "2016-03-19T14:34:02+00:00"
-        }
-    ],
+    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "kertz/twitteroauth": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

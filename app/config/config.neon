@@ -20,6 +20,16 @@ parameters:
 			password:
 	google:
 		account: info@vzs-jablonec.cz
+		login:
+			clientId: 698488418952-95tac0912e96pdk6mlhme3i143i5kgvg.apps.googleusercontent.com
+			clientSecret: 3enX6Pf17fkp4uPjjW2CNfBr
+			callbackURL: http://localhost/vzsjablonec/member/sign/googlelogin
+	facebook:
+		login:
+			appId: 123456789
+			appSecret: 987654321
+			callbackURL: http://localhost/vzsjablonec/member/sign/facebooklogin
+			defaultFbGraphVersion: 'v2.11'
 
 application:
 	errorPresenter: Error
@@ -50,11 +60,13 @@ session:
     gc_maxlifetime: 21600
 
 services:
-	authenticator: App\Model\Authenticator
 	router: RouterFactory::createRouter
 	nette.latteFactory:
 		setup:
 			- addFilter(null, App\Template\LatteFilters::loader)
+
+	- App\Authenticator\CredentialsAuthenticator
+	- App\Authenticator\EmailAuthenticator
 
 	- App\Model\AkceService
 	- App\Model\ForumService
@@ -82,6 +94,19 @@ services:
 	- Google_Service_Drive
 	- Google_Service_Calendar
 	- Google_Service_People
+
+	googleLogin:
+		class: Vencax\GoogleLogin(%google.login%, "vzsjablonec-social-login")
+		setup:
+			- setScope([
+				Google_Service_Plus::PLUS_ME
+				Google_Service_Plus::USERINFO_EMAIL
+			])
+
+	facebookLogin:
+		class: Vencax\FacebookLogin(%facebook.login%, "vzsjablonec-social-login")
+		setup:
+			- setScope([Vencax\FacebookLogin::EMAIL])
 
 extensions:
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
