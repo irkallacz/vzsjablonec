@@ -1,4 +1,4 @@
--- 2017-11-25T11:09:27+01:00 - mysql:host=localhost;dbname=wordpress
+-- 2017-11-29T21:45:15+01:00 - mysql:host=localhost;dbname=wordpress
 
 -- Table structure for table `wp_commentmeta`
 
@@ -190,4 +190,4 @@ CREATE TABLE `wp_users` (
   KEY `user_nicename` (`user_nicename`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Completed on: 2017-11-25T11:09:27+01:00
+-- Completed on: 2017-11-29T21:45:15+01:00
