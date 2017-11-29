@@ -118,7 +118,7 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
-	protected function afterLogin(){
+	private function afterLogin(){
 		$userId = $this->getUser()->getId();
 		$this->getUser()->setExpiration('6 hours', TRUE);
 
