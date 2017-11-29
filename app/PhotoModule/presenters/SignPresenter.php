@@ -2,6 +2,7 @@
 
 namespace App\PhotoModule\Presenters;
 
+use App\Authenticator\CredentialsAuthenticator;
 use App\Model\GalleryService;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
@@ -12,23 +13,18 @@ class SignPresenter extends BasePresenter {
 	/** @persistent */
 	public $backlink = '';
 
-	/**
-	 * @var GalleryService @inject
-	 */
+	/** @var GalleryService @inject */
 	public $galleryService;
 
-	/**
-	 *
-	 */
+	/** @var CredentialsAuthenticator @inject */
+	public $credentialsAuthenticator;
+
 	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste odhlášen');
 		$this->redirect('Album:default');
 	}
 
-	/**
-	 *
-	 */
 	public function renderIn() {
 		$this->template->backlink = $this->backlink;
 	}
@@ -60,26 +56,30 @@ class SignPresenter extends BasePresenter {
 	public function signInFormSubmitted(Form $form) {
 		try {
 			$values = $form->getValues();
-
-			$this->getUser()->setExpiration('6 hours', TRUE);
-			$this->getUser()->login($values->mail, $values->password);
-
-			$user_id = $this->getUser()->getId();
-
-			$this->getUser()->getIdentity()->date_last = $this->galleryService->getLastLoginByMemberId($user_id);
-			$this->galleryService->addMemberLogin($user_id, new DateTime());
-
-			if ($this->backlink) {
-				$this->restoreRequest($this->backlink);
-			}elseif ($this->getUser()->isInRole('member')) {
-				$this->redirect('Myself:');
-			}else {
-				$this->redirect('News:');
-			}
+			$this->credentialsAuthenticator->login($values->mail, $values->password);
+			$this->afterLogin();
 
 		} catch (Security\AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
+	}
+
+	private function afterLogin(){
+		$this->getUser()->setExpiration('6 hours', TRUE);
+
+		$user_id = $this->getUser()->getId();
+
+		$this->getUser()->getIdentity()->date_last = $this->galleryService->getLastLoginByMemberId($user_id);
+		$this->galleryService->addMemberLogin($user_id, new DateTime());
+
+		if ($this->backlink) {
+			$this->restoreRequest($this->backlink);
+		}elseif ($this->getUser()->isInRole('member')) {
+			$this->redirect('Myself:');
+		}else {
+			$this->redirect('News:');
+		}
+
 	}
 
 }

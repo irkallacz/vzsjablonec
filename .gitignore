@@ -50,6 +50,7 @@ vendor/
 config.local.neon
 config.local.neon.production
 google_api_service.json
+composer.lock
 .idea
 www/subdom/t9
 www/subdom/photo/albums
