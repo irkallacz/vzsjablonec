@@ -1,3 +1,11 @@
+parameters:
+	google:
+		login:
+			clientSecret: 123456789
+	facebook:
+		login:
+			appSecret: 987654321
+
 session:
 	expiration: 12 hours
 	namespace: vzsjablonec

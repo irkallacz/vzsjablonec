@@ -22,7 +22,7 @@ parameters:
 		account: info@vzs-jablonec.cz
 		login:
 			clientId: 698488418952-95tac0912e96pdk6mlhme3i143i5kgvg.apps.googleusercontent.com
-			clientSecret: 3enX6Pf17fkp4uPjjW2CNfBr
+			clientSecret: 123456789
 			callbackURL: http://localhost/vzsjablonec/member/sign/googlelogin
 	facebook:
 		login:
