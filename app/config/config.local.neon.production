@@ -1,0 +1,37 @@
+#
+# SECURITY WARNING: it is CRITICAL that this file & directory are NOT accessible directly via a web browser!
+#
+# If you don't protect this directory from direct web access, anybody will be able to see your passwords.
+# http://nette.org/security-warning
+#
+
+parameters:
+	database:
+		default:
+			host: wm119.wedos.net
+			dbname: d133882_member
+			user: w133882_member
+			password: aS82MMPN
+		photo:
+			host: wm119.wedos.net
+			dbname: d133882_photo
+			user: w133882_photo
+			password: rJFWjhEP
+			photoUri: http://photo.vzs-jablonec.cz
+		wordpress:
+			host: wm119.wedos.net
+			dbname: d133882_bde69a3
+			user: w133882_bde69a3
+			password: jdLEC785
+	google:
+		login:
+			clientSecret: 123456789
+			callbackURL: https://member.vzs-jablonec.cz/sign/googlelogin
+	facebook:
+		login:
+			appSecret: 987654321
+			callbackURL: https://member.vzs-jablonec.cz/sign/facebooklogin
+
+
+tracy:
+	email: webmaster@vzs-jablonec.cz
