@@ -67,6 +67,9 @@ class AlbumPresenter extends BasePresenter {
 	}
 
 
+	/**
+	 * @param $offset
+	 */
 	public function handleLoadMore($offset) {
 		$this->offset = $offset;
 		$this->redrawControl();
