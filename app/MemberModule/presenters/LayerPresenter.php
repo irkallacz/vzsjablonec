@@ -58,7 +58,7 @@ abstract class LayerPresenter extends BasePresenter {
 			['title' => 'ankety',   	'link' => 'Ankety:',    	'current' => 'Ankety:*',    	'role'=> 'member', 	'icon' => 'list-ul'			],
 			['title' => 'hlasovani',	'link' => 'Hlasovani:', 	'current' => 'Hlasovani:*', 	'role'=> 'member', 	'icon' => 'balance-scale'	],
 			['title' => 'email', 		'link' => 'Mail:', 			'current' => 'Mail:*', 			'role'=> 'board',	'icon' => 'envelope-o'		],
-			['title' => 'galerie', 		'link' => ':Photo:Myself:', 'current' => ':Photo:Myself:*', 'role'=> 'member',	'icon' => 'image'			],
+			['title' => 'galerie', 		'link' => ':Photo:Album:',	'current' => ':Photo:Album:*', 	'role'=> 'member',	'icon' => 'image'			],
 		];
 
 		$this->template->mainMenu = ArrayHash::from($mainMenu);

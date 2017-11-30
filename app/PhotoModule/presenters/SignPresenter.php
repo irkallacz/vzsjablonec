@@ -64,7 +64,7 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
-	private function afterLogin(){
+	private function afterLogin() {
 		$this->getUser()->setExpiration('6 hours', TRUE);
 
 		$user_id = $this->getUser()->getId();
@@ -74,10 +74,8 @@ class SignPresenter extends BasePresenter {
 
 		if ($this->backlink) {
 			$this->restoreRequest($this->backlink);
-		}elseif ($this->getUser()->isInRole('member')) {
-			$this->redirect('Myself:');
-		}else {
-			$this->redirect('News:');
+		} else {
+			$this->redirect('Album:');
 		}
 
 	}

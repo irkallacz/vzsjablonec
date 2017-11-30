@@ -30,13 +30,13 @@ abstract class BasePresenter extends Presenter {
 		$this->template->photoDir = self::photoDir;
 
 		$mainMenu = [
-			['title' => 'novinky',		'link' => 'News:',  			 'current' => 'News:*',				'role' => NULL		],
-			['title' => 'alba',			'link' => 'Album:', 			 'current' => 'Album:*',			'role' => NULL		],
-			['title' => 'můj účet', 	'link' => 'Myself:',             'current' => 'Myself:*',			'role' => 'member'	],
-			['title' => 'rss',      	'link' => ':Member:Feed:albums', 'current' => ':Member:Feed:albums','role' => 'user'	],
-			['title' => 'member',   	'link' => ':Member:News:',       'current' => ':Member:News:',		'role' => 'user'	],
-			['title' => 'odhlášení',	'link' => 'Sign:out',            'current' => 'Sign:*',				'role' => 'user'	],
-			['title' => 'přihlášení',	'link' => 'Sign:in',             'current' => 'Sign:*',				'role' => 'guest'	],
+			['title' => 'novinky',		'link' => 'News:',					'current' => 'News:*',				'role' => NULL		],
+			['title' => 'alba',			'link' => 'Album:',					'current' => 'Album:*',				'role' => NULL		],
+			['title' => 'můj účet',		'link' => 'Myself:',				'current' => 'Myself:*',			'role' => 'member'	],
+			['title' => 'rss',			'link' => ':Member:Feed:albums',	'current' => ':Member:Feed:albums',	'role' => 'user'	],
+			['title' => 'member',		'link' => ':Member:News:',			'current' => ':Member:News:',		'role' => 'user'	],
+			['title' => 'odhlášení',	'link' => 'Sign:out',				'current' => 'Sign:*',				'role' => 'user'	],
+			['title' => 'přihlášení',	'link' => 'Sign:in',				'current' => 'Sign:*',				'role' => 'guest'	],
 		];
 
 		$this->template->mainMenu = ArrayHash::from($mainMenu);
