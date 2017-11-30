@@ -74,11 +74,17 @@ class SignPresenter extends BasePresenter {
 	public function actionFacebookLogin() {
 		try {
 			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
-			$this->emailAuthenticator->login($me['email']);
-		}
+			if(!isset($me['email'])) {
+				$this->flashMessage('Pravděpodobně jste aplikaci VZS JBC na Facebooku odebrali právo 
+						přistupovat k vašemu emailu. Odeberte aplikaci a znovu se pokuste přihlásit.', 'error');
+				$this->redirect("Sign:in");
+			}
+ 			$this->emailAuthenticator->login($me['email']);
+			$this->afterLogin();
+ 		}
 		catch(NS\AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
-			$this->redirect("Sign:default");
+			$this->redirect("Sign:in");
 		}
 	}
 
