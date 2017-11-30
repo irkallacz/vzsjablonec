@@ -62,7 +62,11 @@
                 <li n:foreach="$form->errors as $error">{$error}</li>
             </ul>
 
-            <div class="float-right">{input ok}</div>
+            <div class="float-right">
+				<button n:name="ok" class="buttonLike">
+					{include svg name => check} uložit
+				</button>
+			</div>
             <p>
                 <span id="stars">
                     <span id="check-star" n:inner-foreach="$form[rating]->items as $key => $label"><input n:name="rating:$key"><label n:name="rating:$key"></label></span>

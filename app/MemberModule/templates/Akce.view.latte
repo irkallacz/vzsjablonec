@@ -143,7 +143,13 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
             </ul>
 
             <p>
-                {if array_key_exists($user->id,$orgList)} {input file} {input ok} {/if}
+                {if array_key_exists($user->id,$orgList)}
+					{input file}
+
+					<button n:name="ok" class="buttonLike">
+						{include svg name => upload} nahrát
+					</button>
+				{/if}
             </p>
         {/form}
 

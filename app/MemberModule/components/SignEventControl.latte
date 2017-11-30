@@ -41,7 +41,7 @@
 <div class="clearfix"></div>
 
 {if $user->isInRole('member')and(($userIsInOrgList)or($user->isInRole('admin')))}
-	<a id="change-button" class="buttonLike">{include svg name => group} upravit účastníky</a>
+	<button id="change-button" class="buttonLike">{include svg name => group} upravit účastníky</button>
 	<div id="change-form" class="hide">
 		<h3>Upravit účastníky</h3>
 		<div n:snippet="logginForm">
