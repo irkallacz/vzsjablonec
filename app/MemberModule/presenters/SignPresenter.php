@@ -6,7 +6,9 @@ use App\Authenticator\CredentialsAuthenticator;
 use App\Authenticator\EmailAuthenticator;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\InvalidArgumentException;
 use Nette\Mail\IMailer;
+use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Security as NS;
 use Nette\Utils\Strings;
@@ -74,17 +76,17 @@ class SignPresenter extends BasePresenter {
 	public function actionFacebookLogin() {
 		try {
 			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
-			if(!isset($me['email'])) {
-				$this->flashMessage('Pravděpodobně jste aplikaci VZS JBC na Facebooku odebrali právo 
-						přistupovat k vašemu emailu. Odeberte aplikaci a znovu se pokuste přihlásit.', 'error');
-				$this->redirect("Sign:in");
-			}
- 			$this->emailAuthenticator->login($me['email']);
+			$email = Arrays::get($me, 'email');
+ 			$this->emailAuthenticator->login($email);
 			$this->afterLogin();
  		}
+		catch(InvalidArgumentException $e) {
+			$this->flashMessage('Pravděpodobně jste aplikaci VZS JBC na Facebooku odebrali právo přistupovat k vašemu emailu. Odeberte aplikaci a znovu se pokuste přihlásit.', 'error');
+			$this->redirect('Sign:in');
+		}
 		catch(NS\AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
-			$this->redirect("Sign:in");
+			$this->redirect('Sign:in');
 		}
 	}
 
