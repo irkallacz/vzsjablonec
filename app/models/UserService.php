@@ -78,8 +78,8 @@ class UserService extends DatabaseService {
 	 * @param $mail
 	 * @return bool|mixed|IRow
 	 */
-	public function getUserByEmail($mail) {
-		return $this->getUsers()->where('mail', $mail)->fetch();
+	public function isEmailValid($mail, $userId) {
+		return (bool) ! $this->getUsers(self::DELETED_LEVEL)->where('mail = ? OR mail2 = ?', $mail, $mail)->where('NOT id', $userId)->fetch();
 	}
 
 	/**
@@ -87,7 +87,7 @@ class UserService extends DatabaseService {
 	 * @return bool|mixed|IRow
 	 */
 	public function getUserByLogin($login) {
-		return $this->getUsers()->select('id, hash, name, surname, mail, role')->where('mail', $login)->fetch();
+		return $this->getUsers()->select('id, hash, name, surname, mail, mail2, role')->where('mail = ? OR mail2 = ?', $login, $login)->fetch();
 	}
 
 

@@ -43,7 +43,7 @@ abstract class BasePresenter extends Presenter {
 	public function getNewMail() {
 		$mail = new \Nette\Mail\Message;
 		$mail->setFrom('info@vzs-jablonec.cz', 'VZS Jablonec')
-			->addCc('info@vzs-jablonec.cz');
+			->addBcc('info@vzs-jablonec.cz');
 
 		return $mail;
 	}
@@ -56,6 +56,7 @@ abstract class BasePresenter extends Presenter {
 		$mail = $this->getNewMail();
 
 		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
+		if ($member->mail2) $mail->addCc($member->mail2);
 		$mail->setSubject('[VZS Jablonec] Obnova hesla');
 		$mail->setHTMLBody($template);
 

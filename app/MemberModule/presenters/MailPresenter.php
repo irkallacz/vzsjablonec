@@ -139,8 +139,10 @@ class MailPresenter extends LayerPresenter {
 		$mail->setSubject('[VZS Jablonec] ' . $values->subject)
 			->setHtmlBody($template);
 
-		foreach ($members as $member)
+		foreach ($members as $member){
 			$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
+			if ($member->mail2) $mail->addCc($member->mail2);
+		}
 
 		if (($form['file']->isFilled()) and ($values->file->isOK())){
 			$filename = $values->file->getSanitizedName();

@@ -83,6 +83,8 @@
 	<ul class="bulletless">
 		<li n:if="$member->mail">{include svg name => envelope} <b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a></li>
 		<li n:if="$member->telefon">{include svg name => phone} <b>Telefon:</b> {$member->telefon|number:0:'.':' '}</li>
+		<li n:if="$member->mail2">{include svg name => envelope-o} <b>Sekundární e-mail:</b> <a href="mailto:{$member->mail2}">{$member->mail2}</a></li>
+		<li n:if="$member->telefon2">{include svg name => phone-square} <b>Sekundární telefon:</b> {$member->telefon2|number:0:'.':' '}</li>
 	</ul>
 
 <div id="poznamka">

@@ -304,9 +304,10 @@ class UserPresenter extends LayerPresenter {
 		$this->mailer->send($mail);
 	}
 
-	public function uniqueValidator($item) {
-		$id = (int)$this->getParameter('id');
-		return (bool)!($this->userService->getTable()->select('id')->where($item->name, $item->value)->where('NOT id', $id)->fetch());
+	public function uniqueMailValidator($item) {
+		$id = $this->getParameter('id');
+
+		return $this->userService->isEmailValid($item->value, $id);
 	}
 
 	public function currentPassValidator($item) {
@@ -342,14 +343,14 @@ class UserPresenter extends LayerPresenter {
 
 		$form->addPassword('password', 'Nové heslo', 20)
 			->addCondition(Form::FILLED)
-			->addRule(Form::PATTERN, 'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena', '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
-			->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo');
+				->addRule(Form::PATTERN, 'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena', '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
+				->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo');
 
 		$form->addPassword('confirm', 'Potvrzení', 20)
 			->setRequired(FALSE)
 			->addRule(Form::EQUAL, 'Zadaná hesla se neschodují', $form['password'])
 			->addCondition(Form::FILLED)
-			->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků', 8);
+				->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků', 8);
 
 		$form->addCheckbox('sendMail', 'Poslat novému členu mail s přihlašovacími údaji')
 			->setDefaultValue(TRUE);
@@ -358,11 +359,21 @@ class UserPresenter extends LayerPresenter {
 
 		$form->addText('mail', 'E-mail', 30)
 			->setType('email')
-			->addRule([$this, 'uniqueValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
+			->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
 			->setRequired('Vyplňte %label');
 
 		$form->addText('telefon', 'Telefon', 30)
 			->setRequired('Vyplňte %label')
+			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
+
+		$form->addText('mail2', 'Sekundární E-mail', 30)
+			->setType('email')
+			->addCondition(Form::FILLED)
+				->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
+				->addRule(Form::NOT_EQUAL, 'E-maily se nesmí shodovat', $form['mail']);
+
+		$form->addText('telefon2', 'Sekundární telefon', 30)
+			->setRequired(FALSE)
 			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 
 		$form->addGroup('Adresa');
@@ -410,6 +421,7 @@ class UserPresenter extends LayerPresenter {
 		unset($values->confirm);
 
 		$values->mail = Strings::lower($values->mail);
+		$values->mail2 = Strings::lower($values->mail2);
 
 		if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
 			$image = $values->image->toImage();
@@ -420,6 +432,7 @@ class UserPresenter extends LayerPresenter {
 		unset($values->image);
 
 		if ((isset($values->text))and(!$values->text)) unset($values->text);
+		if ((isset($values->mail2))and(!$values->mail2)) unset($values->mail2);
 
 		$values->date_update = new DateTime();
 
