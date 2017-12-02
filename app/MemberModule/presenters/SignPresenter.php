@@ -168,7 +168,7 @@ class SignPresenter extends BasePresenter {
 		$values = $form->getValues();
 		$values->mail = Strings::lower($values->mail);
 
-		$member = $this->userService->getUserByLogin($values->mail);
+		$member = $this->userService->getUserByEmail($values->mail);
 
 		if (!$member) $form->addError('E-mail nenalezen');
 		else {

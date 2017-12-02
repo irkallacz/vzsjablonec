@@ -306,8 +306,7 @@ class UserPresenter extends LayerPresenter {
 
 	public function uniqueMailValidator($item) {
 		$id = $this->getParameter('id');
-
-		return $this->userService->isEmailValid($item->value, $id);
+		return $this->userService->isEmailUnique($item->value, $id);
 	}
 
 	public function currentPassValidator($item) {
@@ -359,22 +358,27 @@ class UserPresenter extends LayerPresenter {
 
 		$form->addText('mail', 'E-mail', 30)
 			->setType('email')
+			->addRule(Form::EMAIL, 'Zadejte platný email')
 			->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
 			->setRequired('Vyplňte %label');
 
 		$form->addText('telefon', 'Telefon', 30)
+			->setType('tel')
 			->setRequired('Vyplňte %label')
 			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 
 		$form->addText('mail2', 'Sekundární E-mail', 30)
 			->setType('email')
 			->addCondition(Form::FILLED)
+				->addRule(Form::EMAIL, 'Zadejte platný email')
 				->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
 				->addRule(Form::NOT_EQUAL, 'E-maily se nesmí shodovat', $form['mail']);
 
 		$form->addText('telefon2', 'Sekundární telefon', 30)
-			->setRequired(FALSE)
-			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
+			->setType('tel')
+			->addCondition(Form::FILLED)
+				->addRule(Form::NOT_EQUAL, 'Telefony se nesmí shodovat', $form['telefon'])
+				->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 
 		$form->addGroup('Adresa');
 
@@ -431,8 +435,9 @@ class UserPresenter extends LayerPresenter {
 
 		unset($values->image);
 
-		if ((isset($values->text))and(!$values->text)) unset($values->text);
-		if ((isset($values->mail2))and(!$values->mail2)) unset($values->mail2);
+		if ((isset($values->text))and(!$values->text)) $values->text = NULL;
+		if ((isset($values->mail2))and(!$values->mail2)) $values->mail2 = NULL;
+		if ((isset($values->telefon2))and(!$values->telefon2)) $values->telefon2 = NULL;
 
 		$values->date_update = new DateTime();
 

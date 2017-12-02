@@ -16,7 +16,7 @@ class EmailAuthenticator extends BaseAuthenticator {
 	 * @throws Security\AuthenticationException
 	 */
 	public function login($email) {
-		$user = $this->userService->getUserByLogin($email);
+		$user = $this->userService->getUserByEmail($email);
 
 		if (!$user) {
 			throw new Security\AuthenticationException("Uživatel s e-mailem '$email' nenalezen.", Security\IAuthenticator::IDENTITY_NOT_FOUND);

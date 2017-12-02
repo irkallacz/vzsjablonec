@@ -17,14 +17,14 @@ class CredentialsAuthenticator extends BaseAuthenticator {
 	 * @throws Security\AuthenticationException
 	 */
 	public function login($email, $password) {
-		$user = $this->userService->getUserByLogin($email);
+		$user = $this->userService->getUserByEmail($email);
 
 		if (!$user) {
 			throw new Security\AuthenticationException("Uživatel s e-mailem '$email' nenalezen.", Security\IAuthenticator::IDENTITY_NOT_FOUND);
 		}
 
 		if (!Security\Passwords::verify($password, $user->hash)) {
-			throw new Security\AuthenticationException("Nesprávné heslo.", Security\IAuthenticator::INVALID_CREDENTIAL);
+			throw new Security\AuthenticationException('Nesprávné heslo.', Security\IAuthenticator::INVALID_CREDENTIAL);
 		}
 
 		$rights = $this->userService->getRightsForUser($user);
