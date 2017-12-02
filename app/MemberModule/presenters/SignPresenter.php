@@ -69,7 +69,7 @@ class SignPresenter extends BasePresenter {
 		}
 		catch(NS\AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
-			$this->redirect("Sign:in");
+			$this->redirect('in');
 		}
 	}
 
@@ -82,11 +82,11 @@ class SignPresenter extends BasePresenter {
  		}
 		catch(InvalidArgumentException $e) {
 			$this->flashMessage('Pravděpodobně jste aplikaci VZS JBC na Facebooku odebrali právo přistupovat k vašemu emailu. Odeberte aplikaci a znovu se pokuste přihlásit.', 'error');
-			$this->redirect('Sign:in');
+			$this->redirect('in');
 		}
 		catch(NS\AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
-			$this->redirect('Sign:in');
+			$this->redirect('in');
 		}
 	}
 
