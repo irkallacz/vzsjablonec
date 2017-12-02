@@ -64,18 +64,4 @@ abstract class LayerPresenter extends BasePresenter {
 		$this->template->mainMenu = ArrayHash::from($mainMenu);
 	}
 
-	public function sendRestoreMail($member, $session) {
-		$template = $this->createTemplate();
-		$template->setFile(__DIR__ . '/../templates/Mail/restorePassword.latte');
-		$template->session = $session;
-
-		$mail = $this->getNewMail();
-
-		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-		$mail->setSubject('[VZS Jablonec] Obnova hesla');
-		$mail->setHTMLBody($template);
-
-		$this->mailer->send($mail);
-	}
-
 }
