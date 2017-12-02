@@ -21,7 +21,7 @@ class HlasovaniPresenter extends LayerPresenter{
 
 	public function renderDefault(){
 		$ankety = $this->hlasovani->getAnkety();
-		if (!$this->user->isInRole('Board')) $ankety->where('date_deatline < NOW() OR locked = ?',1);
+		if (!$this->user->isInRole('board')) $ankety->where('date_deatline < NOW() OR locked = ?',1);
 
 		$this->template->ankety = $ankety;
 	}
@@ -104,7 +104,7 @@ class HlasovaniPresenter extends LayerPresenter{
 		
 		$anketa = $this->hlasovani->getAnketaById($id);
 
-		if ((!$anketa)or($anketa->locked)or(!$this->user->isInRole('Board'))) {
+		if ((!$anketa)or($anketa->locked)or(!$this->user->isInRole('board'))) {
             throw new BadRequestException('V tomto hlasovaní nemůžete hlasovat');
         }
 

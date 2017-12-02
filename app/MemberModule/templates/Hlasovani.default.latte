@@ -17,7 +17,7 @@ table#items .first { font-size: 1.1em;}
 
 {block #content}
 
-<p n:if="$user->isInRole('Board')" class="right"><a class="buttonLike" n:href="add">{include svg name => plus} nové hlasování</a></p>
+<p n:if="$user->isInRole('board')" class="right"><a class="buttonLike" n:href="add">{include svg name => plus} nové hlasování</a></p>
 
 <table id="items">
 <tr class="first"><th>Hlasování</th><th>Počet hlasů</th><th>Poslední hlas</th></tr>
