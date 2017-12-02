@@ -128,7 +128,7 @@ class SignPresenter extends BasePresenter {
 
 	private function afterLogin(){
 		$userId = $this->getUser()->getId();
-		$this->getUser()->setExpiration('6 hours', TRUE);
+		$this->getUser()->setExpiration('6 hours', NS\IUserStorage::CLEAR_IDENTITY, TRUE);
 
 		$this->getUser()->getIdentity()->date_last = $this->userService->getLastLoginByUserId($userId);
 		$this->userService->addUserLogin($userId, new DateTime());
