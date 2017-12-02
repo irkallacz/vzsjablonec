@@ -86,7 +86,7 @@ class UserService extends DatabaseService {
 	 * @param $login
 	 * @return bool|mixed|IRow
 	 */
-	public function getUsersByLogin($login) {
+	public function getUserByLogin($login) {
 		return $this->getUsers()->select('id, hash, name, surname, mail, role')->where('mail', $login)->fetch();
 	}
 
