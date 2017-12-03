@@ -346,6 +346,7 @@ class UserPresenter extends LayerPresenter {
 				->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo');
 
 		$form->addPassword('confirm', 'Potvrzení', 20)
+			->setOmitted()
 			->setRequired(FALSE)
 			->addRule(Form::EQUAL, 'Zadaná hesla se neschodují', $form['password'])
 			->addCondition(Form::FILLED)
@@ -356,19 +357,20 @@ class UserPresenter extends LayerPresenter {
 
 		$form->addGroup('Kontakty');
 
-		$form->addText('mail', 'E-mail', 30)
+		$form->addText('mail', 'Primární e-mail', 30)
 			->setType('email')
 			->addRule(Form::EMAIL, 'Zadejte platný email')
 			->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
 			->setRequired('Vyplňte %label');
 
-		$form->addText('telefon', 'Telefon', 30)
+		$form->addText('telefon', 'Primární telefon', 30)
 			->setType('tel')
 			->setRequired('Vyplňte %label')
 			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 
-		$form->addText('mail2', 'Sekundární E-mail', 30)
+		$form->addText('mail2', 'Sekundární e-mail', 30)
 			->setType('email')
+			->setNullable()
 			->addCondition(Form::FILLED)
 				->addRule(Form::EMAIL, 'Zadejte platný email')
 				->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
@@ -376,6 +378,7 @@ class UserPresenter extends LayerPresenter {
 
 		$form->addText('telefon2', 'Sekundární telefon', 30)
 			->setType('tel')
+			->setNullable()
 			->addCondition(Form::FILLED)
 				->addRule(Form::NOT_EQUAL, 'Telefony se nesmí shodovat', $form['telefon'])
 				->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
@@ -401,6 +404,7 @@ class UserPresenter extends LayerPresenter {
 			->endCondition();
 
 		$form->addTextArea('text', 'Poznámka', 30)
+			->setNullable()
 			->setAttribute('spellcheck', 'true');
 
 		$form->addSubmit('ok', 'Ulož');
@@ -422,10 +426,9 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		unset($values->password);
-		unset($values->confirm);
 
 		$values->mail = Strings::lower($values->mail);
-		$values->mail2 = Strings::lower($values->mail2);
+		if ($values->mail2) $values->mail2 = Strings::lower($values->mail2);
 
 		if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
 			$image = $values->image->toImage();
@@ -434,10 +437,6 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		unset($values->image);
-
-		if ((isset($values->text))and(!$values->text)) $values->text = NULL;
-		if ((isset($values->mail2))and(!$values->mail2)) $values->mail2 = NULL;
-		if ((isset($values->telefon2))and(!$values->telefon2)) $values->telefon2 = NULL;
 
 		$values->date_update = new DateTime();
 

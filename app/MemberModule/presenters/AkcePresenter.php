@@ -386,7 +386,7 @@ class AkcePresenter extends LayerPresenter {
 			->setDefaultValue($this->getUser()->getId())
 			->setPrompt('není')
 			->addConditionOn($form['login_org'], Form::EQUAL, FALSE)
-			->addRule(FORM::FILLED, 'Musíte vybrat organizátora');
+				->addRule(FORM::FILLED, 'Musíte vybrat organizátora');
 
 		$form->addUpload('file', 'Soubor')
 			->setRequired(FALSE)
@@ -394,13 +394,15 @@ class AkcePresenter extends LayerPresenter {
 
 		$form->addText('price', 'Cena', 7)
 			->setType('number')
+			->setNullable()
 			->setOption('description', 'Kč')
 			->addCondition(Form::FILLED)
-			->addRule(Form::INTEGER, '%label musí být číslo');
+				->addRule(Form::INTEGER, '%label musí být číslo');
 
 		$form->addText('perex', 'Stručný popis', 50)
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class', 'perex');
+			->setAttribute('class', 'perex')
+			->setRequired('Vyplňte %label akce');
 
 		$form->addTextArea('description', 'Podrobný popis')
 			->setAttribute('spellcheck', 'true')
@@ -411,10 +413,12 @@ class AkcePresenter extends LayerPresenter {
 
 		$form->addCheckbox('addMessage', 'Připojit zprávu z akce')
 			->setDefaultValue(FALSE)
+			->setOmitted()
 			->addCondition(Form::EQUAL, TRUE)
-			->toggle('frm-akceForm-message');
+				->toggle('frm-akceForm-message');
 
 		$form->addTextArea('message', 'Zpráva z akce')
+			->setNullable()
 			->setAttribute('spellcheck', 'true')
 			->setDefaultValue($text)
 			->setAttribute('class', 'texyla');
@@ -430,43 +434,38 @@ class AkcePresenter extends LayerPresenter {
 	 * @allow(member)
 	 */
 	public function akceFormSubmitted(Form $form) {
-		$id = (int)$this->getParameter('id');
+		$id = (int) $this->getParameter('id');
 
-		$data = $form->getValues();
+		$values = $form->getValues();
 		$datum = new Datetime();
 
-		$data->name = ucfirst($data->name);
+		$values->name = ucfirst($values->name);
 
-		$data->date_update = $datum;
+		$values->date_update = $datum;
 
-		if (!$data->price) unset($data->price);
+		$org = $values->organizator;
+		unset($values->organizator);
 
-		$org = $data->organizator;
-		unset($data->organizator);
-
-		if (!$data->addMessage) unset($data->message);
-		unset($data->addMessage);
-
-		if (($form['file']->isFilled()) and ($data->file->isOK())) {
-			$data->file->move(WWW_DIR . '/doc/akce/' . $data->file->getSanitizedName());
-			$data->file = $data->file->getSanitizedName();
-		} else unset($data->file);
+		if (($form['file']->isFilled()) and ($values->file->isOK())) {
+			$values->file->move(WWW_DIR . '/doc/akce/' . $values->file->getSanitizedName());
+			$values->file = $values->file->getSanitizedName();
+		} else unset($values->file);
 
 		if ($id) {
-			$this->akceService->getAkceById($id)->update($data);
+			$this->akceService->getAkceById($id)->update($values);
 			$this->flashMessage('Akce byla změněna');
 		} else {
-			$data->date_add = $datum;
+			$values->date_add = $datum;
 
-			$row = $this->akceService->addAkce($data);
+			$akce = $this->akceService->addAkce($values);
 
-			if ($org) $this->akceService->addMemberToAction($org, $row->id, TRUE);
+			if ($org) $this->akceService->addMemberToAction($org, $akce->id, TRUE);
 
-			$this->sendConfirmMail($row);
+			$this->sendConfirmMail($akce);
 
 			$this->flashMessage('Akce byla přidána');
 
-			$id = $row->id;
+			$id = $akce->id;
 		}
 
 		$this->redirect('Akce:view', $id);
