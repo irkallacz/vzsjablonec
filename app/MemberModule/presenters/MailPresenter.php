@@ -141,7 +141,7 @@ class MailPresenter extends LayerPresenter {
 
 		foreach ($members as $member){
 			$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-			if ($member->mail2) $mail->addCc($member->mail2);
+			if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
 		}
 
 		if (($form['file']->isFilled()) and ($values->file->isOK())){

@@ -56,7 +56,7 @@ abstract class BasePresenter extends Presenter {
 		$mail = $this->getNewMail();
 
 		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-		if ($member->mail2) $mail->addCc($member->mail2);
+		if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
 		$mail->setSubject('[VZS Jablonec] Obnova hesla');
 		$mail->setHTMLBody($template);
 
