@@ -298,6 +298,7 @@ class UserPresenter extends LayerPresenter {
 		$mail = $this->getNewMail();
 
 		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
+		if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
 		$mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
 		$mail->setHTMLBody($template);
 
@@ -375,6 +376,13 @@ class UserPresenter extends LayerPresenter {
 				->addRule(Form::EMAIL, 'Zadejte platný email')
 				->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
 				->addRule(Form::NOT_EQUAL, 'E-maily se nesmí shodovat', $form['mail']);
+
+		$form->addCheckbox('send_to_second', 'Zasílat emaily i na sekundární email?');
+
+		$form['mail2']
+			->setRequired(FALSE)
+			->addConditionOn($form['send_to_second'], Form::EQUAL, true)
+				->addRule(Form::EMAIL, 'Vyplňte sekundární email');
 
 		$form->addText('telefon2', 'Sekundární telefon', 30)
 			->setType('tel')
