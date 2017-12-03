@@ -375,13 +375,15 @@ class UserPresenter extends LayerPresenter {
 			->addCondition(Form::FILLED)
 				->addRule(Form::EMAIL, 'Zadejte platný email')
 				->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
-				->addRule(Form::NOT_EQUAL, 'E-maily se nesmí shodovat', $form['mail']);
+				->addRule(Form::NOT_EQUAL, 'E-maily se nesmí shodovat', $form['mail'])
+				->toggle('send_to_second');
 
-		$form->addCheckbox('send_to_second', 'Zasílat emaily i na sekundární email?');
+		$form->addCheckbox('send_to_second', 'Zasílat e-maily i na sekundární email?')
+			->setDefaultValue(FALSE)
+			->getLabelPrototype()->id = 'send_to_second';
 
-		$form['mail2']
-			->setRequired(FALSE)
-			->addConditionOn($form['send_to_second'], Form::EQUAL, true)
+		$form['mail2']->setRequired(FALSE)
+			->addConditionOn($form['send_to_second'], Form::EQUAL, TRUE)
 				->addRule(Form::EMAIL, 'Vyplňte sekundární email');
 
 		$form->addText('telefon2', 'Sekundární telefon', 30)
