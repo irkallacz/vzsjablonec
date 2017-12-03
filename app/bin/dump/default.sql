@@ -1,4 +1,4 @@
--- 2017-11-29T21:45:14+01:00 - mysql:host=localhost;dbname=vzsjablonec
+-- 2017-12-03T21:21:35+01:00 - mysql:host=localhost;dbname=vzsjablonec
 
 -- Table structure for table `akce`
 
@@ -315,7 +315,7 @@ CREATE TABLE `password_session` (
   PRIMARY KEY (`id`),
   KEY `member_id` (`member_id`),
   CONSTRAINT `password_session_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- Table structure for table `report_member`
 
@@ -395,21 +395,23 @@ CREATE TABLE `user` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(40) COLLATE utf8_czech_ci NOT NULL,
   `surname` varchar(40) COLLATE utf8_czech_ci NOT NULL,
-  `login` varchar(20) COLLATE utf8_czech_ci NOT NULL,
   `hash` varchar(60) COLLATE utf8_czech_ci NOT NULL,
-  `date_born` date NOT NULL,
+  `date_born` date DEFAULT NULL,
   `zamestnani` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
   `mesto` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
   `ulice` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
   `mail` varchar(50) COLLATE utf8_czech_ci NOT NULL,
+  `mail2` varchar(50) COLLATE utf8_czech_ci DEFAULT NULL,
+  `send_to_second` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `telefon` varchar(9) COLLATE utf8_czech_ci DEFAULT NULL,
+  `telefon2` varchar(9) COLLATE utf8_czech_ci DEFAULT NULL,
   `text` text COLLATE utf8_czech_ci,
   `role` tinyint(4) DEFAULT '0',
   `date_add` date DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `login` (`login`),
   UNIQUE KEY `mail` (`mail`),
+  UNIQUE KEY `mail2` (`mail2`),
   KEY `role` (`role`),
   FULLTEXT KEY `name_surname_zamestnani_mesto_ulice_mail_telefon_text` (`name`,`surname`,`zamestnani`,`mesto`,`ulice`,`mail`,`telefon`,`text`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`) ON DELETE CASCADE
@@ -446,4 +448,4 @@ SET NEW.pubkey = MD5(UUID())
 //
 DELIMITER ;
 
--- Completed on: 2017-11-29T21:45:14+01:00
+-- Completed on: 2017-12-03T21:21:35+01:00
