@@ -22,15 +22,6 @@ class DokumentyService extends DatabaseService {
 		$this->database->query('DELETE FROM ' . self::TABLE_DIRECTORIES);
 		$this->database->query('DELETE FROM ' . self::TABLE_DOKUMENTY );
 	}
-
-	public function beginTransaction() {
-		$this->database->beginTransaction();
-	}
-
-	public function commitTransaction() {
-		$this->database->commit();
-	}
-
 	/**
 	 * @return Selection
 	 */
