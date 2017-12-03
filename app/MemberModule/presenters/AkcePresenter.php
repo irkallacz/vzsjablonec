@@ -413,7 +413,6 @@ class AkcePresenter extends LayerPresenter {
 
 		$form->addCheckbox('addMessage', 'Připojit zprávu z akce')
 			->setDefaultValue(FALSE)
-			->setOmitted()
 			->addCondition(Form::EQUAL, TRUE)
 				->toggle('frm-akceForm-message');
 
@@ -445,6 +444,9 @@ class AkcePresenter extends LayerPresenter {
 
 		$org = $values->organizator;
 		unset($values->organizator);
+
+		if (!$values->addMessage) unset($values->message);
+		unset($values->addMessage);
 
 		if (($form['file']->isFilled()) and ($values->file->isOK())) {
 			$values->file->move(WWW_DIR . '/doc/akce/' . $values->file->getSanitizedName());
