@@ -49,7 +49,7 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
-	public function renderIn(){
+	public function renderIn() {
 		$this->template->googleLoginUrl = $this->googleLogin->getLoginUrl();
 		$this->template->googleLastLogin = $this->googleLogin->isThisServiceLastLogin();
 
@@ -66,8 +66,7 @@ class SignPresenter extends BasePresenter {
 			$me = $this->googleLogin->getMe($code);
 			$this->emailAuthenticator->login($me->email);
 			$this->afterLogin();
-		}
-		catch(NS\AuthenticationException $e) {
+		} catch (NS\AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('in');
 		}
@@ -77,14 +76,12 @@ class SignPresenter extends BasePresenter {
 		try {
 			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
 			$email = Arrays::get($me, 'email');
- 			$this->emailAuthenticator->login($email);
+			$this->emailAuthenticator->login($email);
 			$this->afterLogin();
- 		}
-		catch(InvalidArgumentException $e) {
+		} catch (InvalidArgumentException $e) {
 			$this->flashMessage('Pravděpodobně jste aplikaci VZS JBC na Facebooku odebrali právo přistupovat k vašemu emailu. Odeberte aplikaci a znovu se pokuste přihlásit.', 'error');
 			$this->redirect('in');
-		}
-		catch(NS\AuthenticationException $e) {
+		} catch (NS\AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('in');
 		}
@@ -126,7 +123,7 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
-	private function afterLogin(){
+	private function afterLogin() {
 		$userId = $this->getUser()->getId();
 		$this->getUser()->setExpiration('6 hours', NS\IUserStorage::CLEAR_IDENTITY, TRUE);
 
