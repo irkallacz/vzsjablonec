@@ -50,6 +50,11 @@ class SignPresenter extends BasePresenter {
 	}
 
 	public function renderIn() {
+		if ($this->backlink) {
+			$this->googleLogin->setState($this->backlink);
+			$this->facebookLogin->setState($this->backlink);
+		}
+
 		$this->template->googleLoginUrl = $this->googleLogin->getLoginUrl();
 		$this->template->googleLastLogin = $this->googleLogin->isThisServiceLastLogin();
 
@@ -58,11 +63,9 @@ class SignPresenter extends BasePresenter {
 	}
 
 
-	/**
-	 * @param $code
-	 */
-	public function actionGoogleLogin($code) {
+	public function actionGoogleLogin($code, $state = NULL) {
 		try {
+			if ($state) $this->backlink = $state;
 			$me = $this->googleLogin->getMe($code);
 			$this->emailAuthenticator->login($me->email);
 			$this->afterLogin();
@@ -72,8 +75,9 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
-	public function actionFacebookLogin() {
+	public function actionFacebookLogin($state = NULL) {
 		try {
+			if ($state) $this->backlink = $state;
 			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
 			$email = Arrays::get($me, 'email');
 			$this->emailAuthenticator->login($email);
