@@ -54,7 +54,7 @@
 
     <h3 id="rating-edit">Moje hodnocení {include svg name => star-o}</span></h3>
 
-    <p id="rating-edit-sign" n:if="$myrating"><a id="editRating" class="buttonLike" data-member="{$user->id}">{include svg name => pencil} editovat</a></p>
+    <p id="rating-edit-sign" n:if="$myrating"><button id="editRating" class="buttonLike" data-member="{$user->id}">{include svg name => pencil} editovat</button></p>
 
     <div id="rating-edit-area" n:class="$myrating ? hide">
     {form ratingForm}
