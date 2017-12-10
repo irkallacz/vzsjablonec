@@ -65,8 +65,10 @@ services:
 		setup:
 			- addFilter(null, App\Template\LatteFilters::loader)
 
+	- App\Authenticator\SsoAuthenticator
 	- App\Authenticator\CredentialsAuthenticator
 	- App\Authenticator\EmailAuthenticator
+	- App\SignModule\StateCryptor({google: %google.login%, facebook: %facebook.login%})
 
 	- App\Model\AkceService
 	- App\Model\ForumService

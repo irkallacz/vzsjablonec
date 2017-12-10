@@ -9,6 +9,7 @@
 namespace App\SignModule\Presenters;
 
 use App\Model\UserService;
+use App\SignModule\StateCryptor;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Presenter;
 use Nette\Http\Request;
@@ -53,6 +54,9 @@ class SignPresenter extends Presenter {
 	/** @var SsoAuthenticator @inject */
 	public $ssoAuthenticator;
 
+	/** @var StateCryptor @inject */
+	public $stateCryptor;
+
 	/** @var IMailer @inject */
 	public $mailer;
 
@@ -62,8 +66,10 @@ class SignPresenter extends Presenter {
 
 	public function renderIn() {
 		if ($this->backlink) {
-			$this->googleLogin->setState($this->backlink);
-			$this->facebookLogin->setState($this->backlink);
+			$googleState = $this->stateCryptor->encryptState($this->backlink, 'google');
+			$facebookState = $this->stateCryptor->encryptState($this->backlink, 'facebook');
+			$this->googleLogin->setState($googleState);
+			$this->facebookLogin->setState($facebookState);
 		}
 
 		$this->template->googleLoginUrl = $this->googleLogin->getLoginUrl();
@@ -76,7 +82,7 @@ class SignPresenter extends Presenter {
 
 	public function actionGoogleLogin($code, $state = NULL) {
 		try {
-			if ($state) $this->backlink = $state;
+			if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'google');
 			$me = $this->googleLogin->getMe($code);
 			$this->emailAuthenticator->login($me->email);
 			$this->user->identity->loginMethod = 'google';
@@ -89,7 +95,7 @@ class SignPresenter extends Presenter {
 
 	public function actionFacebookLogin($state = NULL) {
 		try {
-			if ($state) $this->backlink = $state;
+			if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'facebook');
 			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
 			$email = Arrays::get($me, 'email');
 			$this->emailAuthenticator->login($email);
