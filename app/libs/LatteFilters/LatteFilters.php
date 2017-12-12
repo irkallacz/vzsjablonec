@@ -116,7 +116,9 @@ class LatteFilters{
     public static function forumTexy($s){
         $texy = new \Texy\Texy();
 
-        $texy->allowed['emoticon'] = TRUE;
+		$texy->allowedTags += ['mark' => TEXY_ALL];
+
+		$texy->allowed['emoticon'] = TRUE;
         $texy->emoticonModule->class = 'smile';
         $texy->emoticonModule->root = self::$root . '/texyla/emoticons';
         $texy->emoticonModule->fileRoot = WWW_DIR . '/texyla/emoticons';
