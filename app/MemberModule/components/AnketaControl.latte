@@ -10,16 +10,16 @@
     <p n:if="$anketa->date_add != $anketa->date_update" class="update" title="{$anketa->date_update|timeAgoInWords}">Upraveno ({$anketa->date_update|date:'%d.%m.%Y %H:%M'})</p>
 </div>
 {snippet odpovedi}
-<h3 n:if="$anketa->locked" class="center"><span class="char icon-lock"></span> Tato anketa je uzavřena.</h3>
+<h3 n:if="$anketa->locked" class="center">{include svg name => lock} Tato anketa je uzavřena.</h3>
     <table id="odpovedi">
         <tr n:foreach="$odpovedi as $odpoved" n:class="$mojeOdpoved == $odpoved->id ? logged">
-            {var $pocet = $odpoved->related('anketa_member')->count('member_id')}
+            {var $pocet = Nette\Utils\Arrays::get($odpovediCount, $odpoved->id, 0)}
             <th class="min">
                 <a class="ajax" href="{link vote $odpoved->id}" n:tag-if="!($anketa->locked or $mojeOdpoved)and($user->isInRole('member'))">
                     {$odpoved->text|firstUpper}
                 </a>
             </th>
-            <td class="bar"><div n:if="$celkem" class="headerLike" style="width: {floor($pocet/$celkem*100)}%"></div></td>
+            <td class="bar"><div n:if="$celkem" class="headerLike" style="width: {floor($pocet/$max*100)}%"></div></td>
             <td class="no-wrap min">{$pocet} / {$celkem}</td>
         </tr>
     </table>

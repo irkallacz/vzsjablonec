@@ -10,9 +10,8 @@ namespace App\MemberModule\Components;
 
 use Nette\Application\BadRequestException;
 use Nette\Utils\Arrays;
-use Nette\Application\UI\Control;
-use Nette\Utils\DateTime;
 use App\Model\AnketyService;
+use Tracy\Debugger;
 
 class AnketaControl extends LayerControl {
 	/** @var AnketyService */
@@ -42,10 +41,12 @@ class AnketaControl extends LayerControl {
 			$this->template->anketa = $anketa;
 			$this->template->odpovedi = $anketa->related('anketa_odpoved')->order('text');
 
-			$memberList = $this->anketyService->getMemberListByAnketaId($this->id);
+			$this->template->mojeOdpoved = $this->anketyService->getOdpovedIdByAnketaId($this->id, $userId);
 
-			$this->template->mojeOdpoved = Arrays::get($memberList, $userId, 0);
-			$this->template->celkem = count($memberList);
+			$odpovediCount = $this->anketyService->getOdpovediCountByAnketaId($this->id);
+			$this->template->celkem = array_sum($odpovediCount);
+			$this->template->max = max($odpovediCount);
+			$this->template->odpovediCount = $odpovediCount;
 
 			$this->template->render();
 		} else {
