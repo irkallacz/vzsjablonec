@@ -1,9 +1,12 @@
+{import '@svg.latte'}
+
 {block #head}
+<link rel="stylesheet" href="{$baseUri}/css/symbols.css">
+
 <style type="text/css" media="screen" n:syntax="off">
- 	.social-login a { margin: 0 auto; padding: 0.5ex 0; color: white; font-size: small; display: block; width: 18em; }
-	.social-login a img { margin-right: 1ex; height: 3ex; vertical-align: middle}
-	.google { background-color: #DC4A38;}
 	.facebook { background-color: #3C5A99;}
+	.google { background-color: #DC4A38;}
+	.social-login a { margin: 0 auto; padding: 0.6ex 0; font-size: 0.95em; color: white; display: block; width: 18em; }
 </style>
 {/block}
 
@@ -13,12 +16,12 @@
 	<div class="social-login">
 		<p>
 			<a rel="nofollow" n:class="google, $googleLastLogin ? last-login" title="Přihlásit se pomocí Googlu" href="{$googleLoginUrl}">
-				<img src="{$basePath}/img/google+.svg">Přihlásit se přes Google
+				{include svg name => google-plus} Přihlásit se přes Google
 			</a>
 		</p>
 		<p>
 			<a rel="nofollow" n:class="facebook, $facebookLastLogin ? last-login" title="Přihlásit se pomocí Facebooku" href="{$facebookLoginUrl}">
-				<img src="{$basePath}/img/facebook.svg">Přihlásit se přes Facebook
+				{include svg name => facebook} Přihlásit se přes Facebook
 			</a>
 		</p>
 	</div>
@@ -26,8 +29,7 @@
 
 	<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
-	<p>Pokud jsi zapomněl/a své přihlašovací jméno a heslo, tak zadej svůj e-mail,
-	a na něj ti přijdou instrukce k jeho obnovení.</p>
+	<p>Pokud jsi zapomněl/a své přihlašovací jméno a heslo, tak zadej svůj e-mail, a na něj ti přijdou instrukce k jeho obnovení.</p>
 
 	<p class="required"><b>{control forgotPassForm}</p>
 
