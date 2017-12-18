@@ -3,9 +3,10 @@
 <head>
 </head>
 <body>
-<table n:inner-foreach="$akceList as $akce">
-	<tr><th>{$akce->date_start|date:'%d.%m.%Y'}{if $akce->date_start->diff($akce->date_end)->days}-{$akce->date_end|date:'%d.%m.%Y'}{/if}</th><th>{$akce->name}</th></tr>
-	<tr><td colspan="2">{$akce->perex}</td><td></td></tr>
-</table>
+<div n:foreach="$akceList as $akce">
+<b>{$akce->name}</b> {$akce->date_start|date:'%d.%m.%Y'}{if $akce->date_start->diff($akce->date_end)->days}-{$akce->date_end|date:'%d.%m.%Y'}{/if}
+{$akce->perex|texy|noescape}
+<br />
+</div>
 </body>
 </html>
