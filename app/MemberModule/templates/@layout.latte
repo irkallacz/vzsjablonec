@@ -45,7 +45,7 @@
 	<ul id="menu" n:inner-foreach="$mainMenu as $item">
 		<li n:if="$user->isInRole($item->role)" n:class="$presenter->isLinkCurrent($item->current) ? current">
 			<a n:href="$item->link" {if $iterator->last}target="_blank"{/if}>
-				{include svg name => $item->icon} {$item->title}
+				{include svg icon => $item->icon} {$item->title}
 			</a>
 		</li>
 	</ul>

@@ -12,7 +12,7 @@
             <td class="col title">
                 <div class="headerLike">
                     <a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" href="{plink Forum:topic,$topic->id}">
-                        <strong>{if $topic->locked}{include svg name => lock}{/if}
+                        <strong>{if $topic->locked}{include svg icon => lock}{/if}
                             {if !$search}{$topic->title|firstUpper}{else}{$topic->title|replace:$search:'<em class="highlight">'.$search.'</em>'|firstUpper|noescape}{/if}
                         </strong>
                     </a>
@@ -30,7 +30,7 @@
                     </div>
                     <div class="no-wrap">
                         <a title="{$post->date_add|timeAgoInWords}" href="{plink Forum:post, $post->id}">
-							{include svg name => comments-o} {$post->date_add|date:'%d.%m.%Y %H:%M'}
+							{include svg icon => comments-o} {$post->date_add|date:'%d.%m.%Y %H:%M'}
 						<a>
                     </div>
                 {/if}
@@ -39,7 +39,7 @@
             <td class="col author right">
                 <div class="no-wrap">
                     <a title="profil uživatele" href="{plink User:view $topic->member_id}">
-						{include svg name => user-o} {$topic->member->surname} {$topic->member->name}
+						{include svg icon => user-o} {$topic->member->surname} {$topic->member->name}
                     </a>
                 </div>
                 <div class="no-wrap">

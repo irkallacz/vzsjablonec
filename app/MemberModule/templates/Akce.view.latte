@@ -44,36 +44,36 @@
 
 <ul n:if="$user->isInRole('member')" class="buttonMenu" n:snippet="menuOnTop">
     {if $user->isInRole('admin') or array_key_exists($user->id,$orgList)}
-    <li><a class="buttonLike" n:href="edit, $akce->id">{include svg name => pencil} editovat</a></li>
+    <li><a class="buttonLike" n:href="edit, $akce->id">{include svg icon => pencil} editovat</a></li>
     <li><a class="buttonLike confirm" data-query="Opravdu chcete akci smazat?" n:href="delete, $akce->id">
-    {include svg name => trash} smazat</a></li>
+    {include svg icon => trash} smazat</a></li>
     {/if}
 
     {if $user->isInRole('confirm')}
         {if !$akce->confirm}
-        <li><a class="buttonLike" n:href="allow, $akce->id, TRUE">{include svg name => check} povolit</a></li>
+        <li><a class="buttonLike" n:href="allow, $akce->id, TRUE">{include svg icon => check} povolit</a></li>
         {else}
-        <li><a class="buttonLike" n:href="allow, $akce->id, 0">{include svg name => ban} zakázat</a></li>
+        <li><a class="buttonLike" n:href="allow, $akce->id, 0">{include svg icon => ban} zakázat</a></li>
         {/if}
     {/if}
 </ul>
 
     <h2>{$akce->name|firstUpper}</h2>
 
-    <p n:if="!$akce->confirm" class="red">{include svg name => ban} Tato akce není schválena!</p>
+    <p n:if="!$akce->confirm" class="red">{include svg icon => ban} Tato akce není schválena!</p>
 
     <div class="prev-next">
         <a n:tag-if="$next" class="buttonLike float-right" n:href="Akce:view, $next->id">
-            <span n:tag-if="!$next" class="buttonLike float-right gray">Další {include svg name => forward}</span>
+            <span n:tag-if="!$next" class="buttonLike float-right gray">Další {include svg icon => forward}</span>
         </a>
 
         <a n:tag-if="$prev" class="buttonLike" n:href="Akce:view, $prev->id">
-            <span n:tag-if="!$prev" class="buttonLike gray">{include svg name => backward} Předchozí</span>
+            <span n:tag-if="!$prev" class="buttonLike gray">{include svg icon => backward} Předchozí</span>
         </a>
     </div>
 
     <h3 title="{$akce->date_start|timeAgoInWords}">
-		{include svg name => calendar} {$akce->date_start|date:'%A %d.%m.%Y %H:%M'} -
+		{include svg icon => calendar} {$akce->date_start|date:'%A %d.%m.%Y %H:%M'} -
         {if $moreOneDay}{$akce->date_end|date:'%A %d.%m.%Y %H:%M'} {else}{$akce->date_end|date:'%H:%M'}{/if}
         ({$akce->date_start|durationInWords:$akce->date_end})
     </h3>
@@ -82,15 +82,15 @@
         <span class="icon-calendar-times-o" title="Přihlášení do"></span> přihlášení do: {$akce->date_deatline|date:'%A %d.%m.%Y'} ({$akce->date_deatline|timeAgoInWords})
     </div>
 
-    <p title="Místo">{include svg name => map-marker} {$akce->place}</p>
+    <p title="Místo">{include svg icon => map-marker} {$akce->place}</p>
 
-    <p n:if="$akce->member_id" title="Zodpovědná osoba">{include svg name => user-o} <a n:href="User:view $akce->member_id">{$akce->member->surname} {$akce->member->name}</a></p>
+    <p n:if="$akce->member_id" title="Zodpovědná osoba">{include svg icon => user-o} <a n:href="User:view $akce->member_id">{$akce->member->surname} {$akce->member->name}</a></p>
 
-    <p>{include svg name => tag} {$akce->akce_for->text}{if $akce->visible}, viditelná veřejnosti{else}, viditelná pouze členům{/if}</p>
+    <p>{include svg icon => tag} {$akce->akce_for->text}{if $akce->visible}, viditelná veřejnosti{else}, viditelná pouze členům{/if}</p>
 
-    <p n:if="$akce->file">{include svg name => file-text-o} <a href="{$basePath}/doc/akce/{$akce->file}">{$akce->file}</a></p>
+    <p n:if="$akce->file">{include svg icon => file-text-o} <a href="{$basePath}/doc/akce/{$akce->file}">{$akce->file}</a></p>
 
-    <p n:if="$akce->price">{include svg name => dollar}{$akce->price} Kč</p>
+    <p n:if="$akce->price">{include svg icon => dollar}{$akce->price} Kč</p>
 
 <p n:if="(!$akceIsOld) and ($akce->date_add != $akce->date_update)" 
 class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->date_update|date:'%d.%m.%Y %H:%M'})</p>
@@ -113,15 +113,15 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
 {control signEvent}
 
     <p n:if="$user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))" id="mail">
-        <a class="buttonLike" n:href="Mail:akce $akce->id">{include svg name => envelope} poslat mail účastníkům</a>
+        <a class="buttonLike" n:href="Mail:akce $akce->id">{include svg icon => envelope} poslat mail účastníkům</a>
     </p>
 
     {if $akceIsOld}
         {if $akce->report}
             <h3>Záznam o akci</h3>
             <p>
-                <a class="buttonLike" n:href="Report:view $akce->id"> {include svg name => book} náhled</a>
-                {if $user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))} <a class="buttonLike" n:href="Report:edit $akce->id">{include svg name => pencil} editovat</a>{/if}
+                <a class="buttonLike" n:href="Report:view $akce->id"> {include svg icon => book} náhled</a>
+                {if $user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))} <a class="buttonLike" n:href="Report:edit $akce->id">{include svg icon => pencil} editovat</a>{/if}
             </p>
         {/if}
 
@@ -130,13 +130,13 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
             <div class="texy">
                 {$akce->message|texy|noescape}
             </div>
-            {*<p><a class="buttonLike" n:href="Akce:editReport $akce->id">{include svg name => pencil} editovat</a></p>*}
+            {*<p><a class="buttonLike" n:href="Akce:editReport $akce->id">{include svg icon => pencil} editovat</a></p>*}
         {/if}
 
         {control rating}
 
         {if (($user->isInRole('member'))and(($akce->bill)or(array_key_exists($user->id,$orgList))))}
-        <h3>Vyúčtování {include svg name => dollar}</h3>
+        <h3>Vyúčtování {include svg icon => dollar}</h3>
         {form uploadBillForm}
             <ul class="error" n:if="$form->hasErrors()">
                 <li n:foreach="$form->errors as $error">{$error}</li>
@@ -147,14 +147,14 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
 					{input file}
 
 					<button n:name="ok" class="buttonLike">
-						{include svg name => upload} nahrát
+						{include svg icon => upload} nahrát
 					</button>
 				{/if}
             </p>
         {/form}
 
 			<p n:if="($akce->bill)and($user->isInRole('member'))">
-                <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->id}-{$akce->name|webalize}.xls">{include svg name => download} stáhnout</a>
+                <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->id}-{$akce->name|webalize}.xls">{include svg icon => download} stáhnout</a>
             </p>
 
 		{/if}
@@ -162,13 +162,13 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
 
 {if $akce->album_id}
 <hr>
-<h3>Fotografie {include svg name => image}</h3>
+<h3>Fotografie {include svg icon => image}</h3>
 {control album $akce->album_id}
 {/if}
 
 {if $akce->anketa_id}
 <hr>
-<h3>Anketa {include svg name => list-ul}</h3>
+<h3>Anketa {include svg icon => list-ul}</h3>
 
 <p><a n:href="Ankety:view $akce->anketa_id" n:tag-if="$user->isInRole('member')">{$anketa->title|firstUpper}</a><p>
 
@@ -177,9 +177,9 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
 
 {if $akce->forum_topic_id}
 <hr>
-<h3>Poslední příspěvky {include svg name => comments-o}</h3>
+<h3>Poslední příspěvky {include svg icon => comments-o}</h3>
 
-<a n:if="(!$topic->locked)and($user->isInRole('member'))" class="buttonLike float-right" n:href="Forum:add $topic->id">{include svg name => plus} nový příspěvěk</a>
+<a n:if="(!$topic->locked)and($user->isInRole('member'))" class="buttonLike float-right" n:href="Forum:add $topic->id">{include svg icon => plus} nový příspěvěk</a>
 
 <ul class="inline-nav">
 <li><a n:href="Forum:">Fórum</a></li>

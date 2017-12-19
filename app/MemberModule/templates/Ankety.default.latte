@@ -16,7 +16,7 @@ table#items .first { font-size: 1.1em;}
 
 {block #content}
 
-<ul class="buttonMenu"><li><a class="buttonLike" n:href="add">{include svg name => plus} nová anketa</a></li></ul>
+<ul class="buttonMenu"><li><a class="buttonLike" n:href="add">{include svg icon => plus} nová anketa</a></li></ul>
 
 <table id="items">
 <tr class="first"><th>Anketa</th><th>Počet hlasů</th><th>Poslední hlas</th></tr>
@@ -30,7 +30,7 @@ table#items .first { font-size: 1.1em;}
 	{*(($post)and($post->member_id == $user->getId())) ? logged*}
 	<td class="col"><a class="noLink" title="{$item->title}{if $item->locked} (uzamčeno){/if}" n:href="Ankety:view,$item->id"><div>
 	<strong class="headerLike">
-		{if $item->locked}{include svg name => lock}{/if}
+		{if $item->locked}{include svg icon => lock}{/if}
 		{$item->title|firstUpper}
 	</strong>
 	<span class="no-wrap"> {$item->member->surname} {$item->member->name}</span>
@@ -52,7 +52,7 @@ table#items .first { font-size: 1.1em;}
 </table>
 
 <p class="right">
-<a n:href="Feed:ankety" class="buttonLike">{include svg name => feed} RSS Ankety</a>
+<a n:href="Feed:ankety" class="buttonLike">{include svg icon => feed} RSS Ankety</a>
 </p>
 
 {/block}

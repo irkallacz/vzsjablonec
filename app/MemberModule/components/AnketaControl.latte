@@ -10,7 +10,7 @@
     <p n:if="$anketa->date_add != $anketa->date_update" class="update" title="{$anketa->date_update|timeAgoInWords}">Upraveno ({$anketa->date_update|date:'%d.%m.%Y %H:%M'})</p>
 </div>
 {snippet odpovedi}
-<h3 n:if="$anketa->locked" class="center">{include svg name => lock} Tato anketa je uzavřena.</h3>
+<h3 n:if="$anketa->locked" class="center">{include svg icon => lock} Tato anketa je uzavřena.</h3>
     <table id="odpovedi">
         <tr n:foreach="$odpovedi as $odpoved" n:class="$mojeOdpoved == $odpoved->id ? logged">
             {var $pocet = Nette\Utils\Arrays::get($odpovediCount, $odpoved->id, 0)}
@@ -27,7 +27,7 @@
 <h3 n:if="$mojeOdpoved" class="center">V této anketě jste již hlasoval</h3>
 <p class="center" n:if="($mojeOdpoved)and(!$anketa->locked)">
     <a href="{link deleteVote! $anketa->id}" class="buttonLike ajax">
-		{include svg name => close} zrušit hlas
+		{include svg icon => close} zrušit hlas
 	</a>
 </p>
 {/snippet}

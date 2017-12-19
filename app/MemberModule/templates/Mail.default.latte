@@ -68,7 +68,7 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 </ul>
 
 <table id="mail">
-	<tr><th>{label to /}</th><td class="no-wrap">{input to} {if !isset($isAkce)}<button id="openButton" class="buttonLike" n:name="open">{include svg name => group}</button>{/if}</td></tr>
+	<tr><th>{label to /}</th><td class="no-wrap">{input to} {if !isset($isAkce)}<button id="openButton" class="buttonLike" n:name="open">{include svg icon => group}</button>{/if}</td></tr>
 <tr><td colspan="2">
 <fieldset id="adresati" class="hide" n:inner-foreach="$members as $member">
     {if $iterator->isFirst()}<div class="float-left">{/if}

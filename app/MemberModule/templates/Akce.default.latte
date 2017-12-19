@@ -19,17 +19,17 @@ table .first svg.icon { font-size: 120% }
 
 {block #content}
 
-<ul n:if="$user->isInRole('member')" class="buttonMenu"><li><a class="buttonLike" n:href="add">{include svg name => plus} nová akce</a></li></ul>
+<ul n:if="$user->isInRole('member')" class="buttonMenu"><li><a class="buttonLike" n:href="add">{include svg icon => plus} nová akce</a></li></ul>
 
 <p>
-	<span class="buttonLike gray" n:tag-if="!$prev"><a n:tag-if="$prev" class="buttonLike" n:href="default, $prev">{include svg name => backward} Předchozí</a></span>
+	<span class="buttonLike gray" n:tag-if="!$prev"><a n:tag-if="$prev" class="buttonLike" n:href="default, $prev">{include svg icon => backward} Předchozí</a></span>
 	<a n:foreach="$years as $y" n:tag-if="$year != $y" n:href="this, $y">{$y}</a>
-	<span class="buttonLike gray" n:tag-if="!$next"><a n:tag-if="$next" class="buttonLike" n:href="default, $next">Další {include svg name => forward}</a></span>
+	<span class="buttonLike gray" n:tag-if="!$next"><a n:tag-if="$next" class="buttonLike" n:href="default, $next">Další {include svg icon => forward}</a></span>
 </p>
 
 {foreach $akceAllList as $old => $akceList}
 <h2 n:if="$akceList">
-    {include svg name => calendar} {if $iterator->isOdd()}Nastávající akce{else}Proběhlé akce {if $year != INF}{$year}{/if}
+    {include svg icon => calendar} {if $iterator->isOdd()}Nastávající akce{else}Proběhlé akce {if $year != INF}{$year}{/if}
 	{/if}
 </h2>
 
@@ -57,35 +57,35 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 <tr class="first"><td>
 {if (!$akce->confirm) and (in_array($akce->id,$orgList) or ($user->isInRole('Confirm')))}
 	{if $akce->confirm}
-		<span class="no-wrap" title="Akce je schválena">{include svg name => check-circle, class => green}
+		<span class="no-wrap" title="Akce je schválena">{include svg icon => check-circle, class => green}
 	{else}
-		<span class="no-wrap" title="Akce není schválena">{include svg name => times-circle, class => red}
+		<span class="no-wrap" title="Akce není schválena">{include svg icon => times-circle, class => red}
 	{/if}schválení</span>
 {/if}
 
 	{if $akce->visible}
-		<span class="no-wrap" title="Akce je viditelná veřejnosti">{include svg name => check-circle, class => green}
+		<span class="no-wrap" title="Akce je viditelná veřejnosti">{include svg icon => check-circle, class => green}
 	{else}
-		<span class="no-wrap" title="Akce není viditelná veřejnosti">{include svg name => times-circle, class => red}
+		<span class="no-wrap" title="Akce není viditelná veřejnosti">{include svg icon => times-circle, class => red}
 	{/if}viditelnost</span>
 
 {if ($akce->login_mem or $akce->login_org)}
-	<span class="no-wrap" title="Na akci se lze přihlásit">{include svg name => check-circle, class => green}
+	<span class="no-wrap" title="Na akci se lze přihlásit">{include svg icon => check-circle, class => green}
 {else}
-	<span class="no-wrap" title="Na akci se lze přihlásit">{include svg name => times-circle, class => red}
+	<span class="no-wrap" title="Na akci se lze přihlásit">{include svg icon => times-circle, class => red}
 {/if}přihlášení</span>
 
 {if $old}
 	{if ($akce->report)or($akce->message)}
-		<span class="no-wrap" title="Akce má vyplněný záznam">{include svg name => check-circle, class => green}
+		<span class="no-wrap" title="Akce má vyplněný záznam">{include svg icon => check-circle, class => green}
 	{else}
-		<span class="no-wrap" title="Akce nemá vyplněný záznam">{include svg name => times-circle, class => red}
+		<span class="no-wrap" title="Akce nemá vyplněný záznam">{include svg icon => times-circle, class => red}
 	{/if}záznam</span>
 
 	{if $akce->bill}
-		<span class="no-wrap" title="Akce má vyplněné vyúčtování">{include svg name => check-circle, class => green}
+		<span class="no-wrap" title="Akce má vyplněné vyúčtování">{include svg icon => check-circle, class => green}
 	{else}
-		<span class="no-wrap" title="Akce nemá vyplněné vyučtování">{include svg name => times-circle, class => red}
+		<span class="no-wrap" title="Akce nemá vyplněné vyučtování">{include svg icon => times-circle, class => red}
 	{/if}vyúčtování</span>
 {/if}
 
@@ -104,11 +104,11 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 {/foreach}
 {/foreach}
 <p>
-	<a n:href="Feed:akce" class="buttonLike float-right">{include svg name => feed} RSS Akce</a>
+	<a n:href="Feed:akce" class="buttonLike float-right">{include svg icon => feed} RSS Akce</a>
 </p>
 
 <p n:if="$year != INF">
-	<a class="buttonLike" n:href="this, INF">{include svg name => check} Zobrazit všechny akce</a>
+	<a class="buttonLike" n:href="this, INF">{include svg icon => check} Zobrazit všechny akce</a>
 </p>
 
 
