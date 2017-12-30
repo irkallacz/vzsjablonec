@@ -9,7 +9,6 @@ use Joseki\Webloader\JsMinFilter;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
-use Nette\Utils\Json;
 use Tracy\Debugger;
 use WebLoader\Compiler;
 use WebLoader\FileCollection;
@@ -117,8 +116,10 @@ class MailPresenter extends LayerPresenter {
 			$akceId = (int)$this->getParameter('id');
 			$members = $this->userService->getUsersByAkceId($akceId)->where('NOT role', NULL);
 			$param['akce_id'] = $akceId;
+			$messageType = 2;
 		} else {
 			$members = $this->userService->getUsers()->where('id', $values->users);
+			$messageType = 1;
 		}
 
 		$members->where('NOT id', $sender->id);
@@ -158,7 +159,8 @@ class MailPresenter extends LayerPresenter {
 			$values->text,
 			$this->getUser()->getId(),
 			$members->fetchPairs('id'),
-			$param ? Json::encode($param) : NULL
+			$param,
+			$messageType
  		);
 
 		$this->flashMessage('Váš mail byl v pořádku odeslán');

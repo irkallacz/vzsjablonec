@@ -10,6 +10,7 @@ namespace App\Model;
 
 
 use Nette\Utils\DateTime;
+use Nette\Utils\Json;
 
 class MessageService extends DatabaseService {
 	const TABLE_MESSAGE = 'message';
@@ -17,11 +18,15 @@ class MessageService extends DatabaseService {
 	const TABLE_MESSAGE_USER = 'message_user';
 
 	public function addMessage($subject, $text, $user, array $users, $param = NULL, $type = 1){
+		$param  = $param ? Json::encode($param) : NULL;
+		$datetime = new DateTime;
+
 		$this->database->query('INSERT INTO '.self::TABLE_MESSAGE, [
 			'message_type_id' => $type,
 			'subject' => $subject,
 			'user_id' => $user,
-			'date_add' => new DateTime,
+			'date_add' => $datetime,
+			'date_send' => $datetime,
 			'text' => $text,
 			'param' => $param
 		]);
