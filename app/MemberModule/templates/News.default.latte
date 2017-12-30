@@ -44,6 +44,13 @@
 	</ol>
 	{/if isset($file)}
 
+	{if}<h3>Zprávy</h3>
+		<ol class="news" n:inner-foreach="$messageList as $message">
+			<li><a n:class="$message->user_id == $user->getId() ? logged" n:href="Mail:default#message/$message->id"
+						title="{$message->date_add|timeAgoInWords}">{$message->subject}</a></li>
+		</ol>
+	{/if isset($message)}
+
 	{if}<h3>Alba</h3>
 		<ol class="news" n:inner-foreach="$albumList as $album">
 			<li><a n:class="$album->member_id == $user->getId() ? logged" n:href=":Photo:Album:view, $album->id.'-'.$album->slug"

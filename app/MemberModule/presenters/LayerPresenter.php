@@ -57,7 +57,7 @@ abstract class LayerPresenter extends BasePresenter {
 			['title' => 'dokumenty',	'link' => 'Dokumenty:', 	'current' => 'Dokumenty:*', 	'role'=> 'user', 	'icon' => 'file-text-o'		],
 			['title' => 'ankety',   	'link' => 'Ankety:',    	'current' => 'Ankety:*',    	'role'=> 'member', 	'icon' => 'list-ul'			],
 			['title' => 'hlasovani',	'link' => 'Hlasovani:', 	'current' => 'Hlasovani:*', 	'role'=> 'member', 	'icon' => 'balance-scale'	],
-			['title' => 'email', 		'link' => 'Mail:', 			'current' => 'Mail:*', 			'role'=> 'board',	'icon' => 'envelope-o'		],
+			['title' => 'zprávy', 		'link' => 'Mail:', 			'current' => 'Mail:*', 			'role'=> 'member',	'icon' => 'envelope-o'		],
 			['title' => 'galerie', 		'link' => ':Photo:Album:',	'current' => ':Photo:Album:*', 	'role'=> 'member',	'icon' => 'image'			],
 		];
 

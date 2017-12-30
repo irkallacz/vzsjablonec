@@ -34,7 +34,7 @@ class MailPresenter extends LayerPresenter {
 	public $mailer;
 
 	/** @allow(board) */
-	public function renderDefault() {
+	public function renderAdd() {
 		$users = $this->userService->getUsers()->order('surname,name');
 		$this->template->members = $users;
 
@@ -42,6 +42,13 @@ class MailPresenter extends LayerPresenter {
 		if (!$form->isSubmitted()) {
 			$this->template->pocet = ceil(count($users) / 3);
 		}
+	}
+
+	/** @allow(member) */
+	public function renderDefault() {
+		$messages = $this->messageService->getMessages()->order('date_add DESC');
+		if (!$this->getUser()->isInRole('admin')) $messages->where(':message_user.user_id = ? OR message.user_id = ?', $this->user->id, $this->user->id);
+		$this->template->messages = $messages;
 	}
 
 	/**
@@ -140,15 +147,15 @@ class MailPresenter extends LayerPresenter {
 		$mail->setSubject('[VZS Jablonec] ' . $values->subject)
 			->setHtmlBody($template);
 
-		foreach ($members as $member){
+		foreach ($members as $member) {
 			$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
 			if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
 		}
 
-		if (($form['file']->isFilled()) and ($values->file->isOK())){
+		if (($form['file']->isFilled()) and ($values->file->isOK())) {
 			$filename = $values->file->getSanitizedName();
 			$mail->addAttachment($filename, $values->file->getContents());
-			$values->file->move(WWW_DIR.'/doc/message/'.$filename);
+			$values->file->move(WWW_DIR . '/doc/message/' . $filename);
 			$param['filename'] = $filename;
 		}
 
@@ -161,7 +168,7 @@ class MailPresenter extends LayerPresenter {
 			$members->fetchPairs('id'),
 			$param,
 			$messageType
- 		);
+		);
 
 		$this->flashMessage('Váš mail byl v pořádku odeslán');
 
