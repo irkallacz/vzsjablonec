@@ -2,11 +2,6 @@
 
 <script type="application/javascript">
 	$(function () {
-		$(document).on('click', '.more', function(){
-			id = this.dataset.member;
-			document.getElementById('rating-preview-'+id).classList.add('hide');
-			document.getElementById('rating-message-'+id).classList.remove('hide');
-		});
 		$(document).on('click', '#editRating', function(){
 			id = this.dataset.member;
 			document.getElementById('rating-edit-sign').classList.add('hide');
@@ -35,13 +30,9 @@
                     </h4>
 
                     {if $rating->message}
-                        <div id="rating-preview-{$memberId}" class="preview">
-                            <a n:tag-if="mb_strlen($rating->message) > $limit" data-member="{$memberId}" class="more noLink">
-                                {$rating->message|breaklines|noescape|truncate:$limit}
-                            </a>
-                            <a n:if="mb_strlen($rating->message) > $limit" data-member="{$memberId}" class="more">Více</a>
-                        </div>
-                        <div n:if="mb_strlen($rating->message) > $limit" id="rating-message-{$memberId}" class="hide message">{$rating->message|texy|noescape}</div>
+                        <div n:if="mb_strlen($rating->message) > $limit" class="message">
+							<a href="#rating-{$memberId}" class="noLink">{$rating->message|texy|noescape}</a>
+						</div>
                     {/if}
                 {/if}
             </div>
