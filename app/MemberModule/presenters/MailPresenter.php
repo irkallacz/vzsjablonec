@@ -53,7 +53,6 @@ class MailPresenter extends LayerPresenter {
 
 	/**
 	 * @param int $id
-	 * @param bool $organizator
 	 * @allow(member)
 	 */
 	public function actionAkce($id) {
@@ -131,7 +130,7 @@ class MailPresenter extends LayerPresenter {
 
 		$members->where('NOT id', $sender->id);
 
-		if (($form['file']->isFilled()) and (!$values->file->isOK())) {
+		if (($form['file']->isFilled())and(!$values->file->isOK())) {
 			$form->addError('Chyba při nahrávání souboru');
 			$this->redirect('this');
 		}
