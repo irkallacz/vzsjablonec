@@ -1,13 +1,13 @@
 {block #head}
 <style type="text/css">
-	body table { border-collapse: collapse; font-size: 100%}
-	article { border-radius: 1em; padding: 0 1em 1ex 1em; margin-bottom: 1em;}
+	body table { border-collapse: collapse; font-size: 100%; width: 100%}
+	article { border-radius: 1em; padding: 0 1em 1ex 1em; margin-bottom: 1em; }
 	.headerLike th { padding: 0.1em 0.5em;}
 	.header, .file { margin: 1ex 0;}
 	.member { font-size: small; overflow: hidden; height: 1.3em;}
 	.member:before { content: '...'; float: right; color: white; background-color: gray; font-weight: bold; border-radius: 1em; padding: 0 1ex;}
-	.member:hover { overflow: visible; height: auto;}
-	.member:hover:before { display: none}
+	article:target .member, .member:hover { overflow: visible; height: auto;}
+	article:target .member:before, .member:hover:before { display: none}
 </style>
 {/block}
 
