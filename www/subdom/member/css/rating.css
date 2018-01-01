@@ -6,8 +6,8 @@
 #ratings .message p { margin-top: 0; }
 #ratings .message { max-height: 1.3em; overflow: hidden; transition: max-height 2s;}
 #ratings .message:before { content: '...'; float: right; color: white; background-color: gray; font-weight: bold; border-radius: 1em; padding: 0 1ex;}
-#ratings .hoverLike:hover .message, #ratings .hoverLike:target .message { max-height: 100em; }
-#ratings .hoverLike:hover .message:before, #ratings .hoverLike:target .message:before { display: none; }
+#ratings .hoverLike:hover .message, #ratings .hoverLike:active .message, #ratings .hoverLike:target .message { max-height: 100em; }
+#ratings .hoverLike:hover .message:before, #ratings .hoverLike:active .message:before, #ratings .hoverLike:target .message:before { display: none; }
 
 #ratings h4 { margin-bottom: 0; margin-top: 1ex; }
 #rating { margin-bottom: 0; }
