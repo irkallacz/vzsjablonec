@@ -38,6 +38,10 @@ class UserService extends DatabaseService {
 		return $users;
 	}
 
+	/**
+	 * @param int $userLevel
+	 * @return array
+	 */
 	public function getUsersArray($userLevel = self::USER_LEVEL) {
 		$users = $this->getUsers($userLevel);
 		return $users->select('id, CONCAT(surname, " ", name)AS jmeno')
@@ -79,7 +83,7 @@ class UserService extends DatabaseService {
 	 * @return bool|mixed|IRow
 	 */
 	public function isEmailUnique($mail, $userId) {
-		return (bool) ! $this->getUsers(self::DELETED_LEVEL)->where('mail = ? OR mail2 = ?', $mail, $mail)->where('NOT id', $userId)->fetch();
+		return (bool)!$this->getUsers(self::DELETED_LEVEL)->where('mail = ? OR mail2 = ?', $mail, $mail)->where('NOT id', $userId)->fetch();
 	}
 
 	/**
@@ -173,13 +177,28 @@ class UserService extends DatabaseService {
 	}
 
 	/**
-	 * @param $search
+	 * @param string $search
+	 * @param int $userLevel
 	 * @return Selection
 	 */
 	public function searchUsers($search, $userLevel = self::DELETED_LEVEL) {
-		return $this->getUsers($userLevel)
-			->where('name LIKE ? OR surname LIKE ? OR zamestnani LIKE ? OR mesto LIKE ? OR ulice LIKE ? OR mail LIKE ? OR telefon LIKE ?', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%', '%' . $search . '%')
-			->order('surname, name');
+		$where = self::prepareSearchParams(['name', 'surname', 'zamestnani', 'mesto', 'ulice', 'mail', 'mail2', 'telefon', 'telefon2'], $search);
+
+		return $this->getUsers($userLevel)->whereOr($where)->order('surname, name');
+	}
+
+	/**
+	 * @param array $columns
+	 * @param string $value
+	 * @return array
+	 */
+	private static function prepareSearchParams(array $columns, $value) {
+		$keys = array_map(function ($key) {
+			return "$key LIKE";
+		}, $columns);
+		$values = array_fill(0, count($keys), "%$value%");
+
+		return array_combine($keys, $values);
 	}
 
 }
