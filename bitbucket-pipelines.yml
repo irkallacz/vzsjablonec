@@ -6,10 +6,11 @@
 image: samueldebruyn/debian-git
 
 pipelines:
-  custom:
-    deploy_to_production:
+  branches:          
+    production:
       - step:
           script:
+            - echo "Updating production server"
             - apt-get update
             - apt-get -qq install git-ftp
             - git ftp push --user $FTP_USER --passwd $FTP_PASSWD ftpes://$FTP_SERVER
@@ -18,10 +19,11 @@ pipelines:
             - touch ~/.lftp/rc
             - echo -n "set ssl:verify-certificate no" > ~/.lftp/rc
             - lftp -e 'rm -r /tmp/cache; mkdir -p /tmp/cache; bye' -u $FTP_USER,$FTP_PASSWD $FTP_SERVER
-
-    deploy_to_testing:
+            - echo "Production server updated"
+    testing:
       - step:
           script:
+            - echo "Updating testing server"
             - apt-get update
             - apt-get -qq install git-ftp
             - git ftp push --user $FTP_USER_TEST --passwd $FTP_PASSWD_TEST ftpes://$FTP_SERVER_TEST
@@ -30,3 +32,4 @@ pipelines:
             - touch ~/.lftp/rc
             - echo -n "set ssl:verify-certificate no" > ~/.lftp/rc
             - lftp -e 'rm -r /tmp/cache; mkdir -p /tmp/cache; bye' -u $FTP_USER_TEST,$FTP_PASSWD_TEST $FTP_SERVER_TEST
+            - echo "Testing server updated"
