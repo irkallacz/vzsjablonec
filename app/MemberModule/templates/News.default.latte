@@ -15,9 +15,11 @@
 	<p>Dnes je: <b>{$nowDate|date:'%A %d.%m.%Y %H:%M'}</b>.
 	Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p>
 
-	{if isset($novinky) && $novinky->post_status == 'publish'}
-	<h2>Aktuálně</h2>
-	<p>{$novinky->post_content|noescape}</p>
+	{if ((isset($novinky))and($novinky))}
+		<h2>Aktuálně</h2>
+		<p>{$novinky->post_content|noescape}</p>
+
+		<p><a href="https://www.vzs-jablonec.cz/category/aktualne" target="_blank">všechny aktuality</a></p>
 	{/if}
 
 	<h2>Novinky</h2>
