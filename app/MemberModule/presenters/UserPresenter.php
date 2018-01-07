@@ -12,7 +12,6 @@ use Nette\Security\Passwords;
 use Nette\Utils\Strings;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
-use Google_Service_People;
 use Tracy\Debugger;
 
 class UserPresenter extends LayerPresenter {
@@ -22,9 +21,6 @@ class UserPresenter extends LayerPresenter {
 
 	/** @var IMailer @inject */
 	public $mailer;
-
-	/** @var Google_Service_People @inject */
-	public $googleService;
 
 	public function actionDefault($q = null) {
 		$searchList = [];
@@ -87,13 +83,6 @@ class UserPresenter extends LayerPresenter {
 		$this->template->searchList = $searchList;
 
 		$this->redrawControl();
-	}
-
-	/** @allow(admin) */
-	public function actionGoogle() {
-		$people = $this->googleService->people->get('people/me', ['personFields' => 'names,emailAddresses']);
-
-		Debugger::dump($people);
 	}
 
 	public function renderView($id) {
