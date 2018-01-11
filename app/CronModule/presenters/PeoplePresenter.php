@@ -15,6 +15,7 @@ use Google_Service_PeopleService_Name;
 use Google_Service_PeopleService_Address;
 use Google_Service_PeopleService_PhoneNumber;
 use Google_Service_PeopleService_EmailAddress;
+use Google_Service_PeopleService_UserDefined;
 use Nette\Database\Table\IRow;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
@@ -25,7 +26,7 @@ use Tracy\Debugger;
  */
 class PeoplePresenter extends BasePresenter {
 
-	const PERSON_FIELDS = 'names,emailAddresses,addresses,phoneNumbers';
+	const PERSON_FIELDS = 'names,emailAddresses,addresses,phoneNumbers,userDefined';
 
 	/** @var UserService @inject */
 	public $userService;
@@ -33,48 +34,106 @@ class PeoplePresenter extends BasePresenter {
 	/** @var Google_Service_PeopleService @inject */
 	public $peopleService;
 
+	/**
+	 * go throug the contacts, update if there is a change
+	 * work only on contact with ID field
+	 */
 	public function actionUpdate() {
 		$this->setView('../Cron.default');
 
-		$me = $this->peopleService->people_connections
-			->listPeopleConnections('people/me', [
-				'personFields' => self::PERSON_FIELDS . ',metadata'
-			]);
-
-		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->fetchPairs('mail');
-
 		$items = [];
-		foreach ($me->getConnections() as $person) {
-			$email = $person->emailAddresses[0]->value;
-			if (array_key_exists($email, $users)) {
-				$user = $users[$email];
-				$update_time = new DateTime($person->metadata->sources[0]->updateTime);
 
-				if ($user->date_update > $update_time) {
-					$person = self::setPerson($person, $user);
-					$items[] = $this->peopleService->people->updateContact($person->resourceName, $person, [
-						'updatePersonFields' => self::PERSON_FIELDS
-					]);
+		$me = $this->peopleService->people_connections->listPeopleConnections('people/me', ['personFields' => self::PERSON_FIELDS . ',metadata']);
+		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->fetchPairs('id');
+
+		$persons = [];
+		foreach ($me->getConnections() as $person) {
+			$id = self::getID($person);
+			if ($id) {
+				$persons[$id] = $person->resourceName;
+				//only update user contacts
+				if (array_key_exists($id, $users)) {
+					$user = $users[$id];
+					$update_time = self::getUpdateTime($person);
+					//if there is a change
+					if ($user->date_update > $update_time) {
+						$person = self::setPerson($person, $user);
+						$this->peopleService->people->updateContact($person->resourceName, $person, ['updatePersonFields' => self::PERSON_FIELDS]);
+						$items[$id] = $person->resourceName;
+					}
 				}
 			}
+		}
+
+		//if user is not in contacts
+		$create = array_diff(array_keys($users), array_keys($persons));
+		foreach ($create as $id) {
+			$user = $users[$id];
+			$person = new Google_Service_PeopleService_Person();
+			$person = self::setID($person, $id);
+			$person = self::setPerson($person, $user);
+			$items[$id] = $this->peopleService->people->createContact($person)->resourceName;
+		}
+
+		//if contact exists but user is not member anymore
+		$delete = array_diff(array_keys($persons), array_keys($users));
+		foreach ($delete as $id) {
+			$resourceName = $persons[$id];
+			$this->peopleService->people->deleteContact($resourceName);
+			$items[$id] = $resourceName;
 		}
 
 		$this->template->items = $items;
 	}
 
+	/**
+	 * put all user to contacts
+	 */
 	public function actionDefaultSync() {
 		$this->setView('../Cron.default');
 
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);
 
-		$items = [];
+		$persons = [];
 		foreach ($users as $user) {
 			$person = new Google_Service_PeopleService_Person;
+			$person = self::setID($person, $user->id);
 			$person = self::setPerson($person, $user);
-			$items[] = $this->peopleService->people->createContact($person);
+			$persons[$user->id] = $this->peopleService->people->createContact($person)->resourceName;
 		}
 
-		$this->template->items = $items;
+		$this->template->items = $persons;
+	}
+
+	/**
+	 * @param Google_Service_PeopleService_Person $person
+	 * @return string|null
+	 */
+	private function getID(Google_Service_PeopleService_Person $person) {
+		foreach ($person->getUserDefined() as $userDefined) {
+			if ($userDefined->getKey() == 'ID') return $userDefined->getValue();
+		}
+	}
+
+	/**
+	 * @param Google_Service_PeopleService_Person $person
+	 * @param $id
+	 * @return Google_Service_PeopleService_Person
+	 */
+	private function setID(Google_Service_PeopleService_Person $person, $id) {
+		$userDefiended = new Google_Service_PeopleService_UserDefined();
+		$userDefiended->setKey('ID');
+		$userDefiended->setValue(strval($id));
+		$person->setUserDefined($userDefiended);
+		return $person;
+	}
+
+	/**
+	 * @param Google_Service_PeopleService_Person $person
+	 * @return DateTime
+	 */
+	private function getUpdateTime(Google_Service_PeopleService_Person $person) {
+		return new DateTime($person->metadata->sources[0]->updateTime);
 	}
 
 	/**
