@@ -88,7 +88,7 @@
 
     <p>{include svg icon => tag} {$akce->akce_for->text}{if $akce->visible}, viditelná veřejnosti{else}, viditelná pouze členům{/if}</p>
 
-    <p n:if="$akce->file">{include svg icon => file-text-o} <a href="{$basePath}/doc/akce/{$akce->file}">{$akce->file}</a></p>
+    <p n:if="$akce->file">{include svg icon => file-text-o} <a target="_blank" href="{$basePath}/doc/akce/{$akce->file}">{$akce->file}</a></p>
 
     <p n:if="$akce->price">{include svg icon => dollar}{$akce->price} Kč</p>
 
