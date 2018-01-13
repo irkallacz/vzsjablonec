@@ -2,6 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Forms\UserFormFactory;
 use App\Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
@@ -9,7 +10,6 @@ use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
 use Nette\Security\Passwords;
-use Nette\Utils\Strings;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
@@ -21,6 +21,9 @@ class UserPresenter extends LayerPresenter {
 
 	/** @var IMailer @inject */
 	public $mailer;
+
+	/** @var UserFormFactory @inject */
+	public $userFormFactory;
 
 	public function actionDefault($q = null) {
 		$searchList = [];
@@ -157,6 +160,39 @@ class UserPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(board)
 	 */
+	public function actionSendLoggingMail($id){
+		$member = $this->userService->getUserById($id);
+
+		if (!$member) throw new BadRequestException('Uživatel nenalezen');
+
+		$session = $this->userService->addPasswordSession($member->id, '24 HOUR');
+
+		$this->sendLoggingMail($member, $session);
+
+		$this->flashMessage('Uživateli byl zaslán úvodní e-mail');
+		$this->redirect('view', $member->id);
+	}
+
+	/** @allow(board) */
+	public function sendLoggingMail($member, $session) {
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
+		$template->session = $session;
+
+		$mail = $this->getNewMail();
+
+		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
+		if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
+		$mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
+		$mail->setHTMLBody($template);
+
+		$this->mailer->send($mail);
+	}
+
+	/**
+	 * @param int $id
+	 * @allow(board)
+	 */
 	public function actionResetPassword($id) {
 		$member = $this->userService->getUserById($id);
 
@@ -259,15 +295,12 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		$form->setDefaults($member);
-
 	}
 
 
 	/** @allow(board) */
 	public function actionAdd() {
 		$form = $this['memberForm'];
-		unset($form['password']);
-		unset($form['confirm']);
 		unset($form['image']);
 		unset($form['text']);
 
@@ -283,32 +316,10 @@ class UserPresenter extends LayerPresenter {
 		$this->setView('edit');
 	}
 
-
 	/** @allow(user) */
 	public function actionProfile() {
 		$id = $this->getUser()->getId();
 		$this->redirect('edit', $id);
-	}
-
-	/** @allow(board) */
-	public function sendLogginMail($member, $session) {
-		$template = $this->createTemplate();
-		$template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
-		$template->session = $session;
-
-		$mail = $this->getNewMail();
-
-		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-		if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
-		$mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
-		$mail->setHTMLBody($template);
-
-		$this->mailer->send($mail);
-	}
-
-	public function uniqueMailValidator($item) {
-		$id = $this->getParameter('id');
-		return $this->userService->isEmailUnique($item->value, $id);
 	}
 
 	public function currentPassValidator($item) {
@@ -317,92 +328,47 @@ class UserPresenter extends LayerPresenter {
 		return !Passwords::verify($item->value, $user->hash);
 	}
 
-	protected function createComponentMemberForm() {
+	protected function createComponentPasswordForm() {
 		$form = new Form;
 
-		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
+		$form->addProtection('Odešlete prosím formulář znovu');
 
-		$form->addGroup('Osobní data');
-
-		$form->addText('name', 'Jméno', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label');
-
-		$form->addText('surname', 'Příjmení', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label');
-
-		$form['date_born'] = new \DateInput('Datum narození');
-		$form['date_born']->setRequired('Vyplňte datum narození')
-			->setDefaultValue(new DateTime());
-
-		$form->addText('zamestnani', 'Zaměstnání/Škola', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label');
-
-		$form->addGroup('Přihlašovací údaje');
-
-		$form->addPassword('password', 'Nové heslo', 20)
+		$form->addPassword('password', 'Nové heslo', 30)
+			->setRequired('Vyplňte heslo')
 			->addCondition(Form::FILLED)
-				->addRule(Form::PATTERN, 'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena', '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
-				->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo');
+			->addRule(Form::PATTERN, 'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena', '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
+			->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo');
 
-		$form->addPassword('confirm', 'Potvrzení', 20)
+		$form->addPassword('confirm', 'Potvrzení', 30)
 			->setOmitted()
-			->setRequired(FALSE)
+			->setRequired('Vyplňte kontrolu hesla')
 			->addRule(Form::EQUAL, 'Zadaná hesla se neschodují', $form['password'])
 			->addCondition(Form::FILLED)
-				->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků', 8);
+			->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků', 8);
 
-		$form->addCheckbox('sendMail', 'Poslat novému členu mail s přihlašovacími údaji')
-			->setDefaultValue(TRUE);
+		$form->addSubmit('ok', 'Ulož');
+		$form->onSuccess[] = [$this, 'passwordFormSubmitted'];
 
-		$form->addGroup('Kontakty');
+		return $form;
+	}
 
-		$form->addText('mail', 'Primární e-mail', 30)
-			->setType('email')
-			->addRule(Form::EMAIL, 'Zadejte platný email')
-			->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
-			->setRequired('Vyplňte %label');
+	public function passwordFormSubmitted(Form $form) {
+		$id = $this->getParameter('id');
+		$values = $form->getValues();
+		
+		if ($values->password) {
+			$hash = Passwords::hash($values->password);
 
-		$form->addText('telefon', 'Primární telefon', 30)
-			->setType('tel')
-			->setRequired('Vyplňte %label')
-			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
-
-		$form->addText('mail2', 'Sekundární e-mail', 30)
-			->setType('email')
-			->setNullable()
-			->addCondition(Form::FILLED)
-				->addRule(Form::EMAIL, 'Zadejte platný email')
-				->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
-				->addRule(Form::NOT_EQUAL, 'E-maily se nesmí shodovat', $form['mail'])
-				->toggle('send_to_second');
-
-		$form->addCheckbox('send_to_second', 'Zasílat e-maily i na sekundární email?')
-			->setDefaultValue(FALSE)
-			->getLabelPrototype()->id = 'send_to_second';
-
-		$form['mail2']->setRequired(FALSE)
-			->addConditionOn($form['send_to_second'], Form::EQUAL, TRUE)
-				->addRule(Form::EMAIL, 'Vyplňte sekundární email');
-
-		$form->addText('telefon2', 'Sekundární telefon', 30)
-			->setType('tel')
-			->setNullable()
-			->addCondition(Form::FILLED)
-				->addRule(Form::NOT_EQUAL, 'Telefony se nesmí shodovat', $form['telefon'])
-				->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
-
-		$form->addGroup('Adresa');
-
-		$form->addText('ulice', 'Ulice', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte ulici');
-
-		$form->addText('mesto', 'Město', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label');
+			$user = $this->userService->getUserById($id);
+			$user->update(['hash' => $hash]);
+			$this->flashMessage('Vaše heslo bylo změněno');
+			$this->redirect('view', $id);
+		}
+	}
+	
+	protected function createComponentMemberForm() {
+		$this->userFormFactory->setUserId($this->getParameter('id'));
+		$form = $this->userFormFactory->create();
 
 		$form->addGroup(' ');
 
@@ -429,18 +395,6 @@ class UserPresenter extends LayerPresenter {
 
 		$values = $form->getValues();
 
-		$sendMail = (isset($values->sendMail)) ? $values->sendMail : NULL;
-		unset($values->sendMail);
-
-		if ((isset($values->password))and($values->password)) {
-			$values->hash = Passwords::hash($values->password);
-		}
-
-		unset($values->password);
-
-		$values->mail = Strings::lower($values->mail);
-		if ($values->mail2) $values->mail2 = Strings::lower($values->mail2);
-
 		if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
 			$image = $values->image->toImage();
 			$image->resize(250, NULL, Image::SHRINK_ONLY);
@@ -456,13 +410,7 @@ class UserPresenter extends LayerPresenter {
 			$this->flashMessage('Osobní profil byl změněn');
 			$this->redirect('view', $id);
 		} else {
-			$values->hash = '';
 			$member = $this->userService->addUser($values);
-
-			if ($sendMail) {
-				$session = $this->userService->addPasswordSession($member->id, '24 HOUR');
-				$this->sendLogginMail($member, $session);
-			}
 
 			$this->userService->addUserLogin($member->id, new DateTime());
 
