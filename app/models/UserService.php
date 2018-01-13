@@ -80,9 +80,10 @@ class UserService extends DatabaseService {
 
 	/**
 	 * @param $mail
+	 * @param $userId
 	 * @return bool|mixed|IRow
 	 */
-	public function isEmailUnique($mail, $userId) {
+	public function isEmailUnique($mail, $userId = NULL) {
 		return (bool)!$this->getUsers(self::DELETED_LEVEL)->where('mail = ? OR mail2 = ?', $mail, $mail)->where('NOT id', $userId)->fetch();
 	}
 
@@ -110,8 +111,8 @@ class UserService extends DatabaseService {
 	 * @param $values
 	 * @return bool|int|IRow
 	 */
-	public function addUser(ArrayHash $values) {
-		$values->role = 1;
+	public function addUser(ArrayHash $values, $role = self::MEMBER_LEVEL) {
+		if ($role != self::DELETED_LEVEL) $values->role = $role-1;
 		return $this->getTable()->insert($values);
 	}
 
