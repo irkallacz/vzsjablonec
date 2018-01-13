@@ -68,6 +68,8 @@ services:
 	- App\Authenticator\CredentialsAuthenticator
 	- App\Authenticator\EmailAuthenticator
 
+	- App\MemberModule\Forms\UserFormFactory
+
 	- App\Model\AkceService
 	- App\Model\ForumService
 	- App\Model\UserService
