@@ -18,18 +18,23 @@
 		</a>
 	</li>
 	<li n:if="($user->isInRole('board'))and(!is_null($member->role))">
-		<a class="buttonLike confirm" n:href="delete,$member->id" data-query="Opravdu chcete tohoto člena smazat? Tento krok může vrátit jen admin.">
+		<a class="buttonLike confirm" n:href="delete $member->id" data-query="Opravdu chcete tohoto člena smazat? Tento krok může vrátit jen admin.">
 			{include svg icon => trash} smazat
 		</a>
 	</li>
 	<li n:if="($user->isInRole('admin'))and(is_null($member->role))">
-		<a class="buttonLike confirm" n:href="activate,$member->id" data-query="Opravdu chcete tohoto uživatele aktivovat?">
-			{include svg icon => ok} aktivovat
+		<a class="buttonLike confirm" n:href="activate $member->id" data-query="Opravdu chcete tohoto uživatele aktivovat?">
+			{include svg icon => check} aktivovat
 		</a>
 	</li>
-	<li n:if="($user->isInRole('board'))and(!is_null($member->role))">
-		<a class="buttonLike" n:href="resetPassword, $member->id">
+	<li n:if="($user->isInRole('board'))and(!is_null($member->role))and($member->hash)">
+		<a class="buttonLike" n:href="resetPassword $member->id">
 			{include svg icon => repeat} resetovat heslo
+		</a>
+	</li>
+	<li n:if="($user->isInRole('board'))and(!is_null($member->role))and(!$member->hash)">
+		<a class="buttonLike" n:href="sendLoggingMail $member->id">
+			{include svg icon => envelope} poslat heslo
 		</a>
 	</li>
 </ul>
