@@ -32,7 +32,8 @@
 		"contributte/console": "^0.2.0",
 		"nette/tester": "^2.0",
 		"kertz/twitteroauth": "dev-master",
-		"venca-x/social-login": "^1.0"
+		"venca-x/social-login": "^1.0",
+		"jzechy/nette-antispam": "^2.0"
 	},
 	"require-dev": {
 	},

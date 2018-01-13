@@ -113,3 +113,4 @@ services:
 extensions:
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	- Echo511\Plupload\DI\PluploadExtension
+	antispam: Zet\AntiSpam\AntiSpamExtension
