@@ -152,9 +152,11 @@ class AnketyPresenter extends LayerPresenter {
 		$form = new Form;
 
 		$form->addText('title', 'Název', 30)
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setAttribute('spellcheck', 'true');
 
 		$form->addTextArea('text', 'Otázka', 60)
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setAttribute('spellcheck', 'true');
 
 		$users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) {
@@ -193,8 +195,6 @@ class AnketyPresenter extends LayerPresenter {
 		$values = $this['anketaForm']->getValues();
 		$datum = new DateTime();
 		$values->date_update = $datum;
-
-		$values->title = ucfirst($values->title);
 
 		$pocet = $values->pocet;
 		unset($values->pocet);

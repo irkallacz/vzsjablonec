@@ -320,7 +320,8 @@ class AkcePresenter extends LayerPresenter {
 
 		$form->addText('name', 'Název', 30)
 			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label akce');
+			->setRequired('Vyplňte %label akce')
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
 
 		$form->addText('place', 'Místo', 50)
 			->setAttribute('spellcheck', 'true')
@@ -402,12 +403,14 @@ class AkcePresenter extends LayerPresenter {
 		$form->addText('perex', 'Stručný popis', 50)
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'perex')
-			->setRequired('Vyplňte %label akce');
+			->setRequired('Vyplňte %label akce')
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
 
 		$form->addTextArea('description', 'Podrobný popis')
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla')
-			->setRequired('Vyplňte %label akce');
+			->setRequired('Vyplňte %label akce')
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
 
 		$text = $this->akceService->getAkceMessageDefault();
 
@@ -419,8 +422,10 @@ class AkcePresenter extends LayerPresenter {
 		$form->addTextArea('message', 'Zpráva z akce')
 			->setNullable()
 			->setAttribute('spellcheck', 'true')
+			->setAttribute('class', 'texyla')
 			->setDefaultValue($text)
-			->setAttribute('class', 'texyla');
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+			->setRequired(FALSE);
 
 		$form->addSubmit('save', 'Ulož')->setAttribute('class', 'default');
 		$form->onSuccess[] = [$this, 'akceFormSubmitted'];
@@ -437,8 +442,6 @@ class AkcePresenter extends LayerPresenter {
 
 		$values = $form->getValues();
 		$datum = new Datetime();
-
-		$values->name = ucfirst($values->name);
 
 		$values->date_update = $datum;
 
