@@ -4,6 +4,7 @@ namespace App\MemberModule\Presenters;
 
 use App\Authenticator\CredentialsAuthenticator;
 use App\Authenticator\EmailAuthenticator;
+use App\MemberModule\Forms\UserFormFactory;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\InvalidArgumentException;
@@ -36,6 +37,9 @@ class SignPresenter extends BasePresenter {
 
 	/** @var IMailer @inject */
 	public $mailer;
+
+	/** @var UserFormFactory @inject */
+	public $userFormFactory;
 
 	/** @persistent */
 	public $backlink = '';
@@ -258,6 +262,57 @@ class SignPresenter extends BasePresenter {
 		}
 
 		$this->redirect('in');
+	}
+
+	/**
+	 * @return Form
+	 */
+	protected function createComponentRegisterForm() {
+		$form = $this->userFormFactory->create();
+
+		$form['mail']->caption = 'E-mail';
+		$form['telefon']->caption = 'Telefon';
+
+		$form['mail2']->caption = 'Druhý e-mail';
+		$form['mail2']->setOption('description','(na rodiče atd...)');
+
+		$form['telefon2']->caption = 'Druhý telefon';
+		$form['telefon2']->setOption('description','(na rodiče atd...)');
+
+		$form->addGroup('');
+		$form->addAntiSpam('notSpam')
+			->setLockTime(5)
+			->setResendTime(NULL);
+
+		$form->addSubmit('ok', 'Odeslat');
+
+		$form->onValidate[] = function (Form $form){
+			$values = $form->getValues();
+			if (($values->date_born->diff(date_create())->y < 18)and((!$values->mail2)or(!$values->telefon2))) {
+				$form->addError('U dětí je potřeba vyplnit i e-mail a telefon rodičů');
+			}
+			if (!$values->notSpam) {
+				$form->addError('Vypadá to, že se jedná o SPAM, zkuste vyplnit formulář znovu');
+			}
+		};
+
+		$form->onSuccess[] = function (Form $form){
+			$values = $form->getValues();
+			$now = new DateTime;
+
+			if ($values->date_born->diff($now)->y < 18) {
+				$values->send_to_second = TRUE;
+			}
+
+			unset($values->notSpam);
+
+			$values->date_add = $now;
+
+			$this->userService->addUser($values, UserService::DELETED_LEVEL);
+			$this->flashMessage('Zánam byl uložen, čekejte prosím na e-mail od administrátora');
+		};
+
+		return $form;
 	}
 
 	public function actionOut() {

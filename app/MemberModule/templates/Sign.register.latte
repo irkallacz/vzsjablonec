@@ -1,0 +1,36 @@
+{block #head}
+<style type="text/css" media="screen" n:syntax="off">
+	label { font-weight: normal}
+	label.required { font-weight: bold}
+	fieldset { border: none;}
+	fieldset table { margin-left: 1em}
+	legend { font-weight: bold; margin-bottom: 1ex;}
+	.error { color: red;}
+	#hlavni { max-width: 40em};
+</style>
+<script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+
+<script type="text/javascript">
+	$(function() {
+		var elem = document.createElement('input');
+		elem.setAttribute('type', 'date');
+
+		if ( elem.type === 'text' ) {
+			$('.date').datepicker();
+		}
+	});
+</script>
+{/block}
+
+{block #content}
+
+	<h2>Registrace nového člena</h2>
+
+	<p>Po vyplnění formuláře musíte počkat na schválení Vašeho účtu administrátorem a následně Vám budou na vyplněné emailové adresy zaslány přístupové údaje.</p>
+
+	<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+
+	{control registerForm}
+
+{/block}
