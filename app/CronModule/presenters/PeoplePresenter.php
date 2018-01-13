@@ -35,7 +35,7 @@ class PeoplePresenter extends BasePresenter {
 	public $peopleService;
 
 	/**
-	 * go throug the contacts, update if there is a change
+	 * go through the contacts, update if there is a change
 	 * work only on contact with ID field
 	 */
 	public function actionUpdate() {
@@ -133,7 +133,7 @@ class PeoplePresenter extends BasePresenter {
 	 * @return DateTime
 	 */
 	private function getUpdateTime(Google_Service_PeopleService_Person $person) {
-		return new DateTime($person->metadata->sources[0]->updateTime);
+		return new DateTime($person->getMetadata()->getSources()[0]->updateTime);
 	}
 
 	/**
