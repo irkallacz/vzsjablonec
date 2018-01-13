@@ -175,10 +175,12 @@ class HlasovaniPresenter extends LayerPresenter{
 	protected function createComponentAnketaForm(){
 	    $form = new Form;
 
-	   	$form->addText('title','Název',30)
+	   	$form->addText('title','Název', 30)
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setAttribute('spellcheck', 'true');
 
-	    $form->addTextArea('text','Otázka',60)
+	    $form->addTextArea('text','Otázka', 60)
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setAttribute('spellcheck', 'true');
 
 		$form['date_deatline'] = new \DateInput('Konec hlasování');
@@ -188,12 +190,6 @@ class HlasovaniPresenter extends LayerPresenter{
 	    $users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) {
 	    	$user->addText('text', 'Odpověď', 30);
 		    $user->addHidden('id');
-
-	        // $user->addButton('remove', '✖')
-	        // 	->setAttribute('class','buttonLike')
-	        // 	->setAttribute('title','Smazat odpověď')
-	        // 	->setAttribute('onClick','removeRow(this)');
-	            
 	    }, 3);
 
 		//$users->addCreateButton('Přidat odpovědi'); // metodu vytváří replicator
@@ -219,9 +215,7 @@ class HlasovaniPresenter extends LayerPresenter{
 
 		$values = $this['anketaForm']->getValues();
 		$datum = new Datetime();
-		
-		$values->title = ucfirst($values->title);
-		
+
 		$values->date_update = $datum;
 		$pocet = $values->pocet;
 		unset($values->pocet);
