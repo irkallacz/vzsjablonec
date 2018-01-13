@@ -230,11 +230,23 @@ class UserPresenter extends LayerPresenter {
 
 		unset($form['sendMail']);
 	}
-		/**
+	/**
+	 * @param int $id
+	 * @allow(user)
+	 */
+	public function renderPassword($id) {
+		if ($this->getUser()->getId() != $id) {
+			throw new ForbiddenRequestException('Nemáte právo měnit heslo');
+		}
+	}
+
+	/**
 	 * @param int $id
 	 * @allow(user)
 	 */
 	public function renderEdit($id) {
+		$this->template->id = $id;
+
 		$form = $this['memberForm'];
 		$member = $this->userService->getUserById($id);
 
