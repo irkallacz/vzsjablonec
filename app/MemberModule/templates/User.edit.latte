@@ -35,6 +35,14 @@
 
 {block #content}
 
+	<ul class="buttonMenu">
+	<li n:if="$user->id == $id">
+		<a class="buttonLike" n:href="password $id">
+			{include svg icon => pencil} změna hesla
+		</a>
+	</li>
+	</ul>
+
 {control memberForm}
 
 {/block}
