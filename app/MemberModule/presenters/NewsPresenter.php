@@ -25,7 +25,7 @@ class NewsPresenter extends LayerPresenter{
 		/** @var Model\MessageService @inject */
 		public $messageService;
 
-	/** @var Model\GalleryService @inject */
+		/** @var Model\GalleryService @inject */
 		public $galleryService;
 
         /** @var Model\HlasovaniService @inject */
