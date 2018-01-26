@@ -2,6 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\Model\MessageService;
 use App\Template\LatteFilters;
 use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Presenter;
@@ -37,30 +38,21 @@ abstract class BasePresenter extends Presenter {
 		}
 	}
 
-	/**
-	 * @return \Nette\Mail\Message
-	 */
-	public function getNewMail() {
-		$mail = new \Nette\Mail\Message;
-		$mail->setFrom('info@vzs-jablonec.cz', 'VZS Jablonec')
-			->addBcc('info@vzs-jablonec.cz');
-
-		return $mail;
-	}
-
-	public function sendRestoreMail($member, $session) {
+	public function addRestoreMail($user, $session) {
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/restorePassword.latte');
 		$template->session = $session;
 
-		$mail = $this->getNewMail();
+		$message = new MessageService\Message();
+		$message->setType(MessageService\Message::PASSWORD_RESET_TYPE);
+		$message->setSubject('Obnova hesla');
+		$message->setText($template);
+		$message->setAuthor($this->getUser()->isLoggedIn() ? $this->user->id : $user->id);
+		$message->addRecipient($user->id);
+		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id]);
 
-		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-		if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
-		$mail->setSubject('[VZS Jablonec] Obnova hesla');
-		$mail->setHTMLBody($template);
+		$this->messageService->addMessage($message);
 
-		$this->mailer->send($mail);
 	}
 
 }

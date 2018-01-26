@@ -6,9 +6,11 @@ use App\Model\AkceService;
 use App\Model\UserService;
 use App\Model\MessageService;
 use Joseki\Webloader\JsMinFilter;
+use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
+use Nette\Utils\Json;
 use Tracy\Debugger;
 use WebLoader\Compiler;
 use WebLoader\FileCollection;
@@ -44,12 +46,42 @@ class MailPresenter extends LayerPresenter {
 		}
 	}
 
-	/** @allow(member) */
 	public function renderDefault() {
-		$messages = $this->messageService->getMessages()->order('date_add DESC');
-		if (!$this->getUser()->isInRole('admin')) $messages->where(':message_user.user_id = ? OR message.user_id = ?', $this->user->id, $this->user->id);
+		$messages = $this->messageService->getMessages()->where('date_send IS NOT NULL')->order('date_add DESC');
+		if (!$this->getUser()->isInRole('admin')) $messages->where(':message_user.user_id = ?', $this->user->id);
 		$this->template->messages = $messages;
 	}
+
+	public function renderSend() {
+		$messages = $this->messageService->getMessages()->order('date_add DESC');
+		if (!$this->getUser()->isInRole('admin')) $messages->where('user_id = ?', $this->user->id);
+		$this->template->messages = $messages;
+		$this->template->nextSendTime = $this->messageService->getNextSendTime();
+
+		$this->setView('default');
+	}
+
+	public function actionEdit($id) {
+		$message = $this->messageService->getMessages()->get($id);
+
+		if (!$message) throw new BadRequestException('Zpráva nenalezena');
+		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete editovat cizí zprávy');
+
+		$form = $this['mailForm'];
+		$form['text']->setDefaultValue($message->text);
+		$form['subject']->setDefaultValue($message->subject);
+		//$form['to']->setDefaultValue(join(',', $users->fetchPairs('id', 'mail')));
+
+		$users = $message->related('message_user')->fetchPairs('id');
+		$form['users']->setDefaultValue(array_keys($users));
+		$form->onSuccess = [[$this, 'mailFormUpdate']];
+		$this->setView('add');
+	}
+
+	public function actionDelete($id) {
+
+	}
+
 
 	/**
 	 * @param int $id
@@ -79,9 +111,11 @@ class MailPresenter extends LayerPresenter {
 		$form->addText('to', 'Příjemci', 50)
 			->setAttribute('readonly')
 			->setAttribute('class', 'max')
+			->setOmitted()
 			->setRequired('Musíte vybrat alespoň jednoho příjemce');
 
-		$form->addButton('open');
+		$form->addButton('open')
+			->setOmitted();
 
 		$form->addCheckboxList('users', 'Příjemci')
 			->setItems($this->userService->getUsersArray(UserService::USER_LEVEL));
@@ -114,64 +148,83 @@ class MailPresenter extends LayerPresenter {
 	 */
 	public function mailFormSubmitted(Form $form) {
 		$values = $form->getValues();
-		$param = [];
+		$parameters = [];
 
-		$sender = $this->userService->getUserById($this->getUser()->getId());
+		$message = new MessageService\Message();
 
 		if ($this->getAction() == 'akce') {
-			$akceId = (int)$this->getParameter('id');
+			$akceId = (int) $this->getParameter('id');
 			$members = $this->userService->getUsersByAkceId($akceId)->where('NOT role', NULL);
-			$param['akce_id'] = $akceId;
-			$messageType = 2;
+			$parameters['akce_id'] = $akceId;
+			$message->setType(MessageService\Message::EVENT_MESSAGE_TYPE);
 		} else {
 			$members = $this->userService->getUsers()->where('id', $values->users);
-			$messageType = 1;
+			$message->setType(MessageService\Message::CUSTOM_MESSAGE_TYPE);
 		}
 
-		$members->where('NOT id', $sender->id);
+		$members->where('NOT id', $this->user->id);
+		$message->setRecipients($members);
+
+		if (($form['file']->isFilled()) and (!$values->file->isOK())) {
+			$form->addError('Chyba při nahrávání souboru');
+			$this->redirect('this');
+		}
+
+		if (($form['file']->isFilled()) and ($values->file->isOK())) {
+			$filename = $values->file->getSanitizedName();
+			$values->file->move(WWW_DIR . MessageService::DIR_ATTACHMENTS . $filename);
+			$parameters['filename'] = $filename;
+		}
+
+		$message->setSubject($values->subject);
+		$message->setText($values->text);
+		$message->setAuthor($this->user->id);
+		$message->setParameters($parameters);
+
+		$this->messageService->addMessage($message);
+
+		$minutes = $this->messageService->getNextSendTime();
+
+		$this->flashMessage("Váš mail bude odeslán za $minutes minut");
+
+		if (isset($akceId)) $this->redirect('Akce:view', $akceId); else $this->redirect('Mail:default');
+	}
+
+	public function mailFormUpdate(Form $form) {
+		$values = $form->getValues();
+
+		$id = $this->getParameter('id');
+		$message = $this->messageService->getMessages()->get($id);
+
+		if (!$message) throw new BadRequestException('Zpráva nenalezena');
+		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete editovat cizí zprávy');
+		$parameters = Json::decode($message->param, JSON_OBJECT_AS_ARRAY);
+
+		$members = $this->userService->getUsers()->where('id', $values->users);
 
 		if (($form['file']->isFilled())and(!$values->file->isOK())) {
 			$form->addError('Chyba při nahrávání souboru');
 			$this->redirect('this');
 		}
 
-		$mail = $this->getNewMail();
-		$mail->addReplyTo($sender->mail, $sender->surname . ' ' . $sender->name);
-		$mail->addBcc($sender->mail, $sender->surname . ' ' . $sender->name);
-
-		$template = $this->createTemplate();
-		$template->setFile(__DIR__ . '/../templates/Mail/newMail.latte');
-		$template->text = $values->text;
-
-		$mail->setSubject('[VZS Jablonec] ' . $values->subject)
-			->setHtmlBody($template);
-
-		foreach ($members as $member) {
-			$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-			if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
-		}
-
 		if (($form['file']->isFilled()) and ($values->file->isOK())) {
 			$filename = $values->file->getSanitizedName();
-			$mail->addAttachment($filename, $values->file->getContents());
-			$values->file->move(WWW_DIR . '/doc/message/' . $filename);
-			$param['filename'] = $filename;
+			$values->file->move(WWW_DIR . MessageService::DIR_ATTACHMENTS . $filename);
+			$parameters['filename'] = $filename;
 		}
 
-		$this->mailer->send($mail);
+		unset($values->file);
 
-		$this->messageService->addMessage(
-			$values->subject,
-			$values->text,
-			$this->getUser()->getId(),
-			$members->fetchPairs('id'),
-			$param,
-			$messageType
-		);
+		$users = $values->users;
+		unset($values->users);
 
-		$this->flashMessage('Váš mail byl v pořádku odeslán');
+		$values->param = Json::encode($parameters, JSON_OBJECT_AS_ARRAY);
+		$message->update($values);
 
-		if (isset($akceId)) $this->redirect('Akce:view', $akceId); else $this->redirect('Mail:default');
+
+		$this->flashMessage('Zráva byla uložena');
+
+		$this->redirect("Mail:send#message/$id");
 	}
 
 	/**

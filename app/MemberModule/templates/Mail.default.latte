@@ -14,8 +14,14 @@
 <h1 n:block="title">Zprávy</h1>
 
 {block #content}
-	<a class="buttonLike float-right" n:href="add" n:if="$user->isInRole('board')">{include svg icon => plus} nová zpráva</a>
-	<h2>{include svg icon => envelope} Doručené</h2>
+	<ul class="buttonMenu">
+		<li n:if="$user->isInRole('board')"><a class="buttonLike" n:href="add">{include svg icon => plus} nová zpráva</a></li>
+		<li n:if="$presenter->action == send"><a class="buttonLike" n:href="default">{include svg icon => envelope-o} doručené</a></li>
+		<li n:if="$presenter->action == default"><a class="buttonLike" n:href="send">{include svg icon => envelope-o} odeslané</a></li>
+	</ul>
+
+	<h2>{include svg icon => envelope} {if $presenter->action =='default'}Doručené{else}Odeslané{/if}</h2>
+
 	{foreach $messages as $message}
 
 		{var $param = $message->param ? $message->param : '[]'}
@@ -25,10 +31,20 @@
 		<table>
 			<tr class="headerLike">
 				<th class="left">
-					<a n:tag-ifset="$param->akce_id" n:href="Akce:view $param->akce_id">{$message->subject}</a>
+					{if ($message->message_type_id == 1)}
+						{$message->subject}
+					{else}
+						<a n:ifset="$param->akce_id" n:href="Akce:view $param->akce_id">{$message->subject}</a>
+						<a n:ifset="$param->user_id" n:href="User:view $param->user_id">{$message->subject}</a>
+						<a n:ifset="$param->hlasovani_id" n:href="Hlasovani:view $param->hlasovani_id">{$message->subject}</a>
+					{/if}
 				</th>
 				<th class="right">
-					<a n:href="default#message/$message->id">{$message->date_send|date:'%A %d.%m.%Y'}</a>
+					{if ($message->date_send)}
+						<a n:href="default#message/$message->id">{$message->date_send|date:'%A %d.%m.%Y %H:%I'}</a>
+					{else}
+						za {$nextSendTime} minut
+					{/if}
 				</th>
 			</tr>
 			<tr class="bottom">
@@ -43,6 +59,10 @@
 						{$message->text|texy|noescape}
 					</div>
 					<div class="file" n:ifset="$param->filename">{include svg icon => paperclip} <a href="{$baseUri}/doc/message/{$param->filename}">{$param->filename}</a></div>
+					<ul class="buttonMenu" n:if="(!$message->date_send)and(($user->isInRole('admin'))or($message->user_id==$user->id))">
+						<li><a class="buttonLike" n:href="edit $message->id">{include svg icon => pencil} editovat</a></li>
+						<li><a class="buttonLike" n:href="delete $message->id">{include svg icon => trash} smazat</a></li>
+					</ul>
 				</td>
 			<tr>
 		</table>

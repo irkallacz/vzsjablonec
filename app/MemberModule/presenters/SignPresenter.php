@@ -5,8 +5,11 @@ namespace App\MemberModule\Presenters;
 use App\Authenticator\CredentialsAuthenticator;
 use App\Authenticator\EmailAuthenticator;
 use App\MemberModule\Forms\UserFormFactory;
+use App\Model\MessageService;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
+use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\IRow;
 use Nette\InvalidArgumentException;
 use Nette\Mail\IMailer;
 use Nette\Utils\Arrays;
@@ -22,6 +25,9 @@ class SignPresenter extends BasePresenter {
 
 	/** @var UserService @inject */
 	public $userService;
+
+	/** @var MessageService @inject */
+	public $messageService;
 
 	/** @var GoogleLogin @inject */
 	public $googleLogin;
@@ -179,10 +185,11 @@ class SignPresenter extends BasePresenter {
 		else {
 			$session = $this->userService->addPasswordSession($member->id);
 			$this->backlink = '';
-			$this->sendRestoreMail($member, $session);
-			$this->flashMessage('Na Váši e-mailovou adresu byly odeslány údaje pro změnu hesla');
+			$this->addRestoreMail($member, $session);
+			$minutes = $this->messageService->getNextSendTime();
+			$this->flashMessage('Na Váši e-mailovou adresu budou za '.$minutes.' minut odeslány údaje pro změnu hesla');
 
-			$this->redirect('Sign:in');
+			$this->redirect('in');
 		}
 	}
 
@@ -308,11 +315,30 @@ class SignPresenter extends BasePresenter {
 
 			$values->date_add = $now;
 
-			$this->userService->addUser($values, UserService::DELETED_LEVEL);
+			$user = $this->userService->addUser($values, UserService::DELETED_LEVEL);
 			$this->flashMessage('Zánam byl uložen, čekejte prosím na e-mail od administrátora');
+
+			$this->addRegistrationMail($user);
+
+			$this->redirect('in');
 		};
 
 		return $form;
+	}
+
+	private function addRegistrationMail(IRow $user){
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . '/../templates/Mail/newRegistration.latte');
+		$template->user = $user;
+
+		$message = new MessageService\Message(MessageService\Message::REGISTRATION_NEW_TYPE);
+		$message->setSubject($template);
+		$message->setText('Nová registrace uživatele');
+		$message->setAuthor($user->id);
+		$message->setRecipients($this->userService->getUsers(UserService::ADMIN_LEVEL));
+		$message->setParameters(['user_id' => $user->id]);
+
+		$this->messageService->addMessage($message);
 	}
 
 	public function actionOut() {

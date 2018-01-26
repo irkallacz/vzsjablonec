@@ -1,19 +1,14 @@
-{layout '@mail_layout.latte'}
-{contentType text/html; charset=utf-8}
-{block content}
-    <p>Zdravím</p>
+Zdravím
 
-    <p>Dnes {$hlasovani->date_add|date:'%d.%m.%Y'} v {$hlasovani->date_add|date:'H:i'}
-        bylo na našem webu vytvořeno nové hlasování představentstva. Můžete jej najít na adrese:
-        <a n:href="//Hlasovani:view,$hlasovani->id">{link //Hlasovani:view,$hlasovani->id}</a></p>
-    <p>Toto hlasování končí {$hlasovani->date_deatline|date:'%d.%m.%Y'}</p>
+Dnes {$hlasovani->date_add|date:'%d.%m.%Y'} v {$hlasovani->date_add|date:'H:i'}
+bylo na našem webu vytvořeno nové hlasování představentstva. Můžete jej najít na adrese: {link //Hlasovani:view $hlasovani->id}
+Toto hlasování končí {$hlasovani->date_deatline|date:'%d.%m.%Y'}
 
-    <strong>{$hlasovani->title}</strong>
+**{$hlasovani->title}**
 
-    <p>{$hlasovani->text|noescape|texy}</p>
+{$hlasovani->text}
 
-    <p>Odpovědi:
-    <ul n:foreach="$odpovedi as $odpoved">
-        <li>{$odpoved->text}</li>
-    </ul>
-{/block}
+Odpovědi:
+{foreach $odpovedi as $odpoved}
+- {$odpoved->text}
+{/foreach}

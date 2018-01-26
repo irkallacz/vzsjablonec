@@ -28,6 +28,9 @@ class AkcePresenter extends LayerPresenter {
 	/** @var Model\AnketyService @inject */
 	public $anketyService;
 
+	/** @var Model\MessageService @inject */
+	public $messageService;
+
 	/** @var Model\RatingService @inject */
 	public $ratingService;
 
@@ -139,7 +142,7 @@ class AkcePresenter extends LayerPresenter {
 
 	public function actionSendAkceMail($id) {
 		$akce = $this->akceService->getAkceById($id);
-		$this->sendConfirmMail($akce);
+		$this->addConfirmMail($akce);
 		$this->redirect('view', $id);
 	}
 
@@ -259,7 +262,7 @@ class AkcePresenter extends LayerPresenter {
 	protected function createComponentRating() {
 		$userId = $this->getUser()->getId();
 		$isOrg = in_array($userId, $this->orgList);
-		$canComment = ($this->getPresenter()->getUser()->isInRole('member') and (in_array($userId, $this->memberList) or ($isOrg)));
+		$canComment = ($this->getUser()->isInRole('member') and (in_array($userId, $this->memberList) or ($isOrg)));
 		return new Components\RatingControl($this->akce->id, $this->ratingService, $userId, $isOrg, $canComment);
 	}
 
@@ -267,23 +270,19 @@ class AkcePresenter extends LayerPresenter {
 	 * @param IRow $akce
 	 * @allow(member)
 	 */
-	public function sendConfirmMail($akce) {
+	public function addConfirmMail($akce) {
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/akceConfirm.latte');
 		$template->akce = $akce;
 
-		$mail = $this->getNewMail();
+		$message = new Model\MessageService\Message(Model\MessageService\Message::EVENT_CONFIRM_TYPE);
+		$message->setSubject('Nová akce čeká na schválení');
+		$message->setText($template);
+		$message->setAuthor($this->user->id);
+		$message->setRecipients($this->userService->getUsersByRight('confirm'));
+		$message->setParameters(['akce_id' => $akce->id]);
 
-		$member = $akce->member;
-
-		$mail->addReplyTo($member->mail, $member->surname . ' ' . $member->name);
-
-		foreach ($this->userService->getUsersByRight('confirm') as $member)
-			$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-
-		$mail->setSubject('[VZS Jablonec] Nová akce čeká na schválení');
-		$mail->setHTMLBody($template);
-		$this->mailer->send($mail);
+		$this->messageService->addMessage($message);
 	}
 
 	protected function createComponentSignEvent() {
@@ -466,7 +465,7 @@ class AkcePresenter extends LayerPresenter {
 
 			if ($org) $this->akceService->addMemberToAction($org, $akce->id, TRUE);
 
-			$this->sendConfirmMail($akce);
+			$this->addConfirmMail($akce);
 
 			$this->flashMessage('Akce byla přidána');
 

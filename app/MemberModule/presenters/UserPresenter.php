@@ -3,6 +3,7 @@
 namespace App\MemberModule\Presenters;
 
 use App\MemberModule\Forms\UserFormFactory;
+use App\Model\MessageService;
 use App\Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
@@ -19,8 +20,8 @@ class UserPresenter extends LayerPresenter {
 	/** @var UserService @inject */
 	public $userService;
 
-	/** @var IMailer @inject */
-	public $mailer;
+	/** @var MessageService @inject */
+	public $messageService;
 
 	/** @var UserFormFactory @inject */
 	public $userFormFactory;
@@ -167,26 +168,29 @@ class UserPresenter extends LayerPresenter {
 
 		$session = $this->userService->addPasswordSession($member->id, '24 HOUR');
 
-		$this->sendLoggingMail($member, $session);
+		$this->addLoggingMail($member, $session);
 
 		$this->flashMessage('Uživateli byl zaslán úvodní e-mail');
 		$this->redirect('view', $member->id);
 	}
 
 	/** @allow(board) */
-	public function sendLoggingMail($member, $session) {
+	public function addLoggingMail($user, $session) {
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
 		$template->session = $session;
 
-		$mail = $this->getNewMail();
+		$message = new MessageService\Message(MessageService\Message::USER_NEW_TYPE);
 
-		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-		if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
-		$mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
-		$mail->setHTMLBody($template);
+		$message->setSubject('Vítejte v informačním systému VZS Jablonec nad Nisou');
+		$message->setText($template);
 
-		$this->mailer->send($mail);
+		$message->setAuthor($this->user->id);
+		$message->addRecipient($user->id);
+
+		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id]);
+
+		$this->messageService->addMessage($message);
 	}
 
 	/**
@@ -194,16 +198,16 @@ class UserPresenter extends LayerPresenter {
 	 * @allow(board)
 	 */
 	public function actionResetPassword($id) {
-		$member = $this->userService->getUserById($id);
+		$user = $this->userService->getUserById($id);
 
-		if (!$member) throw new BadRequestException('Uživatel nenalezen');
+		if (!$user) throw new BadRequestException('Uživatel nenalezen');
 
-		$session = $this->userService->addPasswordSession($member->id, '12 HOUR');
+		$session = $this->userService->addPasswordSession($user->id, '12 HOUR');
 
-		$this->sendRestoreMail($member, $session);
-
-		$this->flashMessage('Uživateli byl odelán email pro změnu hesla');
-		$this->redirect('view', $member->id);
+		$this->addRestoreMail($user, $session);
+		$minutes = $this->messageService->getNextSendTime();
+		$this->flashMessage("Uživateli bude za $minutes minut odelán email pro změnu hesla");
+		$this->redirect('view', $user->id);
 	}
 
 	/**
@@ -277,7 +281,7 @@ class UserPresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param int $id
+	 * @param int $idE
 	 * @allow(user)
 	 */
 	public function renderEdit($id) {
