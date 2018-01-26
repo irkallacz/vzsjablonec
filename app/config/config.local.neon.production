@@ -38,4 +38,4 @@ tracy:
 
 session:
 	cookie_secure: true
-	cookieDomain: 'vzs-jablonec.cz'
+#	cookieDomain: 'vzs-jablonec.cz'
