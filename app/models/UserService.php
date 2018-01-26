@@ -112,7 +112,7 @@ class UserService extends DatabaseService {
 	 * @return bool|int|IRow
 	 */
 	public function addUser(ArrayHash $values, $role = self::MEMBER_LEVEL) {
-		if ($role != self::DELETED_LEVEL) $values->role = $role-1;
+		$values->role = ($role == self::DELETED_LEVEL) ? NULL : $role-1;
 		return $this->getTable()->insert($values);
 	}
 
