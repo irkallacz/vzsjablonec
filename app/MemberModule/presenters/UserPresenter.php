@@ -117,8 +117,7 @@ class UserPresenter extends LayerPresenter {
 
 		foreach ($this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name') as $member) {
 			$template->member = $member;
-			$s = (string)$template;
-			//$s = iconv('utf-8','cp1250',$s);
+			$s = (string) $template;
 			$zip->addFromString(Strings::toAscii($member->surname) . ' ' . Strings::toAscii($member->name) . '.vcf', $s);
 		}
 
