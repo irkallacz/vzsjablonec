@@ -100,7 +100,7 @@ class UserPresenter extends LayerPresenter {
 			throw new ForbiddenRequestException('Nemáte práva prohlížete tohoto uživatele');
 		}
 
-		$this->template->narozeni = $member->date_born->diff(date_create());
+		$this->template->age = ($member->date_born) ? $member->date_born->diff(date_create()) : NULL;
 		$this->template->member = $member;
 		$this->template->last_login = $member->related('user_log')->order('date_add DESC')->fetch();
 		$this->template->fileExists = file_exists(WWW_DIR . '/img/portrets/' . $id . '.jpg');
