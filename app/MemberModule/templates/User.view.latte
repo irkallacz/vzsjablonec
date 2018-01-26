@@ -49,7 +49,7 @@
 
 	<p>{include svg icon => user} <b>Osobní číslo:</b> {$member->id}</p>
 	{if $user->isInRole('board')}
-		<p n:if="$member->date_born">{include svg icon => calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$narozeni->format('%y')} let)</p>
+		<p n:if="$member->date_born">{include svg icon => calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$age->format('%y')} let)</p>
 		<ul class="bulletless">
 			<li n:if="$member->date_add">
 				{include svg icon => calendar-plus-o} <b>Datum registrace:</b>
