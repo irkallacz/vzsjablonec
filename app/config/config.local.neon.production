@@ -35,3 +35,7 @@ parameters:
 
 tracy:
 	email: webmaster@vzs-jablonec.cz
+
+session:
+	cookie_secure: true
+	cookieDomain: 'vzs-jablonec.cz'
