@@ -332,8 +332,8 @@ class SignPresenter extends BasePresenter {
 		$template->user = $user;
 
 		$message = new MessageService\Message(MessageService\Message::REGISTRATION_NEW_TYPE);
-		$message->setSubject($template);
-		$message->setText('Nová registrace uživatele');
+		$message->setSubject('Nová registrace uživatele');
+		$message->setText($template);
 		$message->setAuthor($user->id);
 		$message->setRecipients($this->userService->getUsers(UserService::ADMIN_LEVEL));
 		$message->setParameters(['user_id' => $user->id]);
