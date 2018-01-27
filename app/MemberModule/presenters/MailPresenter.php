@@ -66,11 +66,17 @@ class MailPresenter extends LayerPresenter {
 
 		if (!$message) throw new BadRequestException('Zpráva nenalezena');
 		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete editovat cizí zprávy');
+		if ($message->date_send) throw new ForbiddenRequestException('Nemůžete editovat již odeslané zprávy');
 
 		$form = $this['mailForm'];
 		$form['text']->setDefaultValue($message->text);
 		$form['subject']->setDefaultValue($message->subject);
-		//$form['to']->setDefaultValue(join(',', $users->fetchPairs('id', 'mail')));
+
+		$to = '';
+		foreach ($this->messageService->getRecipients($message->id) as $recipient){
+			$to .= $recipient->user->mail . ',';
+		}
+		$form['to']->setDefaultValue($to);
 
 		$users = $message->related('message_user')->fetchPairs('id');
 		$form['users']->setDefaultValue(array_keys($users));
@@ -79,7 +85,16 @@ class MailPresenter extends LayerPresenter {
 	}
 
 	public function actionDelete($id) {
+		$message = $this->messageService->getMessages()->get($id);
 
+		if (!$message) throw new BadRequestException('Zpráva nenalezena');
+		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete mazat cizí zprávy');
+		if ($message->date_send) throw new ForbiddenRequestException('Nemůžete mazat již odeslané zprávy');
+
+		$message->delete();
+
+		$this->flashMessage('Zpráva byla smazána');
+		$this->redirect('send');
 	}
 
 
@@ -221,10 +236,18 @@ class MailPresenter extends LayerPresenter {
 		$values->param = Json::encode($parameters, JSON_OBJECT_AS_ARRAY);
 		$message->update($values);
 
+		$recipients = $this->messageService->getRecipients($id)->fetchPairs('user_id', 'user_id');
+
+		foreach (MessageService::getDifferences($users, $recipients)['add'] as $recipient_id){
+			$this->messageService->addRecipient($recipient_id, $id);
+		}
+
+		$this->messageService->getRecipients($id)
+			->where('user_id', MessageService::getDifferences($users, $recipients)['delete'])
+			->delete();
 
 		$this->flashMessage('Zráva byla uložena');
-
-		$this->redirect("Mail:send#message/$id");
+		$this->redirect("send#message/$id");
 	}
 
 	/**
