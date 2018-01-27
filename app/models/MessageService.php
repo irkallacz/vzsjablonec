@@ -65,7 +65,7 @@ class MessageService extends DatabaseService {
 	 * @param int $user_id
 	 * @param int $message_id
 	 */
-	private function addRecipient($user_id, $message_id){
+	public function addRecipient($user_id, $message_id){
 		$this->database->query('INSERT INTO '.self::TABLE_MESSAGE_USER, [
 			'user_id' => $user_id,
 			'message_id' => $message_id
@@ -77,6 +77,16 @@ class MessageService extends DatabaseService {
 	public function getMessages(){
 		return $this->getTable();
 	}
+
+	/**
+	 * @return \Nette\Database\Table\Selection
+	 */
+	public function getRecipients($message_id = NULL){
+		$recipients = $this->database->table(self::TABLE_MESSAGE_USER);
+		if ($message_id) $recipients->where('message_id', $message_id);
+		return $recipients;
+	}
+
 
 	/**
 	 * @param DateTime $date
