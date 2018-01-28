@@ -40,18 +40,25 @@ class MailPresenter extends LayerPresenter {
 		$users = $this->userService->getUsers()->order('surname,name');
 		$this->template->members = $users;
 
+		/** @var Form $form */
 		$form = $this['mailForm'];
 		if (!$form->isSubmitted()) {
 			$this->template->pocet = ceil(count($users) / 3);
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function renderDefault() {
 		$messages = $this->messageService->getMessages()->where('date_send IS NOT NULL')->order('date_add DESC');
 		if (!$this->getUser()->isInRole('admin')) $messages->where(':message_user.user_id = ?', $this->user->id);
 		$this->template->messages = $messages;
 	}
 
+	/**
+	 *
+	 */
 	public function renderSend() {
 		$messages = $this->messageService->getMessages()->order('date_add DESC');
 		if (!$this->getUser()->isInRole('admin')) $messages->where('user_id = ?', $this->user->id);
@@ -102,8 +109,10 @@ class MailPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(member)
 	 */
-	public function actionAkce($id) {
+	public function actionAkce(int $id) {
+		/** @var Form $form */
 		$form = $this['mailForm'];
+
 		$akce = $this->akceService->getAkceById($id);
 		$users = $this->userService->getUsersByAkceId($id)->where('NOT role', NULL);
 

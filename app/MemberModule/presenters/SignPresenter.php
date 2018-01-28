@@ -214,7 +214,9 @@ class SignPresenter extends BasePresenter {
 		$this->template->date_end = $date_end;
 		$this->template->time_remain = date_create()->diff($date_end);
 
-		$this['restorePasswordForm']->setDefaults($member);
+		/** @var Form $form */
+		$form = $this['restorePasswordForm'];
+		$form->setDefaults($member);
 	}
 
 	/**

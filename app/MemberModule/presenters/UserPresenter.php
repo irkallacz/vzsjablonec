@@ -244,7 +244,8 @@ class UserPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(user)
 	 */
-	public function actionEdit($id) {
+	public function actionEdit(int $id) {
+		/** @var Form $form*/
 		$form = $this['memberForm'];
 		$form['name']->setAttribute('readonly');
 		$form['surname']->setAttribute('readonly');
@@ -303,6 +304,7 @@ class UserPresenter extends LayerPresenter {
 
 	/** @allow(board) */
 	public function actionAdd() {
+		/**@var Form $form */
 		$form = $this['memberForm'];
 		unset($form['image']);
 		unset($form['text']);
@@ -399,6 +401,7 @@ class UserPresenter extends LayerPresenter {
 		$values = $form->getValues();
 
 		if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
+			/** @var Image $image  */
 			$image = $values->image->toImage();
 			$image->resize(250, NULL, Image::SHRINK_ONLY);
 			$image->save(WWW_DIR . '/img/portrets/' . $id . '.jpg', 80, Image::JPEG);

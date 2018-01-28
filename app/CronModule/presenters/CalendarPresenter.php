@@ -9,6 +9,7 @@ use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 use Google_Service_Calendar_EventDateTime;
 use Google_Service_Calendar_EventAttendee;
+use Nette\Database\Table\Selection;
 use Tracy\Debugger;
 
 /**
@@ -66,6 +67,8 @@ class CalendarPresenter extends Presenter {
 			->order('date_add DESC');
 
 		foreach ($newEvents as $newEvent) {
+			/** @var ActiveRow $newEvent*/
+
 			$event = $this->setEvent($newEvent, new Google_Service_Calendar_Event);
 
 			$createdEvent = $this->calendarService->events->insert(self::CALENDAR_ID, $event);
@@ -75,12 +78,15 @@ class CalendarPresenter extends Presenter {
 		}
 
 		//Remove deleted events
+		/** @var Selection $deleteEvents */
 		$deleteEvents = $this->akceService->getAkce()
 			->where('confirm = ? OR enable = ?', FALSE, FALSE)
 			->where('NOT calendarId', NULL)
 			->order('date_add DESC');
 
 		foreach ($deleteEvents as $deleteEvent) {
+			/** @var ActiveRow $deleteEvent*/
+
 			$this->calendarService->events->delete(self::CALENDAR_ID, $deleteEvent->calendarId);
 			$deleteEvent->update(['calendarId' => NULL]);
 

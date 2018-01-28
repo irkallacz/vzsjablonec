@@ -37,9 +37,11 @@ class NewsPresenter extends LayerPresenter{
                     $this->template->novinky = $this->wordpressService->getLastNews();
                 }
 
+                /**@var DateTime $datum */
                 $datum = $this->getUser()->getIdentity()->date_last;
 
-                $user_id = $this->getUser()->getId();
+				/**@var int $id */
+				$user_id = $this->getUser()->getId();
 
                 $this->template->lastDate = $datum;
                 $this->template->nowDate = new DateTime();

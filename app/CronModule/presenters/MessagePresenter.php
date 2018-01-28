@@ -4,6 +4,7 @@ namespace App\CronModule\Presenters;
 
 use App\Model\UserService;
 use App\Model\MessageService;
+use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
@@ -26,12 +27,17 @@ class MessagePresenter extends BasePresenter {
 	/** @var IMailer @inject */
 	public $mailer;
 
+	/**
+	 *
+	 */
 	public function actionSend() {
 		$this->messageService->beginTransaction();
 		$messages = $this->messageService->getMessagesToSend();
 		$this->template->items = [];
 
 		foreach ($messages as $message) {
+			/** @var ActiveRow $message*/
+
 			$mail = $this->getNewMail();
 			$parameters = Json::decode($message->param, Json::FORCE_ARRAY);
 
@@ -82,6 +88,10 @@ class MessagePresenter extends BasePresenter {
 		return $mail;
 	}
 
+	/**
+	 * @param IRow|ActiveRow $user
+	 * @return string
+	 */
 	private static function getFullName(IRow $user) {
 		return $user->surname . ' ' . $user->name;
 	}

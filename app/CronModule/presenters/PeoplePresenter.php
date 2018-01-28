@@ -16,6 +16,7 @@ use Google_Service_PeopleService_Address;
 use Google_Service_PeopleService_PhoneNumber;
 use Google_Service_PeopleService_EmailAddress;
 use Google_Service_PeopleService_UserDefined;
+use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
@@ -94,6 +95,8 @@ class PeoplePresenter extends BasePresenter {
 
 		$persons = [];
 		foreach ($users as $user) {
+			/** @var ActiveRow $user*/
+
 			$person = new Google_Service_PeopleService_Person;
 			$person = self::setID($person, $user->id);
 			$person = self::setPerson($person, $user);
@@ -136,7 +139,7 @@ class PeoplePresenter extends BasePresenter {
 
 	/**
 	 * @param Google_Service_PeopleService_Person $person
-	 * @param IRow $user
+	 * @param IRow|ActiveRow $user
 	 * @return Google_Service_PeopleService_Person
 	 */
 	private static function setPerson(Google_Service_PeopleService_Person $person, IRow $user) {
