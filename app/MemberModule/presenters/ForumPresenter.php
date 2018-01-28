@@ -24,8 +24,8 @@ use Joseki\Webloader\JsMinFilter;
 
 class ForumPresenter extends LayerPresenter {
 
-	const postPerPage = 30;
-	const topicPerPage = 30;
+	const POST_PER_PAGE = 30;
+	const TOPIC_PER_PAGE = 30;
 
 	/** @var ForumService @inject */
 	public $forumService;
@@ -45,7 +45,7 @@ class ForumPresenter extends LayerPresenter {
 	 */
 	public function showPost(IRow $post) {
 		$param = ['id' => $post->forum_topic_id];
-		$page = ceil($post->row_number / self::postPerPage);
+		$page = ceil($post->row_number / self::POST_PER_PAGE);
 		if ($page > 1) $param['vp-page'] = $page;
 		$this->redirect("Forum:topic#post/$post->id", $param);
 	}
@@ -72,7 +72,7 @@ class ForumPresenter extends LayerPresenter {
 
 		/** @var Paginator $paginator */
 		$paginator = $vp->getPaginator();
-		$paginator->setItemsPerPage(self::topicPerPage);
+		$paginator->setItemsPerPage(self::TOPIC_PER_PAGE);
 		$paginator->setItemCount($count);
 
 		$this['searchForm']['q']->setDefaultValue($q);
@@ -150,7 +150,7 @@ class ForumPresenter extends LayerPresenter {
 
 		$vp = new \VisualPaginator($this, 'vp');
 		$paginator = $vp->getPaginator();
-		$paginator->setItemsPerPage(self::postPerPage);
+		$paginator->setItemsPerPage(self::POST_PER_PAGE);
 		$paginator->setItemCount($count);
 		$this->template->paginator = $paginator;
 
@@ -167,7 +167,7 @@ class ForumPresenter extends LayerPresenter {
 	 */
 	public function renderSearch(string $q = NULL, int $forum_id = NULL, string $subject = 'posts') {
 		$vp = new \VisualPaginator($this, 'vp');
-		$vp->getPaginator()->setItemsPerPage(self::postPerPage);
+		$vp->getPaginator()->setItemsPerPage(self::POST_PER_PAGE);
 
 		$this->template->subject = $subject;
 		$this->template->forum_id = $forum_id;
