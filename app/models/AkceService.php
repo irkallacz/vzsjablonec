@@ -6,8 +6,10 @@
 
 namespace App\Model;
 
+use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 
 class AkceService extends DatabaseService {
@@ -25,7 +27,7 @@ class AkceService extends DatabaseService {
 	 * @param bool $future
 	 * @return Selection
 	 */
-	public function getAkceByFuture($future = false) {
+	public function getAkceByFuture(bool $future = FALSE) {
 		$akce = $this->getAkce()->where('enable', 1);
 
 		if ($future) $akce->where('date_start > NOW()')->order('date_start ASC'); else $akce->where('date_start < NOW()')->order('date_start DESC');;
@@ -34,10 +36,10 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
-	 * @param $id
-	 * @return IRow
+	 * @param int $id
+	 * @return IRow|ActiveRow
 	 */
-	public function getAkceById($id) {
+	public function getAkceById(int $id) {
 		return $this->getAkce()->get($id);
 	}
 
@@ -52,11 +54,11 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @param DateTime $date
 	 * @return bool|mixed|IRow
 	 */
-	public function getAkceNext($id, DateTime $date) {
+	public function getAkceNext(int $id, DateTime $date) {
 		return $this->getAkce()
 			->where('enable', TRUE)
 			->where('confirm', TRUE)
@@ -68,11 +70,11 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @param DateTime $date
 	 * @return bool|mixed|IRow
 	 */
-	public function getAkcePrev($id, DateTime $date) {
+	public function getAkcePrev(int $id, DateTime $date) {
 		return $this->getAkce()
 			->where('enable', TRUE)
 			->where('confirm', TRUE)
@@ -84,10 +86,10 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
-	 * @param $values
-	 * @return bool|int|IRow
+	 * @param ArrayHash $values
+	 * @return bool|int|IRow|ActiveRow
 	 */
-	public function addAkce($values) {
+	public function addAkce(ArrayHash $values) {
 		return $this->getAkce()->insert($values);
 	}
 
@@ -99,11 +101,11 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @param bool $org
 	 * @return array
 	 */
-	public function getMemberListByAkceId($id, $org = false) {
+	public function getMemberListByAkceId(int $id, bool $org = FALSE) {
 		return $this->database->table(self::TABLE_AKCE_MEMBER_NAME)->where('akce_id', $id)->where('organizator', $org)->fetchPairs('member_id', 'member_id');
 	}
 
@@ -115,21 +117,20 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
-	 * @param $member_id
-	 * @param $akce_id
+	 * @param int $member_id
+	 * @param int $akce_id
 	 * @param bool $org
 	 */
-	public function addMemberToAction($member_id, $akce_id, $org = false) {
+	public function addMemberToAction(int $member_id, int $akce_id, bool $org = FALSE) {
 		$values = ['member_id' => $member_id, 'akce_id' => $akce_id, 'organizator' => $org];
 		$this->database->query('INSERT INTO `'.self::TABLE_AKCE_MEMBER_NAME.'`', $values);
 	}
 
 	/**
-	 * @param $member_id
-	 * @param $akce_id
-	 * @param bool $org
+	 * @param int $member_id
+	 * @param int $akce_id
 	 */
-	public function deleteMemberFromAction($member_id, $akce_id) {
+	public function deleteMemberFromAction(int $member_id, int $akce_id) {
 		$this->database->table(self::TABLE_AKCE_MEMBER_NAME)
 			->where('member_id', $member_id)
 			->where('akce_id', $akce_id)
@@ -137,11 +138,11 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @param bool $org
 	 * @return array
 	 */
-	public function getAkceByMemberId($id, $org = false) {
+	public function getAkceByMemberId(int $id, bool $org = FALSE) {
 		return array_values($this->database->table(self::TABLE_AKCE_MEMBER_NAME)
 			->select('akce_id')
 			->where('member_id', $id)
@@ -151,10 +152,10 @@ class AkceService extends DatabaseService {
 
 	/**
 	 * @param DateTime $date
-	 * @param $user_id
+	 * @param int $user_id
 	 * @return Selection
 	 */
-	public function getFeedbackRequests(DateTime $date, $user_id) {
+	public function getFeedbackRequests(DateTime $date, int $user_id) {
 		return $this->getAkce()
 			->where('enable', TRUE)
 			->where('confirm', TRUE)
@@ -166,10 +167,10 @@ class AkceService extends DatabaseService {
 
 	/**
 	 * @param DateTime $date
-	 * @param $user_id
+	 * @param int $user_id
 	 * @return Selection
 	 */
-	public function getRatingNews(DateTime $date, $user_id) {
+	public function getRatingNews(DateTime $date, int $user_id) {
 		return $this->getAkceByFuture(FALSE)
 			->select('id, name, :akce_rating_member.member_id AS rating_member_id, :akce_rating_member.date_add AS rating_date_add')
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.member_id', $user_id)
@@ -180,10 +181,10 @@ class AkceService extends DatabaseService {
 
 	/**
 	 * @param DateTime $date
-	 * @param $user_id
+	 * @param int $user_id
 	 * @return Selection
 	 */
-	public function getReportRequests(DateTime $date, $user_id) {
+	public function getReportRequests(DateTime $date, int $user_id) {
 		return $this->getAkce()
 			->where('enable', TRUE)
 			->where('confirm', TRUE)
@@ -194,33 +195,33 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @return IRow
 	 */
-	public function getReportById($id) {
+	public function getReportById(int $id) {
 		return $this->database->table('report')->get($id);
 	}
 
 	/**
-	 * @param $values
+	 * @param ArrayHash $values
 	 * @return bool|int|IRow
 	 */
-	public function addReport($values) {
+	public function addReport(ArrayHash $values) {
 		return $this->database->table('report')->insert($values);
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @return Selection
 	 */
-	public function getMembersByReportId($id) {
+	public function getMembersByReportId(int $id) {
 		return $this->database->table(self::TABLE_AKCE_NAME)->where(':report_member.report_id', $id);
 	}
 
 	/**
-	 * @param array $values
+	 * @param array ArrayHash $values
 	 */
-	public function addMemberToReport($values) {
+	public function addMemberToReport(ArrayHash $values) {
 		$this->database->query('INSERT INTO `report_member`', $values);
 	}
 

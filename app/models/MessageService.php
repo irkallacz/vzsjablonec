@@ -9,20 +9,23 @@
 namespace App\Model;
 
 use App\Model\MessageService\Message;
+use Nette\Database\Table\Selection;
+use Nette\Database\Table\IRow;
+use Nette\Database\Table\ActiveRow;
 use Nette\Utils\DateTime;
 use Nette\Utils\Json;
 
 class MessageService extends DatabaseService {
-	const TABLE_MESSAGE 		= 'message';
-	const TABLE_MESSAGE_TYPE 	= 'message_type';
-	const TABLE_MESSAGE_USER 	= 'message_user';
+	const TABLE_MESSAGE = 'message';
+	const TABLE_MESSAGE_TYPE = 'message_type';
+	const TABLE_MESSAGE_USER = 'message_user';
 
-	const DIR_ATTACHMENTS 		= '/doc/message/';
+	const DIR_ATTACHMENTS = '/doc/message/';
 
 	/**
 	 * @param Message $message
 	 */
-	public function addMessage(Message $message){
+	public function addMessage(Message $message) {
 		$this->insertMessage(
 			$message->getSubject(),
 			$message->getText(),
@@ -34,17 +37,17 @@ class MessageService extends DatabaseService {
 	}
 
 	/**
-	 * @param $subject
-	 * @param $text
-	 * @param $author_id
+	 * @param string $subject
+	 * @param string $text
+	 * @param int $author_id
 	 * @param \Iterator|array $recipients
-	 * @param null $parameters
+	 * @param array|NULL $parameters
 	 * @param int $type
 	 */
-	private function insertMessage($subject, $text, $author_id, $recipients, $parameters = NULL, $type = Message::CUSTOM_MESSAGE_TYPE){
-		$parameters  = $parameters ? Json::encode($parameters) : NULL;
+	private function insertMessage(string $subject, string $text, int $author_id, $recipients, array $parameters = NULL, int $type = Message::CUSTOM_MESSAGE_TYPE) {
+		$parameters = $parameters ? Json::encode($parameters) : NULL;
 
-		$this->database->query('INSERT INTO '.self::TABLE_MESSAGE, [
+		$this->database->query('INSERT INTO ' . self::TABLE_MESSAGE, [
 			'message_type_id' => $type,
 			'subject' => $subject,
 			'user_id' => $author_id,
@@ -54,8 +57,8 @@ class MessageService extends DatabaseService {
 		]);
 
 		$message_id = $this->database->getInsertId();
-		if ((is_array($recipients))or($recipients instanceof \Iterator)) {
-			foreach ($recipients as $user_id => $recipient){
+		if ((is_array($recipients)) or ($recipients instanceof \Iterator)) {
+			foreach ($recipients as $user_id => $recipient) {
 				$this->addRecipient($user_id, $message_id);
 			}
 		}
@@ -65,23 +68,34 @@ class MessageService extends DatabaseService {
 	 * @param int $user_id
 	 * @param int $message_id
 	 */
-	public function addRecipient($user_id, $message_id){
-		$this->database->query('INSERT INTO '.self::TABLE_MESSAGE_USER, [
+	public function addRecipient(int $user_id, int $message_id) {
+		$this->database->query('INSERT INTO ' . self::TABLE_MESSAGE_USER, [
 			'user_id' => $user_id,
 			'message_id' => $message_id
 		]);
 	}
+
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return Selection
 	 */
-	public function getMessages(){
+	public function getMessages() {
 		return $this->getTable();
 	}
 
+
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @param int $id
+	 * @return IRow|ActiveRow
 	 */
-	public function getRecipients($message_id = NULL){
+	public function getMessageById(int $id){
+		return $this->getMessages()->get($id);
+	}
+
+	/**
+	 * @param int $message_id
+	 * @return Selection
+	 */
+	public function getRecipients(int $message_id = NULL) {
 		$recipients = $this->database->table(self::TABLE_MESSAGE_USER);
 		if ($message_id) $recipients->where('message_id', $message_id);
 		return $recipients;
@@ -90,31 +104,32 @@ class MessageService extends DatabaseService {
 
 	/**
 	 * @param DateTime $date
-	 * @return \Nette\Database\Table\Selection
+	 * @param int $user_id
+	 * @return Selection
 	 */
-	public function getMessagesNews(DateTime $date, $user_id){
+	public function getMessagesNews(DateTime $date, int $user_id) {
 		return $this->getMessages()->where('date_send > ?', $date)->where(':message_user.user_id', $user_id);
 	}
 
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return Selection
 	 */
-	public function getMessagesToSend(){
+	public function getMessagesToSend() {
 		return $this->getMessages()->where('date_send IS NULL')->order('date_add DESC');
 	}
 
 
 	/**
-	 * @return \Nette\Database\Table\Selection
+	 * @return Selection
 	 */
-	public function getTable(){
+	public function getTable() {
 		return $this->database->table(self::TABLE_MESSAGE);
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getNextSendTime(){
+	public function getNextSendTime() {
 		$now = new DateTime;
 		return 60 - intval($now->format('i'));
 	}

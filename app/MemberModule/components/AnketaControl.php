@@ -11,6 +11,7 @@ namespace App\MemberModule\Components;
 use Nette\Application\BadRequestException;
 use Nette\Utils\Arrays;
 use App\Model\AnketyService;
+use Nette\Utils\DateTime;
 use Tracy\Debugger;
 
 class AnketaControl extends LayerControl {
@@ -22,9 +23,9 @@ class AnketaControl extends LayerControl {
 	/**
 	 * AnketaControl constructor.
 	 * @param AnketyService $anketyService
-	 * @param $id
+	 * @param int $id
 	 */
-	public function __construct($id, AnketyService $anketyService) {
+	public function __construct(int $id, AnketyService $anketyService) {
 		parent::__construct();
 		$this->anketyService = $anketyService;
 		$this->id = $id;
@@ -83,8 +84,8 @@ class AnketaControl extends LayerControl {
 	 * @param int $odpoved
 	 * @allow(member)
 	 */
-	public function handleVote($odpoved) {
-		$odpovedId = (int)$odpoved;
+	public function handleVote(int $odpoved) {
+		$odpovedId = $odpoved;
 
 		$userId = $this->presenter->getUser()->getId();
 		$odpoved = $this->anketyService->getOdpovedById($odpovedId);
@@ -97,7 +98,7 @@ class AnketaControl extends LayerControl {
 
 			if (in_array($odpovedId, $odpovedi)) {
 				$this->anketyService->addVote([
-					'member_id' => $userId, 'anketa_id' => $odpoved->anketa_id, 'anketa_odpoved_id' => $odpovedId, 'date_add' => new Datetime
+					'member_id' => $userId, 'anketa_id' => $odpoved->anketa_id, 'anketa_odpoved_id' => $odpovedId, 'date_add' => new DateTime()
 				]);
 				$this->flashMessage('Váš hlas byl zaznamenán');
 			} else throw new BadRequestException('Pro tuto odpověď nemůžete hlasovat');

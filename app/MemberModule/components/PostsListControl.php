@@ -30,7 +30,7 @@ class PostsListControl extends Control {
 	 * @param bool $isLocked
 	 * @param string $search
 	 */
-	public function __construct(Selection $posts, $isLocked, $search = NULL) {
+	public function __construct(Selection $posts, bool $isLocked, string $search = NULL) {
 		parent::__construct();
 		$this->posts = $posts;
 		$this->isLocked = $isLocked;

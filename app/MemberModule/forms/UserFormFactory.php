@@ -10,6 +10,7 @@ namespace App\MemberModule\Forms;
 
 use App\Model\UserService;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\BaseControl;
 use Nette\Object;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
@@ -112,15 +113,15 @@ class UserFormFactory extends Object {
 	/**
 	 * @param int $userId
 	 */
-	public function setUserId($userId) {
+	public function setUserId(int $userId) {
 		$this->userId = $userId;
 	}
 
 	/**
-	 * @param $item
+	 * @param BaseControl $item
 	 * @return bool|mixed|\Nette\Database\Table\IRow
 	 */
-	public function uniqueMailValidator($item) {
+	public function uniqueMailValidator(BaseControl $item) {
 		return $this->userService->isEmailUnique($item->value, $this->userId);
 	}
 }

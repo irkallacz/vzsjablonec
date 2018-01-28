@@ -77,7 +77,7 @@ class SignEventControl extends Control {
 	/**
 	 * @param bool $isOrg
 	 */
-	private function getMemberList($isOrg = NULL) {
+	private function getMemberList(bool $isOrg = NULL) {
 		$list = $this->akce->related(AkceService::TABLE_AKCE_MEMBER_NAME);
 		if (!is_null($isOrg)) $list->where('organizator', $isOrg);
 		return $list;
@@ -86,7 +86,7 @@ class SignEventControl extends Control {
 	/**
 	 * @param bool $isOrg
 	 */
-	private function userIsInList($isOrg = NULL) {
+	private function userIsInList(bool $isOrg = NULL) {
 		$userId = $this->getPresenter()->getUser()->getId();
 		if (is_null($isOrg)) {
 			return in_array($userId, $this->getLocalMemberList());
@@ -98,7 +98,7 @@ class SignEventControl extends Control {
 	/**
 	 * @param bool $toOrg
 	 */
-	private function userIsAllowToLog($toOrg) {
+	private function userIsAllowToLog(bool $toOrg) {
 		return (
 			($this->getPresenter()->getUser()->isInRole('member'))
 			and
@@ -118,7 +118,7 @@ class SignEventControl extends Control {
 	 * @param int $userId
 	 * @param bool $isOrg
 	 */
-	private function logUser($userId, $isOrg) {
+	private function logUser(int $userId, bool $isOrg) {
 		$this->akceService->addMemberToAction($userId, $this->akce->id, $isOrg);
 		if ($isOrg) $this->orgList[$userId] = $userId;
 		else $this->userList[$userId] = $userId;
@@ -127,7 +127,7 @@ class SignEventControl extends Control {
 	/**
 	 * @param int $userId
 	 */
-	private function unlogUser($userId) {
+	private function unlogUser(int $userId) {
 		$this->akceService->deleteMemberFromAction($userId, $this->akce->id);
 		unset($this->orgList[$userId]);
 		unset($this->userList[$userId]);
@@ -136,7 +136,7 @@ class SignEventControl extends Control {
 	/**
 	 * @param bool $isOrg
 	 */
-	public function handleLogSelf($isOrg) {
+	public function handleLogSelf(bool $isOrg) {
 		$userId = $this->getPresenter()->getUser()->getId();
 
 		if ($this->userIsAllowToLog($isOrg)) {
@@ -152,7 +152,7 @@ class SignEventControl extends Control {
 	/**
 	 * @param bool $isOrg
 	 */
-	public function handleUnlogSelf($isOrg) {
+	public function handleUnlogSelf(bool $isOrg) {
 		$userId = $this->getPresenter()->getUser()->getId();
 
 		if ($this->userIsAllowToLog($isOrg)) {

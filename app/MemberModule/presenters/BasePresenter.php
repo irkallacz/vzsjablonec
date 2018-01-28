@@ -6,6 +6,8 @@ use App\Model\MessageService;
 use App\Template\LatteFilters;
 use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Presenter;
+use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\IRow;
 use Nette\Utils\Html;
 
 /**
@@ -13,6 +15,9 @@ use Nette\Utils\Html;
  */
 abstract class BasePresenter extends Presenter {
 
+	/**
+	 *
+	 */
 	protected function afterRender() {
 		parent::afterRender();
 		if (!$this->context->parameters['productionMode']) {
@@ -25,7 +30,7 @@ abstract class BasePresenter extends Presenter {
 	/**
 	 * @param bool $class
 	 */
-	public function actionTexyPreview($class = false) {
+	public function actionTexyPreview(bool $class = FALSE) {
 		if ($this->isAjax()) {
 
 			$httpRequest = $this->context->getByType('Nette\Http\Request');
@@ -38,7 +43,11 @@ abstract class BasePresenter extends Presenter {
 		}
 	}
 
-	public function addRestoreMail($user, $session) {
+	/**
+	 * @param IRow|ActiveRow $user
+	 * @param IRow|ActiveRow $session
+	 */
+	public function addRestoreMail(IRow $user, IRow $session) {
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/restorePassword.latte');
 		$template->session = $session;

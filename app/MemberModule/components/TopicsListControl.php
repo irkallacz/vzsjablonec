@@ -26,7 +26,7 @@ class TopicsListControl extends Control {
 	 * @param Selection $posts
 	 * @param string $search
 	 */
-	public function __construct(Selection $topics, $search = NULL) {
+	public function __construct(Selection $topics, string $search = NULL) {
 		parent::__construct();
 		$this->topics = $topics;
 		$this->search = $search;

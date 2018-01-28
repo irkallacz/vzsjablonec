@@ -57,34 +57,34 @@ class DokumentyService extends DatabaseService {
 	}
 
 	/**
-	 * @param $id
+	 * @param string $id
 	 * @return bool|int|IRow
 	 */
-	public function getDirectoryById($id) {
+	public function getDirectoryById(string $id) {
 		return $this->getDirectories()->get($id);
 	}
 
 	/**
-	 * @param $values
+	 * @param array $values
 	 * @return bool|int|IRow
 	 */
-	public function addDirectory($values) {
+	public function addDirectory(array $values) {
 		return $this->getDirectories()->insert($values);
 	}
 
 	/**
-	 * @param $id
+	 * @param string $id
 	 * @return bool|int|IRow
 	 */
-	public function getDokumentById($id) {
+	public function getDokumentById(string $id) {
 		return $this->getDokumenty()->get($id);
 	}
 
 	/**
-	 * @param $values
+	 * @param array $values
 	 * @return bool|int|IRow
 	 */
-	public function addFile($values) {
+	public function addFile(array $values) {
 		return $this->getDokumenty()->insert($values);
 	}
 

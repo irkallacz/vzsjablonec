@@ -51,6 +51,9 @@ class SignPresenter extends BasePresenter {
 	public $backlink = '';
 
 
+	/**
+	 *
+	 */
 	public function startup() {
 		parent::startup();
 		if ($this->getUser()->isLoggedIn() and ($this->getAction() != 'out')) {
@@ -59,6 +62,9 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function renderIn() {
 		if ($this->backlink) {
 			$this->googleLogin->setState($this->backlink);
@@ -73,7 +79,11 @@ class SignPresenter extends BasePresenter {
 	}
 
 
-	public function actionGoogleLogin($code, $state = NULL) {
+	/**
+	 * @param string $code
+	 * @param string|NULL $state
+	 */
+	public function actionGoogleLogin(string $code, string $state = NULL) {
 		try {
 			if ($state) $this->backlink = $state;
 			$me = $this->googleLogin->getMe($code);
@@ -85,7 +95,10 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
-	public function actionFacebookLogin($state = NULL) {
+	/**
+	 * @param string|NULL $state
+	 */
+	public function actionFacebookLogin(string $state = NULL) {
 		try {
 			if ($state) $this->backlink = $state;
 			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
@@ -137,6 +150,9 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	private function afterLogin() {
 		$userId = $this->getUser()->getId();
 		$this->getUser()->setExpiration('6 hours', NS\IUserStorage::CLEAR_IDENTITY, TRUE);
@@ -197,7 +213,7 @@ class SignPresenter extends BasePresenter {
 	 * @param $pubkey
 	 * @throws BadRequestException
 	 */
-	public function renderRestorePassword($pubkey) {
+	public function renderRestorePassword(string $pubkey) {
 		$session = $this->userService->getPasswordSession($pubkey);
 
 		if (!$session) {
@@ -328,6 +344,9 @@ class SignPresenter extends BasePresenter {
 		return $form;
 	}
 
+	/**
+	 * @param IRow|ActiveRow $user
+	 */
 	private function addRegistrationMail(IRow $user){
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/newRegistration.latte');
@@ -343,6 +362,9 @@ class SignPresenter extends BasePresenter {
 		$this->messageService->addMessage($message);
 	}
 
+	/**
+	 *
+	 */
 	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste odhlášen');

@@ -39,7 +39,7 @@ class RatingControl extends Control {
 	 * @param bool $isOrg
 	 * @param bool $canComment
 	 */
-	public function __construct($akceId, RatingService $ratingService, $userId, $isOrg, $canComment) {
+	public function __construct(int $akceId, RatingService $ratingService, int $userId, bool $isOrg, bool $canComment) {
 		parent::__construct();
 		$this->userId = $userId;
 		$this->akceId = $akceId;

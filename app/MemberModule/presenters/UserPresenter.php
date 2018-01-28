@@ -9,10 +9,12 @@ use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
-use Nette\Mail\IMailer;
+use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\IRow;
 use Nette\Security\Passwords;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
+use Nette\Utils\Strings;
 use Tracy\Debugger;
 
 class UserPresenter extends LayerPresenter {
@@ -26,7 +28,10 @@ class UserPresenter extends LayerPresenter {
 	/** @var UserFormFactory @inject */
 	public $userFormFactory;
 
-	public function actionDefault($q = null) {
+	/**
+	 * @param string|null $q
+	 */
+	public function actionDefault(string $q = null) {
 		$searchList = [];
 		if ($q) {
 			$searchList['members'] = $this->userService->searchUsers($q, UserService::MEMBER_LEVEL);
@@ -89,22 +94,27 @@ class UserPresenter extends LayerPresenter {
 		$this->redrawControl();
 	}
 
-	public function renderView($id) {
-		$member = $this->userService->getTable()->get($id);
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
+	 */
+	public function renderView(int $id) {
+		$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
-		if (!$member) {
+		if (!$user) {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		if ((!$member->role)and($this->getUser()->getId() != $id)and(!$this->getUser()->isInRole('board'))){
+		if ((!$user->role)and($this->getUser()->getId() != $id)and(!$this->getUser()->isInRole('board'))){
 			throw new ForbiddenRequestException('Nemáte práva prohlížete tohoto uživatele');
 		}
 
-		$this->template->age = ($member->date_born) ? $member->date_born->diff(date_create()) : NULL;
-		$this->template->member = $member;
-		$this->template->last_login = $member->related('user_log')->order('date_add DESC')->fetch();
+		$this->template->age = ($user->date_born) ? $user->date_born->diff(date_create()) : NULL;
+		$this->template->member = $user;
+		$this->template->last_login = $user->related('user_log')->order('date_add DESC')->fetch();
 		$this->template->fileExists = file_exists(WWW_DIR . '/img/portrets/' . $id . '.jpg');
-		$this->template->title = $member->surname . ' ' . $member->name;
+		$this->template->title = $user->surname . ' ' . $user->name;
 	}
 
 	public function actionVcfArchive() {
@@ -142,8 +152,9 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @allow(admin)
+	 * @throws BadRequestException
 	 */
-	public function actionActivate($id) {
+	public function actionActivate(int $id) {
 		$member = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
 		if (!$member) {
@@ -159,8 +170,9 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @allow(board)
+	 * @throws BadRequestException
 	 */
-	public function actionSendLoggingMail($id){
+	public function actionSendLoggingMail(int $id){
 		$member = $this->userService->getUserById($id);
 
 		if (!$member) throw new BadRequestException('Uživatel nenalezen');
@@ -173,8 +185,13 @@ class UserPresenter extends LayerPresenter {
 		$this->redirect('view', $member->id);
 	}
 
-	/** @allow(board) */
-	public function addLoggingMail($user, $session) {
+
+	/**
+	 * @param IRow|ActiveRow $user
+	 * @param IRow|ActiveRow $session
+	 * @allow(board)
+	 */
+	public function addLoggingMail(IRow $user, IRow $session) {
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
 		$template->session = $session;
@@ -195,8 +212,9 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @allow(board)
+	 * @throws BadRequestException
 	 */
-	public function actionResetPassword($id) {
+	public function actionResetPassword(int $id) {
 		$user = $this->userService->getUserById($id);
 
 		if (!$user) throw new BadRequestException('Uživatel nenalezen');
@@ -212,8 +230,9 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @allow(board)
+	 * @throws BadRequestException
 	 */
-	public function actionDelete($id) {
+	public function actionDelete(int $id) {
 		$member = $this->userService->getUserById($id);
 
 		if (!$member) {
@@ -226,7 +245,11 @@ class UserPresenter extends LayerPresenter {
 		$this->redirect('default');
 	}
 
-	public function renderVcf($id) {
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 */
+	public function renderVcf(int $id) {
 		$member = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
 		if (!$member) {
@@ -263,7 +286,7 @@ class UserPresenter extends LayerPresenter {
 			);
 		}
 
-		if ($this->getUser()->getId()!=$id) {
+		if ($this->getUser()->getId() != $id) {
 			unset($form['password']);
 			unset($form['confirm']);
 		}
@@ -273,20 +296,23 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @allow(user)
+	 * @throws ForbiddenRequestException
 	 */
-	public function renderPassword($id) {
+	public function renderPassword(int $id) {
 		if ($this->getUser()->getId() != $id) {
 			throw new ForbiddenRequestException('Nemáte právo měnit heslo');
 		}
 	}
 
 	/**
-	 * @param int $idE
+	 * @param int $id
 	 * @allow(user)
+	 * @throws ForbiddenRequestException
 	 */
-	public function renderEdit($id) {
+	public function renderEdit(int $id) {
 		$this->template->id = $id;
 
+		/**@var Form $form */
 		$form = $this['memberForm'];
 		$member = $this->userService->getUserById($id);
 
@@ -329,6 +355,7 @@ class UserPresenter extends LayerPresenter {
 
 	public function currentPassValidator($item) {
 		$id = $this->getParameter('id');
+
 		$user = $this->userService->getUserById($id);
 		return !Passwords::verify($item->value, $user->hash);
 	}
@@ -377,7 +404,7 @@ class UserPresenter extends LayerPresenter {
 
 		$form->addGroup(' ');
 
-		$form->setCurrentGroup(null);
+		$form->setCurrentGroup(NULL);
 
 		$form->addUpload('image', 'Nový obrázek')
 			->addCondition(Form::FILLED)
@@ -412,16 +439,17 @@ class UserPresenter extends LayerPresenter {
 		$values->date_update = new DateTime();
 
 		if ($id) {
-			$this->userService->getUserById($id)->update($values);
+			$user = $this->userService->getUserById($id);
+			$user->update($values);
 			$this->flashMessage('Osobní profil byl změněn');
 			$this->redirect('view', $id);
 		} else {
-			$member = $this->userService->addUser($values);
+			$user = $this->userService->addUser($values);
 
-			$this->userService->addUserLogin($member->id, new DateTime());
+			$this->userService->addUserLogin($user->id, new DateTime());
 
 			$this->flashMessage('Byl přidán nový člen');
-			$this->redirect('view', $member->id);
+			$this->redirect('view', $user->id);
 		}
 	}
 }

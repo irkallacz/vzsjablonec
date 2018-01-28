@@ -9,6 +9,7 @@ use Joseki\Webloader\JsMinFilter;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
+use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
@@ -25,6 +26,9 @@ class HlasovaniPresenter extends LayerPresenter {
 	/** @var UserService @inject */
 	public $userService;
 
+	/**
+	 *
+	 */
 	public function renderDefault() {
 		$ankety = $this->hlasovani->getAnkety();
 		if (!$this->user->isInRole('board')) $ankety->where('date_deatline < NOW() OR locked = ?', 1);
@@ -32,7 +36,13 @@ class HlasovaniPresenter extends LayerPresenter {
 		$this->template->ankety = $ankety;
 	}
 
-	public function renderView($id) {
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
+	 */
+	public function renderView(int $id) {
+		/** @var ActiveRow $anketa*/
 		$anketa = $this->hlasovani->getAnketaById($id);
 
 		if (!$anketa) {
@@ -64,6 +74,9 @@ class HlasovaniPresenter extends LayerPresenter {
 		$this->template->title = $anketa->title;
 	}
 
+	/**
+	 *
+	 */
 	public function renderAdd() {
 		$form = $this['anketaForm'];
 		$form['users'][0]['text']->setValue('Jsem pro');
@@ -74,8 +87,13 @@ class HlasovaniPresenter extends LayerPresenter {
 		$this->template->nova = TRUE;
 	}
 
-	public function renderEdit($id) {
-		$this->template->nova = false;
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
+	 */
+	public function renderEdit(int $id) {
+		$this->template->nova = FALSE;
 
 		$form = $this['anketaForm'];
 		if (!$form->isSubmitted()) {
@@ -83,7 +101,6 @@ class HlasovaniPresenter extends LayerPresenter {
 
 			if (!$anketa) {
 				throw new BadRequestException('Hlasování nenalezeno!');
-				$this->redirect('default');
 			}
 
 			if (!$this->getUser()->isInRole('board')) {
@@ -104,9 +121,12 @@ class HlasovaniPresenter extends LayerPresenter {
 		}
 	}
 
-	public function handleVote($odpoved) {
-		$id = (int)$this->getParameter('id');
-		$odpoved = (int)$odpoved;
+	/**
+	 * @param int $odpoved
+	 * @throws BadRequestException
+	 */
+	public function handleVote(int $odpoved) {
+		$id = (int) $this->getParameter('id');
 
 		$anketa = $this->hlasovani->getAnketaById($id);
 
@@ -131,7 +151,11 @@ class HlasovaniPresenter extends LayerPresenter {
 		$this->redirect('view', $id);
 	}
 
-	public function actionDelete($id) {
+	/**
+	 * @param int $id
+	 * @throws ForbiddenRequestException
+	 */
+	public function actionDelete(int $id) {
 		$anketa = $this->hlasovani->getAnketaById($id);
 
 		if (!$this->user->isInRole('board')) {
@@ -147,7 +171,12 @@ class HlasovaniPresenter extends LayerPresenter {
 		$this->redirect('default');
 	}
 
-	public function actionLock($id, $lock) {
+	/**
+	 * @param int $id
+	 * @param bool $lock
+	 * @throws ForbiddenRequestException
+	 */
+	public function actionLock(int $id, bool $lock) {
 		$anketa = $this->hlasovani->getAnketaById($id);
 
 		if (!$this->user->isInRole('board')) {
@@ -162,6 +191,9 @@ class HlasovaniPresenter extends LayerPresenter {
 		$this->redirect('view', $id);
 	}
 
+	/**
+	 * @return \WebLoader\Nette\JavaScriptLoader
+	 */
 	public function createComponentTexylaJs() {
 		$files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
 		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
@@ -178,6 +210,9 @@ class HlasovaniPresenter extends LayerPresenter {
 		return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
 
+	/**
+	 * @return Form
+	 */
 	protected function createComponentAnketaForm() {
 		$form = new Form;
 
@@ -218,6 +253,9 @@ class HlasovaniPresenter extends LayerPresenter {
 		return $form;
 	}
 
+	/**
+	 *
+	 */
 	public function addAnketaFormSubmitted() {
 		$id = (int)$this->getParameter('id');
 
@@ -253,18 +291,22 @@ class HlasovaniPresenter extends LayerPresenter {
 			}
 
 			foreach ($odpovedi as $odpoved) {
-				$array = array('hlasovani_id' => $anketa_id, 'text' => ucfirst($odpoved->text));
+				$array = ['hlasovani_id' => $anketa_id, 'text' => $odpoved->text];
 				$this->hlasovani->addOdpoved($array);
 			}
 		} else {
 			foreach ($odpovedi as $odpoved) {
-				$this->hlasovani->getOdpovedById($odpoved->id)->update(['text' => ucfirst($odpoved->text)]);
+				$this->hlasovani->getOdpovedById($odpoved->id)->update(['text' => $odpoved->text]);
 			}
 		}
 
 		$this->redirect('view', $anketa_id);
 	}
 
+	/**
+	 * @param $hlasovani
+	 * @param $odpovedi
+	 */
 	protected function addHlasovaniMail($hlasovani, $odpovedi) {
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../templates/Mail/newHlasovani.latte');

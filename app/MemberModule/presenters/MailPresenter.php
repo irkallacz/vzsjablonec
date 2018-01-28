@@ -9,6 +9,7 @@ use Joseki\Webloader\JsMinFilter;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
+use Nette\Database\Table\ActiveRow;
 use Nette\Mail\IMailer;
 use Nette\Utils\Json;
 use Tracy\Debugger;
@@ -68,8 +69,13 @@ class MailPresenter extends LayerPresenter {
 		$this->setView('default');
 	}
 
-	public function actionEdit($id) {
-		$message = $this->messageService->getMessages()->get($id);
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
+	 */
+	public function actionEdit(int $id) {
+		$message = $this->messageService->getMessageById($id);
 
 		if (!$message) throw new BadRequestException('Zpráva nenalezena');
 		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete editovat cizí zprávy');
@@ -91,8 +97,13 @@ class MailPresenter extends LayerPresenter {
 		$this->setView('add');
 	}
 
-	public function actionDelete($id) {
-		$message = $this->messageService->getMessages()->get($id);
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
+	 */
+	public function actionDelete(int $id) {
+		$message = $this->messageService->getMessageById($id);
 
 		if (!$message) throw new BadRequestException('Zpráva nenalezena');
 		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete mazat cizí zprávy');
@@ -214,11 +225,16 @@ class MailPresenter extends LayerPresenter {
 		if (isset($akceId)) $this->redirect('Akce:view', $akceId); else $this->redirect('Mail:default');
 	}
 
+	/**
+	 * @param Form $form
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
+	 */
 	public function mailFormUpdate(Form $form) {
 		$values = $form->getValues();
 
 		$id = $this->getParameter('id');
-		$message = $this->messageService->getMessages()->get($id);
+		$message = $this->messageService->getMessageById($id);
 
 		if (!$message) throw new BadRequestException('Zpráva nenalezena');
 		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete editovat cizí zprávy');

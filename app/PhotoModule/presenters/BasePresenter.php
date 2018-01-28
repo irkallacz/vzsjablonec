@@ -13,6 +13,9 @@ abstract class BasePresenter extends Presenter {
 
 	const photoDir = 'albums';
 
+	/**
+	 *
+	 */
 	protected function afterRender() {
 		parent::afterRender();
 
@@ -22,6 +25,9 @@ abstract class BasePresenter extends Presenter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	protected function beforeRender() {
 		parent::beforeRender();
 

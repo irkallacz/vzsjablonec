@@ -68,7 +68,7 @@ class Message extends Object {
 	/**
 	 * @param string $subject
 	 */
-	public function setSubject($subject) {
+	public function setSubject(string $subject) {
 		$this->subject = (string) $subject;
 	}
 
@@ -82,7 +82,7 @@ class Message extends Object {
 	/**
 	 * @param string $text
 	 */
-	public function setText($text) {
+	public function setText(string $text) {
 		$this->text = (string) $text;
 	}
 
@@ -96,14 +96,14 @@ class Message extends Object {
 	/**
 	 * @param \Iterator $recipients
 	 */
-	public function setRecipients($recipients) {
+	public function setRecipients(\Iterator $recipients) {
 		$this->recipients = $recipients;
 	}
 
 	/**
 	 * @param int $id
 	 */
-	public function addRecipient($id) {
+	public function addRecipient(int $id) {
 		$this->recipients[intval($id)] = intval($id);
 	}
 
@@ -117,7 +117,7 @@ class Message extends Object {
 	/**
 	 * @param int $author
 	 */
-	public function setAuthor($author) {
+	public function setAuthor(int $author) {
 		$this->author = $author;
 	}
 
@@ -131,7 +131,7 @@ class Message extends Object {
 	/**
 	 * @param array $parameters
 	 */
-	public function setParameters($parameters) {
+	public function setParameters(array $parameters) {
 		$this->parameters = $parameters;
 	}
 
@@ -145,7 +145,7 @@ class Message extends Object {
 	/**
 	 * @param int $type
 	 */
-	public function setType($type) {
+	public function setType(int $type) {
 		$this->type = $type;
 	}
 

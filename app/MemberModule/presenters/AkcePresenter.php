@@ -12,6 +12,7 @@ use Nette\Database\Table\IRow;
 use Nette\Mail\IMailer;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
+use WebLoader;
 use Tracy\Debugger;
 
 class AkcePresenter extends LayerPresenter {
@@ -52,6 +53,9 @@ class AkcePresenter extends LayerPresenter {
 	/** @var array */
 	private $memberList;
 
+	/**
+	 * @param string|NULL $year
+	 */
 	public function renderDefault($year = NULL) {
 		$YEARS_END = intval(date('Y'));
 
@@ -105,7 +109,11 @@ class AkcePresenter extends LayerPresenter {
 		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(), TRUE);
 	}
 
-	public function actionView($id) {
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 */
+	public function actionView(int $id) {
 		if (!$id) $this->redirect('default');
 
 		$this->akce = $this->akceService->getAkceById($id);
@@ -118,7 +126,10 @@ class AkcePresenter extends LayerPresenter {
 		$this->memberList = $this->userService->getUsersByAkceId($id, FALSE)->fetchPairs('id', 'id');
 	}
 
-	public function renderView($id) {
+	/**
+	 * @param int $id
+	 */
+	public function renderView(int $id) {
 		$this->template->akce = $this->akce;
 		$this->template->title = $this->akce->name;
 		$this->template->akceIsOld = $this->akce->date_start < date_create();
@@ -140,13 +151,19 @@ class AkcePresenter extends LayerPresenter {
 		}
 	}
 
-	public function actionSendAkceMail($id) {
+	/**
+	 * @param int $id
+	 */
+	public function actionSendAkceMail(int $id) {
 		$akce = $this->akceService->getAkceById($id);
 		$this->addConfirmMail($akce);
 		$this->redirect('view', $id);
 	}
 
-	public function renderExport($year = null) {
+	/**
+	 * @param string|NULL $year
+	 */
+	public function renderExport($year = NULL) {
 		$akce = $this->akceService->getAkce()->where('enable', 1)->where('confirm', 1)->order('date_start ASC');
 
 		if ($year) $akce->where('YEAR(date_start) = ?', $year);
@@ -155,10 +172,11 @@ class AkcePresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @allow(member)
+	 * @throws BadRequestException
 	 */
-	public function actionEdit($id) {
+	public function actionEdit(int $id) {
 		if (!$id) $this->redirect('default');
 
 		$this->akce = $this->akceService->getAkceById($id);
@@ -169,16 +187,19 @@ class AkcePresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @allow(member)
+	 * @throws ForbiddenRequestException
 	 */
-	public function renderEdit($id) {
+	public function renderEdit(int $id) {
 		if (!$id) $this->redirect('default');
 
 		$this->template->akce = $this->akce;
 		$this->template->title = $this->akce->name;
 
+		/**@var Form $form */
 		$form = $this['akceForm'];
+
 		if (!$form->isSubmitted()) {
 			$orgList = $this->akce->related('akce_member')->where('organizator', TRUE)->fetchPairs('member_id', 'member_id');
 
@@ -197,7 +218,6 @@ class AkcePresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param $id
 	 * @allow(member)
 	 */
 	public function renderAdd() {
@@ -206,27 +226,30 @@ class AkcePresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @allow(member)
+	 * @throws ForbiddenRequestException
 	 */
-	public function actionDelete($id) {
+	public function actionDelete(int $id) {
 		$orgList = $this->akceService->getMemberListByAkceId($id, TRUE);
 
 		if ((!array_key_exists($this->getUser()->getId(), $orgList)) and (!$this->getUser()->isInRole('admin'))) {
 			throw new ForbiddenRequestException('Nemáte právo tuto akci smazat');
 		}
 
-		$this->akceService->getAkceById($id)->update(['enable' => 0]);
+		$akce = $this->akceService->getAkceById($id);
+		$akce->update(['enable' => 0]);
+
 		$this->flashMessage('Akce byla smazána');
 		$this->redirect('Akce:default');
 	}
 
 	/**
 	 * @param $id
-	 * @param $allow
+	 * @param bool $allow
 	 * @allow(confirm)
 	 */
-	public function actionAllow($id, $allow) {
+	public function actionAllow(int $id, bool $allow) {
 		$values = ['confirm' => $allow];
 
 		if ($allow) {
@@ -234,10 +257,14 @@ class AkcePresenter extends LayerPresenter {
 			$values['date_update'] = new DateTime();
 		} else $this->flashMessage('Akce byla zakázána');
 
-		$this->akceService->getAkceById($id)->update($values);
+		$akce = $this->akceService->getAkceById($id);
+		$akce->update($values);
 		$this->redirect('view', $id);
 	}
 
+	/**
+	 * @return Components\PostsListControl
+	 */
 	public function createComponentPostsList() {
 		$topic = $this->forumService->getTopicById($this->akce->forum_topic_id);
 		if ($this->forumService->checkTopic($topic)) {
@@ -251,14 +278,23 @@ class AkcePresenter extends LayerPresenter {
 		}
 	}
 
+	/**
+	 * @return Components\AlbumPreviewControl
+	 */
 	protected function createComponentAlbum() {
 		return new Components\AlbumPreviewControl($this->galleryService);
 	}
 
+	/**
+	 * @return Components\AnketaControl
+	 */
 	public function createComponentAnketa() {
 		return new Components\AnketaControl($this->akce->anketa_id, $this->anketyService);
 	}
 
+	/**
+	 * @return Components\RatingControl
+	 */
 	protected function createComponentRating() {
 		$userId = $this->getUser()->getId();
 		$isOrg = in_array($userId, $this->orgList);
@@ -267,7 +303,7 @@ class AkcePresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param IRow $akce
+	 * @param IRow|ActiveRow $akce
 	 * @allow(member)
 	 */
 	public function addConfirmMail($akce) {
@@ -285,31 +321,35 @@ class AkcePresenter extends LayerPresenter {
 		$this->messageService->addMessage($message);
 	}
 
+	/**
+	 * @return Components\SignEventControl
+	 */
 	protected function createComponentSignEvent() {
 		return new Components\SignEventControl($this->akceService, $this->userService, $this->akce);
 	}
 
 	/**
 	 * @allow(member)
+	 * @return WebLoader\Nette\JavaScriptLoader
 	 */
 	public function createComponentTexylaJs() {
-		$files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
+		$files = new WebLoader\FileCollection(WWW_DIR . '/texyla/js');
 		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
 		$files->addFiles(['../plugins/table/table.js']);
 		$files->addFiles(['../plugins/color/color.js']);
 		$files->addFiles(['../plugins/symbol/symbol.js']);
 		$files->addFiles(['../plugins/textTransform/textTransform.js']);
 		$files->addFiles([WWW_DIR . '/js/texyla_akce.js']);
-//		$files->addFiles([WWW_DIR . '/js/texyla_public.js']);
 
-		$compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
+		$compiler = WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
 		$compiler->addFileFilter(new JsMinFilter());
 
-		return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+		return new WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
 
 	/**
 	 * @allow(member)
+	 * @return Form
 	 */
 	protected function createComponentAkceForm() {
 		$datum = new Datetime();
@@ -444,6 +484,7 @@ class AkcePresenter extends LayerPresenter {
 
 		$values->date_update = $datum;
 
+		/** @var bool $org*/
 		$org = $values->organizator;
 		unset($values->organizator);
 
