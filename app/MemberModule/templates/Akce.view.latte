@@ -121,7 +121,6 @@ class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->dat
             <h3>Záznam o akci</h3>
             <p>
                 <a class="buttonLike" n:href="Report:view $akce->id"> {include svg icon => book} náhled</a>
-                {if $user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))} <a class="buttonLike" n:href="Report:edit $akce->id">{include svg icon => pencil} editovat</a>{/if}
             </p>
         {/if}
 
