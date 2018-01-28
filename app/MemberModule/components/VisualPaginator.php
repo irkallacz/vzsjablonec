@@ -33,7 +33,7 @@ class VisualPaginator extends Control {
 
 
 	/**
-	 * @return Nette\Paginator
+	 * @return Paginator
 	 */
 	public function getPaginator() {
 		if (!$this->paginator) {
