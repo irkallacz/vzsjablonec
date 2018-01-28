@@ -24,6 +24,8 @@ class MyselfPresenter extends BasePresenter {
 	 */
 	public function renderDefault() {
 		$user_id = $this->getUser()->getId();
+
+		/** @var DateTime $date_last*/
 		$date_last = $this->getUser()->getIdentity()->date_last;
 
 		$albums = $this->gallery->getAlbums()->order('date_add DESC')->where('member_id', $user_id);
@@ -63,6 +65,7 @@ class MyselfPresenter extends BasePresenter {
 		$form = new Form;
 
 		$form->addText('name', 'Název', 30, 50)
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setRequired('Vyplňte %label')
 			->setAttribute('autofocus');
 
