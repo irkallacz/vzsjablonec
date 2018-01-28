@@ -42,14 +42,18 @@ abstract class BasePresenter extends Presenter {
 		$this->template->mainMenu = ArrayHash::from($mainMenu);
 	}
 
-	public static function getIdFromSlug($slug) {
-		return (int)substr($slug, 0, strstr($slug, '-') - 1);
+	/**
+	 * @param string $slug
+	 * @return int
+	 */
+	public static function getIdFromSlug(string $slug) {
+		return (int) substr($slug, 0, strstr($slug, '-') - 1);
 	}
 
-	public static function nullString($value) {
-		return empty($value) ? null : $value;
-	}
-
+	/**
+	 * @param $element
+	 * @throws ForbiddenRequestException
+	 */
 	public function checkRequirements($element) {
 		if ($element->hasAnnotation('allow')) {
 			if ($this->getUser()->isLoggedIn()) {

@@ -307,7 +307,8 @@ class AlbumPresenter extends BasePresenter {
 			->setDefaultValue(FALSE)
 			->setAttribute('onclick', 'swapTitle(this)');
 
-		$form->addTextArea('text', 'Popis', 30);
+		$form->addTextArea('text', 'Popis', 30)
+			->setNullable();
 
 		$form->addMultiplier('photos', function (\Nette\Forms\Container $photo) {
 			$photo->addText('text', 'Popis', 30, 50);
@@ -344,12 +345,13 @@ class AlbumPresenter extends BasePresenter {
 	 * @allow(member)
 	 */
 	public function superFormSave() {
-		$slug = (string)$this->params['slug'];
+		$slug = (string) $this->params['slug'];
 		$id = parent::getIdFromSlug($slug);
 
-		$values = $this['superForm']->getValues();
+		/** @var Form $form*/
+		$form = $this['superForm'];
+		$values = $form->getValues();
 		$values->date_update = new Datetime();
-		$values->text = self::nullString($values->text);
 		$values->slug = Strings::webalize($values->name);
 
 		$show_date = $values->show_date;
@@ -367,7 +369,7 @@ class AlbumPresenter extends BasePresenter {
 				$datetime = $photo->text ? date_create($photo->text) : NULL;
 				if ($datetime == FALSE) $datetime = NULL;
 				$update['date_taken'] = $datetime;
-			} else $update['text'] = self::nullString($photo->text);
+			} else $update['text'] = $photo->text;
 
 			$this->gallery->getPhotoById($photo->id)->update($update);
 		}
