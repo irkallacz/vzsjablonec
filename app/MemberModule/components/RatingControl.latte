@@ -18,7 +18,7 @@
     <div id="ratings">
         {var $limit = 100}
         {foreach $ratings as $memberId => $rating}
-            <div class="hoverLike target" id="rating-{$memberId}" n:if="($rating->public)or($isOrg)or($memberId == $user->id)">
+            <div class="hoverLike target" id="rating/{$memberId}" n:if="($rating->public)or($isOrg)or($memberId == $user->id)">
                 {if ($rating->rating)or($rating->message)}
                     <h4>
                         {if !$rating->anonymous}
@@ -29,11 +29,9 @@
                         <span n:if="$rating->rating" class="stars">{$rating->rating|stars}</span>
                     </h4>
 
-                    {if $rating->message}
-                        <div n:if="mb_strlen($rating->message) > $limit" class="message">
-							<a href="#rating-{$memberId}" class="noLink">{$rating->message|texy|noescape}</a>
-						</div>
-                    {/if}
+					<div n:if="$rating->message" class="message">
+						<a href="#rating/{$memberId}" class="noLink">{$rating->message|texy|noescape}</a>
+					</div>
                 {/if}
             </div>
         {/foreach}
