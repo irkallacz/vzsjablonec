@@ -9,6 +9,7 @@ parameters:
 session:
 	expiration: 12 hours
 	namespace: vzsjablonec
+	cookie_secure: false
 
 tracy:
 	editor: 'phpstorm://open/?file=%file&line=%line'
