@@ -58,6 +58,18 @@ session:
     autoStart: true
     savePath: "%tempDir%/../session"
     gc_maxlifetime: 21600
+    cookie_secure: true
+
+http:
+	csp:
+		script-src:
+			- self
+			- nonce
+		frame-ancestors: none
+		form-action: self
+		style-src:
+			- self
+			- unsafe-inline
 
 services:
 	router: RouterFactory::createRouter

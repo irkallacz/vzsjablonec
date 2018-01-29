@@ -19,30 +19,30 @@
 		#tabs ul li.active a { color: inherit;}
 	</style>
 	<script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
-	<script type="text/javascript">
-	$(function () {
-		$.nette.init();
+	<script type="text/javascript" n:nonce>
+		$(function () {
+			$.nette.init();
 
-		$('#member-search').keyup(function(){
-			var q = document.getElementById('member-search').value;
+			$('#member-search').keyup(function(){
+				var q = document.getElementById('member-search').value;
 
-			if (q.length > 2) {
-				history.replaceState(null, null, window.location.pathname + '?q=' + q);
-				$('#member-search-button').submit();
-			}else history.replaceState(null, null, window.location.pathname);
+				if (q.length > 2) {
+					history.replaceState(null, null, window.location.pathname + '?q=' + q);
+					$('#member-search-button').submit();
+				}else history.replaceState(null, null, window.location.pathname);
+			});
+
+			$(document).on('click', '.tab-link', function(){
+				openTab(this.id);
+			});
 		});
 
-		$(document).on('click', '.tab-link', function(){
-			openTab(this.id);
-		});
-	});
-	
-	function openTab(name) {
-		$('#tabs .active').removeClass('active');
-		$('.tab.active').removeClass('active');
-		$('#tab-button-'+name).addClass('active');
-		$('#tab-'+name).addClass('active');
-	}
+		function openTab(name) {
+			$('#tabs .active').removeClass('active');
+			$('.tab.active').removeClass('active');
+			$('#tab-button-'+name).addClass('active');
+			$('#tab-'+name).addClass('active');
+		}
 	</script>
 
 {/block}

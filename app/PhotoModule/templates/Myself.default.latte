@@ -73,19 +73,19 @@ Naposledy jste byl přihlášen: <b>{$date_last|date:'%A %d.%m.%Y %H:%M'}</b>.</
 
 {snippet albumForm}
 {if isset($showAlbumForm) or $presenter['albumForm']->hasErrors()}
-<script type="text/javascript">
-$(function(){     
-    
-    var elem = document.createElement('input');
-    elem.setAttribute('type', 'date');
+<script type="text/javascript" n:nonce>
+    $(function(){
 
-    if (elem.type === 'text') {
-      $('#frm-albumForm-date').datepicker();
-    }
-    
-    $("#snippet--albumForm").dialog({ modal: true, width: 500, title: "Přidat album" });
-    Nette.initForm(document.forms[0]);    
-});                        
+        var elem = document.createElement('input');
+        elem.setAttribute('type', 'date');
+
+        if (elem.type === 'text') {
+          $('#frm-albumForm-date').datepicker();
+        }
+
+        $("#snippet--albumForm").dialog({ modal: true, width: 500, title: "Přidat album" });
+        Nette.initForm(document.forms[0]);
+    });
 </script>
 {control albumForm}
 {/if}

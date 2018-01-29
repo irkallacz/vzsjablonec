@@ -1,9 +1,9 @@
 # disable directory listing
 Options -Indexes
 
-<ifModule mod_headers.c>
-	Header set Content-Security-Policy "script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'"
-</ifModule>
+#<ifModule mod_headers.c>
+#	Header set Content-Security-Policy "script-src 'self' 'unsafe-inline'; connect-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'"
+#</ifModule>
 
 # enable cool URL
 RewriteEngine On
