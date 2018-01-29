@@ -15,7 +15,7 @@ table .first svg.icon { font-size: 120% }
 </style>
 {/block}
 
-<h1 n:block="title">Akce</h1>
+<h1 n:block="title">Akce {if is_int($year)}{$year}{/if}</h1>
 
 {block #content}
 
