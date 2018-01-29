@@ -312,7 +312,7 @@ class AlbumPresenter extends BasePresenter {
 
 		$form->addCheckBox('show_date', 'Upravit datum pořízení')
 			->setDefaultValue(FALSE)
-			->setAttribute('onclick', 'swapTitle(this)');
+			->setHtmlId('swap-title');
 
 		$form->addTextArea('text', 'Popis', 30)
 			->setNullable();

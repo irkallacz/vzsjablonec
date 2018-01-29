@@ -22,16 +22,18 @@
 <script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
 <script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
 
-<script type="text/javascript">
-	function swapTitle(el){
-		var attribute = el.checked ? 'date' : 'title';
-
-		$('input.title').each(function(){
-			$(this).val($(this).data(attribute));
-		})
-	}
-	
+<script type="text/javascript" n:nonce>
 	$(function() {
+		$('#swap-title').click(function() {
+			var el = document.getElementById('swap-title');
+			var attribute = el.checked ? 'date' : 'title';
+
+			$('input.title').each(function(){
+				$(this).val($(this).data(attribute));
+			})
+			;
+		});
+
 		$('#frm-superForm-text').textareaAutoSize();
 
 		$(document).bind('keydown', 'ctrl+a', function(){
