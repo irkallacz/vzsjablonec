@@ -1,5 +1,16 @@
 {import '../templates/@svg.latte'}
 
+<script type="text/javascript" n:nonce>
+	$(function () {
+		$.nette.init();
+
+		$('#change-button').click(function() {
+			$('#change-form').show();
+			$('#change-button').hide();
+		})
+	});
+</script>
+
 {define #userList}
 	<p n:if="($akce->date_deatline > date_create())and($user->isInRole('member'))">
 		{if $isAllowLogin}
