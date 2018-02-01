@@ -23,19 +23,19 @@
 		"google/apiclient": "^2.1",
 		"janmarek/webloader": "^2.5",
 		"webchemistry/forms-multiplier": "^2.0",
-		"nextras/mail-panel": "^2.3",
 		"joseki/webloader-filters": "^1.1",
 		"echo511/plupload": "^2.1",
 		"lsolesen/pel": "^0.9.6",
 		"tedivm/stash": "^0.14.2",
-		"rah/danpu": "^2.6",
-		"contributte/console": "^0.2.0",
-		"nette/tester": "^2.0",
 		"kertz/twitteroauth": "dev-master",
 		"venca-x/social-login": "^1.0",
 		"jzechy/nette-antispam": "^2.0"
 	},
 	"require-dev": {
+	  "nette/tester": "^2.0",
+	  "nextras/mail-panel": "^2.3",
+	  "rah/danpu": "^2.6",
+	  "contributte/console": "^0.2.0"
 	},
 	"minimum-stability": "stable"
 }
