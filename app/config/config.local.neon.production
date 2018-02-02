@@ -38,3 +38,7 @@ tracy:
 
 session:
 #	cookieDomain: 'vzs-jablonec.cz'
+
+http:
+	csp:
+		default-src: 'https:'
