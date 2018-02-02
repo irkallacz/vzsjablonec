@@ -17,8 +17,13 @@
 		elem.setAttribute('type', 'date');
 
 		if ( elem.type === 'text' ) {
+
 			$('.date').datepicker();
 		}
+
+		document.getElementById('frm-registerForm-notSpam-fields').classList.add('hide');
+//		document.getElementById('frm-registerForm-notSpam-question').style.display = 'none';
+//		document.getElementById('frm-registerForm-notSpam-question-input').value = 1;
 	});
 </script>
 {/block}
