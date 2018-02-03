@@ -51,7 +51,7 @@
 				<td colspan="2">
 					<div class="header">
 						<div><a n:href="User:view $message->user_id">{include svg icon => user} {$message->user->surname} {$message->user->name}</a></div>
-						<div class="member" n:inner-foreach="$message->related('message_user') as $member">
+						<div class="member" n:inner-foreach="$message->related('message_user')->order('surname, name DESC') as $member">
 							{first}{include svg icon => user-o}{/first} {$member->user->surname} {$member->user->name}{sep},{/sep}
 						</div>
 					</div>
@@ -59,7 +59,7 @@
 						{$message->text|texy|noescape}
 					</div>
 					<div class="file" n:ifset="$param->filename">{include svg icon => paperclip} <a href="{$baseUri}/doc/message/{$param->filename}">{$param->filename}</a></div>
-					<ul class="buttonMenu" n:if="(!$message->date_send)and(($user->isInRole('admin'))or($message->user_id==$user->id))">
+					<ul class="buttonMenu" n:if="(!$message->date_send)and(($user->isInRole('admin'))or($message->user_id == $user->id))">
 						<li><a class="buttonLike" n:href="edit $message->id">{include svg icon => pencil} editovat</a></li>
 						<li><a class="buttonLike" n:href="delete $message->id">{include svg icon => trash} smazat</a></li>
 					</ul>
