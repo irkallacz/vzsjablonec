@@ -310,6 +310,7 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @allow(user)
+	 * @throws BadRequestException
 	 * @throws ForbiddenRequestException
 	 */
 	public function renderEdit(int $id) {
