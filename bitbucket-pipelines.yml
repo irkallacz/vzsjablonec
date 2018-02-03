@@ -13,7 +13,7 @@ pipelines:
             - echo "Updating production server"
             - apt-get update
             - apt-get -qq install git-ftp
-            - git ftp push --user $FTP_USER --passwd $FTP_PASSWD ftpes://$FTP_SERVER
+            - git ftp push --force --user $FTP_USER --passwd $FTP_PASSWD ftpes://$FTP_SERVER
             - apt-get -qq install lftp
             - mkdir ~/.lftp
             - touch ~/.lftp/rc
@@ -26,7 +26,7 @@ pipelines:
             - echo "Updating testing server"
             - apt-get update
             - apt-get -qq install git-ftp
-            - git ftp push --user $FTP_USER_TEST --passwd $FTP_PASSWD_TEST ftpes://$FTP_SERVER_TEST
+            - git ftp push --force --user $FTP_USER_TEST --passwd $FTP_PASSWD_TEST ftpes://$FTP_SERVER_TEST
             - apt-get -qq install lftp
             - mkdir ~/.lftp
             - touch ~/.lftp/rc
