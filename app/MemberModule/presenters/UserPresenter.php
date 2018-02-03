@@ -106,15 +106,18 @@ class UserPresenter extends LayerPresenter {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		if ((!$user->role)and($this->getUser()->getId() != $id)and(!$this->getUser()->isInRole('board'))){
+		if ((!$user->role) and ($this->getUser()->getId() != $id) and (!$this->getUser()->isInRole('board'))){
 			throw new ForbiddenRequestException('Nemáte práva prohlížete tohoto uživatele');
 		}
 
-		$this->template->age = ($user->date_born) ? $user->date_born->diff(date_create()) : NULL;
+		$this->template->age = ($user->date_born) ? $user->date_born->diff(new DateTime()) : NULL;
 		$this->template->member = $user;
 		$this->template->last_login = $user->related('user_log')->order('date_add DESC')->fetch();
-		$this->template->fileExists = file_exists(WWW_DIR . '/img/portrets/' . $id . '.jpg');
-		$this->template->title = $user->surname . ' ' . $user->name;
+
+		$fullName = $user->surname . ' ' . $user->name;
+		$fileName = '/img/photos/' . Strings::webalize($fullName) . '.jpg';
+		$this->template->filename = file_exists(WWW_DIR . $fileName) ? $fileName : NULL;
+		$this->template->title = $fullName;
 	}
 
 	public function actionVcfArchive() {
@@ -427,19 +430,20 @@ class UserPresenter extends LayerPresenter {
 
 		$values = $form->getValues();
 
-		if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
-			/** @var Image $image  */
-			$image = $values->image->toImage();
-			$image->resize(250, NULL, Image::SHRINK_ONLY);
-			$image->save(WWW_DIR . '/img/portrets/' . $id . '.jpg', 80, Image::JPEG);
-		}
-
-		unset($values->image);
-
 		$values->date_update = new DateTime();
 
 		if ($id) {
 			$user = $this->userService->getUserById($id);
+
+			if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
+				/** @var Image $image  */
+				$image = $values->image->toImage();
+				$image->resize(1000, NULL, Image::SHRINK_ONLY);
+				$image->save(WWW_DIR . '/img/photos/' . Strings::webalize($user->surname.' '.$user->name) . '.jpg', 90, Image::JPEG);
+			}
+
+			unset($values->image);
+
 			$user->update($values);
 			$this->flashMessage('Osobní profil byl změněn');
 			$this->redirect('view', $id);
