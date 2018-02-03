@@ -61,6 +61,8 @@ session:
     cookie_secure: true
 
 http:
+	headers:
+		X-Content-Type-Options: nosniff
 	csp:
 		script-src:
 			- self
