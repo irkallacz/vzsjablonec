@@ -106,8 +106,8 @@ class MailPresenter extends LayerPresenter {
 		$message = $this->messageService->getMessageById($id);
 
 		if (!$message) throw new BadRequestException('Zpráva nenalezena');
-		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete mazat cizí zprávy');
-		if ($message->date_send) throw new ForbiddenRequestException('Nemůžete mazat již odeslané zprávy');
+		if ((!$this->user->isInRole('admin')) and ($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete mazat cizí zprávy');
+		//if ($message->date_send) throw new ForbiddenRequestException('Nemůžete mazat již odeslané zprávy');
 
 		$message->delete();
 
