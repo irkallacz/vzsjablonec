@@ -502,11 +502,13 @@ class AkcePresenter extends LayerPresenter {
 		} else {
 			$values->date_add = $datum;
 
+			if ($this->user->isInRole('confirm')) $values->confirm = TRUE;
+
 			$akce = $this->akceService->addAkce($values);
 
 			if ($org) $this->akceService->addMemberToAction($org, $akce->id, TRUE);
 
-			$this->addConfirmMail($akce);
+			if (!$akce->confirm) $this->addConfirmMail($akce);
 
 			$this->flashMessage('Akce byla přidána');
 
