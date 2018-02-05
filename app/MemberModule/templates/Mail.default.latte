@@ -51,7 +51,7 @@
 				<td colspan="2">
 					<div class="header">
 						<div><a n:href="User:view $message->user_id">{include svg icon => user} {$message->user->surname} {$message->user->name}</a></div>
-						<div class="member" n:inner-foreach="$message->related('message_user')->order('surname, name DESC') as $member">
+						<div class="member" n:inner-foreach="$message->related('message_user')->order('user.surname, user.name DESC') as $member">
 							{first}{include svg icon => user-o}{/first} {$member->user->surname} {$member->user->name}{sep},{/sep}
 						</div>
 					</div>
