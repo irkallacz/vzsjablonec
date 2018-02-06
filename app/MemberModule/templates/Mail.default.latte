@@ -61,7 +61,7 @@
 					<div class="file" n:ifset="$param->filename">{include svg icon => paperclip} <a href="{$baseUri}/doc/message/{$param->filename}">{$param->filename}</a></div>
 					<ul class="buttonMenu" n:if="$presenter->action == 'send'">
 						<li n:if="!$message->date_send"><a class="buttonLike" n:href="edit $message->id">{include svg icon => pencil} editovat</a></li>
-						<li n:if="($user->isInRole('admin')or(!$message->date_send)"><a class="buttonLike" n:href="delete $message->id">{include svg icon => trash} smazat</a></li>
+						<li n:if="($user->isInRole('admin'))or(!$message->date_send)"><a class="buttonLike" n:href="delete $message->id">{include svg icon => trash} smazat</a></li>
 					</ul>
 				</td>
 			<tr>
