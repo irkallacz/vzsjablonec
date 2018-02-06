@@ -43,7 +43,7 @@
 					{if ($message->date_send)}
 						<a href="#message/{$message->id}">{$message->date_send|date:'%A %d.%m.%Y %H:%I'}</a>
 					{else}
-						za {$nextSendTime} minut
+						bude odesláno {$nextSendTime|timeAgoInWords}
 					{/if}
 				</th>
 			</tr>

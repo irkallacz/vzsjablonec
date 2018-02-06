@@ -3,6 +3,7 @@ namespace App\MemberModule\Presenters;
 
 use App\Model;
 use App\MemberModule\Components;
+use App\Template\LatteFilters;
 use Joseki\Webloader\JsMinFilter;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
@@ -523,9 +524,14 @@ class AkcePresenter extends LayerPresenter {
 
 			if ($org) $this->akceService->addMemberToAction($org, $akce->id, TRUE);
 
-			if (!$akce->confirm) $this->addConfirmMail($akce);
-
 			$this->flashMessage('Akce byla přidána');
+
+			if (!$akce->confirm) {
+				$this->addConfirmMail($akce);
+				$next = $this->messageService->getNextSendTime();
+				$this->flashMessage('Email pro schválení akce bude odeslán '.LatteFilters::timeAgoInWords($next));
+			}
+
 
 			$id = $akce->id;
 		}

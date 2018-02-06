@@ -5,6 +5,7 @@ namespace App\MemberModule\Presenters;
 use App\Model\AkceService;
 use App\Model\UserService;
 use App\Model\MessageService;
+use App\Template\LatteFilters;
 use Joseki\Webloader\JsMinFilter;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
@@ -218,9 +219,8 @@ class MailPresenter extends LayerPresenter {
 
 		$this->messageService->addMessage($message);
 
-		$minutes = $this->messageService->getNextSendTime();
-
-		$this->flashMessage("Váš mail bude odeslán za $minutes minut");
+		$next = $this->messageService->getNextSendTime();
+		$this->flashMessage('Váš mail bude odeslán '.LatteFilters::timeAgoInWords($next));
 
 		if (isset($akceId)) $this->redirect('Akce:view', $akceId); else $this->redirect('Mail:default');
 	}

@@ -127,11 +127,13 @@ class MessageService extends DatabaseService {
 	}
 
 	/**
-	 * @return int
+	 * @return DateTime
 	 */
 	public function getNextSendTime() {
-		$now = new DateTime;
-		return 60 - intval($now->format('i'));
+		$dateTime = new DateTime;
+		$dateTime->setTime($dateTime->format('G'), 0);
+		$dateTime->add(new \DateInterval('PT1H'));
+		return $dateTime;
 	}
 
 }

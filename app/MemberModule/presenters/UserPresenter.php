@@ -5,6 +5,7 @@ namespace App\MemberModule\Presenters;
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\MessageService;
 use App\Model\UserService;
+use App\Template\LatteFilters;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\FileResponse;
@@ -225,8 +226,8 @@ class UserPresenter extends LayerPresenter {
 		$session = $this->userService->addPasswordSession($user->id, '12 HOUR');
 
 		$this->addRestoreMail($user, $session);
-		$minutes = $this->messageService->getNextSendTime();
-		$this->flashMessage("Uživateli bude za $minutes minut odelán email pro změnu hesla");
+		$next = $this->messageService->getNextSendTime();
+		$this->flashMessage('Uživateli bude '.LatteFilters::timeAgoInWords($next).' minut odelán email pro změnu hesla');
 		$this->redirect('view', $user->id);
 	}
 

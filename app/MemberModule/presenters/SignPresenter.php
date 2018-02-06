@@ -6,6 +6,7 @@ use App\Authenticator\CredentialsAuthenticator;
 use App\Authenticator\EmailAuthenticator;
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\MessageService;
+use App\Template\LatteFilters;
 use Nette\Application\BadRequestException;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
@@ -202,8 +203,8 @@ class SignPresenter extends BasePresenter {
 			$session = $this->userService->addPasswordSession($member->id);
 			$this->backlink = '';
 			$this->addRestoreMail($member, $session);
-			$minutes = $this->messageService->getNextSendTime();
-			$this->flashMessage('Na Váši e-mailovou adresu budou za '.$minutes.' minut odeslány údaje pro změnu hesla');
+			$next = $this->messageService->getNextSendTime();
+			$this->flashMessage('Na Váši e-mailovou adresu budou '.LatteFilters::timeAgoInWords($next).' odeslány údaje pro změnu hesla');
 
 			$this->redirect('in');
 		}
