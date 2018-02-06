@@ -39,7 +39,7 @@ class MessagePresenter extends BasePresenter {
 			/** @var ActiveRow $message*/
 
 			$mail = $this->getNewMail();
-			$parameters = Json::decode($message->param, Json::FORCE_ARRAY);
+			$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
 
 			$author = $this->userService->getUserById($message->user_id);
 
