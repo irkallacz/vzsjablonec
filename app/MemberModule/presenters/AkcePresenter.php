@@ -366,16 +366,29 @@ class AkcePresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Vyplňte %label akce');
 
-		$form['date_start'] = new \DateTimeInput('Začátek');
-		$form['date_start']->setRequired(TRUE);
-		$form['date_start']->setDefaultValue($datum);
+		$form->addComponent(new \DateTimeInput('Začátek'), 'date_start');
 
-		$form['date_end'] = new \DateTimeInput('Konec');
-		$form['date_end']->setRequired(TRUE);
-		$form['date_end']->setDefaultValue($datum)
+		/** @var \DateTimeInput $dateTimeInput*/
+		$dateTimeInput = $form['date_start'];
+		$dateTimeInput->setRequired(TRUE)
+			->setDefaultValue($datum);
+//		$form->getComponent('date_start')->setRequired(TRUE);
+//		$form->getComponent('date_start')->setDefaultValue($datum);
+//		$form['date_start'] = new \DateTimeInput('Začátek');
+//		$form['date_start']->setRequired(TRUE);
+//		$form['date_start']->setDefaultValue($datum);
+
+		$form->addComponent(new \DateTimeInput('Konec'), 'date_end');
+		/** @var \DateTimeInput $dateTimeInput*/
+		$dateTimeInput = $form['date_end'];
+		$dateTimeInput->setRequired(TRUE)
+			->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
 				return $item->value >= $arg;
 			}, 'Datum konce akce nesmí být menší než datum začátku akce', $form['date_start']);
+
+//		$form['date_end']->setRequired(TRUE);
+//		$form['date_end']->setDefaultValue($datum)
 
 		$form->addCheckbox('login_mem', 'Povoleno přihlašování účastníků')
 			->setDefaultValue(TRUE)
@@ -385,16 +398,18 @@ class AkcePresenter extends LayerPresenter {
 			->setDefaultValue(FALSE)
 			->setAttribute('onclick', 'doTheTrick()');
 
-		$form['date_deatline'] = new \DateTimeInput('Přihlášení do');
-		$form['date_deatline']->setRequired(FALSE);
-		$form['date_deatline']->setDefaultValue($datum)
+		$form->addComponent(new \DateTimeInput('Přihlášení do'), 'date_deatline');
+		/** @var \DateTimeInput $dateTimeInput*/
+		$dateTimeInput = $form['date_deatline'];
+		$dateTimeInput->setRequired(FALSE)
+			->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
 				return $item->value <= $arg;
 			}, 'Datum přihlášení musí být menší než datum začátku akce', $form['date_start'])
 			->addConditionOn($form['login_mem'], Form::EQUAL, TRUE)
 			->addRule(Form::FILLED, 'Vyplňte datum konce přihlašování');
 
-		$form['date_deatline']
+		$dateTimeInput
 			->addConditionOn($form['login_org'], Form::EQUAL, TRUE)
 			->addRule(Form::FILLED, 'Vyplňte datum konce přihlašování');
 
