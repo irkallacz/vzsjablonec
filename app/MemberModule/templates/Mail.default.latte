@@ -31,7 +31,7 @@
 		<table>
 			<tr class="headerLike">
 				<th class="left">
-					{if ($message->message_type_id == 1)}
+					{if ($message->message_type_id == App\Model\MessageService\Message::CUSTOM_MESSAGE_TYPE)}
 						{$message->subject}
 					{else}
 						<a n:ifset="$param->akce_id" n:href="Akce:view $param->akce_id">{$message->subject}</a>
