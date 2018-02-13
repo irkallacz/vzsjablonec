@@ -7,20 +7,26 @@
 
 		#card { position: relative; color: white; margin-top: 1em; max-width: 53em;}
 		#card, .square table { font-family: Arial, 'sans-serif';}
-		.line { height: 1.4em; font-weight: bold; font-size: 1.5em; padding-top: 0.5ex; padding-left: 1.5em}
-		.small { height: 0.5ex; }
-		.line .buttonLike { font-size: 0.70em; }
+		.line { display: none; }
 		.square { padding: 1em 1em 2em 1.1em; background-color: white;}
 		.square table { text-align: left; color: black; border-collapse: collapse; font-size: 1.2em; height: 150px;}
 		.square table th, .square table td { padding: 0 1em; font-weight: bold}
 		.square table th { text-align: right; border-right: 2px solid silver; font-weight: normal}
-		.yellow { background-color: #fac232;}
-		.red { background-color: #da251c; color: white;}
-		.blue { background-color: #12397e}
-		#first { text-align: right; padding-bottom: 0.6ex; padding-right: 1.5em; border-radius: 1.5em 1.5em 0 0;}
-		#last { height: 2em; border-radius: 0 0 1.5em 1.5em; }
-		#card #logo { position: absolute; bottom: 1em; right: 1em; background-color: white; padding: 1em; border-radius: 100%;}
+		#first { display: block; text-align: right; padding-bottom: 0.6ex; padding-right: 1.5em; border-radius: 1.5em 1.5em 0 0;}
 		#photo { background-color: silver; color: gray; padding: 65px 0;}
+		#card #logo { display: none; }
+
+		@media screen and (min-width: 600px) {
+			.line { display: block; height: 1.4em; font-weight: bold; font-size: 1.5em; padding-top: 0.5ex; padding-left: 1.5em; overflow: hidden;}
+			.line .buttonLike { font-size: 0.70em; }
+			#card #logo { display: block; position: absolute; bottom: 1em; right: 1em; background-color: white; padding: 1em; border-radius: 100%;}
+
+			.blue { background-color: #12397e;}
+			.red { background-color: #da251c; color: white;}
+			.yellow { background-color: #fac232; height: 0;}
+
+			#last { display: block; height: 2em; border-radius: 0 0 1.5em 1.5em; }
+		}
 	</style>
 	<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 {/block}
@@ -59,13 +65,13 @@
 			</li>
 		</ul>
 	</div>
-	<div class="small yellow"></div>
+	<div class="line yellow"></div>
 	<div class="line blue">Vodní záchranná služba ČČK, Jablonec nad Nisou, p.s.</div>
 	<div class="square">
 		<table>
 			<tr><td rowspan="4">
 					{if $filename}
-						<a href="{$basePath}/{$filename}" target="_blank"><img src="{$basePath}/{$filename}" alt="fotografie" height="150"></a>
+						<a href="{$baseUri}/{$filename}" target="_blank"><img src="{$baseUri}/{$filename}" alt="fotografie" height="150"></a>
 					{else}
 						<div id="photo">FOTOGRAFIE</div>
 					{/if}
@@ -84,7 +90,7 @@
 		</table>
 	</div>
 	<div class="line blue">ČLENSKÝ PRŮKAZ</div>
-	<div class="small yellow"></div>
+	<div class="line yellow"></div>
 	<div class="line red" id="last">www.vzs-jablonec.cz</div>
 </div>
 
