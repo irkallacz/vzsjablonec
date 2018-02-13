@@ -67,7 +67,7 @@ class CalendarPresenter extends Presenter {
 			->order('date_add DESC');
 
 		foreach ($newEvents as $newEvent) {
-			/** @var ActiveRow $newEvent*/
+			/** @var ActiveRow $newEvent */
 
 			$event = $this->setEvent($newEvent, new Google_Service_Calendar_Event);
 
@@ -85,7 +85,7 @@ class CalendarPresenter extends Presenter {
 			->order('date_add DESC');
 
 		foreach ($deleteEvents as $deleteEvent) {
-			/** @var ActiveRow $deleteEvent*/
+			/** @var ActiveRow $deleteEvent */
 
 			$this->calendarService->events->delete(self::CALENDAR_ID, $deleteEvent->calendarId);
 			$deleteEvent->update(['calendarId' => NULL]);
@@ -98,30 +98,40 @@ class CalendarPresenter extends Presenter {
 	 * Sync all calendar followess with all users with Gmail accounts
 	 */
 	public function actionFollowers() {
-		$members = $this->userService->getUsers(UserService::MEMBER_LEVEL)
+		$futureFollowers = $this->userService->getUsers(UserService::MEMBER_LEVEL)
 			->where('mail LIKE ?', '%@gmail.com')
 			->fetchPairs('id', 'mail');
 
-		$rules = [];
+		$pastFollowers = $this->userService->getUsers(UserService::DELETED_LEVEL)
+			->where('mail LIKE ?', '%@gmail.com')
+			->fetchPairs('id', 'mail');
+
+
 		$alcRules = $this->calendarService->acl->listAcl(self::CALENDAR_ID)->getItems();
 
-		//Remove followers from calendar with are not users
+		$currentFollowers = [];
 		foreach ($alcRules as $rule) {
 			$ruleId = $rule->getId();
 			$mail = $rule->getScope()->getValue();
-
-			if (!in_array($mail, $members)) {
-				$this->calendarService->acl->delete(self::CALENDAR_ID, $ruleId);
-			} else {
-				$rules[$ruleId] = $mail;
-			}
+			$currentFollowers[$ruleId] = $mail;
 		}
 
-		//Set new users follows calendar
-		foreach (array_diff($members, $rules) as $mail) {
+		$differences = UserService::getDifferences($futureFollowers, $currentFollowers);
+
+		//Set new users to follow calendar
+		foreach ($differences['add'] as $mail) {
 			$aclRule = self::createAclRule($mail);
 			$this->calendarService->acl->insert(self::CALENDAR_ID, $aclRule);
 		}
+
+		//Remove followers from calendar witch are no longer users
+		foreach ($differences['delete'] as $mail) {
+			if (in_array($mail, $pastFollowers, TRUE)) {
+				$ruleId = array_search($mail, $currentFollowers);
+				$this->calendarService->acl->delete(self::CALENDAR_ID, $ruleId);;
+			}
+		}
+
 	}
 
 	/**
