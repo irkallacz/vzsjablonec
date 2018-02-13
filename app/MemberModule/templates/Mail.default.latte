@@ -20,7 +20,7 @@
 		<li n:if="$presenter->action == default"><a class="buttonLike" n:href="send">{include svg icon => envelope-o} odeslané</a></li>
 	</ul>
 
-	<h2>{include svg icon => envelope} {if $presenter->action =='default'}Doručené{else}Odeslané{/if}</h2>
+	<h2>{include svg icon => envelope} {if $presenter->action == default}Doručené{else}Odeslané{/if}</h2>
 
 	{foreach $messages as $message}
 
@@ -41,7 +41,7 @@
 				</th>
 				<th class="right">
 					{if ($message->date_send)}
-						<a href="#message/{$message->id}">{$message->date_send|date:'%A %d.%m.%Y %H:%I'}</a>
+						<a href="#message/{$message->id}">{$message->date_send|date:'%A %d.%m.%Y %H:%M'}</a>
 					{else}
 						bude odesláno {$nextSendTime|timeAgoInWords}
 					{/if}
