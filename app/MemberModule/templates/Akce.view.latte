@@ -70,7 +70,8 @@
         <span class="icon-calendar-times-o" title="Přihlášení do"></span> přihlášení do: {$akce->date_deatline|date:'%A %d.%m.%Y'} ({$akce->date_deatline|timeAgoInWords})
     </div>
 
-    <p title="Místo">{include svg icon => map-marker} {$akce->place}</p>
+    <p title="Místo">{include svg icon => map-marker} {$akce->place}
+        <sup><a href="https://mapy.cz/zakladni?q={$akce->place|escapeurl}" target="_blank" title="Hledat na Mapy.cz">{include svg icon => search}Mapy.cz</a></sup></p>
 
     <p n:if="$akce->member_id" title="Zodpovědná osoba">{include svg icon => user-o} <a n:href="User:view $akce->member_id">{$akce->member->surname} {$akce->member->name}</a></p>
 
