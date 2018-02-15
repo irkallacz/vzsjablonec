@@ -404,7 +404,10 @@ class UserPresenter extends LayerPresenter {
 	}
 	
 	protected function createComponentMemberForm() {
-		$this->userFormFactory->setUserId($this->getParameter('id'));
+		if ($this->action == 'edit') {
+			$this->userFormFactory->setUserId($this->getParameter('id'));
+		}
+
 		$form = $this->userFormFactory->create();
 
 		$form->addGroup(' ');

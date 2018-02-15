@@ -20,7 +20,7 @@ class UserFormFactory extends Object {
 	private $userService;
 
 	/** @var int */
-	private $userId;
+	private $userId = NULL;
 
 	/**
 	 * UserFormFactory constructor.
@@ -113,7 +113,7 @@ class UserFormFactory extends Object {
 	/**
 	 * @param int $userId
 	 */
-	public function setUserId(int $userId) {
+	public function setUserId(int $userId = NULL) {
 		$this->userId = $userId;
 	}
 

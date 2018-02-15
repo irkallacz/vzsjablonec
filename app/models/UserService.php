@@ -88,7 +88,9 @@ class UserService extends DatabaseService {
 	 * @return bool|mixed|IRow
 	 */
 	public function isEmailUnique(string $mail, int $userId = NULL) {
-		return (bool)!$this->getUsers(self::DELETED_LEVEL)->where('mail = ? OR mail2 = ?', $mail, $mail)->where('NOT id', $userId)->fetch();
+		$user = $this->getUsers(self::DELETED_LEVEL)->where('mail = ? OR mail2 = ?', $mail, $mail);
+		if ($userId) $user->where('NOT id', $userId);
+		return (bool) ! $user->fetch();
 	}
 
 	/**
