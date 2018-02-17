@@ -141,7 +141,7 @@
 		</address>
 	{/if}
 
-	<p><a n:href="vcf $member->id" class="buttonLike">{include svg icon => address-card-o} stáhnout vizitku</a></p>
+	<p n:if="($user->isInRole('member'))"><a n:href="vcf $member->id" class="buttonLike">{include svg icon => address-card-o} stáhnout vizitku</a></p>
 
 	<div id="poznamka">
 		{$member->text|noescape|texy}
