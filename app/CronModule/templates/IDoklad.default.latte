@@ -1,0 +1,50 @@
+{*{foreach $names as $namen}*}
+    {*{if is_array($namen)}*}
+        {*>*}
+        {*{foreach $namen as $name}*}
+            {*{if is_array($name)}*}
+                {*->*}
+                {*<ul>*}
+                {*{foreach $name as $nam}*}
+                    {*{if is_array($nam)}*}
+                        {*-->*}
+                        {*{foreach $nam as $na}*}
+                            {*<li n:if="!empty($na)">{$na}</li>*}
+                            {*<li>{$na}</li>*}
+                        {*{/foreach}*}
+                        {*</ul>*}
+                    {*{else}*}
+                        {*<li n:if="!empty($nam)">{$nam}</li>*}
+                        {*<li>{$nam}</li>*}
+                    {*{/if}*}
+                {*{/foreach}*}
+            {*{else}*}
+                {*<li n:if="!empty($name)">{$name}</li>*}
+                {*<li>{$name->}</li>*}
+            {*{/if}*}
+        {*{/foreach}*}
+    {*{/if}*}
+    {*<hr>*}
+{*{/foreach}*}
+
+{*{foreach $names as $namen}*}
+    {*<li>{$namen->CompanyName}</li>*}
+    {*<li>{$namen->DateLastChange}</li>*}
+{*{/foreach}*}
+
+{*<?php*}
+
+    {*function recArray($a) {*}
+        {*if (!is_array($a)) {*}
+            {*echo "<li>$a</li>";*}
+            {*return;*}
+        {*}*}
+        {*foreach($a as $k) {*}
+            {*echo "<ul>";*}
+        {*recArray($k);*}
+            {*echo "</ul>";*}
+        {*}*}
+        {*echo"<hr>";*}
+    {*}*}
+    {*recArray($names);*}
+{*?>*}

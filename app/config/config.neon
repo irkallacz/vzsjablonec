@@ -124,6 +124,11 @@ services:
 		setup:
 			- setScope([Vencax\FacebookLogin::EMAIL])
 
+	iDoklad:
+	    class: malcanek\iDoklad\iDoklad(%idoklad.id%, %idoklad.sc%, 'http://localhost/vzsjablonec/member/user')
+
+	- malcanek\iDoklad\request\iDokladRequest
+
 extensions:
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	- Echo511\Plupload\DI\PluploadExtension
