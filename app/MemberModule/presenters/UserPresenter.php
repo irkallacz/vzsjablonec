@@ -167,6 +167,8 @@ class UserPresenter extends LayerPresenter {
 
 		$member->update(['role' => 0]);
 
+		$this->userService->addUserLogin($member->id, new DateTime());
+
 		$this->flashMessage('Uživatel byl úspěšně přidán mezi aktivní');
 		$this->redirect('view', $id);
 	}
