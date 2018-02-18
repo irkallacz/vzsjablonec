@@ -42,7 +42,7 @@ class IDokladPresenter extends BasePresenter {
 		foreach ($users as $user) {
 			$this->iDoklad->authCCF();
 			$request = new iDokladRequest('Contacts');
-			$filter = new iDokladFilter('IdentificationNumber', '==', $user->id);
+			$filter = new iDokladFilter('IdentificationNumber', '==', 'VZSJBC'.$user->id);
 			$request->addFilter($filter);
 			$response = $this->iDoklad->sendRequest($request);
 			$person = $response->getData();
@@ -72,6 +72,7 @@ class IDokladPresenter extends BasePresenter {
 	 *  - does NOT create new if not exists
 	 */
 	public function actionDefaultSync() {
+		$this->setView('idoklad');
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
 		foreach ($users as $user) {
 			$this->iDoklad->authCCF();
@@ -109,7 +110,7 @@ class IDokladPresenter extends BasePresenter {
 			'City' => $user->mesto,
 			'Email' => $user->mail,
 			'Firstname' => $user->name,
-			'IdentificationNumber' => $user->id,
+			'IdentificationNumber' => 'VZSJBC'.$user->id,
 			'Mobile' => $user->telefon,
 			'Street' => $user->ulice,
 			'Surname' => $user->name,
