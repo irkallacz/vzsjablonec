@@ -17,10 +17,10 @@ use malcanek\iDoklad\request\iDokladFilter;
 use Tracy\Debugger;
 
 /**
- * Class IDokladPresenter
+ * Class IdokladPresenter
  * @package App\CronModule\presenters
  */
-class IDokladPresenter extends BasePresenter {
+class IdokladPresenter extends BasePresenter {
 
 	/** @var UserService @inject */
 	public $userService;
@@ -28,21 +28,18 @@ class IDokladPresenter extends BasePresenter {
 	/** @var iDoklad\iDoklad @inject */
 	public $iDoklad;
 
-	/** @var iDokladRequest @inject */
-	public $iDokladRequest;
-
 	/**
 	 * go through the contacts, use IdentificationNumber
 	 *  - update if there is a change
 	 *  - create new if not exists
 	 */
 	public function actionUpdate() {
-		$this->setView('idoklad');
+		$this->setView('default');
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
 		foreach ($users as $user) {
 			$this->iDoklad->authCCF();
 			$request = new iDokladRequest('Contacts');
-			$filter = new iDokladFilter('IdentificationNumber', '==', 'VZSJBC'.$user->id);
+			$filter = new iDokladFilter('IdentificationNumber', '==', 'VZSJBC' . $user->id);
 			$request->addFilter($filter);
 			$response = $this->iDoklad->sendRequest($request);
 			$person = $response->getData();
@@ -72,7 +69,7 @@ class IDokladPresenter extends BasePresenter {
 	 *  - does NOT create new if not exists
 	 */
 	public function actionDefaultSync() {
-		$this->setView('idoklad');
+		$this->setView('default');
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
 		foreach ($users as $user) {
 			$this->iDoklad->authCCF();
@@ -90,7 +87,7 @@ class IDokladPresenter extends BasePresenter {
 			$data = $this->setContactData($user);
 			$request->addPostParameters($data);
 			$response = $this->iDoklad->sendRequest($request);
-			echo $response->getCode();
+			//echo $response->getCode();
 			if ($response->getCode() == 200) {
 				echo $user->surname . " " . $user->name . " - UPDATED<br />";
 			} else {
@@ -110,7 +107,7 @@ class IDokladPresenter extends BasePresenter {
 			'City' => $user->mesto,
 			'Email' => $user->mail,
 			'Firstname' => $user->name,
-			'IdentificationNumber' => 'VZSJBC'.$user->id,
+			'IdentificationNumber' => 'VZSJBC' . $user->id,
 			'Mobile' => $user->telefon,
 			'Street' => $user->ulice,
 			'Surname' => $user->name,
