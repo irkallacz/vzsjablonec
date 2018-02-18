@@ -14,6 +14,7 @@ use Nette\Database\Table\IRow;
 use malcanek\iDoklad;
 use malcanek\iDoklad\request\iDokladRequest;
 use malcanek\iDoklad\request\iDokladFilter;
+use Nette\Utils\DateTime;
 use Tracy\Debugger;
 
 /**
@@ -45,8 +46,8 @@ class IdokladPresenter extends BasePresenter {
 		$contacts = $response->getData();
 		foreach ($contacts as $contact) {
 			$id = substr($contact['IdentificationNumber'], 6);
-			$update_time = $contact['DateLastChange'];
-			if ($users[$id]->date_update > $update_time) { //work only on day difference
+			$update_time = new Datetime($contact['DateLastChange']);
+			if ($users[$id]->date_update > $update_time) {
 				$request = new iDokladRequest('Contacts/' . $contact['Id']);
 				$request->addMethodType('PATCH');
 				$data = $this->setContactData($users[$id]);
@@ -63,8 +64,7 @@ class IdokladPresenter extends BasePresenter {
 		foreach ($users as $user) {
 			if ($this->contactCreate($user) == 200) {
 				$items[$user->id] = "CREATED";
-			}
-			else {
+			} else {
 				$items[$user->id] = "CREATING FAILED";
 			}
 		}
@@ -80,8 +80,8 @@ class IdokladPresenter extends BasePresenter {
 		$this->setView('default');
 		$items = [];
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
+		$this->iDoklad->authCCF();
 		foreach ($users as $user) {
-			$this->iDoklad->authCCF();
 			$request = new iDokladRequest('Contacts');
 			$filter = new iDokladFilter('CompanyName', '==', $user->surname . " " . $user->name);
 			$request->addFilter($filter);
