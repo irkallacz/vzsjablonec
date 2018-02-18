@@ -29,47 +29,56 @@ class IdokladPresenter extends BasePresenter {
 	public $iDoklad;
 
 	/**
-	 * go through the contacts, use IdentificationNumber
+	 * get all iDoklad contacts from VZS by IdentificationNumber and then
 	 *  - update if there is a change
 	 *  - create new if not exists
 	 */
 	public function actionUpdate() {
 		$this->setView('default');
+		$items = [];
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
-		foreach ($users as $user) {
-			$this->iDoklad->authCCF();
-			$request = new iDokladRequest('Contacts');
-			$filter = new iDokladFilter('IdentificationNumber', '==', 'VZSJBC' . $user->id);
-			$request->addFilter($filter);
-			$response = $this->iDoklad->sendRequest($request);
-			$person = $response->getData();
-			if (count($person) == 3) {
-				$this->contactCreate($user);
-				echo $user->surname . " " . $user->name . '- CREATED<br />';
-				continue;
-			}
-			if ($user->date_update > $person[0]['DateLastChange']) {
-				$request = new iDokladRequest('Contacts/' . $person[0]['Id']);
+		$this->iDoklad->authCCF();
+		$request = new iDokladRequest('Contacts');
+		$filter = new iDokladFilter('IdentificationNumber', 'contains', 'VZSJBC');
+		$request->addFilter($filter)->setPageSize($users->count());
+		$response = $this->iDoklad->sendRequest($request);
+		$contacts = $response->getData();
+		foreach ($contacts as $contact) {
+			$id = substr($contact['IdentificationNumber'], 6);
+			$update_time = $contact['DateLastChange'];
+			if ($users[$id]->date_update > $update_time) { //work only on day difference
+				$request = new iDokladRequest('Contacts/' . $contact['Id']);
 				$request->addMethodType('PATCH');
-				$data = $this->setContactData($user);
+				$data = $this->setContactData($users[$id]);
 				$request->addPostParameters($data);
 				$response = $this->iDoklad->sendRequest($request);
 				if ($response->getCode() == 200) {
-					echo $user->surname . " " . $user->name . " - UPDATED<br />";
+					$items[$id] = "UPDATED";
 				} else {
-					echo $user->surname . " " . $user->name . " - FAILED<br />";
+					$items[$id] = "FAILED";
 				}
 			}
+			unset($users[$id]);
 		}
+		foreach ($users as $user) {
+			if ($this->contactCreate($user) == 200) {
+				$items[$user->id] = "CREATED";
+			}
+			else {
+				$items[$user->id] = "CREATING FAILED";
+			}
+		}
+		$this->template->items = $items;
 	}
 
 	/**
-	 * go through the contacts, compare "surname name" with CompanyName
+	 * go through the iDoklad contacts one by one by comparing "surname name" with CompanyName then
 	 *  - always update
 	 *  - does NOT create new if not exists
 	 */
 	public function actionDefaultSync() {
 		$this->setView('default');
+		$items = [];
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
 		foreach ($users as $user) {
 			$this->iDoklad->authCCF();
@@ -79,7 +88,7 @@ class IdokladPresenter extends BasePresenter {
 			$response = $this->iDoklad->sendRequest($request);
 			$person = $response->getData();
 			if (count($person) == 3) {
-				echo $user->surname . " " . $user->name . '- NOT FOUND<br />';
+				$items[$user->id] = "NOT FOUND";
 				continue;
 			}
 			$request = new iDokladRequest('Contacts/' . $person[0]['Id']);
@@ -89,11 +98,12 @@ class IdokladPresenter extends BasePresenter {
 			$response = $this->iDoklad->sendRequest($request);
 			//echo $response->getCode();
 			if ($response->getCode() == 200) {
-				echo $user->surname . " " . $user->name . " - UPDATED<br />";
+				$items[$user->id] = "UPDATED";
 			} else {
-				echo $user->surname . " " . $user->name . " - FAILED<br />";
+				$items[$user->id] = "FAILED";
 			}
 		}
+		$this->template->items = $items;
 	}
 
 	/**
@@ -117,6 +127,7 @@ class IdokladPresenter extends BasePresenter {
 
 	/**
 	 * @param IRow|ActiveRow $user
+	 * @return int
 	 */
 	public function contactCreate($user) {
 		$this->iDoklad->authCCF();
@@ -125,6 +136,6 @@ class IdokladPresenter extends BasePresenter {
 		$data = $this->setContactData($user);
 		$request->addPostParameters($data);
 		$response = $this->iDoklad->sendRequest($request);
-		//echo $response->getCode();
+		return $response->getCode();
 	}
 }
