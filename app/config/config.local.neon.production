@@ -32,8 +32,9 @@ parameters:
 			appSecret: 987654321
 			callbackURL: https://member.vzs-jablonec.cz/sign/facebooklogin
 	idoklad:
-		id: 12345678-abcd-efgh-ijkl-098765432100
-		sc: 98765432-lkji-hgfe-dcba-001234567890
+		clientId: 12345678-abcd-efgh-ijkl-098765432100
+		clientSecret: 98765432-lkji-hgfe-dcba-001234567890
+		redirectUri: ''
 
 tracy:
 	email: webmaster@vzs-jablonec.cz
