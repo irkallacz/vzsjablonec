@@ -121,6 +121,9 @@ class UserPresenter extends LayerPresenter {
 		$this->template->title = $fullName;
 	}
 
+	/**
+	 * @allow(member)
+	 */
 	public function actionVcfArchive() {
 		$zip = new \ZipArchive;
 		$zip->open(WWW_DIR . '/archive.zip', \ZIPARCHIVE::CREATE | \ZIPARCHIVE::OVERWRITE);
@@ -146,6 +149,9 @@ class UserPresenter extends LayerPresenter {
 		$this->sendResponse($response);
 	}
 
+	/**
+	 * @allow(member)
+	 */
 	public function renderCsv() {
 		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name');
 
@@ -253,6 +259,7 @@ class UserPresenter extends LayerPresenter {
 
 	/**
 	 * @param int $id
+	 * @allow(member)
 	 * @throws BadRequestException
 	 */
 	public function renderVcf(int $id) {
