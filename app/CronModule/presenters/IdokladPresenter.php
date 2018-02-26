@@ -75,7 +75,7 @@ class IdokladPresenter extends BasePresenter {
 		}
 		foreach ($users as $user) {
 			$idoklad_id = $user->idoklad_id;
-			if (!$idoklad_id) {
+			if (!$idoklad_id || !isset($contacts[$idoklad_id])) {
 				if ($this->contactCreate($user)) {
 					$items[$user->id] = $user->surname . " " . $user->name . " - CREATED";
 				} else {
