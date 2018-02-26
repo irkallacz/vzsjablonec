@@ -42,7 +42,7 @@ class IdokladPresenter extends BasePresenter {
 		$this->iDoklad->setCredentialsCallback(function ($credentials) use ($filePath) {
 			file_put_contents($filePath, $credentials->toJson());
 		});
-		if (!file_exists($filePath) || empty($_GET['code'])) {
+		if (!file_exists($filePath)) {
 			$this->iDoklad->authCCF();
 		}
 		$credentials = new iDokladCredentials(file_get_contents($filePath), TRUE);
@@ -50,9 +50,9 @@ class IdokladPresenter extends BasePresenter {
 	}
 
 	/**
-	 * get all iDoklad contacts, when find match with ID in database
+	 * get all iDoklad contacts
+	 *  - create new if idoklad_id not exists
 	 *  - update if there is a change
-	 *  - create new if not exists
 	 */
 	public function actionUpdate() {
 		$this->setView('default');
@@ -62,49 +62,49 @@ class IdokladPresenter extends BasePresenter {
 		$request = new iDokladRequest('Contacts');
 		$request->setPageSize(self::PAGESIZE);
 		$response = $this->iDoklad->sendRequest($request);
-		$contacts = $response->getData();
+		$data = $response->getData();
 		$pages = $response->getTotalPages();
 		for ($i = 2; $i <= $pages; ++$i) {
 			$request->setPage($i);
 			$response = $this->iDoklad->sendRequest($request);
-			$contacts = array_merge($contacts, $response->getData());
+			$data = array_merge($data, $response->getData());
+		}
+		$contacts = [];
+		foreach ($data as $contact) {
+			$contacts[$contact['Id']] = $contact;
 		}
 		foreach ($users as $user) {
-			foreach ($contacts as $contact) {
-				$contact_id = $contact['Id'];
-				if (!$contact_id) {
-					if ($this->contactCreate($user)) {
-						$items[$user->id] = $user->surname . " " . $user->name . " - CREATED";
-					} else {
-						$items[$user->id] = $user->surname . " " . $user->name . " - CREATING FAILED";
-					}
-					unset($users[$user->id]);
-					break;
+			$idoklad_id = $user->idoklad_id;
+			if (!$idoklad_id) {
+				if ($this->contactCreate($user)) {
+					$items[$user->id] = $user->surname . " " . $user->name . " - CREATED";
+				} else {
+					$items[$user->id] = $user->surname . " " . $user->name . " - CREATING FAILED";
 				}
-				if ($user->idoklad_id == $contact_id) {
-					$update_time = new DateTime($contact['DateLastChange']); //one hour shifted?
-					$update_time->setTimezone(new DateTimeZone('+0100'));
-					if ($user->date_update > $update_time) {
-						$request = new iDokladRequest('Contacts/' . $contact_id);
-						$request->addMethodType('PATCH');
-						$data = $this->setContactData($user);
-						$request->addPostParameters($data);
-						$response = $this->iDoklad->sendRequest($request);
-						if ($response->getCode() == 200) {
-							$items[$user->id] = $user->surname . " " . $user->name . " - UPDATED";
-						} else {
-							$items[$user->id] = $user->surname . " " . $user->name . " - FAILED";
-						}
+				unset($users[$user->id]);
+			} else {
+				$update_time = new DateTime($contacts[$idoklad_id]['DateLastChange']);
+				$update_time->setTimezone(new DateTimeZone('+0100'));
+				if ($user->date_update > $update_time) {
+					$request = new iDokladRequest('Contacts/' . $idoklad_id);
+					$request->addMethodType('PATCH');
+					$data = $this->setContactData($user);
+					$request->addPostParameters($data);
+					$response = $this->iDoklad->sendRequest($request);
+					if ($response->getCode() == 200) {
+						$items[$user->id] = $user->surname . " " . $user->name . " - UPDATED";
 					} else {
-						$items[$user->id] = $user->surname . " " . $user->name . " - WITHOUT CHANGE";
+						$items[$user->id] = $user->surname . " " . $user->name . " - FAILED";
 					}
-					unset($users[$user->id]);
-					break;
+				} else {
+					$items[$user->id] = $user->surname . " " . $user->name . " - WITHOUT CHANGE";
 				}
+				unset($users[$user->id]);
 			}
 		}
 		if (count($users)) {
 			echo('ERROR - some users left without action<br><br>');
+			Debugger::barDump($users);
 		}
 		$this->template->items = $items;
 	}
@@ -140,7 +140,7 @@ class IdokladPresenter extends BasePresenter {
 	 * @return array
 	 */
 	public function setContactData($user) {
-		$data = array(
+		$data = [
 			'CompanyName' => $user->surname . " " . $user->name,
 			'CountryId' => 2,
 			'City' => $user->mesto,
@@ -149,7 +149,7 @@ class IdokladPresenter extends BasePresenter {
 			'Mobile' => $user->telefon,
 			'Street' => $user->ulice,
 			'Surname' => $user->name
-		);
+		];
 		return $data;
 	}
 
