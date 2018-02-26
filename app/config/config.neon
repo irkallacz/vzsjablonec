@@ -30,6 +30,10 @@ parameters:
 			appSecret: 987654321
 			callbackURL: http://localhost/vzsjablonec/member/sign/facebooklogin
 			defaultFbGraphVersion: 'v2.11'
+	idoklad:
+			clientId: 12345678-abcd-efgh-ijkl-098765432100
+			clientSecret: 98765432-lkji-hgfe-dcba-001234567890
+			redirectUri: ''
 
 application:
 	errorPresenter: Error
@@ -123,6 +127,8 @@ services:
 		class: Vencax\FacebookLogin(%facebook.login%, "vzsjablonec-social-login")
 		setup:
 			- setScope([Vencax\FacebookLogin::EMAIL])
+
+	idoklad: malcanek\iDoklad\iDoklad(%idoklad.clientId%, %idoklad.clientSecret%, %idoklad.redirectUri%)
 
 extensions:
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension

@@ -29,7 +29,8 @@
 		"tedivm/stash": "^0.14.2",
 		"kertz/twitteroauth": "dev-master",
 		"venca-x/social-login": "^1.0",
-		"jzechy/nette-antispam": "^2.0"
+		"jzechy/nette-antispam": "^2.0",
+		"malcanek/iDoklad-v2": "dev-master"
 	},
 	"require-dev": {
 	  "nette/tester": "^2.0",
