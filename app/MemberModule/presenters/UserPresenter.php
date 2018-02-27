@@ -172,31 +172,17 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		$member->update(['role' => 0]);
-
 		$this->userService->addUserLogin($member->id, new DateTime());
-
 		$this->flashMessage('Uživatel byl úspěšně přidán mezi aktivní');
-		$this->redirect('view', $id);
-	}
-
-	/**
-	 * @param int $id
-	 * @allow(board)
-	 * @throws BadRequestException
-	 */
-	public function actionSendLoggingMail(int $id){
-		$member = $this->userService->getUserById($id);
-
-		if (!$member) throw new BadRequestException('Uživatel nenalezen');
 
 		$session = $this->userService->addPasswordSession($member->id, '24 HOUR');
 
 		$this->addLoggingMail($member, $session);
+		$datetime = $this->messageService->getNextSendTime();
+		$this->flashMessage('Uživateli bude zaslán úvodní e-mail ' . LatteFilters::timeAgoInWords($datetime));
 
-		$this->flashMessage('Uživateli byl zaslán úvodní e-mail');
-		$this->redirect('view', $member->id);
+		$this->redirect('view', $id);
 	}
-
 
 	/**
 	 * @param IRow|ActiveRow $user
@@ -465,8 +451,14 @@ class UserPresenter extends LayerPresenter {
 			$user = $this->userService->addUser($values);
 
 			$this->userService->addUserLogin($user->id, new DateTime());
-
 			$this->flashMessage('Byl přidán nový člen');
+
+			$session = $this->userService->addPasswordSession($user->id, '24 HOUR');
+
+			$this->addLoggingMail($user, $session);
+			$datetime = $this->messageService->getNextSendTime();
+			$this->flashMessage('Uživateli bude zaslán úvodní e-mail ' . LatteFilters::timeAgoInWords($datetime));
+
 			$this->redirect('view', $user->id);
 		}
 	}
