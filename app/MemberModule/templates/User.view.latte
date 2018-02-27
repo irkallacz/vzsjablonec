@@ -3,10 +3,10 @@
 		.out { margin-left: 40px}
 		.bullet-less { list-style-type: none;}
 
-		.buttonMenu, .buttonMenu li { float: none; padding-bottom: 2ex; margin: 0;}
+		.buttonMenu, .buttonMenu li { float: none; }
 
-		#card { position: relative; color: white; margin-top: 1em; max-width: 53em;}
-		#card, .square table { font-family: Arial, 'sans-serif';}
+		.card { position: relative; color: white; margin-top: 1em; max-width: 53em;}
+		.card, .square table { font-family: Arial, 'sans-serif';}
 		.line { display: none; }
 		.square { background-color: white;}
 		.square table { text-align: left; color: black; border-collapse: collapse; font-size: 1.2em; height: 150px;}
@@ -14,20 +14,22 @@
 		.square table th { text-align: right; border-right: 2px solid silver; font-weight: normal}
 		#first { display: block; text-align: right; padding-bottom: 0.6ex; padding-right: 1.5em; border-radius: 1.5em 1.5em 0 0;}
 		#photo { background-color: silver; color: gray; padding: 65px 0;}
-		#card #logo { display: none; }
+		.card #logo { display: none; }
 
 		@media screen and (min-width: 600px) {
-			.line { display: block; height: 1.4em; font-weight: bold; font-size: 1.5em; padding-top: 0.5ex; padding-left: 1.5em; overflow: hidden;}
-			.line .buttonLike { font-size: 0.70em; }
-			#card #logo { display: block; position: absolute; bottom: 1em; right: 1em; background-color: white; padding: 1em; border-radius: 100%;}
+			.card .buttonMenu { margin-top: 0; padding-bottom: 2ex;}
 
-			.square { padding: 1em 1em 2em 1.1em; }
-			.square table th, .square table td { padding: 0 1em; }
-			.blue { background-color: #12397e;}
-			.red { background-color: #da251c; color: white;}
-			.yellow { background-color: #fac232; height: 0;}
+			.card .line { display: block; height: 1.4em; font-weight: bold; font-size: 1.5em; padding-top: 0.5ex; padding-left: 1.5em; overflow: hidden;}
+			.card .line .buttonLike { font-size: 0.70em; }
+			.card #logo { display: block; position: absolute; bottom: 1em; right: 1em; background-color: white; padding: 1em; border-radius: 100%;}
 
-			#last { display: block; height: 2em; border-radius: 0 0 1.5em 1.5em; }
+			.card .square { padding: 1em 1em 2em 1.1em; }
+			.card .square table th, .square table td { padding: 0 1em; }
+			.card .blue { background-color: #12397e;}
+			.card .red { background-color: #da251c; color: white;}
+			.card .yellow { background-color: #fac232; height: 0;}
+
+			.card #last { display: block; height: 2em; border-radius: 0 0 1.5em 1.5em; }
 		}
 	</style>
 	<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
@@ -36,8 +38,8 @@
 <h1 n:block="#title">Osobní profil</h1>
 
 {block #content}
-<div id="card">
-	<img src="{$basePath}/img/vzs.svg" alt="logo" height="150" id="logo">
+<div n:class="$member->role ? card">
+	<img n:if="$member->role" src="{$basePath}/img/vzs.svg" alt="logo" height="150" id="logo">
 	<div class="line red" id="first">
 		<ul class="buttonMenu">
 			<li n:if="($user->isInRole('admin'))and(is_null($member->role))">
