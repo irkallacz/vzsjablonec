@@ -22,6 +22,10 @@ class UserService extends DatabaseService {
 	const BOARD_LEVEL = 3;
 	const ADMIN_LEVEL = 4;
 
+	const LOGIN_METHOD_PASSWORD = 1;
+	const LOGIN_METHOD_GOOGLE = 2;
+	const LOGIN_METHOD_FACEBOOK = 3;
+
 	/**
 	 * @return Selection
 	 */
@@ -66,7 +70,7 @@ class UserService extends DatabaseService {
 	 */
 	public function getUserByAutentication(int $id, string $password) {
 
-		/** @var ActiveRow $member*/
+		/** @var ActiveRow $member */
 		$member = $this->getUsers()
 			->select('mail, hash')
 			->get($id);
@@ -90,7 +94,7 @@ class UserService extends DatabaseService {
 	public function isEmailUnique(string $mail, int $userId = NULL) {
 		$user = $this->getUsers(self::DELETED_LEVEL)->where('mail = ? OR mail2 = ?', $mail, $mail);
 		if ($userId) $user->where('NOT id', $userId);
-		return (bool) ! $user->fetch();
+		return (bool)!$user->fetch();
 	}
 
 	/**
@@ -119,7 +123,7 @@ class UserService extends DatabaseService {
 	 * @return bool|int|IRow|ActiveRow
 	 */
 	public function addUser(ArrayHash $values, int $role = self::MEMBER_LEVEL) {
-		$values->role = ($role == self::DELETED_LEVEL) ? NULL : $role-1;
+		$values->role = ($role == self::DELETED_LEVEL) ? NULL : $role - 1;
 		return $this->getTable()->insert($values);
 	}
 
@@ -162,8 +166,12 @@ class UserService extends DatabaseService {
 	 * @param int $user_id
 	 * @param DateTime $datetime
 	 */
-	public function addUserLogin(int $user_id, DateTime $datetime) {
-		$this->database->query('INSERT INTO user_log VALUES(?, ?) ON DUPLICATE KEY UPDATE date_add = ?', $user_id, $datetime, $datetime);
+	public function addUserLogin(int $user_id, DateTime $datetime, $method = self::LOGIN_METHOD_PASSWORD) {
+		$this->database->query('INSERT INTO user_log', [
+			'member_id' => $user_id,
+			'date_add' => $datetime,
+			'method_id' => $method
+		]);
 	}
 
 	/**

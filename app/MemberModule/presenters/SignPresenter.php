@@ -89,7 +89,7 @@ class SignPresenter extends BasePresenter {
 			if ($state) $this->backlink = $state;
 			$me = $this->googleLogin->getMe($code);
 			$this->emailAuthenticator->login($me->email);
-			$this->afterLogin();
+			$this->afterLogin(self::LOGIN_METHOD_GOOGLE);
 		} catch (NS\AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('in');
@@ -105,7 +105,7 @@ class SignPresenter extends BasePresenter {
 			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
 			$email = Arrays::get($me, 'email');
 			$this->emailAuthenticator->login($email);
-			$this->afterLogin();
+			$this->afterLogin(UserService::LOGIN_METHOD_FACEBOOK);
 		} catch (InvalidArgumentException $e) {
 			$this->flashMessage('Pravděpodobně jste aplikaci VZS JBC na Facebooku odebrali právo přistupovat k vašemu emailu. Odeberte aplikaci a znovu se pokuste přihlásit.', 'error');
 			$this->redirect('in');
@@ -144,7 +144,7 @@ class SignPresenter extends BasePresenter {
 		try {
 			$values = $form->getValues();
 			$this->credentialsAuthenticator->login($values->mail, $values->password);
-			$this->afterLogin();
+			$this->afterLogin(UserService::LOGIN_METHOD_PASSWORD);
 
 		} catch (NS\AuthenticationException $e) {
 			$form->addError($e->getMessage());
@@ -152,14 +152,14 @@ class SignPresenter extends BasePresenter {
 	}
 
 	/**
-	 *
+	 * @param int $method
 	 */
-	private function afterLogin() {
+	private function afterLogin($method = UserService::LOGIN_METHOD_PASSWORD) {
 		$userId = $this->getUser()->getId();
 		$this->getUser()->setExpiration('6 hours', NS\IUserStorage::CLEAR_IDENTITY, TRUE);
 
 		$this->getUser()->getIdentity()->date_last = $this->userService->getLastLoginByUserId($userId);
-		$this->userService->addUserLogin($userId, new DateTime());
+		$this->userService->addUserLogin($userId, new DateTime(), $method);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
 		else $this->redirect('News:default');

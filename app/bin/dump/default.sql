@@ -423,6 +423,7 @@ DROP TABLE IF EXISTS `user_log`;
 CREATE TABLE `user_log` (
   `member_id` smallint(5) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
+  `method_id` tinyint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`member_id`,`date_add`),
   CONSTRAINT `user_log_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
