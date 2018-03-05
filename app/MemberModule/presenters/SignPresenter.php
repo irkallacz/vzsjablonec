@@ -89,7 +89,7 @@ class SignPresenter extends BasePresenter {
 			if ($state) $this->backlink = $state;
 			$me = $this->googleLogin->getMe($code);
 			$this->emailAuthenticator->login($me->email);
-			$this->afterLogin(self::LOGIN_METHOD_GOOGLE);
+			$this->afterLogin(UserService::LOGIN_METHOD_GOOGLE);
 		} catch (NS\AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('in');
