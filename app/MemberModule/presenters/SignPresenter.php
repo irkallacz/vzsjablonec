@@ -158,7 +158,8 @@ class SignPresenter extends BasePresenter {
 		$userId = $this->getUser()->getId();
 		$this->getUser()->setExpiration('6 hours', NS\IUserStorage::CLEAR_IDENTITY, TRUE);
 
-		$this->getUser()->getIdentity()->date_last = $this->userService->getLastLoginByUserId($userId);
+		$dateLast = $this->userService->getLastLoginByUserId($userId);
+		$this->getUser()->getIdentity()->date_last = $dateLast ? $dateLast : new DateTime();
 		$this->userService->addUserLogin($userId, new DateTime(), $method);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);

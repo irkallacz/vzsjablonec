@@ -172,7 +172,6 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		$member->update(['role' => 0]);
-		$this->userService->addUserLogin($member->id, new DateTime());
 		$this->flashMessage('Uživatel byl úspěšně přidán mezi aktivní');
 
 		$session = $this->userService->addPasswordSession($member->id, '24 HOUR');
@@ -450,7 +449,6 @@ class UserPresenter extends LayerPresenter {
 		} else {
 			$user = $this->userService->addUser($values);
 
-			$this->userService->addUserLogin($user->id, new DateTime());
 			$this->flashMessage('Byl přidán nový člen');
 
 			$session = $this->userService->addPasswordSession($user->id, '24 HOUR');
