@@ -16,7 +16,7 @@
 		"nette/mail": "^2.4",
 		"nette/robot-loader": "^2.4",
 		"nette/security": "^2.4",
-		"nette/utils": "^2.4",
+		"nette/utils": "v2.4.9",
 		"latte/latte": "^2.4",
 		"tracy/tracy": "^2.4",
 		"texy/texy": "^2.9",
