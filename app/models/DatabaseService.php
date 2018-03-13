@@ -6,17 +6,19 @@
 
 namespace App\Model;
 
-use Nette;
+use Nette\Database\Context;
+use Nette\Object;
 
-abstract class DatabaseService extends Nette\Object {
-	/** @var Nette\Database\Context */
+abstract class DatabaseService extends Object {
+
+	/** @var Context */
 	public $database;
 
 	/**
 	 * DatabaseService constructor.
-	 * @param Nette\Database\Context $database
+	 * @param Context $database
 	 */
-	public function __construct(Nette\Database\Context $database) {
+	public function __construct(Context $database) {
 		$this->database = $database;
 	}
 
