@@ -8,7 +8,6 @@
 
 namespace App\Model;
 
-use App\Model\UserService;
 use malcanek\iDoklad\iDoklad;
 use malcanek\iDoklad\request\iDokladRequest;
 use malcanek\iDoklad\request\iDokladResponse;
@@ -38,7 +37,7 @@ class IDokladService extends Object {
 	}
 
 	/**
-	 * check if credetials are still valid, reauthenticate if not
+	 * check if credentials are still valid, re-authenticate if not
 	 */
 	public function authenticate() {
 		$this->iDoklad->setCredentialsCallback(function ($credentials) {
