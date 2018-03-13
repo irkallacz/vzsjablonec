@@ -115,10 +115,9 @@ class UserPresenter extends LayerPresenter {
 		$this->template->member = $user;
 		$this->template->last_login = $user->related('user_log')->order('date_add DESC')->fetch();
 
-		$fullName = $user->surname . ' ' . $user->name;
-		$fileName = '/img/photos/' . Strings::webalize($fullName) . '.jpg';
+		$fileName = self::getUserImageName($user);
 		$this->template->filename = file_exists(WWW_DIR . $fileName) ? $fileName : NULL;
-		$this->template->title = $fullName;
+		$this->template->title = UserService::getFullName($user);
 	}
 
 	/**
@@ -438,7 +437,8 @@ class UserPresenter extends LayerPresenter {
 				/** @var Image $image  */
 				$image = $values->image->toImage();
 				$image->resize(1000, NULL, Image::SHRINK_ONLY);
-				$image->save(WWW_DIR . '/img/photos/' . Strings::webalize($user->surname.' '.$user->name) . '.jpg', 90, Image::JPEG);
+				$filename = WWW_DIR . self::getUserImageName($user);
+				$image->save($filename, 90, Image::JPEG);
 			}
 
 			unset($values->image);
@@ -459,5 +459,9 @@ class UserPresenter extends LayerPresenter {
 
 			$this->redirect('view', $user->id);
 		}
+	}
+
+	private static function getUserImageName($user){
+		return '/img/photos/' . $user->id  .' '. Strings::webalize(UserService::getFullName($user)) . '.jpg';
 	}
 }
