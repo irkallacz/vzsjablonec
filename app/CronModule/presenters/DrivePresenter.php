@@ -22,15 +22,15 @@ class DrivePresenter extends BasePresenter {
 		$this->dokumentyService->emptyTables();
 
 		$this->dokumentyService->addDirectory([
-			'id' => DokumentyService::DOCUMENT_DIR_ID,
+			'id' => $this->dokumentyService->driveDir,
 			'name' => 'Web',
 			'parent' => NULL,
 			'webViewLink' => '',
 			'level' => 0,
 		]);
 
-		$files = $this->driveService->files->listFiles(self::getFileSearchQuery(DokumentyService::DOCUMENT_DIR_ID));
-		$this->parseFiles($files->getFiles(), DokumentyService::DOCUMENT_DIR_ID, 1);
+		$files = $this->driveService->files->listFiles(self::getFileSearchQuery($this->dokumentyService->driveDir));
+		$this->parseFiles($files->getFiles(), $this->dokumentyService->driveDir, 1);
 
 		$this->dokumentyService->commitTransaction();
 

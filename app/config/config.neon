@@ -20,6 +20,7 @@ parameters:
 			password:
 	google:
 		account: info@vzs-jablonec.cz
+		driveDir: olqBGlusVSO2QWsuaOq0WpazaQqK
 		login:
 			clientId: 698488418952-95tac0912e96pdk6mlhme3i143i5kgvg.apps.googleusercontent.com
 			clientSecret: 123456789
@@ -91,7 +92,7 @@ services:
 	- App\Model\AkceService
 	- App\Model\ForumService
 	- App\Model\UserService
-	- App\Model\DokumentyService
+	- App\Model\DokumentyService(@database.default.context, %google.driveDir%)
 	- App\Model\AnketyService
 	- App\Model\RatingService
 	- App\Model\MessageService

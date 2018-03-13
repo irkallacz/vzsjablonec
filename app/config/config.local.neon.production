@@ -24,6 +24,7 @@ parameters:
 			user: w133882_bde69a3
 			password: jdLEC785
 	google:
+		driveDir: olqBGlusVSO2QWsuaOq0WpazaQqK
 		login:
 			clientSecret: 123456789
 			callbackURL: https://member.vzs-jablonec.cz/sign/googlelogin
