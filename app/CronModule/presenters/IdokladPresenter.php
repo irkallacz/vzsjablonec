@@ -8,7 +8,7 @@
 
 namespace App\CronModule\Presenters;
 
-use App\Model\MessageService\IDokladService;
+use App\Model\IDokladService;
 use App\Model\UserService;
 use DateTimeZone;
 use malcanek\iDoklad\request\iDokladFilter;

@@ -6,7 +6,7 @@
  * Time: 19:30
  */
 
-namespace App\Model\MessageService;
+namespace App\Model;
 
 use App\Model\UserService;
 use malcanek\iDoklad\iDoklad;
