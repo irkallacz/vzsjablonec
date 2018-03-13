@@ -146,7 +146,7 @@ class PeoplePresenter extends BasePresenter {
 		$name = new Google_Service_PeopleService_Name;
 		$name->setFamilyName($user->surname);
 		$name->setGivenName($user->name);
-		$name->setDisplayName($user->surname . ', ' . $user->name);
+		$name->setDisplayName(UserService::getFullName($user));
 
 		$person->setNames([$name]);
 

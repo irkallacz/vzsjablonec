@@ -218,4 +218,11 @@ class UserService extends DatabaseService {
 		return array_combine($keys, $values);
 	}
 
+
+	/**
+	 * @param IRow|ActiveRow $user
+	 */
+	public static function getFullName(IRow $user){
+		return $user->surname . ' ' . $user->name;
+	}
 }

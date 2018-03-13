@@ -57,7 +57,7 @@ class MessagePresenter extends BasePresenter {
 				$mail->addTo('predstavenstvo@vzs-jablonec.cz');
 			} else {
 				foreach ($message->related('message_user') as $recipient) {
-					$mail->addTo($recipient->user->mail, self::getFullName($recipient->user));
+					$mail->addTo($recipient->user->mail, UserService::getFullName($recipient->user));
 					if ($recipient->user->mail2 && $recipient->user->send_to_second) $mail->addCc($recipient->user->mail2);
 				}
 			}
@@ -86,14 +86,6 @@ class MessagePresenter extends BasePresenter {
 			->addBcc('info@vzs-jablonec.cz');
 
 		return $mail;
-	}
-
-	/**
-	 * @param IRow|ActiveRow $user
-	 * @return string
-	 */
-	private static function getFullName(IRow $user) {
-		return $user->surname . ' ' . $user->name;
 	}
 
 }
