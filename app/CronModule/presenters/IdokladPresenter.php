@@ -38,7 +38,7 @@ class IDokladPresenter extends BasePresenter {
 	public function actionUpdate() {
 		$this->setView('default');
 		$items = [];
-		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
+		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);
 
 		$this->iDokladService->authenticate();
 		$request = $this->iDokladService->requestsContacts();
@@ -89,7 +89,7 @@ class IDokladPresenter extends BasePresenter {
 	public function actionDefaultSync() {
 		$this->setView('default');
 		$items = [];
-		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
+		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);
 		$this->iDokladService->authenticate();
 		foreach ($users as $user) {
 			$request = $this->iDokladService->requestsContacts();
