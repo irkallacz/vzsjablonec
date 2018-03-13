@@ -35,6 +35,8 @@ parameters:
 			clientId: 12345678-abcd-efgh-ijkl-098765432100
 			clientSecret: 98765432-lkji-hgfe-dcba-001234567890
 			redirectUri: ''
+			credentialsFile: "%tempDir%/idoklad/credentials.json"
+
 
 application:
 	errorPresenter: Error
@@ -93,6 +95,7 @@ services:
 	- App\Model\ForumService
 	- App\Model\UserService
 	- App\Model\DokumentyService(%google.driveDir%)
+	- App\Model\IDokladService(%idoklad.credentialsFile%)
 	- App\Model\AnketyService
 	- App\Model\RatingService
 	- App\Model\MessageService

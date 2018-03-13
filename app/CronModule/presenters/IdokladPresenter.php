@@ -8,149 +8,104 @@
 
 namespace App\CronModule\Presenters;
 
+use App\Model\MessageService\IDokladService;
 use App\Model\UserService;
 use DateTimeZone;
-use malcanek\iDoklad\auth\iDokladCredentials;
+use malcanek\iDoklad\request\iDokladFilter;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
-use malcanek\iDoklad;
-use malcanek\iDoklad\request\iDokladRequest;
-use malcanek\iDoklad\request\iDokladFilter;
+use Nette\Http\Response;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
 
 /**
- * Class IdokladPresenter
+ * Class IDokladPresenter
  * @package App\CronModule\presenters
  */
-class IdokladPresenter extends BasePresenter {
-
-	const PAGESIZE = 200;
-	const CREDENTIALS_FILENAME = 'credentials.json';
+class IDokladPresenter extends BasePresenter {
 
 	/** @var UserService @inject */
 	public $userService;
 
-	/** @var iDoklad\iDoklad @inject */
-	public $iDoklad;
-
-	/**
-	 * check if credetials are still valid, reauthenticate if not
-	 */
-	public function iDokladAuthenticate() {
-		$filePath = APP_DIR . '/../tmp/idoklad/' . self::CREDENTIALS_FILENAME;
-		$this->iDoklad->setCredentialsCallback(function ($credentials) use ($filePath) {
-			file_put_contents($filePath, $credentials->toJson());
-		});
-		if (!file_exists($filePath)) {
-			$this->iDoklad->authCCF();
-		}
-		$credentials = new iDokladCredentials(file_get_contents($filePath), TRUE);
-		$this->iDoklad->setCredentials($credentials);
-	}
+	/** @var IDokladService @inject */
+	public $iDokladService;
 
 	/**
 	 * get all iDoklad contacts
-	 *  - create new if idoklad_id not exists
+	 *  - create new if iDokladId not exists
 	 *  - update if there is a change
 	 */
 	public function actionUpdate() {
 		$this->setView('default');
 		$items = [];
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
-		$this->iDokladAuthenticate();
-		$request = new iDokladRequest('Contacts');
-		$request->setPageSize(self::PAGESIZE);
-		$response = $this->iDoklad->sendRequest($request);
-		$data = $response->getData();
-		$pages = $response->getTotalPages();
-		for ($i = 2; $i <= $pages; ++$i) {
-			$request->setPage($i);
-			$response = $this->iDoklad->sendRequest($request);
-			$data = array_merge($data, $response->getData());
-		}
+
+		$this->iDokladService->authenticate();
+		$request = $this->iDokladService->requestsContacts();
+		$request->setPageSize(IDokladService::PAGE_SIZE);
+		$response = $this->iDokladService->sendRequest($request);
+		$data = $this->iDokladService->getData($request, $response);
+
 		$contacts = [];
 		foreach ($data as $contact) {
 			$contacts[$contact['Id']] = $contact;
 		}
+
 		foreach ($users as $user) {
-			$idoklad_id = $user->idoklad_id;
-			if (!$idoklad_id || !array_key_exists($idoklad_id, $contacts)) {
+			$contactId = $user->iDokladId;
+			if (!$contactId || !array_key_exists($contactId, $contacts)) {
 				if ($this->contactCreate($user)) {
-					$items[$user->id] = $user->surname . " " . $user->name . " - CREATED";
+					$items[$user->id] = UserService::getFullName($user) . ' - CREATED';
 				} else {
-					$items[$user->id] = $user->surname . " " . $user->name . " - CREATING FAILED";
+					$items[$user->id] = UserService::getFullName($user) . ' - CREATING FAILED';
 				}
 				unset($users[$user->id]);
 			} else {
-				$update_time = new DateTime($contacts[$idoklad_id]['DateLastChange']);
+				$update_time = new DateTime($contacts[$contactId]['DateLastChange']);
 				$update_time->setTimezone(new DateTimeZone('+0100'));
 				if ($user->date_update > $update_time) {
-					$request = new iDokladRequest('Contacts/' . $idoklad_id);
-					$request->addMethodType('PATCH');
-					$data = $this->setContactData($user);
-					$request->addPostParameters($data);
-					$response = $this->iDoklad->sendRequest($request);
-					if ($response->getCode() == 200) {
-						$items[$user->id] = $user->surname . " " . $user->name . " - UPDATED";
+					$response = $this->iDokladService->updateContact($contactId, $user);
+					if ($response->getCode() == Response::S200_OK) {
+						$items[$user->id] = UserService::getFullName($user) . ' - UPDATED';
 					} else {
-						$items[$user->id] = $user->surname . " " . $user->name . " - FAILED";
+						$items[$user->id] = UserService::getFullName($user) . ' - FAILED';
 					}
 				} else {
-					$items[$user->id] = $user->surname . " " . $user->name . " - WITHOUT CHANGE";
+					$items[$user->id] = UserService::getFullName($user) . ' - WITHOUT CHANGE';
 				}
 				unset($users[$user->id]);
 			}
 		}
 		if (count($users)) {
 			echo('ERROR - some users left without action<br><br>');
-			Debugger::barDump($users);
 		}
 		$this->template->items = $items;
 	}
 
 	/**
-	 * go through the iDoklad contacts one by one by comparing "surname name" (beware of duplicates) with CompanyName then
-	 *  - add idoklad_id to our database
+	 * go through the iDoklad contacts one by one by comparing 'surname name' (beware of duplicates) with CompanyName then
+	 *  - add iDokladId to our database
 	 */
 	public function actionDefaultSync() {
 		$this->setView('default');
 		$items = [];
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);//->order('surname');
-		$this->iDokladAuthenticate();
+		$this->iDokladService->authenticate();
 		foreach ($users as $user) {
-			$request = new iDokladRequest('Contacts');
-			$filter = new iDokladFilter('CompanyName', '==', $user->surname . " " . $user->name);
+			$request = $this->iDokladService->requestsContacts();
+			$filter = new iDokladFilter('CompanyName', '==', UserService::getFullName($user));
 			$request->addFilter($filter);
-			$response = $this->iDoklad->sendRequest($request);
+			$response = $this->iDokladService->sendRequest($request);
 			$person = $response->getData();
 			if (count($person) != 1) {
-				$items[$user->id] = $user->surname . " " . $user->name . " - NOT FOUND";
+				$items[$user->id] = UserService::getFullName($user) . ' - NOT FOUND';
 				continue;
 			}
-			$user->update(['idoklad_id' => $person[0]['Id']]);
-			$items[$user->id] = $user->surname . " " . $user->name . " - LOCALY UPDATED";
+			$user->update(['iDokladId' => $person[0]['Id']]);
+			$items[$user->id] = UserService::getFullName($user) . ' - LOCALY UPDATED';
 
 		}
 		$this->template->items = $items;
-	}
-
-	/**
-	 * @param IRow|ActiveRow $user
-	 * @return array
-	 */
-	public function setContactData($user) {
-		$data = [
-			'CompanyName' => $user->surname . " " . $user->name,
-			'CountryId' => 2,
-			'City' => $user->mesto,
-			'Email' => $user->mail,
-			'Firstname' => $user->name,
-			'Mobile' => $user->telefon,
-			'Street' => $user->ulice,
-			'Surname' => $user->name
-		];
-		return $data;
 	}
 
 	/**
@@ -158,15 +113,12 @@ class IdokladPresenter extends BasePresenter {
 	 * @return bool
 	 */
 	public function contactCreate($user) {
-		$this->iDokladAuthenticate();
-		$request = new iDokladRequest('Contacts');
-		$request->addMethodType('POST');
-		$data = $this->setContactData($user);
-		$request->addPostParameters($data);
-		$response = $this->iDoklad->sendRequest($request);
-		if ($response->getCode() == 200) {
+		$this->iDokladService->authenticate();
+		$response = $this->iDokladService->createContact($user);
+
+		if ($response->getCode() == Response::S200_OK) {
 			$id = $response->getData()['Id'];
-			return $user->update(['idoklad_id' => $id]);
+			return $user->update(['iDokladId' => $id]);
 		} else {
 			return FALSE;
 		}
