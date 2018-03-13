@@ -83,7 +83,7 @@
 				<th>Příjmení</th><td>{$member->surname}</td>
 			</tr>
 			<tr>
-				<th>Osobní číslo</th><td>{$member->id}</td>
+				<th>Osobní číslo</th><td>{$member->id|padLeft:3:0}</td>
 			</tr>
 			<tr>
 				<th>Registrace</th><td>{if $member->date_add}{$member->date_add|date:'d.m.Y'}{/if}</td>
