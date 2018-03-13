@@ -28,7 +28,7 @@ class AkceService extends DatabaseService {
 	 * @return Selection
 	 */
 	public function getAkceByFuture(bool $future = FALSE) {
-		$akce = $this->getAkce()->where('enable', 1);
+		$akce = $this->getAkce()->where('enable', TRUE);
 
 		if ($future) $akce->where('date_start > NOW()')->order('date_start ASC'); else $akce->where('date_start < NOW()')->order('date_start DESC');;
 
