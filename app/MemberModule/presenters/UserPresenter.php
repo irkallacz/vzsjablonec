@@ -461,7 +461,11 @@ class UserPresenter extends LayerPresenter {
 		}
 	}
 
-	private static function getUserImageName($user){
-		return '/img/photos/' . $user->id  .' '. Strings::webalize(UserService::getFullName($user)) . '.jpg';
+	/**
+	 * @param IRow|ActiveRow $user
+	 * @return string
+	 */
+	private static function getUserImageName(IRow $user){
+		return '/img/photos/' . Strings::webalize(UserService::getFullName($user)) . '-' . $user->id . '.jpg';
 	}
 }
