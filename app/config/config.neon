@@ -92,7 +92,7 @@ services:
 	- App\Model\AkceService
 	- App\Model\ForumService
 	- App\Model\UserService
-	- App\Model\DokumentyService(@database.default.context, %google.driveDir%)
+	- App\Model\DokumentyService(%google.driveDir%)
 	- App\Model\AnketyService
 	- App\Model\RatingService
 	- App\Model\MessageService

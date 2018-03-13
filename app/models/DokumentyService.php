@@ -23,10 +23,10 @@ class DokumentyService extends DatabaseService {
 
 	/**
 	 * DokumentyService constructor.
-	 * @param Context $database
 	 * @param $driveDir
+	 * @param Context $database
 	 */
-	public function __construct(Context $database, string $driveDir) {
+	public function __construct(string $driveDir, Context $database) {
 		parent::__construct($database);
 		$this->driveDir = $driveDir;
 	}
