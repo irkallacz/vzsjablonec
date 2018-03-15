@@ -174,14 +174,29 @@ class UserService extends DatabaseService {
 		]);
 	}
 
+
+	/**
+	 * @param int $user_id
+	 * @return bool
+	 */
+	public function haveActivePasswordSession(int $user_id) {
+		return (bool) $this->database->table('password_session')
+			->where('member_id', $user_id)
+			->where('date_end >', new DateTime())
+			->fetch();
+	}
+
 	/**
 	 * @param int $user_id
 	 * @param string $interval
 	 * @return bool|int|IRow
 	 */
-	public function addPasswordSession(int $user_id, string $interval = '20 MINUTE') {
+	public function addPasswordSession(int $user_id, string $interval = '40 MINUTE') {
 		$this->database->query('DELETE FROM `password_session` WHERE `member_id` = ?', $user_id);
-		return $this->database->table('password_session')->insert(['member_id' => $user_id, 'date_end' => new SqlLiteral('NOW() + INTERVAL ' . $interval)]);
+		return $this->database->table('password_session')->insert([
+			'member_id' => $user_id,
+			'date_end' => new SqlLiteral('NOW() + INTERVAL ' . $interval)
+		]);
 	}
 
 	/**
