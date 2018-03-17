@@ -407,7 +407,7 @@ class UserPresenter extends LayerPresenter {
 
 		$form->setCurrentGroup(NULL);
 
-		$form->addUpload('image', 'Nový obrázek')
+		$form->addUpload('image', 'Nová fotografie')
 			->addCondition(Form::FILLED)
 			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 5 MB.', 5 * 1024 * 1024 /* v bytech */)
 			->addRule(Form::IMAGE, 'Fotografie musí být ve formátu JPEG')
