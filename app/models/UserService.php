@@ -182,7 +182,7 @@ class UserService extends DatabaseService {
 	public function haveActivePasswordSession(int $user_id) {
 		return (bool) $this->database->table('password_session')
 			->where('member_id', $user_id)
-			->where('date_end >', new DateTime())
+			->where('date_end >', new SqlLiteral('NOW()'))
 			->fetch();
 	}
 
