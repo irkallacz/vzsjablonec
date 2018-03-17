@@ -31,6 +31,9 @@ parameters:
 			appSecret: 987654321
 			callbackURL: http://localhost/vzsjablonec/member/sign/facebooklogin
 			defaultFbGraphVersion: 'v2.11'
+	recaptcha:
+		siteKey: GrcZy3jKLti1aKGi0hLJuaRxBX3rxOxcb44p5rZV
+		secretKey: kKtcntSs85ITBXqZVwwZTFMVPb6xcRCTrmokMTWF
 	idoklad:
 			clientId: 12345678-abcd-efgh-ijkl-098765432100
 			clientSecret: 98765432-lkji-hgfe-dcba-001234567890
@@ -137,4 +140,8 @@ services:
 extensions:
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	- Echo511\Plupload\DI\PluploadExtension
-	antispam: Zet\AntiSpam\AntiSpamExtension
+	recaptcha: Minetro\ReCaptcha\DI\ReCaptchaExtension
+
+recaptcha:
+	siteKey: %recaptcha.siteKey%
+	secretKey: %recaptcha.secretKey%

@@ -1,3 +1,5 @@
+{layout Sign.@layout.latte}
+
 {block #head}
 <style type="text/css" media="screen" n:syntax="off">
 	label { font-weight: normal}
@@ -10,6 +12,7 @@
 </style>
 <script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
 <script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+<script type="text/javascript" src="https://www.google.com/recaptcha/api.js" n:nonce></script>
 
 <script type="text/javascript" n:nonce>
 	$(function() {
@@ -20,10 +23,6 @@
 
 			$('.date').datepicker();
 		}
-
-		document.getElementById('frm-registerForm-notSpam-fields').classList.add('hide');
-//		document.getElementById('frm-registerForm-notSpam-question').style.display = 'none';
-//		document.getElementById('frm-registerForm-notSpam-question-input').value = 1;
 	});
 </script>
 {/block}
@@ -37,5 +36,9 @@
 	<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 	{control registerForm}
+
+	{*<div class="form-group">*}
+		{*<div n:name="recaptcha"></div>*}
+	{*</div>*}
 
 {/block}

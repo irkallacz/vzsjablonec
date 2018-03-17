@@ -6,6 +6,9 @@ parameters:
 	facebook:
 		login:
 			appSecret: 987654321
+	recaptcha:
+		siteKey: GrcZy3jKLti1aKGi0hLJuaRxBX3rxOxcb44p5rZV
+		secretKey: kKtcntSs85ITBXqZVwwZTFMVPb6xcRCTrmokMTWF
 
 session:
 	expiration: 12 hours
