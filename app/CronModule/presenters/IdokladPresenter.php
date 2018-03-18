@@ -11,10 +11,10 @@ namespace App\CronModule\Presenters;
 use App\Model\IDokladService;
 use App\Model\UserService;
 use DateTimeZone;
+use malcanek\iDoklad\iDokladException;
 use malcanek\iDoklad\request\iDokladFilter;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
-use Nette\Http\Response;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
 
@@ -52,24 +52,16 @@ class IDokladPresenter extends BasePresenter {
 		}
 
 		foreach ($users as $user) {
-			$contactId = $user->iDokladId;
-			if (!$contactId || !array_key_exists($contactId, $contacts)) {
-				if ($this->contactCreate($user)) {
-					$items[$user->id] = UserService::getFullName($user) . ' - CREATED';
-				} else {
-					$items[$user->id] = UserService::getFullName($user) . ' - CREATING FAILED';
-				}
+			if (!$user->iDokladId || !array_key_exists($user->iDokladId, $contacts)) {
+				$this->contactCreate($user);
+				$items[$user->id] = UserService::getFullName($user) . ' - CREATED';
 				unset($users[$user->id]);
 			} else {
-				$update_time = new DateTime($contacts[$contactId]['DateLastChange']);
+				$update_time = new DateTime($contacts[$user->iDokladId]['DateLastChange']);
 				$update_time->setTimezone(new DateTimeZone('+0100'));
 				if ($user->date_update > $update_time) {
-					$response = $this->iDokladService->updateContact($contactId, $user);
-					if ($response->getCode() == Response::S200_OK) {
-						$items[$user->id] = UserService::getFullName($user) . ' - UPDATED';
-					} else {
-						$items[$user->id] = UserService::getFullName($user) . ' - FAILED';
-					}
+					$this->iDokladService->updateContact($user->iDokladId, $user);
+					$items[$user->id] = UserService::getFullName($user) . ' - UPDATED';
 				} else {
 					$items[$user->id] = UserService::getFullName($user) . ' - WITHOUT CHANGE';
 				}
@@ -111,16 +103,12 @@ class IDokladPresenter extends BasePresenter {
 	/**
 	 * @param IRow|ActiveRow $user
 	 * @return bool
+	 * @throws iDokladException
 	 */
 	public function contactCreate($user) {
 		$this->iDokladService->authenticate();
 		$response = $this->iDokladService->createContact($user);
-
-		if ($response->getCode() == Response::S200_OK) {
-			$id = $response->getData()['Id'];
-			return $user->update(['iDokladId' => $id]);
-		} else {
-			return FALSE;
-		}
+		$id = $response->getData()['Id'];
+		return $user->update(['iDokladId' => $id]);
 	}
 }

@@ -9,11 +9,13 @@
 namespace App\Model;
 
 use malcanek\iDoklad\iDoklad;
+use malcanek\iDoklad\iDokladException;
 use malcanek\iDoklad\request\iDokladRequest;
 use malcanek\iDoklad\request\iDokladResponse;
 use malcanek\iDoklad\auth\iDokladCredentials;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
+use Nette\Http\Response;
 use Nette\Object;
 
 class IDokladService extends Object {
@@ -62,6 +64,7 @@ class IDokladService extends Object {
 	/**
 	 * @param IRow|ActiveRow $user
 	 * @return iDokladResponse
+	 * @throws iDokladException
 	 */
 	public function createContact(IRow $user) {
 		$request = $this->requestsContacts();
@@ -78,6 +81,7 @@ class IDokladService extends Object {
 	 * @param int $id
 	 * @param IRow|ActiveRow $user
 	 * @return iDokladResponse
+	 * @throws iDokladException
 	 */
 	public function updateContact(int $id, IRow $user) {
 		$request = new iDokladRequest('Contacts/' . $id);
@@ -108,9 +112,13 @@ class IDokladService extends Object {
 	/**
 	 * @param iDokladRequest $request
 	 * @return iDokladResponse
+	 * @throws iDokladException
 	 */
 	public function sendRequest(iDokladRequest $request) {
 		$response = $this->iDoklad->sendRequest($request);
+
+		if ($response->getCode() != Response::S200_OK)
+			throw new iDokladException($response->getCode().' '.$response->getCodeText());
 
 		return $response;
 	}
