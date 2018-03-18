@@ -8,7 +8,6 @@
 
 namespace App\MemberModule\Presenters;
 
-
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\MessageService;
 use App\Model\UserService;
