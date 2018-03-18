@@ -38,7 +38,7 @@ parameters:
 			clientId: 12345678-abcd-efgh-ijkl-098765432100
 			clientSecret: 98765432-lkji-hgfe-dcba-001234567890
 			redirectUri: ''
-			credentialsFile: "%tempDir%/idoklad/credentials.json"
+			credentialsFile: '%tempDir%/idoklad/credentials.json'
 
 
 application:
@@ -66,7 +66,7 @@ php:
 
 session:
     autoStart: true
-    savePath: "%tempDir%/../session"
+    savePath: %tempDir%/../session
     gc_maxlifetime: 21600
     cookie_secure: true
 
@@ -109,21 +109,21 @@ services:
 	googleClient:
 		class: Google_Client
 		setup:
-			- setAuthConfig("%appDir%/config/google_api_service.json")
+			- setAuthConfig(%appDir%/config/google_api_service.json)
 			- setSubject(%google.account%)
 			- setScopes([
 				Google_Service_Drive::DRIVE_READONLY
 				Google_Service_Calendar::CALENDAR
 				Google_Service_PeopleService::CONTACTS
 			])
-			- setCache(Stash\Pool(Stash\Driver\FileSystem([path: "%tempDir%/stash"])))
+			- setCache(Stash\Pool(Stash\Driver\FileSystem([path: %tempDir%/stash])))
 
 	- Google_Service_Drive
 	- Google_Service_Calendar
 	- Google_Service_PeopleService
 
 	googleLogin:
-		class: Vencax\GoogleLogin(%google.login%, "vzsjablonec-social-login")
+		class: Vencax\GoogleLogin(%google.login%, vzsjablonec-social-login)
 		setup:
 			- setScope([
 				Google_Service_Plus::PLUS_ME
@@ -131,7 +131,7 @@ services:
 			])
 
 	facebookLogin:
-		class: Vencax\FacebookLogin(%facebook.login%, "vzsjablonec-social-login")
+		class: Vencax\FacebookLogin(%facebook.login%, vzsjablonec-social-login)
 		setup:
 			- setScope([Vencax\FacebookLogin::EMAIL])
 
