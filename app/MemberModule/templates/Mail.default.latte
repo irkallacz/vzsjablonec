@@ -20,6 +20,8 @@
 		<li n:if="$presenter->action == default"><a class="buttonLike" n:href="send">{include svg icon => envelope-o} odeslané</a></li>
 	</ul>
 
+	<p>{control yp}</p>
+
 	<h2>{include svg icon => envelope} {if $presenter->action == default}Doručené{else}Odeslané{/if}</h2>
 
 	{foreach $messages as $message}
@@ -69,4 +71,9 @@
 		</article>
 
 	{/foreach}
+
+	{*<p n:if="$year != INF">*}
+		{*<a class="buttonLike" n:href="this, yp-year => INF">{include svg icon => check} Zobrazit všechny zprávy</a>*}
+	{*</p>*}
+
 {/block}

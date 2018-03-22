@@ -2,6 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\YearPaginator;
 use App\Model\AkceService;
 use App\Model\UserService;
 use App\Model\MessageService;
@@ -53,18 +54,32 @@ class MailPresenter extends LayerPresenter {
 	 *
 	 */
 	public function renderDefault() {
+		$year = $this['yp']->year;
+
 		$messages = $this->messageService->getMessages()->where('date_send IS NOT NULL')->order('date_add DESC');
 		if (!$this->getUser()->isInRole('admin')) $messages->where(':message_user.user_id = ?', $this->user->id);
+		if ($year) $messages->where('YEAR(date_add) = ?', $year);
 		$this->template->messages = $messages;
+		$this->template->year = $year;
+	}
+
+
+	public function createComponentYp() {
+		return new YearPaginator(2017, NULL, 1, intval(date('Y')));
 	}
 
 	/**
 	 *
 	 */
 	public function renderSend() {
+		$year = $this['yp']->year;
+
 		$messages = $this->messageService->getMessages()->order('date_add DESC');
 		if (!$this->getUser()->isInRole('admin')) $messages->where('user_id = ?', $this->user->id);
+		if ($year) $messages->where('YEAR(date_add) = ?', $year);
+
 		$this->template->messages = $messages;
+		$this->template->year = $year;
 		$this->template->nextSendTime = $this->messageService->getNextSendTime();
 
 		$this->setView('default');
@@ -238,7 +253,7 @@ class MailPresenter extends LayerPresenter {
 
 		if (!$message) throw new BadRequestException('Zpráva nenalezena');
 		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete editovat cizí zprávy');
-		$parameters = Json::decode($message->param, JSON_OBJECT_AS_ARRAY);
+		$parameters = ($message->param) ? Json::decode($message->param, JSON_OBJECT_AS_ARRAY) : [];
 
 		$members = $this->userService->getUsers()->where('id', $values->users);
 
@@ -258,7 +273,7 @@ class MailPresenter extends LayerPresenter {
 		$users = $values->users;
 		unset($values->users);
 
-		$values->param = Json::encode($parameters, JSON_OBJECT_AS_ARRAY);
+		$values->param = (!empty($parameters)) ? Json::encode($parameters, JSON_OBJECT_AS_ARRAY) : NULL;
 		$message->update($values);
 
 		$recipients = $this->messageService->getRecipients($id)->fetchPairs('user_id', 'user_id');
