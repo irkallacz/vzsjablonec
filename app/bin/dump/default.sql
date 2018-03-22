@@ -1,4 +1,4 @@
--- 2017-12-03T21:21:35+01:00 - mysql:host=localhost;dbname=vzsjablonec
+-- 2018-03-22T20:20:54+01:00 - mysql:host=localhost;dbname=vzsjablonec
 
 -- Table structure for table `akce`
 
@@ -304,6 +304,17 @@ CREATE TABLE `message_user` (
   CONSTRAINT `message_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
+-- Table structure for table `password_attempt`
+
+DROP TABLE IF EXISTS `password_attempt`;
+CREATE TABLE `password_attempt` (
+  `user_id` smallint(5) unsigned NOT NULL,
+  `count` tinyint(3) unsigned NOT NULL,
+  `date_end` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `password_attempt_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
 -- Table structure for table `password_session`
 
 DROP TABLE IF EXISTS `password_session`;
@@ -395,7 +406,7 @@ CREATE TABLE `user` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(40) COLLATE utf8_czech_ci NOT NULL,
   `surname` varchar(40) COLLATE utf8_czech_ci NOT NULL,
-  `hash` varchar(60) COLLATE utf8_czech_ci NOT NULL,
+  `hash` varchar(255) COLLATE utf8_czech_ci DEFAULT NULL,
   `date_born` date DEFAULT NULL,
   `zamestnani` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
   `mesto` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
