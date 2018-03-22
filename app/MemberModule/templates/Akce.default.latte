@@ -21,11 +21,7 @@ table .first svg.icon { font-size: 120% }
 
 <ul n:if="$user->isInRole('member')" class="buttonMenu"><li><a class="buttonLike" n:href="add">{include svg icon => plus} nová akce</a></li></ul>
 
-<p>
-	<span class="buttonLike gray" n:tag-if="!$prev"><a n:tag-if="$prev" class="buttonLike" n:href="default, $prev">{include svg icon => backward} Předchozí</a></span>
-	<a n:foreach="$years as $y" n:tag-if="$year != $y" n:href="this, $y">{$y}</a>
-	<span class="buttonLike gray" n:tag-if="!$next"><a n:tag-if="$next" class="buttonLike" n:href="default, $next">Další {include svg icon => forward}</a></span>
-</p>
+<p>{control yp}</p>
 
 {foreach $akceAllList as $old => $akceList}
 <h2 n:if="$akceList">
@@ -108,7 +104,7 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 </p>
 
 <p n:if="$year != INF">
-	<a class="buttonLike" n:href="this, INF">{include svg icon => check} Zobrazit všechny akce</a>
+	<a class="buttonLike" n:href="this, yp-year => INF">{include svg icon => check} Zobrazit všechny akce</a>
 </p>
 
 

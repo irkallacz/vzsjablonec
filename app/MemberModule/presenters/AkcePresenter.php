@@ -18,8 +18,6 @@ use Tracy\Debugger;
 
 class AkcePresenter extends LayerPresenter {
 	const FORUM_AKCE_ID = 2;
-	const YEARS_START = 2007;
-	const YEARS_STEP = 3;
 
 	/** @var Model\AkceService @inject */
 	public $akceService;
@@ -54,27 +52,10 @@ class AkcePresenter extends LayerPresenter {
 	/** @var array */
 	private $memberList;
 
-	/**
-	 * @param string|NULL $year
-	 */
-	public function renderDefault($year = NULL) {
-		$YEARS_END = intval(date('Y'));
-
-		switch ($year) {
-			case NULL:
-				$year = NAN;
-				break;
-			case 'INF':
-				$year = INF;
-				break;
-			default:
-				$year = intval($year);
-		}
+	public function renderDefault() {
+		$year = $this['yp']->year;
 
 		if (is_int($year)) {
-			if ($year < self::YEARS_START) $this->redirect('this', self::YEARS_START);
-			if ($year > $YEARS_END) $this->redirect('this', $YEARS_END);
-
 			$akce[0] = [];
 		} else {
 			$akce[0] = $this->akceService->getAkceByFuture(TRUE);
@@ -84,30 +65,15 @@ class AkcePresenter extends LayerPresenter {
 
 		$this->template->year = $year;
 
-		if (is_int($year)) $akce[1]->where('YEAR(date_start)', $year); else $year = $YEARS_END;
-
-		$count = 2 * self::YEARS_STEP;
-		$start = self::YEARS_START + (($year - self::YEARS_START) - self::YEARS_STEP);
-		$end = $start + $count;
-
-		if ($end > $YEARS_END) {
-			$start = $YEARS_END - $count;
-			$end = $YEARS_END;
-		}
-
-		if ($start < self::YEARS_START) {
-			$start = self::YEARS_START;
-			$end = self::YEARS_START + $count;
-		}
-
-		$this->template->years = range($start, $end);
-
-		if (is_int($this->template->year)) $this->template->prev = (($year - 1) >= self::YEARS_START) ? ($year - 1) : NULL; else $this->template->prev = $YEARS_END;
-		$this->template->next = (($year + 1) <= $YEARS_END) ? ($year + 1) : NULL;
+		if (is_int($year)) $akce[1]->where('YEAR(date_start)', $year);
 
 		$this->template->akceAllList = $akce;
 		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());
 		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(), TRUE);
+	}
+
+	public function createComponentYp() {
+		return new Components\YearPaginator(2007);
 	}
 
 	/**
