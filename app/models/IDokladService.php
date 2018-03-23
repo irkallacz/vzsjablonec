@@ -130,13 +130,13 @@ class IDokladService extends Object {
 	public static function setContactData($user) {
 		$data = [
 			'CompanyName' => UserService::getFullName($user),
-			'CountryId' => 2,
-			'City' => $user->mesto,
-			'Email' => $user->mail,
 			'Firstname' => $user->name,
+			'Surname' => $user->surname,
+			'Email' => $user->mail,
 			'Mobile' => $user->telefon,
+			'City' => $user->mesto,
 			'Street' => $user->ulice,
-			'Surname' => $user->name
+			'CountryId' => 2,
 		];
 		return $data;
 	}
