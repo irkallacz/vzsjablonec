@@ -4,7 +4,7 @@
 	"type": "project",
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"require": {
-		"php": ">= 5.6",
+		"php": ">= 7.0",
 		"nette/application": "^2.4",
 		"nette/bootstrap": "^2.4.2",
 		"nette/caching": "^2.5",
@@ -16,25 +16,27 @@
 		"nette/mail": "^2.4",
 		"nette/robot-loader": "^2.4",
 		"nette/security": "^2.4",
-		"nette/utils": "^2.4",
+		"nette/utils": "v2.4.9",
 		"latte/latte": "^2.4",
 		"tracy/tracy": "^2.4",
 		"texy/texy": "^2.9",
 		"google/apiclient": "^2.1",
 		"janmarek/webloader": "^2.5",
 		"webchemistry/forms-multiplier": "^2.0",
-		"nextras/mail-panel": "^2.3",
 		"joseki/webloader-filters": "^1.1",
 		"echo511/plupload": "^2.1",
 		"lsolesen/pel": "^0.9.6",
 		"tedivm/stash": "^0.14.2",
-		"rah/danpu": "^2.6",
-		"contributte/console": "^0.2.0",
-		"nette/tester": "^2.0",
 		"kertz/twitteroauth": "dev-master",
-		"venca-x/social-login": "^1.0"
+		"venca-x/social-login": "^1.0",
+		"malcanek/iDoklad-v2": "dev-master",
+		"minetro/recaptcha": "2.0.0"
 	},
 	"require-dev": {
+	  "nette/tester": "^2.0",
+	  "nextras/mail-panel": "^2.3",
+	  "rah/danpu": "^2.6",
+	  "contributte/console": "^0.2.0"
 	},
 	"minimum-stability": "stable"
 }

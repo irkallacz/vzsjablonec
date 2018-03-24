@@ -2,13 +2,15 @@
 namespace App\CronModule\Presenters;
 
 use App\Model\UserService;
+use App\Model\AkceService;
 use Nette\Application\UI\Presenter;
 use Nette\Database\Table\ActiveRow;
-use App\Model\AkceService;
 use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 use Google_Service_Calendar_EventDateTime;
 use Google_Service_Calendar_EventAttendee;
+use Nette\Database\Table\Selection;
+use Tracy\Debugger;
 
 /**
  * Class CronPresenter
@@ -27,7 +29,18 @@ class CalendarPresenter extends Presenter {
 	/** @var Google_Service_Calendar @inject */
 	public $calendarService;
 
+	/**
+	 * Perform all actions
+	 */
 	public function actionDefault() {
+		$this->actionEvents();
+		$this->actionFollowers();
+	}
+
+	/**
+	 * Sync calendar with events database
+	 */
+	public function actionEvents() {
 		$eventList = [];
 
 		//Update events
@@ -54,6 +67,8 @@ class CalendarPresenter extends Presenter {
 			->order('date_add DESC');
 
 		foreach ($newEvents as $newEvent) {
+			/** @var ActiveRow $newEvent */
+
 			$event = $this->setEvent($newEvent, new Google_Service_Calendar_Event);
 
 			$createdEvent = $this->calendarService->events->insert(self::CALENDAR_ID, $event);
@@ -63,26 +78,60 @@ class CalendarPresenter extends Presenter {
 		}
 
 		//Remove deleted events
+		/** @var Selection $deleteEvents */
 		$deleteEvents = $this->akceService->getAkce()
 			->where('confirm = ? OR enable = ?', FALSE, FALSE)
 			->where('NOT calendarId', NULL)
 			->order('date_add DESC');
 
 		foreach ($deleteEvents as $deleteEvent) {
+			/** @var ActiveRow $deleteEvent */
+
 			$this->calendarService->events->delete(self::CALENDAR_ID, $deleteEvent->calendarId);
 			$deleteEvent->update(['calendarId' => NULL]);
 
 			$eventList[] = $deleteEvent->id;
 		}
+	}
 
-		//Add members to calendar
-		$members = $this->userService->getUsers(UserService::MEMBER_LEVEL)
-			->where('mail LIKE ?', '%@gmail.com');
+	/**
+	 * Sync all calendar followess with all users with Gmail accounts
+	 */
+	public function actionFollowers() {
+		$futureFollowers = $this->userService->getUsers(UserService::MEMBER_LEVEL)
+			->where('mail LIKE ?', '%@gmail.com')
+			->fetchPairs('id', 'mail');
 
-//		foreach ($members as $member){
-//			$aclRule = self::createAclRule($member);
-//			$this->calendarService->acl->insert(self::CALENDAR_ID, $aclRule);
-//		}
+		$pastFollowers = $this->userService->getUsers(UserService::DELETED_LEVEL)
+			->where('mail LIKE ?', '%@gmail.com')
+			->fetchPairs('id', 'mail');
+
+
+		$alcRules = $this->calendarService->acl->listAcl(self::CALENDAR_ID)->getItems();
+
+		$currentFollowers = [];
+		foreach ($alcRules as $rule) {
+			$ruleId = $rule->getId();
+			$mail = $rule->getScope()->getValue();
+			$currentFollowers[$ruleId] = $mail;
+		}
+
+		$differences = UserService::getDifferences($futureFollowers, $currentFollowers);
+
+		//Set new users to follow calendar
+		foreach ($differences['add'] as $mail) {
+			$aclRule = self::createAclRule($mail);
+			$this->calendarService->acl->insert(self::CALENDAR_ID, $aclRule);
+		}
+
+		//Remove followers from calendar witch are no longer users
+		foreach ($differences['delete'] as $mail) {
+			if (in_array($mail, $pastFollowers, TRUE)) {
+				$ruleId = array_search($mail, $currentFollowers);
+				$this->calendarService->acl->delete(self::CALENDAR_ID, $ruleId);;
+			}
+		}
+
 	}
 
 	/**
@@ -102,6 +151,7 @@ class CalendarPresenter extends Presenter {
 		$event->setEnd($end);
 		$event->setVisibility($akce->visible ? 'public' : 'private');
 
+		//Add attendees to event
 		$attendees = [];
 		foreach ($this->userService->getUsersByAkceId($akce->id)->where('NOT role', NULL) as $member) {
 			$attendee = new Google_Service_Calendar_EventAttendee();
@@ -115,12 +165,16 @@ class CalendarPresenter extends Presenter {
 		return $event;
 	}
 
-	private static function createAclRule(ActiveRow $member) {
+	/**
+	 * @param string $mail
+	 * @return \Google_Service_Calendar_AclRule
+	 */
+	private static function createAclRule($mail) {
 		$aclRule = new \Google_Service_Calendar_AclRule();
 		$aclRule->setRole('reader');
 		$scope = new \Google_Service_Calendar_AclRuleScope();
 		$scope->setType('user');
-		$scope->setValue($member->mail);
+		$scope->setValue($mail);
 		$aclRule->setScope($scope);
 		return $aclRule;
 	}

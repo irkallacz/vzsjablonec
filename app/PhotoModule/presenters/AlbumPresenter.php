@@ -7,6 +7,8 @@ use App\Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
+use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\IRow;
 use Nette\Utils\DateTime;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
@@ -16,7 +18,6 @@ use Echo511\Plupload\Entity\UploadQueue;
 use Nette\Http\FileUpload;
 use lsolesen\pel\PelJpeg;
 use Tracy\Debugger;
-use WebChemistry\Forms\Controls\Multiplier;
 
 class AlbumPresenter extends BasePresenter {
 
@@ -34,10 +35,11 @@ class AlbumPresenter extends BasePresenter {
 	const LOAD_COUNT = 30;
 
 	/**
-	 * @param $slug
-	 * @return \Nette\Database\Table\IRow
+	 * @param string $slug
+	 * @return IRow|ActiveRow
+	 * @throws BadRequestException
 	 */
-	public function getAlbumById($slug) {
+	public function getAlbumById(string $slug) {
 		$id = parent::getIdFromSlug($slug);
 
 		$album = $this->gallery->getAlbumById($id);
@@ -68,9 +70,9 @@ class AlbumPresenter extends BasePresenter {
 
 
 	/**
-	 * @param $offset
+	 * @param int $offset
 	 */
-	public function handleLoadMore($offset) {
+	public function handleLoadMore(int $offset) {
 		$this->offset = $offset;
 		$this->redrawControl();
 	}
@@ -94,10 +96,10 @@ class AlbumPresenter extends BasePresenter {
 	}
 
 	/**
-	 * @param $slug
-	 * @param null $pubkey
+	 * @param string $slug
+	 * @param string|NULL $pubkey
 	 */
-	public function renderView($slug, $pubkey = null) {
+	public function renderView(string $slug, string $pubkey = NULL) {
 		$album = $this->getAlbumById($slug);
 		$this->template->album = $album;
 
@@ -121,11 +123,12 @@ class AlbumPresenter extends BasePresenter {
 	}
 
 	/**
-	 * @param $slug
+	 * @param string $slug
 	 * @param string $order
 	 * @allow(member)
+	 * @throws ForbiddenRequestException
 	 */
-	public function renderEdit($slug, $order = 'order') {
+	public function renderEdit(string $slug, string $order = 'order') {
 		$album = $this->getAlbumById($slug);
 		$this->template->album = $album;
 
@@ -143,6 +146,7 @@ class AlbumPresenter extends BasePresenter {
 		$this->template->photos = $photos;
 		$this->template->slug = $slug;
 
+		/** @var Form $form*/
 		$form = $this['superForm'];
 		if (!$form->isSubmitted()) {
 			$form->setDefaults($album);
@@ -151,23 +155,25 @@ class AlbumPresenter extends BasePresenter {
 	}
 
 	/**
-	 * @param $slug
+	 * @param string $slug
 	 * @allow(user)
 	 */
-	public function renderAdd($slug) {
+	public function renderAdd(string $slug) {
 		$album = $this->getAlbumById($slug);
 		$this->template->album = $album;
 		$this->template->slug = $slug;
 	}
 
 	/**
-	 * @param $slug
-	 * @param bool $visible
+	 * @param string $slug
+	 * @param bool|NULL $visible
 	 * @allow(admin)
 	 */
-	public function actionSetAlbumVisibility($slug, $visible = FALSE) {
+	public function actionSetAlbumVisibility(string $slug, bool $visible = FALSE) {
 		$id = parent::getIdFromSlug($slug);
-		$this->gallery->getAlbumById($id)->update(['visible' => $visible]);
+
+		$album = $this->gallery->getAlbumById($id);
+		$album->update(['visible' => $visible]);
 
 		$text = $visible ? null : 'ne';
 		$this->flashMessage('Album bylo označeno jako ' . $text . 'viditelné pro veřenost');
@@ -176,10 +182,11 @@ class AlbumPresenter extends BasePresenter {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @allow(member)
+	 * @throws ForbiddenRequestException
 	 */
-	public function actionDeleteAlbum($id) {
+	public function actionDeleteAlbum(int $id) {
 		$album = $this->gallery->getAlbumById($id);
 
 		if (!(($album->member_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
@@ -245,7 +252,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @param FileUpload $file
 	 */
 	public function pluploadSubmbited(FileUpload $file) {
-		$slug = (string)$this->getParameter('slug');
+		$slug = (string) $this->getParameter('slug');
 		$id = parent::getIdFromSlug($slug);
 
 		$datum = new DateTime();
@@ -305,9 +312,10 @@ class AlbumPresenter extends BasePresenter {
 
 		$form->addCheckBox('show_date', 'Upravit datum pořízení')
 			->setDefaultValue(FALSE)
-			->setAttribute('onclick', 'swapTitle(this)');
+			->setHtmlId('swap-title');
 
-		$form->addTextArea('text', 'Popis', 30);
+		$form->addTextArea('text', 'Popis', 30)
+			->setNullable();
 
 		$form->addMultiplier('photos', function (\Nette\Forms\Container $photo) {
 			$photo->addText('text', 'Popis', 30, 50);
@@ -344,12 +352,13 @@ class AlbumPresenter extends BasePresenter {
 	 * @allow(member)
 	 */
 	public function superFormSave() {
-		$slug = (string)$this->params['slug'];
+		$slug = (string) $this->params['slug'];
 		$id = parent::getIdFromSlug($slug);
 
-		$values = $this['superForm']->getValues();
+		/** @var Form $form*/
+		$form = $this['superForm'];
+		$values = $form->getValues();
 		$values->date_update = new Datetime();
-		$values->text = self::nullString($values->text);
 		$values->slug = Strings::webalize($values->name);
 
 		$show_date = $values->show_date;
@@ -358,7 +367,8 @@ class AlbumPresenter extends BasePresenter {
 		$photos = $values->photos;
 		unset($values->photos);
 
-		$this->gallery->getAlbumById($id)->update($values);
+		$album = $this->gallery->getAlbumById($id);
+		$album->update($values);
 
 		foreach ($photos as $order => $photo) {
 			$update = ['order' => $order];
@@ -367,7 +377,7 @@ class AlbumPresenter extends BasePresenter {
 				$datetime = $photo->text ? date_create($photo->text) : NULL;
 				if ($datetime == FALSE) $datetime = NULL;
 				$update['date_taken'] = $datetime;
-			} else $update['text'] = self::nullString($photo->text);
+			} else $update['text'] = $photo->text;
 
 			$this->gallery->getPhotoById($photo->id)->update($update);
 		}

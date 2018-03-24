@@ -6,46 +6,46 @@
   <title>Záznam akce {$akce->name}</title>
   <style type="text/css" media="print,screen" n:syntax="off">
   <!--
-    body {font-family: Arial, sans-serif; font-size: 10pt; }
-    table {width: 100%; margin-bottom: 1ex;}
-    #page {width: 660px;}
-    th,td {text-align: left; padding: 3px; font-weight: normal;}
-    td img {height: 60px;}
-    .up {text-transform: uppercase;}
-    h1,h2,h3 {font-size: 12pt; font-weight: bold; margin: 0px;}
-    h2 {text-decoration: underline;}
-    h3 {font-size: 10pt; text-decoration: underline; text-transform: uppercase; padding: 5px; margin-top: 1em }
-    .h1 {border-right: 1px solid black; width: 350px;}
-    .h2 {width: 500px;}
-    h3 {clear: both; page-break-after: avoid;}
-    .hr {border-bottom: 1px solid black; padding-bottom: 5px; }
-    .small {font-size: 8pt;}
-    .bor1 {border: 1px solid black;}
-    .bor2 {border: 2px solid black;}
-    .red {width: 50%; float: left; }
-    .red .col1 {width: 125px;}
-    .red .col2 {width: 200px;}
-    div.bor2 {margin: 3px; padding: 5px; height: 170px; overflow: auto;}
-    div.half {height: 100px}
-    .yellow {background-color: rgb(255,255,153);}
-    .under {text-decoration: underline;}
-    .col th {width: 120px;}
-    .close {width: 100px;}
-    .right {text-align: right;}
-    #poc {width: 220px;}
-    #akce {margin-bottom: 0em;}
-    #akce th {text-align: right;}
-    #akce .first {width: 50px;}
-    #akce .bor1 {width: 20px; font-weight: bold; text-align: center;}
-    #comp {border-collapse: collapse; margin: 3px; width: 650px;}
-    #comp .col1 {border-style: solid; border-color: black; border-width: 2px 0px 2px 2px; }
-    #comp .col2 {border-style: solid; border-color: black; border-width: 2px 0px 2px 0px; }
-    #comp .col3 {border-style: solid; border-color: black; border-width: 2px 0px 2px 0px; width: 60px;}
-    #comp .col4 {border-style: solid; border-color: black; border-width: 2px 2px 2px 0px; width: 60px;}
-    #comp th {border: 1px solid black;}
-    #comp td {font-size: 8pt;}
-    #comp th#vel {border: none !important;}
-    #comp .under, #comp .bor1 {font-size: 10pt;}
+    body { font-family: Arial, sans-serif; font-size: 10pt; }
+    table { width: 100%; margin-bottom: 1ex;}
+    #page { width: 660px;}
+    th,td { text-align: left; padding: 3px; font-weight: normal;}
+    td img { height: 60px;}
+    .up { text-transform: uppercase;}
+    h1,h2,h3 { font-size: 12pt; font-weight: bold; margin: 0px;}
+    h2 { text-decoration: underline;}
+    h3 { font-size: 10pt; text-decoration: underline; text-transform: uppercase; padding: 5px; margin-top: 1em }
+    .h1 { border-right: 1px solid black; width: 350px;}
+    .h2 { width: 500px;}
+    h3 { clear: both; page-break-after: avoid;}
+    .hr { border-bottom: 1px solid black; padding-bottom: 5px; }
+    .small { font-size: 8pt;}
+    .bor1 { border: 1px solid black;}
+    .bor2 { border: 2px solid black;}
+    .red { width: 50%; float: left; }
+    .red .col1 { width: 125px;}
+    .red .col2 { width: 200px;}
+    div.bor2 { margin: 3px; padding: 5px; height: 170px; overflow: auto;}
+    div.half { height: 100px}
+    .yellow { background-color: rgb(255,255,153);}
+    .under { text-decoration: underline;}
+    .col th { width: 120px;}
+    .close { width: 100px;}
+    .right { text-align: right;}
+    #poc { width: 220px;}
+    #akce { margin-bottom: 0em;}
+    #akce th { text-align: right;}
+    #akce .first { width: 50px;}
+    #akce .bor1 { width: 20px; font-weight: bold; text-align: center;}
+    #comp { border-collapse: collapse; margin: 3px; width: 650px;}
+    #comp .col1 { border-style: solid; border-color: black; border-width: 2px 0px 2px 2px; }
+    #comp .col2 { border-style: solid; border-color: black; border-width: 2px 0px 2px 0px; }
+    #comp .col3 { border-style: solid; border-color: black; border-width: 2px 0px 2px 0px; width: 60px;}
+    #comp .col4 { border-style: solid; border-color: black; border-width: 2px 2px 2px 0px; width: 60px;}
+    #comp th { border: 1px solid black;}
+    #comp td { font-size: 8pt;}
+    #comp th#vel { border: none !important;}
+    #comp .under, #comp .bor1 { font-size: 10pt;}
   //-->
   </style>
   </head>
@@ -100,7 +100,7 @@
    
    <h3>Popis akce</h3>
    <div class="bor2">
-   {$akce->popis|escape|nl2br}
+   {$akce->popis|escape|breaklines}
    </div>
    
    <h3>Účastníci</h3>
@@ -130,28 +130,28 @@
    {if $akce->material_ms}
    <h3>Použitý materiál na akce v majetku místní skupiny</h3>
    <div class="bor2">
-   {$akce->material_ms|escape|nl2br|noescape}
+   {$akce->material_ms|escape|breaklines|noescape}
    </div>
    {/if}
    
    {if $akce->material_cizi}
    <h3>Další použitý materiál</h3>
    <div class="bor2">
-   {$akce->material_cizi|escape|nl2br|noescape}
+   {$akce->material_cizi|escape|breaklines|noescape}
    </div>
    {/if} 
    
    {if $akce->material_ztraty}
    <h3>Ztráty a poškození materiálu</h3>
    <div class="bor2 half">
-   {$akce->material_ztraty|escape|nl2br|noescape}
+   {$akce->material_ztraty|escape|breaklines|noescape}
    </div>
    {/if}
    
    {if $akce->doprava}
    <h3>Doprava na akci a způsob její úhrady</h3>
    <div class="bor2 half">
-   {$akce->doprava|escape|nl2br|noescape}
+   {$akce->doprava|escape|breaklines|noescape}
    </div>
    {/if}
 

@@ -11,18 +11,16 @@
 
 <script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
 
-<script type="text/javascript">
-//<![CDATA[
-$.texyla.setDefaults({
-	baseDir: {$basePath}+'/texyla',
-	previewPath: {link texyPreview}
-});
+<script type="text/javascript" n:nonce>
+	$.texyla.setDefaults({
+		baseDir: {$basePath}+'/texyla',
+		previewPath: {link texyPreview}
+	});
 
-$(function () {
-	$('.texyla').textareaAutoSize();
-	$('.texyla').texyla(forum);
-});
-//]]>
+	$(function () {
+		$('.texyla').textareaAutoSize();
+		$('.texyla').texyla(forum);
+	});
 </script>
 {/block}
 
@@ -46,11 +44,11 @@ $(function () {
 <div class="right">{control vp}</div>
 
 <p class="float-right">
-	<a n:href="Feed:forum category => $forum->id" class="buttonLike">{include svg name => feed} RSS této kategorie</a>
+	<a n:href="Feed:forum category => $forum->id" class="buttonLike">{include svg icon => feed} RSS této kategorie</a>
 </p>
 
 <p>
-	<a n:href="search,null,$forum->id" class="buttonLike">{include svg name => search} Hledat ve fóru</a>
+	<a n:href="search,null,$forum->id" class="buttonLike">{include svg icon => search} Hledat ve fóru</a>
 </p>
 
 {if $user->isInRole('member')}

@@ -15,9 +15,11 @@
 	<p>Dnes je: <b>{$nowDate|date:'%A %d.%m.%Y %H:%M'}</b>.
 	Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p>
 
-	{if isset($novinky) && $novinky->post_status == 'publish'}
-	<h2>Aktuálně</h2>
-	<p>{$novinky->post_content|noescape}</p>
+	{if ((isset($novinky))and($novinky))}
+		<h2>Aktuálně</h2>
+		<p>{$novinky->post_content|noescape}</p>
+
+		<p><a href="https://www.vzs-jablonec.cz/category/aktualne" target="_blank">všechny aktuality</a></p>
 	{/if}
 
 	<h2>Novinky</h2>
@@ -43,6 +45,13 @@
 			   title="{$file->modifiedTime|timeAgoInWords}">{$file->name}</a></li>
 	</ol>
 	{/if isset($file)}
+
+	{if}<h3>Zprávy</h3>
+		<ol class="news" n:inner-foreach="$messageList as $message">
+			<li><a n:class="$message->user_id == $user->getId() ? logged" n:href="Mail:default#message/$message->id"
+						title="{$message->date_add|timeAgoInWords}">{$message->subject}</a></li>
+		</ol>
+	{/if isset($message)}
 
 	{if}<h3>Alba</h3>
 		<ol class="news" n:inner-foreach="$albumList as $album">

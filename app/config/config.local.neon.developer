@@ -1,14 +1,19 @@
 parameters:
 	google:
+		driveDir: olqBGlusVSO2QWsuaOq0WpazaQqK
 		login:
 			clientSecret: 123456789
 	facebook:
 		login:
 			appSecret: 987654321
+	recaptcha:
+		siteKey: GrcZy3jKLti1aKGi0hLJuaRxBX3rxOxcb44p5rZV
+		secretKey: kKtcntSs85ITBXqZVwwZTFMVPb6xcRCTrmokMTWF
 
 session:
 	expiration: 12 hours
 	namespace: vzsjablonec
+	cookie_secure: false
 
 tracy:
 	editor: 'phpstorm://open/?file=%file&line=%line'

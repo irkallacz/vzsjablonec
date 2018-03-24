@@ -6,6 +6,7 @@
 
 namespace App\Model;
 
+use Nette\Database\Context;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 use Nette\Utils\DateTime;
@@ -15,8 +16,21 @@ class DokumentyService extends DatabaseService {
 	const TABLE_DOKUMENTY = 'dokumenty';
 	const TABLE_DIRECTORIES = 'dokumenty_directories';
 
-	const DOCUMENT_DIR_ID = '0Bw4dUSMcekaVdklkS0htZWxMeHM';
 	const DIR_MIME_TYPE = 'application/vnd.google-apps.folder';
+
+	/** @var string */
+	public $driveDir;
+
+	/**
+	 * DokumentyService constructor.
+	 * @param $driveDir
+	 * @param Context $database
+	 */
+	public function __construct(string $driveDir, Context $database) {
+		parent::__construct($database);
+		$this->driveDir = $driveDir;
+	}
+
 
 	public function emptyTables() {
 		$this->database->query('DELETE FROM ' . self::TABLE_DIRECTORIES);
@@ -57,34 +71,34 @@ class DokumentyService extends DatabaseService {
 	}
 
 	/**
-	 * @param $id
+	 * @param string $id
 	 * @return bool|int|IRow
 	 */
-	public function getDirectoryById($id) {
+	public function getDirectoryById(string $id) {
 		return $this->getDirectories()->get($id);
 	}
 
 	/**
-	 * @param $values
+	 * @param array $values
 	 * @return bool|int|IRow
 	 */
-	public function addDirectory($values) {
+	public function addDirectory(array $values) {
 		return $this->getDirectories()->insert($values);
 	}
 
 	/**
-	 * @param $id
+	 * @param string $id
 	 * @return bool|int|IRow
 	 */
-	public function getDokumentById($id) {
+	public function getDokumentById(string $id) {
 		return $this->getDokumenty()->get($id);
 	}
 
 	/**
-	 * @param $values
+	 * @param array $values
 	 * @return bool|int|IRow
 	 */
-	public function addFile($values) {
+	public function addFile(array $values) {
 		return $this->getDokumenty()->insert($values);
 	}
 

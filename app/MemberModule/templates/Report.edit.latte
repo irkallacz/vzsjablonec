@@ -36,25 +36,25 @@ form textarea {width: 100%}
 
 {control texylaJs}
 
-<script type="text/javascript">
-function removeRow(elem){
-  p = elem.parentNode;
-  p.parentNode.removeChild(p);
-}
+<script type="text/javascript" n:nonce>
+    function removeRow(elem){
+      p = elem.parentNode;
+      p.parentNode.removeChild(p);
+    }
 
-$.texyla.setDefaults({
-    baseDir: {$basePath}+'/texyla',
-    previewPath: {link texyPreview, TRUE}
-});
+    $.texyla.setDefaults({
+        baseDir: {$basePath}+'/texyla',
+        previewPath: {link texyPreview, TRUE}
+    });
 
-$(function() {		
-    var elem = document.createElement('input');
-    elem.setAttribute('type', 'date');
+    $(function() {
+        var elem = document.createElement('input');
+        elem.setAttribute('type', 'date');
 
-    if (elem.type === 'text') $(".date").datepicker();
+        if (elem.type === 'text') $(".date").datepicker();
 
-    $('.texyla').texyla(akce_public);
-	});	
+        $('.texyla').texyla(akce_public);
+        });
 </script>
 {/block}
 

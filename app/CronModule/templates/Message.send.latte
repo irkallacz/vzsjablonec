@@ -1,0 +1,5 @@
+{ifset $items}
+	{foreach $items as $id => $item}
+		  {$id} {$item|date:'d.m.Y H:i:s'}<br />
+	{/foreach}
+{/ifset}

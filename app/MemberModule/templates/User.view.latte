@@ -1,9 +1,36 @@
 {block #head}
 	<style type="text/css" n:syntax="off">
-		#photo { margin-right: 1em; margin-bottom: 1em;}
-		.out { margin-left: 1em;}
-		.bulletless { list-style-type: none;}
-		#member { width: 75%;}
+		.out { margin-left: 40px}
+		.bullet-less { list-style-type: none;}
+
+		.buttonMenu, .buttonMenu li { float: none; }
+
+		.card { position: relative; color: white; margin-top: 1em; max-width: 53em;}
+		.card, .square table { font-family: Arial, 'sans-serif';}
+		.line { display: none; }
+		.square { background-color: white;}
+		.square table { text-align: left; color: black; border-collapse: collapse; font-size: 1.2em; height: 150px;}
+		.square table th, .square table td { padding: 0 1ex; font-weight: bold;}
+		.square table th { text-align: right; border-right: 2px solid silver; font-weight: normal}
+		#first { display: block; text-align: right; padding-bottom: 0.6ex; padding-right: 1.5em; border-radius: 1.5em 1.5em 0 0;}
+		#photo { background-color: silver; color: gray; padding: 65px 0;}
+		.card #logo { display: none; }
+
+		@media screen and (min-width: 600px) {
+			.card .buttonMenu { margin-top: 0; padding-bottom: 2ex;}
+
+			.card .line { display: block; height: 1.4em; font-weight: bold; font-size: 1.5em; padding-top: 0.5ex; padding-left: 1.5em; overflow: hidden;}
+			.card .line .buttonLike { font-size: 0.70em; }
+			.card #logo { display: block; position: absolute; bottom: 1em; right: 1em; background-color: white; padding: 1em; border-radius: 100%;}
+
+			.card .square { padding: 1em 1em 2em 1.1em; }
+			.card .square table th, .square table td { padding: 0 1em; }
+			.card .blue { background-color: #12397e;}
+			.card .red { background-color: #da251c; color: white;}
+			.card .yellow { background-color: #fac232; height: 0;}
+
+			.card #last { display: block; height: 2em; border-radius: 0 0 1.5em 1.5em; }
+		}
 	</style>
 	<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 {/block}
@@ -11,85 +38,113 @@
 <h1 n:block="#title">Osobní profil</h1>
 
 {block #content}
-<ul class="buttonMenu">
-	<li n:if="(($user->isInRole('admin')or($member->id == $user->getId()))and(!is_null($member->role)))">
-		<a class="buttonLike" n:href="edit,$member->id">
-			{include svg name => pencil} editovat
-		</a>
-	</li>
-	<li n:if="($user->isInRole('board'))and(!is_null($member->role))">
-		<a class="buttonLike confirm" n:href="delete,$member->id" data-query="Opravdu chcete tohoto člena smazat? Tento krok může vrátit jen admin.">
-			{include svg name => trash} smazat
-		</a>
-	</li>
-	<li n:if="($user->isInRole('admin'))and(is_null($member->role))">
-		<a class="buttonLike confirm" n:href="activate,$member->id" data-query="Opravdu chcete tohoto uživatele aktivovat?">
-			{include svg name => ok} aktivovat
-		</a>
-	</li>
-	<li n:if="($user->isInRole('board'))and(!is_null($member->role))">
-		<a class="buttonLike" n:href="resetPassword, $member->id">
-			{include svg name => repeat} resetovat heslo
-		</a>
-	</li>
-</ul>
+<div n:class="$member->role ? card">
+	<img n:if="$member->role" src="{$basePath}/img/vzs.svg" alt="logo" height="150" id="logo">
+	<div class="line red" id="first">
+		<ul class="buttonMenu">
+			<li n:if="($user->isInRole('admin'))and(is_null($member->role))">
+				<a class="buttonLike confirm" n:href="activate $member->id" data-query="Opravdu chcete tohoto uživatele aktivovat?">
+					{include svg icon => check} aktivovat
+				</a>
+			</li>
+			{if ($user->isInRole('board'))and(!is_null($member->role))}
+			<li>
+				<a class="buttonLike" n:href="resetPassword $member->id">
+					{include svg icon => repeat} resetovat heslo
+				</a>
+			</li>
+			<li>
+				<a class="buttonLike confirm" n:href="delete $member->id" data-query="Opravdu chcete tohoto člena smazat? Tento krok může vrátit jen admin.">
+					{include svg icon => trash} smazat
+				</a>
+			</li>
+			{/if}
+			<li n:if="(($user->isInRole('admin')or($member->id == $user->getId()))and(!is_null($member->role)))">
+				<a class="buttonLike" n:href="edit,$member->id">
+					{include svg icon => pencil} editovat
+				</a>
+			</li>
+		</ul>
+	</div>
+	<div class="line yellow"></div>
+	<div class="line blue">Vodní záchranná služba ČČK, Jablonec nad Nisou, p.s.</div>
+	<div class="square">
+		<table>
+			<tr><td rowspan="4">
+					{if $filename}
+						<a href="{$baseUri}/{$filename}" target="_blank"><img src="{$baseUri}/{$filename}" alt="fotografie" height="150"></a>
+					{else}
+						<div id="photo">FOTOGRAFIE</div>
+					{/if}
+				</td>
+				<th>Jméno</th><td>{$member->name}</td>
+			</tr>
+			<tr>
+				<th>Příjmení</th><td>{$member->surname}</td>
+			</tr>
+			<tr>
+				<th>Osobní číslo</th><td>{$member->id|padLeft:3:0}</td>
+			</tr>
+			<tr>
+				<th>Registrace</th><td>{if $member->date_add}{$member->date_add|date:'d.m.Y'}{/if}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="line blue">ČLENSKÝ PRŮKAZ</div>
+	<div class="line yellow"></div>
+	<div class="line red" id="last">www.vzs-jablonec.cz</div>
+</div>
 
-<div n:if="$fileExists" class="float-left" id="photo"><img src="{$basePath}/img/portrets/{$member->id}.jpg" alt="fotografie"></div>
-
-<a class="buttonLike head" n:href="vcf, $member->id" title="stáhnout vizitku ve formátu .vfc">
-	{include svg name => user} {$member->name} {$member->surname}
-</a>
-
-<div id="member" class="float-left">
-
-	<p>{include svg name => user} <b>Osobní číslo:</b> {$member->id}</p>
+<div id="member">
 	{if $user->isInRole('board')}
-		<p>{include svg name => calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$narozeni->format('%y')} let)</p>
-		<ul class="bulletless">
+		<p n:if="$member->date_born">{include svg icon => calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$age->format('%y')} let)</p>
+		<ul class="bullet-less">
 			<li n:if="$member->date_add">
-				{include svg name => calendar-plus-o} <b>Datum registrace:</b>
+				{include svg icon => calendar-plus-o} <b>Datum registrace:</b>
 				<span title="{$member->date_add|timeAgoInWords}">
 					{$member->date_add|date:'d.m.Y'}
 				</span>
 			</li>
 			<li n:if="$member->date_update">
-				{include svg name => calendar-o} <b>Datum úpravy:</b>
+				{include svg icon => calendar-o} <b>Datum úpravy:</b>
 				<span title="{$member->date_update|timeAgoInWords}">
 					{$member->date_update|date:'d.m.Y'}
 				</span>
 			</li>
 			<li n:if="$last_login">
-				{include svg name => calendar-check-o} <b>Datum posledního přihlášení:</b>
+				{include svg icon => calendar-check-o} <b>Datum posledního přihlášení:</b>
 				<span title="{$last_login->date_add|timeAgoInWords}">
 					{$last_login->date_add|date:'d.m.Y H:i'}
 				</span>
 			</li>
 		</ul>
 	{else}
-		<p><b>Věk:</b> {$narozeni->format('%y')}</p>
+		<p n:if="$age"><b>Věk:</b> {$age->format('%y')}</p>
 	{/if}
 
-	<p>{include svg name => building} <b>Zaměstnání/Škola:</b> {$member->zamestnani}</p>
-
-{if $user->isInRole('member')}
-<h3>{include svg name => map-marker} Adresa:</h3>
-<address class="out">
-	{$member->ulice}<br>
-	{$member->mesto}
-</address>
-{/if}
-
-<h3>Kontakty:</h3>
-	<ul class="bulletless">
-		<li n:if="$member->mail">{include svg name => envelope} <b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a></li>
-		<li n:if="$member->telefon">{include svg name => phone} <b>Telefon:</b> {$member->telefon|number:0:'.':' '}</li>
-		<li n:if="$member->mail2">{include svg name => envelope-o} <b>Sekundární e-mail:</b> <a href="mailto:{$member->mail2}">{$member->mail2}</a></li>
-		<li n:if="$member->telefon2">{include svg name => phone-square} <b>Sekundární telefon:</b> {$member->telefon2|number:0:'.':' '}</li>
+	<h3>{include svg icon => address-book-o} Kontakty:</h3>
+	<ul class="bullet-less">
+		<li n:if="$member->mail">{include svg icon => envelope} <b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a></li>
+		<li n:if="$member->telefon">{include svg icon => phone} <b>Telefon:</b> {$member->telefon|number:0:'.':' '}</li>
+		<li n:if="$member->mail2">{include svg icon => envelope-o} <b>Sekundární e-mail:</b> <a href="mailto:{$member->mail2}">{$member->mail2}</a></li>
+		<li n:if="$member->telefon2">{include svg icon => phone-square} <b>Sekundární telefon:</b> {$member->telefon2|number:0:'.':' '}</li>
 	</ul>
 
-<div id="poznamka">
-{$member->text|noescape|texy}
-</div>
+	<p>{include svg icon => building} <b>Zaměstnání/Škola:</b> {$member->zamestnani}</p>
+
+	{if $user->isInRole('member')}
+		<h3>{include svg icon => map-marker} Adresa:</h3>
+		<address class="out">
+			{$member->ulice}<br>
+			{$member->mesto}
+		</address>
+	{/if}
+
+	<p n:if="($user->isInRole('member'))"><a n:href="vcf $member->id" class="buttonLike">{include svg icon => address-card-o} stáhnout vizitku</a></p>
+
+	<div id="poznamka">
+		{$member->text|noescape|texy}
+	</div>
 
 </div>
 {/block}

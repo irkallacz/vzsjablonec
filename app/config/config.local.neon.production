@@ -24,6 +24,7 @@ parameters:
 			user: w133882_bde69a3
 			password: jdLEC785
 	google:
+		driveDir: olqBGlusVSO2QWsuaOq0WpazaQqK
 		login:
 			clientSecret: 123456789
 			callbackURL: https://member.vzs-jablonec.cz/sign/googlelogin
@@ -31,7 +32,20 @@ parameters:
 		login:
 			appSecret: 987654321
 			callbackURL: https://member.vzs-jablonec.cz/sign/facebooklogin
-
+	idoklad:
+		clientId: 12345678-abcd-efgh-ijkl-098765432100
+		clientSecret: 98765432-lkji-hgfe-dcba-001234567890
+		redirectUri: ''
+	recaptcha:
+		siteKey: GrcZy3jKLti1aKGi0hLJuaRxBX3rxOxcb44p5rZV
+		secretKey: kKtcntSs85ITBXqZVwwZTFMVPb6xcRCTrmokMTWF
 
 tracy:
 	email: webmaster@vzs-jablonec.cz
+
+session:
+#	cookieDomain: 'vzs-jablonec.cz'
+
+http:
+	csp:
+		default-src: 'https:'

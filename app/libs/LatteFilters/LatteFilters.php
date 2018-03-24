@@ -2,6 +2,8 @@
 
 namespace App\Template;
 
+use Tracy\Debugger;
+
 class LatteFilters{
 
     static $root = '';
@@ -99,24 +101,44 @@ class LatteFilters{
     }
 
 
+	/**
+	 * @return \Texy\Texy
+	 */
+	private static function createTexy(){
+		$texy = new \Texy\Texy();
+
+		$texy->addHandler('phrase', function (\Texy\HandlerInvocation $invocation){
+			$el = $invocation->proceed();
+			// ověř, že $el je objekt HtmlElement a že jde o element 'a' a uprav jej
+			if ($el instanceof \Texy\HtmlElement && $el->getName() === 'a') $el->attrs['target'] = '_blank';
+
+			return $el;
+		});
+
+		return $texy;
+	}
+
     /**
      * @param $s
      * @return string
      */
     public static function texy($s){
-        $texy = new \Texy\Texy();
+        $texy = self::createTexy();
         $texy->headingModule->balancing = \Texy\Modules\HeadingModule::FIXED;
-        return $texy->process($s);
+
+		return $texy->process($s);
     }
 
-    /**
+	/**
      * @param $s
      * @return string
      */
     public static function forumTexy($s){
-        $texy = new \Texy\Texy();
+        $texy = self::createTexy();
 
-        $texy->allowed['emoticon'] = TRUE;
+		$texy->allowedTags += ['mark' => TEXY_ALL];
+
+		$texy->allowed['emoticon'] = TRUE;
         $texy->emoticonModule->class = 'smile';
         $texy->emoticonModule->root = self::$root . '/texyla/emoticons';
         $texy->emoticonModule->fileRoot = WWW_DIR . '/texyla/emoticons';

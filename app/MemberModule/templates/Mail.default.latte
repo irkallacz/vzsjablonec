@@ -1,88 +1,79 @@
 {block #head}
-<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
-
-<style type="text/css" n:syntax="off">
-#text { padding-top: 1ex;}
-#mail { width: 95%; border-collapse: collapse;}
-#mail .texyla { width: 96%;}
-#mail .max { width: 90%;}
-#mail th { text-align: left;}
-#frm-mailForm-open { font-size: 1em; height: 2em; padding: 0px 1ex; vertical-align: middle;}
-
-input.buttonLike { border: none; cursor: pointer; font-size: 1.1em}
-input.buttonLike:hover, input.buttonLike:focus,
-input.buttonLike:active { background-color: #da251c; color: white; background-image: none;}
-
-#adresati div.label { width: 15em; }
-#adresati { background-color: #EEE; border: 1px solid gray; border-radius: 2px; color: rgb(64,64,64); margin: 1ex 0px;}
-#adresati p { clear: both; padding-top: 1em; margin-bottom: 0px;}
+<style type="text/css">
+	body table { border-collapse: collapse; font-size: 100%; width: 100%}
+	article { border-radius: 1em; padding: 0 1em 1ex 1em; margin-bottom: 1em; }
+	.headerLike th { padding: 0.1em 0.5em;}
+	.header, .file { margin: 1ex 0;}
+	.member { font-size: small; overflow: hidden; height: 1.3em;}
+	.member:before { content: '...'; float: right; color: white; background-color: gray; font-weight: bold; border-radius: 1em; padding: 0 1ex;}
+	article:target .member, .member:hover { overflow: visible; height: auto;}
+	article:target .member:before, .member:hover:before { display: none}
 </style>
-<script type="text/javascript" src="{$baseUri}/js/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" src="{$baseUri}/js/jquery.shortcuts.min.js"></script>
-
-{control texylaJs}
-
-<script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
-<script type="text/javascript">
-	$.Shortcuts.add({
-	    	mask: 'Ctrl+A',
-	    	handler: function() {
-        		if($('#adresati').is(":visible")) $('#adresati input').attr('checked','true');
-    		}
-	});
-
-	$.texyla.setDefaults({
-		baseDir: {$basePath}+'/texyla',
-		previewPath: {link texyPreview}
-	});
-
-	$(function() {
-        $.Shortcuts.start();
-
-		$('.texyla').textareaAutoSize();
-		$('.texyla').texyla(forum);
-
-		$('#openButton').click(function(){
-			if($('#adresati').is(":visible")) {
-				$('#frm-mailForm-to').val('');
-				$('#adresati .label input:checked').each(function(index) {
-					$('#frm-mailForm-to').val($('#frm-mailForm-to').val()+this.getAttribute('data-mail')+',');
-				});
-			}
-			$('#adresati').slideToggle('fast');
-		})
-    });    
-</script>
 {/block}
 
-<h1 n:block="title">Hromadný mail</h1>
+<h1 n:block="title">Zprávy</h1>
 
 {block #content}
+	<ul class="buttonMenu">
+		<li n:if="$user->isInRole('board')"><a class="buttonLike" n:href="add">{include svg icon => plus} nová zpráva</a></li>
+		<li n:if="$presenter->action == send"><a class="buttonLike" n:href="default">{include svg icon => envelope-o} doručené</a></li>
+		<li n:if="$presenter->action == default"><a class="buttonLike" n:href="send">{include svg icon => envelope-o} odeslané</a></li>
+	</ul>
 
-{form mailForm}
+	<p>{control yp}</p>
 
-<ul class="error" n:if="$form->hasErrors()">
-  <li n:foreach="$form->errors as $error">{$error}</li>
-</ul>
+	<h2>{include svg icon => envelope} {if $presenter->action == default}Doručené{else}Odeslané{/if}</h2>
 
-<table id="mail">
-	<tr><th>{label to /}</th><td class="no-wrap">{input to} {if !isset($isAkce)}<button id="openButton" class="buttonLike" n:name="open">{include svg name => group}</button>{/if}</td></tr>
-<tr><td colspan="2">
-<fieldset id="adresati" class="hide" n:inner-foreach="$members as $member">
-    {if $iterator->isFirst()}<div class="float-left">{/if}
-		<div class="label"><input n:name="users:$member->id" class="member" {if !isset($isAkce)}data-mail="{$member->mail}"{/if}> <label n:name="users:$member->id">{$member->surname} {$member->name}</label></div>
-    {if !($iterator->getCounter()%$pocet)} </div><div class="float-left"> {/if}
-	{if $iterator->isLast()}</div><p><i>Pro výběr všech položek využijte klávesovou zkratku Ctrl + A</i></p>{/if}
-</fieldset>
-</td></tr>
-<tr><th>{label subject /}</th><td>{input subject}</td></tr>
-<tr><th>{label file /}</th><td>{input file}</td></tr>
-<tr><th colspan="2">{label text /}</th></tr>
-<tr><td colspan="2">{input text}</td></tr>
-</table>
-{*<p>{input ok}</p>*}
-{/form}
+	{foreach $messages as $message}
+
+		{var $param = $message->param ? $message->param : '[]'}
+		{var $param = Nette\Utils\Json::decode($param)}
+
+		<article id="message/{$message->id}" n:class="borderLike, target, ($user->id == $message->user_id) ? logged, $message->date_add > $user->getIdentity()->date_last ? 'new'">
+		<table>
+			<tr class="headerLike">
+				<th class="left">
+					{if ($message->message_type_id == App\Model\MessageService\Message::CUSTOM_MESSAGE_TYPE)}
+						{$message->subject}
+					{else}
+						<a n:ifset="$param->akce_id" n:href="Akce:view $param->akce_id">{$message->subject}</a>
+						<a n:ifset="$param->user_id" n:href="User:view $param->user_id">{$message->subject}</a>
+						<a n:ifset="$param->hlasovani_id" n:href="Hlasovani:view $param->hlasovani_id">{$message->subject}</a>
+					{/if}
+				</th>
+				<th class="right">
+					{if ($message->date_send)}
+						<a href="#message/{$message->id}">{$message->date_send|date:'%A %d.%m.%Y %H:%M'}</a>
+					{else}
+						bude odesláno {$nextSendTime|timeAgoInWords}
+					{/if}
+				</th>
+			</tr>
+			<tr class="bottom">
+				<td colspan="2">
+					<div class="header">
+						<div><a n:href="User:view $message->user_id">{include svg icon => user} {$message->user->surname} {$message->user->name}</a></div>
+						<div class="member" n:inner-foreach="$message->related('message_user')->order('user.surname, user.name DESC') as $member">
+							{first}{include svg icon => user-o}{/first} {$member->user->surname} {$member->user->name}{sep},{/sep}
+						</div>
+					</div>
+					<div class="texy">
+						{$message->text|texy|noescape}
+					</div>
+					<div class="file" n:ifset="$param->filename">{include svg icon => paperclip} <a href="{$baseUri}/doc/message/{$param->filename}">{$param->filename}</a></div>
+					<ul class="buttonMenu" n:if="$presenter->action == 'send'">
+						<li n:if="!$message->date_send"><a class="buttonLike" n:href="edit $message->id">{include svg icon => pencil} editovat</a></li>
+						<li n:if="($user->isInRole('admin'))or(!$message->date_send)"><a class="buttonLike" n:href="delete $message->id">{include svg icon => trash} smazat</a></li>
+					</ul>
+				</td>
+			<tr>
+		</table>
+		</article>
+
+	{/foreach}
+
+	{*<p n:if="$year != INF">*}
+		{*<a class="buttonLike" n:href="this, yp-year => INF">{include svg icon => check} Zobrazit všechny zprávy</a>*}
+	{*</p>*}
 
 {/block}

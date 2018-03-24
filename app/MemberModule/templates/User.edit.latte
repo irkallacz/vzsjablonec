@@ -13,13 +13,14 @@
 	form table th label { font-weight: normal;}
  	.required label { font-weight: bold;}
 	#ui-datepicker-div { font-size: 1em;}
+	.error { color: red;}
 -->
 </style>
 
 <script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
 <script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
 
-<script type="text/javascript">
+<script type="text/javascript" n:nonce>
 	$(function() {		
 		var elem = document.createElement('input');
       	elem.setAttribute('type', 'date');
@@ -34,6 +35,14 @@
 <h1 n:block="title">Osobní profil</h1>
 
 {block #content}
+
+	<ul class="buttonMenu" n:ifset="$id" n:if="($user->id == $id)">
+		<li>
+			<a class="buttonLike" n:href="password $id">
+				{include svg icon => pencil} změna hesla
+			</a>
+		</li>
+	</ul>
 
 {control memberForm}
 

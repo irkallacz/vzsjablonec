@@ -2,17 +2,20 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Forms\UserFormFactory;
+use App\Model\MessageService;
 use App\Model\UserService;
+use App\Template\LatteFilters;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
-use Nette\Mail\IMailer;
+use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\IRow;
 use Nette\Security\Passwords;
-use Nette\Utils\Strings;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
-use Google_Service_People;
+use Nette\Utils\Strings;
 use Tracy\Debugger;
 
 class UserPresenter extends LayerPresenter {
@@ -20,13 +23,16 @@ class UserPresenter extends LayerPresenter {
 	/** @var UserService @inject */
 	public $userService;
 
-	/** @var IMailer @inject */
-	public $mailer;
+	/** @var MessageService @inject */
+	public $messageService;
 
-	/** @var Google_Service_People @inject */
-	public $googleService;
+	/** @var UserFormFactory @inject */
+	public $userFormFactory;
 
-	public function actionDefault($q = null) {
+	/**
+	 * @param string|null $q
+	 */
+	public function actionDefault(string $q = null) {
 		$searchList = [];
 		if ($q) {
 			$searchList['members'] = $this->userService->searchUsers($q, UserService::MEMBER_LEVEL);
@@ -89,31 +95,34 @@ class UserPresenter extends LayerPresenter {
 		$this->redrawControl();
 	}
 
-	/** @allow(admin) */
-	public function actionGoogle() {
-		$people = $this->googleService->people->get('people/me', ['personFields' => 'names,emailAddresses']);
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
+	 */
+	public function renderView(int $id) {
+		$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
-		Debugger::dump($people);
-	}
-
-	public function renderView($id) {
-		$member = $this->userService->getTable()->get($id);
-
-		if (!$member) {
+		if (!$user) {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		if ((!$member->role)and($this->getUser()->getId() != $id)and(!$this->getUser()->isInRole('board'))){
+		if ((!$user->role) and ($this->getUser()->getId() != $id) and (!$this->getUser()->isInRole('board'))){
 			throw new ForbiddenRequestException('Nemáte práva prohlížete tohoto uživatele');
 		}
 
-		$this->template->narozeni = $member->date_born->diff(date_create());
-		$this->template->member = $member;
-		$this->template->last_login = $member->related('user_log')->order('date_add DESC')->fetch();
-		$this->template->fileExists = file_exists(WWW_DIR . '/img/portrets/' . $id . '.jpg');
-		$this->template->title = $member->surname . ' ' . $member->name;
+		$this->template->age = ($user->date_born) ? $user->date_born->diff(new DateTime()) : NULL;
+		$this->template->member = $user;
+		$this->template->last_login = $user->related('user_log')->order('date_add DESC')->fetch();
+
+		$fileName = self::getUserImageName($user);
+		$this->template->filename = file_exists(WWW_DIR . $fileName) ? $fileName : NULL;
+		$this->template->title = UserService::getFullName($user);
 	}
 
+	/**
+	 * @allow(member)
+	 */
 	public function actionVcfArchive() {
 		$zip = new \ZipArchive;
 		$zip->open(WWW_DIR . '/archive.zip', \ZIPARCHIVE::CREATE | \ZIPARCHIVE::OVERWRITE);
@@ -124,8 +133,7 @@ class UserPresenter extends LayerPresenter {
 
 		foreach ($this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name') as $member) {
 			$template->member = $member;
-			$s = (string)$template;
-			//$s = iconv('utf-8','cp1250',$s);
+			$s = (string) $template;
 			$zip->addFromString(Strings::toAscii($member->surname) . ' ' . Strings::toAscii($member->name) . '.vcf', $s);
 		}
 
@@ -140,6 +148,9 @@ class UserPresenter extends LayerPresenter {
 		$this->sendResponse($response);
 	}
 
+	/**
+	 * @allow(member)
+	 */
 	public function renderCsv() {
 		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name');
 
@@ -150,8 +161,9 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @allow(admin)
+	 * @throws BadRequestException
 	 */
-	public function actionActivate($id) {
+	public function actionActivate(int $id) {
 		$member = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
 		if (!$member) {
@@ -159,33 +171,64 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		$member->update(['role' => 0]);
-
 		$this->flashMessage('Uživatel byl úspěšně přidán mezi aktivní');
+
+		$session = $this->userService->addPasswordSession($member->id, '24 HOUR');
+
+		$this->addLoggingMail($member, $session);
+		$datetime = $this->messageService->getNextSendTime();
+		$this->flashMessage('Uživateli bude zaslán úvodní e-mail ' . LatteFilters::timeAgoInWords($datetime));
+
 		$this->redirect('view', $id);
 	}
 
 	/**
-	 * @param int $id
+	 * @param IRow|ActiveRow $user
+	 * @param IRow|ActiveRow $session
 	 * @allow(board)
 	 */
-	public function actionResetPassword($id) {
-		$member = $this->userService->getUserById($id);
+	public function addLoggingMail(IRow $user, IRow $session) {
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
+		$template->session = $session;
 
-		if (!$member) throw new BadRequestException('Uživatel nenalezen');
+		$message = new MessageService\Message(MessageService\Message::USER_NEW_TYPE);
 
-		$session = $this->userService->addPasswordSession($member->id, '12 HOUR');
+		$message->setSubject('Vítejte v informačním systému VZS Jablonec nad Nisou');
+		$message->setText($template);
 
-		$this->sendRestoreMail($member, $session);
+		$message->setAuthor($this->user->id);
+		$message->addRecipient($user->id);
 
-		$this->flashMessage('Uživateli byl odelán email pro změnu hesla');
-		$this->redirect('view', $member->id);
+		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id]);
+
+		$this->messageService->addMessage($message);
 	}
 
 	/**
 	 * @param int $id
 	 * @allow(board)
+	 * @throws BadRequestException
 	 */
-	public function actionDelete($id) {
+	public function actionResetPassword(int $id) {
+		$user = $this->userService->getUserById($id);
+
+		if (!$user) throw new BadRequestException('Uživatel nenalezen');
+
+		$session = $this->userService->addPasswordSession($user->id, '12 HOUR');
+
+		$this->addRestoreMail($user, $session);
+		$next = $this->messageService->getNextSendTime();
+		$this->flashMessage('Uživateli bude '.LatteFilters::timeAgoInWords($next).' minut odelán email pro změnu hesla');
+		$this->redirect('view', $user->id);
+	}
+
+	/**
+	 * @param int $id
+	 * @allow(board)
+	 * @throws BadRequestException
+	 */
+	public function actionDelete(int $id) {
 		$member = $this->userService->getUserById($id);
 
 		if (!$member) {
@@ -198,7 +241,12 @@ class UserPresenter extends LayerPresenter {
 		$this->redirect('default');
 	}
 
-	public function renderVcf($id) {
+	/**
+	 * @param int $id
+	 * @allow(member)
+	 * @throws BadRequestException
+	 */
+	public function renderVcf(int $id) {
 		$member = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
 		if (!$member) {
@@ -216,7 +264,8 @@ class UserPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(user)
 	 */
-	public function actionEdit($id) {
+	public function actionEdit(int $id) {
+		/** @var Form $form*/
 		$form = $this['memberForm'];
 		$form['name']->setAttribute('readonly');
 		$form['surname']->setAttribute('readonly');
@@ -234,18 +283,34 @@ class UserPresenter extends LayerPresenter {
 			);
 		}
 
-		if ($this->getUser()->getId()!=$id) {
+		if ($this->getUser()->getId() != $id) {
 			unset($form['password']);
 			unset($form['confirm']);
 		}
 
 		unset($form['sendMail']);
 	}
-		/**
+	/**
 	 * @param int $id
 	 * @allow(user)
+	 * @throws ForbiddenRequestException
 	 */
-	public function renderEdit($id) {
+	public function renderPassword(int $id) {
+		if ($this->getUser()->getId() != $id) {
+			throw new ForbiddenRequestException('Nemáte právo měnit heslo');
+		}
+	}
+
+	/**
+	 * @param int $id
+	 * @allow(user)
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
+	 */
+	public function renderEdit(int $id) {
+		$this->template->id = $id;
+
+		/**@var Form $form */
 		$form = $this['memberForm'];
 		$member = $this->userService->getUserById($id);
 
@@ -258,15 +323,13 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		$form->setDefaults($member);
-
 	}
 
 
 	/** @allow(board) */
 	public function actionAdd() {
+		/**@var Form $form */
 		$form = $this['memberForm'];
-		unset($form['password']);
-		unset($form['confirm']);
 		unset($form['image']);
 		unset($form['text']);
 
@@ -282,132 +345,69 @@ class UserPresenter extends LayerPresenter {
 		$this->setView('edit');
 	}
 
-
 	/** @allow(user) */
 	public function actionProfile() {
 		$id = $this->getUser()->getId();
 		$this->redirect('edit', $id);
 	}
 
-	/** @allow(board) */
-	public function sendLogginMail($member, $session) {
-		$template = $this->createTemplate();
-		$template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
-		$template->session = $session;
-
-		$mail = $this->getNewMail();
-
-		$mail->addTo($member->mail, $member->surname . ' ' . $member->name);
-		if ($member->mail2 && $member->send_to_second) $mail->addCc($member->mail2);
-		$mail->setSubject('[VZS Jablonec] Vítejte v informačním systému VZS Jablonec nad Nisou');
-		$mail->setHTMLBody($template);
-
-		$this->mailer->send($mail);
-	}
-
-	public function uniqueMailValidator($item) {
-		$id = $this->getParameter('id');
-		return $this->userService->isEmailUnique($item->value, $id);
-	}
-
 	public function currentPassValidator($item) {
 		$id = $this->getParameter('id');
+
 		$user = $this->userService->getUserById($id);
 		return !Passwords::verify($item->value, $user->hash);
 	}
 
-	protected function createComponentMemberForm() {
+	protected function createComponentPasswordForm() {
 		$form = new Form;
 
-		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
+		$form->addProtection('Odešlete prosím formulář znovu');
 
-		$form->addGroup('Osobní data');
-
-		$form->addText('name', 'Jméno', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label');
-
-		$form->addText('surname', 'Příjmení', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label');
-
-		$form['date_born'] = new \DateInput('Datum narození');
-		$form['date_born']->setRequired('Vyplňte datum narození')
-			->setDefaultValue(new DateTime());
-
-		$form->addText('zamestnani', 'Zaměstnání/Škola', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label');
-
-		$form->addGroup('Přihlašovací údaje');
-
-		$form->addPassword('password', 'Nové heslo', 20)
+		$form->addPassword('password', 'Nové heslo', 30)
+			->setRequired('Vyplňte heslo')
 			->addCondition(Form::FILLED)
-				->addRule(Form::PATTERN, 'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena', '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
-				->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo');
+			->addRule(Form::PATTERN, 'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena', '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$')
+			->addRule([$this, 'currentPassValidator'], 'Nesmíte použít svoje staré heslo');
 
-		$form->addPassword('confirm', 'Potvrzení', 20)
+		$form->addPassword('confirm', 'Potvrzení', 30)
 			->setOmitted()
-			->setRequired(FALSE)
+			->setRequired('Vyplňte kontrolu hesla')
 			->addRule(Form::EQUAL, 'Zadaná hesla se neschodují', $form['password'])
 			->addCondition(Form::FILLED)
-				->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků', 8);
+			->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků', 8);
 
-		$form->addCheckbox('sendMail', 'Poslat novému členu mail s přihlašovacími údaji')
-			->setDefaultValue(TRUE);
+		$form->addSubmit('ok', 'Ulož');
+		$form->onSuccess[] = [$this, 'passwordFormSubmitted'];
 
-		$form->addGroup('Kontakty');
+		return $form;
+	}
 
-		$form->addText('mail', 'Primární e-mail', 30)
-			->setType('email')
-			->addRule(Form::EMAIL, 'Zadejte platný email')
-			->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
-			->setRequired('Vyplňte %label');
+	public function passwordFormSubmitted(Form $form) {
+		$id = $this->getParameter('id');
+		$values = $form->getValues();
+		
+		if ($values->password) {
+			$hash = Passwords::hash($values->password);
 
-		$form->addText('telefon', 'Primární telefon', 30)
-			->setType('tel')
-			->setRequired('Vyplňte %label')
-			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
+			$user = $this->userService->getUserById($id);
+			$user->update(['hash' => $hash]);
+			$this->flashMessage('Vaše heslo bylo změněno');
+			$this->redirect('view', $id);
+		}
+	}
+	
+	protected function createComponentMemberForm() {
+		if ($this->action == 'edit') {
+			$this->userFormFactory->setUserId($this->getParameter('id'));
+		}
 
-		$form->addText('mail2', 'Sekundární e-mail', 30)
-			->setType('email')
-			->setNullable()
-			->addCondition(Form::FILLED)
-				->addRule(Form::EMAIL, 'Zadejte platný email')
-				->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
-				->addRule(Form::NOT_EQUAL, 'E-maily se nesmí shodovat', $form['mail'])
-				->toggle('send_to_second');
-
-		$form->addCheckbox('send_to_second', 'Zasílat e-maily i na sekundární email?')
-			->setDefaultValue(FALSE)
-			->getLabelPrototype()->id = 'send_to_second';
-
-		$form['mail2']->setRequired(FALSE)
-			->addConditionOn($form['send_to_second'], Form::EQUAL, TRUE)
-				->addRule(Form::EMAIL, 'Vyplňte sekundární email');
-
-		$form->addText('telefon2', 'Sekundární telefon', 30)
-			->setType('tel')
-			->setNullable()
-			->addCondition(Form::FILLED)
-				->addRule(Form::NOT_EQUAL, 'Telefony se nesmí shodovat', $form['telefon'])
-				->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
-
-		$form->addGroup('Adresa');
-
-		$form->addText('ulice', 'Ulice', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte ulici');
-
-		$form->addText('mesto', 'Město', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label');
+		$form = $this->userFormFactory->create();
 
 		$form->addGroup(' ');
 
-		$form->setCurrentGroup(null);
+		$form->setCurrentGroup(NULL);
 
-		$form->addUpload('image', 'Nový obrázek')
+		$form->addUpload('image', 'Nová fotografie')
 			->addCondition(Form::FILLED)
 			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 5 MB.', 5 * 1024 * 1024 /* v bytech */)
 			->addRule(Form::IMAGE, 'Fotografie musí být ve formátu JPEG')
@@ -428,45 +428,44 @@ class UserPresenter extends LayerPresenter {
 
 		$values = $form->getValues();
 
-		$sendMail = (isset($values->sendMail)) ? $values->sendMail : NULL;
-		unset($values->sendMail);
-
-		if ((isset($values->password))and($values->password)) {
-			$values->hash = Passwords::hash($values->password);
-		}
-
-		unset($values->password);
-
-		$values->mail = Strings::lower($values->mail);
-		if ($values->mail2) $values->mail2 = Strings::lower($values->mail2);
-
-		if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
-			$image = $values->image->toImage();
-			$image->resize(250, NULL, Image::SHRINK_ONLY);
-			$image->save(WWW_DIR . '/img/portrets/' . $id . '.jpg', 80, Image::JPEG);
-		}
-
-		unset($values->image);
-
 		$values->date_update = new DateTime();
 
 		if ($id) {
-			$this->userService->getUserById($id)->update($values);
+			$user = $this->userService->getUserById($id);
+
+			if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
+				/** @var Image $image  */
+				$image = $values->image->toImage();
+				$image->resize(1000, NULL, Image::SHRINK_ONLY);
+				$filename = WWW_DIR . self::getUserImageName($user);
+				$image->save($filename, 90, Image::JPEG);
+			}
+
+			unset($values->image);
+
+			$user->update($values);
 			$this->flashMessage('Osobní profil byl změněn');
 			$this->redirect('view', $id);
 		} else {
-			$values->hash = '';
-			$member = $this->userService->addUser($values);
-
-			if ($sendMail) {
-				$session = $this->userService->addPasswordSession($member->id, '24 HOUR');
-				$this->sendLogginMail($member, $session);
-			}
-
-			$this->userService->addUserLogin($member->id, new DateTime());
+			$user = $this->userService->addUser($values);
 
 			$this->flashMessage('Byl přidán nový člen');
-			$this->redirect('view', $member->id);
+
+			$session = $this->userService->addPasswordSession($user->id, '24 HOUR');
+
+			$this->addLoggingMail($user, $session);
+			$datetime = $this->messageService->getNextSendTime();
+			$this->flashMessage('Uživateli bude zaslán úvodní e-mail ' . LatteFilters::timeAgoInWords($datetime));
+
+			$this->redirect('view', $user->id);
 		}
+	}
+
+	/**
+	 * @param IRow|ActiveRow $user
+	 * @return string
+	 */
+	private static function getUserImageName(IRow $user){
+		return '/img/photos/' . Strings::webalize(UserService::getFullName($user)) . '-' . $user->id . '.jpg';
 	}
 }

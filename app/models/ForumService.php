@@ -6,8 +6,11 @@
 
 namespace App\Model;
 
+use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
+use Nette\Utils\ArrayHash;
+use Nette\Utils\DateTime;
 
 class ForumService extends DatabaseService{
     /**
@@ -18,10 +21,10 @@ class ForumService extends DatabaseService{
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @return IRow
      */
-    public function getForumById($id){
+    public function getForumById(int $id){
         return $this->getForum()->get($id);
     }
 
@@ -32,12 +35,12 @@ class ForumService extends DatabaseService{
         return $this->database->table('forum_post')->where('NOT row_number',0);
     }
 
-    /**
-     * @param $q
-     * @param $forum
-     * @return Selection
-     */
-    public function searchPosts($q, $forum = NULL){
+	/**
+	 * @param string $q
+	 * @param string|NULL $forum
+	 * @return Selection
+	 */
+	public function searchPosts(string $q, string $forum = NULL){
         $posts = $this->getPosts()->where('`text` LIKE ?',"%$q%");
         if ($forum) $posts->where('forum_id',$forum);
 
@@ -45,11 +48,11 @@ class ForumService extends DatabaseService{
     }
 
 	/**
-	 * @param $q
-	 * @param $forum
+	 * @param string $q
+	 * @param string $forum|NULL
 	 * @return Selection
 	 */
-	public function searchTopics($q, $forum = NULL){
+	public function searchTopics(string $q, string $forum = NULL){
 		$topics = $this->getTopics()->where('`title` LIKE ?',"%$q%");
 		if ($forum) $topics->where('forum_id',$forum);
 
@@ -57,7 +60,7 @@ class ForumService extends DatabaseService{
 	}
 
 	/**
-     * @param IRow $topic
+     * @param IRow|ActiveRow $topic
      * @return bool
      */
     public function checkTopic(IRow $topic){
@@ -67,46 +70,49 @@ class ForumService extends DatabaseService{
 
 
     /**
-     * @param $id
+     * @param int $id
      * @return int
      */
-    public function getPostsCountByTopicId($id){
+    public function getPostsCountByTopicId(int $id){
         return $this->getPosts()->where('forum_topic_id',$id)->count('id');
     }
 
     /**
-     * @param $id
+     * @param int $id
+     * @param string $search
      * @return Selection
      */
-    public function getPostsByTopicId($id, $search = null){
+    public function getPostsByTopicId(int $id, string $search = null){
         $posts = $this->getPosts()->where('forum_topic_id',$id);
 	    if ($search) $posts->where('text LIKE ?',"%$search%");
 	    return $posts;
     }
 
     /**
-     * @param $id
-     * @return IRow
+     * @param int $id
+     * @return IRow|ActiveRow
      */
-    public function getPostById($id){
+    public function getPostById(int $id){
         return $this->getPosts()->get($id);
     }
 
     /**
-     * @param $values
+     * @param ArrayHash $values
      * @return bool|int|IRow
      */
-    public function addPost($values){
+    public function addPost(ArrayHash $values){
         $values->row_number = $this->getPostsByTopicId($values->forum_topic_id)->max('row_number') + 1;
         return $this->getPosts()->insert($values);
     }
 
     /**
-     * @param $values
+     * @param ArrayHash $values
      */
-    public function addTopic($values){
+    public function addTopic(ArrayHash $values){
         $values->forum_topic_id = 1;
         $values->row_number = 1;
+
+        /** @var ActiveRow $row*/
         $row = $this->getTopics()->insert($values);
         $this->getPostById($row->id)->update(['forum_topic_id'=>$row->id]);
     }
@@ -119,18 +125,18 @@ class ForumService extends DatabaseService{
     }
 
     /**
-     * @param $id
-     * @return IRow
+     * @param int $id
+     * @return IRow|ActiveRow
      */
-    public function getTopicById($id){
+    public function getTopicById(int $id){
         return $this->getTopics()->get($id);
     }
 
     /**
-     * @param \Nette\Utils\DateTime $date
+     * @param DateTime $date
      * @return Selection
      */
-    public function getTopicNews(\Nette\Utils\DateTime $date){
+    public function getTopicNews(DateTime $date){
         return $this->getPosts()
             ->order('date_add DESC')
             ->where('date_add > ?',$date)
@@ -138,21 +144,21 @@ class ForumService extends DatabaseService{
     }
 
 	/**
-	 * @param $id
-	 * @param null $search
+	 * @param int $id
+	 * @param string|NULL $search
 	 * @return Selection
 	 */
-	public function getTopicsByForumId($id, $search = null){
+	public function getTopicsByForumId(int $id, string $search = null){
         $topics = $this->getTopics()->where('forum_id',$id)->where('forum_topic_id = id')->order('date_add DESC');
 	    if ($search) $topics->where('title LIKE ?',"%$search%");
 	    return $topics;
     }
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @return int
 	 */
-	public function getTopicsCountByForumId($id){
+	public function getTopicsCountByForumId(int $id){
 		return $this->getTopics()->where('forum_id',$id)->count('id');
 	}
 

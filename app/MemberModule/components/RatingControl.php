@@ -39,7 +39,7 @@ class RatingControl extends Control {
 	 * @param bool $isOrg
 	 * @param bool $canComment
 	 */
-	public function __construct($akceId, RatingService $ratingService, $userId, $isOrg, $canComment) {
+	public function __construct(int $akceId, RatingService $ratingService, int $userId, bool $isOrg, bool $canComment) {
 		parent::__construct();
 		$this->userId = $userId;
 		$this->akceId = $akceId;
@@ -64,7 +64,7 @@ class RatingControl extends Control {
 
 		$this['ratingForm']->setDefaults($myrating);
 		$this->template->ratings = $ratings;
-		$this->template->myrating = (bool)$myrating;
+		$this->template->myrating = (bool) $myrating;
 
 		$this->template->addFilter('stars', function ($count) {
 			$s = intval($count);

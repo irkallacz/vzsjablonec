@@ -14,8 +14,13 @@ class NewsPresenter extends BasePresenter {
 	public $userService;
 
 	public function renderDefault() {
-		$albums = $this->gallery->getAlbums()->order('date_add DESC')->limit(5);
-		$photos = $this->gallery->getPhotos()->order('rand()')->limit(10);
+		$albums = $this->gallery->getAlbums()
+			->order('date_add DESC')
+			->limit(5);
+
+		$photos = $this->gallery->getPhotos()
+			->order('rand()')
+			->limit(10);
 
 		if (!$this->getUser()->isLoggedIn()) {
 			$albums->where('visible', TRUE);

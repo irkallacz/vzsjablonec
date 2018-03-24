@@ -19,30 +19,30 @@
 		#tabs ul li.active a { color: inherit;}
 	</style>
 	<script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
-	<script type="text/javascript">
-	$(function () {
-		$.nette.init();
+	<script type="text/javascript" n:nonce>
+		$(function () {
+			$.nette.init();
 
-		$('#member-search').keyup(function(){
-			var q = document.getElementById('member-search').value;
+			$('#member-search').keyup(function(){
+				var q = document.getElementById('member-search').value;
 
-			if (q.length > 2) {
-				history.replaceState(null, null, window.location.pathname + '?q=' + q);
-				$('#member-search-button').submit();
-			}else history.replaceState(null, null, window.location.pathname);
+				if (q.length > 2) {
+					history.replaceState(null, null, window.location.pathname + '?q=' + q);
+					$('#member-search-button').submit();
+				}else history.replaceState(null, null, window.location.pathname);
+			});
+
+			$(document).on('click', '.tab-link', function(){
+				openTab(this.id);
+			});
 		});
 
-		$(document).on('click', '.tab-link', function(){
-			openTab(this.id);
-		});
-	});
-	
-	function openTab(name) {
-		$('#tabs .active').removeClass('active');
-		$('.tab.active').removeClass('active');
-		$('#tab-button-'+name).addClass('active');
-		$('#tab-'+name).addClass('active');
-	}
+		function openTab(name) {
+			$('#tabs .active').removeClass('active');
+			$('.tab.active').removeClass('active');
+			$('#tab-button-'+name).addClass('active');
+			$('#tab-'+name).addClass('active');
+		}
 	</script>
 
 {/block}
@@ -55,9 +55,9 @@
 
 {block #content}
 <ul class="buttonMenu">
-	<li><a n:href="vcfArchive" class="buttonLike">{include svg name => address-card-o} stáhnout vizitky</a></li>
-	<li n:if="$user->isInRole('board')"><a n:href="csv" class="buttonLike">{include svg name => file-excel-o} stáhnout exel</a></li>
-	<li n:if="$user->isInRole('board')"><a n:href="add" class="buttonLike">{include svg name => user-plus} nový člen</a></li>
+	<li n:if="$user->isInRole('member')"><a n:href="vcfArchive" class="buttonLike">{include svg icon => address-card-o} stáhnout vizitky</a></li>
+	<li n:if="$user->isInRole('board')"><a n:href="csv" class="buttonLike">{include svg icon => file-excel-o} stáhnout exel</a></li>
+	<li n:if="$user->isInRole('board')"><a n:href="add" class="buttonLike">{include svg icon => user-plus} nový člen</a></li>
 </ul>
 
 {form memberSearchForm}

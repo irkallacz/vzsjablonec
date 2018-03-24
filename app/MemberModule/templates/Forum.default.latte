@@ -36,7 +36,7 @@
 			</div>
 			<div class="no-wrap">
 				<a title="{$post->date_add|timeAgoInWords}" n:href="Forum:post,$post->id">
-					{include svg name => comments-o} {$post->date_add|date:'%d.%m.%Y %H:%M'}
+					{include svg icon => comments-o} {$post->date_add|date:'%d.%m.%Y %H:%M'}
 				</a>
 			</div>
 			<div class="no-wrap">
@@ -54,11 +54,11 @@
 </table>
 
 <p class="float-right">
-	<a n:href="Feed:forum" class="buttonLike">{include svg name => feed} RSS celého fóra</a>
+	<a n:href="Feed:forum" class="buttonLike">{include svg icon => feed} RSS celého fóra</a>
 </p>
 
 <p>
-	<a n:href="search" class="buttonLike">{include svg name => search} Hledat ve fóru</a>
+	<a n:href="search" class="buttonLike">{include svg icon => search} Hledat ve fóru</a>
 </p>
 
 {/block}

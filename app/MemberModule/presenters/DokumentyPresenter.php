@@ -19,14 +19,21 @@ class DokumentyPresenter extends LayerPresenter {
 	/** @var Response @inject */
 	public $httpResponse;
 
+	/**
+	 *
+	 */
 	public function renderDefault() {
 		$this->template->TABLE_DOKUMENTY = DokumentyService::TABLE_DOKUMENTY;
 		$this->template->TABLE_DIRECTORIES = DokumentyService::TABLE_DIRECTORIES;
 
-		$this->template->dir = $this->dokumentyService->getDirectoryById(DokumentyService::DOCUMENT_DIR_ID);
+		$this->template->dir = $this->dokumentyService->getDirectoryById($this->dokumentyService->driveDir);
 	}
 
-	public function actionGetPdf($id) {
+	/**
+	 * @param string $id
+	 * @throws BadRequestException
+	 */
+	public function actionGetPdf(string $id) {
 		$file = $this->dokumentyService->getDokumentById($id);
 
 		if (!$file) throw new BadRequestException('Soubor nenalezen');

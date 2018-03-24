@@ -26,7 +26,10 @@ class AlbumPreviewControl extends Control {
 		$this->galleryService = $galleryService;
 	}
 
-	public function render($id) {
+	/**
+	 * @param int $id
+	 */
+	public function render(int $id) {
 		$album = $this->galleryService->getAlbumById($id);
 		$photos = $album ? $album->related('photo')->order('order, date_add') : NULL;
 

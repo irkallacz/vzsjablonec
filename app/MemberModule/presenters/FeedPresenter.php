@@ -37,6 +37,9 @@ class FeedPresenter extends BasePresenter {
 	/** @var GalleryService @inject */
 	public $galleryService;
 
+	/**
+	 *
+	 */
 	protected function startup() {
 		parent::startup();
 
@@ -45,6 +48,9 @@ class FeedPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	protected function zkontroluj() {
 		$user = $this->userService->getUserByAutentication($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 
@@ -56,6 +62,9 @@ class FeedPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	protected function prihlas() {
 		$this->httpResponse->setHeader('WWW-Authenticate', 'Basic realm="VZS member"');
 		$this->httpResponse->setCode(Response::S401_UNAUTHORIZED);
@@ -63,18 +72,30 @@ class FeedPresenter extends BasePresenter {
 		$this->terminate();
 	}
 
+	/**
+	 *
+	 */
 	public function renderAnkety() {
 		$this->template->items = $this->anketyService->getAnkety();
 	}
 
+	/**
+	 *
+	 */
 	public function renderHlasovani() {
 		$this->template->items = $this->hlasovaniService->getAnkety()->where('date_deatline < NOW() OR locked = ?', 1);
 	}
 
+	/**
+	 *
+	 */
 	public function renderAkce() {
 		$this->template->items = $this->akceService->getAkce()->where('confirm', TRUE)->where('enable', TRUE);
 	}
 
+	/**
+	 *
+	 */
 	public function renderForum() {
 		$topicId = $this->getParameter('topic');
 		$forumId = $this->getParameter('category');
@@ -95,6 +116,9 @@ class FeedPresenter extends BasePresenter {
 		$this->template->items = $items;
 	}
 
+	/**
+	 *
+	 */
 	public function renderAlbums() {
 		$albums = $this->galleryService->getAlbums()->order('date_add DESC');
 		$users = $this->userService->getUsers(UserService::DELETED_LEVEL)->select('id,name,surname,mail')

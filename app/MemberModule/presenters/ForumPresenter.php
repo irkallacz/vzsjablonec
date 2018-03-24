@@ -11,19 +11,21 @@ use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\IRow;
 use Nette\Utils\Html;
 use Nette\Database\SqlLiteral;
 use Nette\Utils\DateTime;
+use Nette\Utils\Paginator;
 use Tracy\Debugger;
 use WebLoader\Compiler;
 use WebLoader\FileCollection;
 use WebLoader\Nette\JavaScriptLoader;
 use Joseki\Webloader\JsMinFilter;
 
-class ForumPresenter extends LayerPresenter{
+class ForumPresenter extends LayerPresenter {
 
-	const postPerPage = 30;
-	const topicPerPage = 30;
+	const POST_PER_PAGE = 30;
+	const TOPIC_PER_PAGE = 30;
 
 	/** @var ForumService @inject */
 	public $forumService;
@@ -31,68 +33,94 @@ class ForumPresenter extends LayerPresenter{
 	/** @var ActiveRow */
 	private $topic;
 
-	public function renderDefault(){
+	/**
+	 *
+	 */
+	public function renderDefault() {
 		$this->template->forum = $this->forumService->getForum();
 	}
 
-	public function showPost($post){
+	/**
+	 * @param IRow|ActiveRow $post
+	 */
+	public function showPost(IRow $post) {
 		$param = ['id' => $post->forum_topic_id];
-		$page = ceil($post->row_number/self::postPerPage);
-		if ($page > 1) $param['vp-page'] = $page;	
+		$page = ceil($post->row_number / self::POST_PER_PAGE);
+		if ($page > 1) $param['vp-page'] = $page;
 		$this->redirect("Forum:topic#post/$post->id", $param);
 	}
 
-	public function actionPost($id){
-		$post = $this->forumService->getPostById($id);		
+	/**
+	 * @param int $id
+	 */
+	public function actionPost(int $id) {
+		$post = $this->forumService->getPostById($id);
 		$this->showPost($post);
 	}
 
-	public function renderCategory($id, $q = null){
+	/**
+	 * @param int $id
+	 * @param string|null $q
+	 */
+	public function renderCategory(int $id, string $q = null) {
 		$forum = $this->forumService->getForumById($id);
 		$this->template->forum = $forum;
 
 		$vp = new \VisualPaginator($this, 'vp');
-		
+
 		$count = $this->forumService->getTopicsByForumId($id, $q)->count();
 
+		/** @var Paginator $paginator */
 		$paginator = $vp->getPaginator();
-		$paginator->setItemsPerPage(self::topicPerPage);
+		$paginator->setItemsPerPage(self::TOPIC_PER_PAGE);
 		$paginator->setItemCount($count);
 
 		$this['searchForm']['q']->setDefaultValue($q);
 	}
 
 
-	protected function createComponentTopicList(){
+	/**
+	 * @return TopicsListControl
+	 */
+	protected function createComponentTopicList() {
 		$id = $this->getParameter('id');
 		$search = $this->getParameter('q');
 
 		$topics = $this->forumService->getTopicsByForumId($id, $search);
 
+		/* @var Paginator $paginator*/
 		$paginator = $this['vp']->getPaginator();
 		$topics->limit($paginator->getLength(), $paginator->getOffset());
 
 		return new TopicsListControl($topics, $search);
 	}
 
-	public function checkTopic($topic, $locked = FALSE){		
-		if ((!$topic)or($topic->row_number == 0)) {
+	/**
+	 * @param IRow|ActiveRow $topic
+	 * @param bool $locked
+	 * @throws BadRequestException
+	 */
+	public function checkTopic(IRow $topic, bool $locked = FALSE) {
+		if ((!$topic) or ($topic->row_number == 0)) {
 			throw new BadRequestException('Téma neexistuje');
 		}
 
 		if ($locked and $topic->locked) {
-        	throw new BadRequestException('Toto téma bylo uzavřeno');
-        } 
+			throw new BadRequestException('Toto téma bylo uzavřeno');
+		}
 	}
 
-	public function createComponentPostsList(){
+	/**
+	 * @return PostsListControl
+	 */
+	public function createComponentPostsList() {
 		$search = $this->getParameter('q');
 
 		$offset = $this['vp']->getPaginator()->getOffset();
 		$limit = $this['vp']->getPaginator()->getLength();
 
 		$posts = $this->forumService->getPostsByTopicId($this->topic->id, $search);
-		$posts->limit($limit,$offset);
+		$posts->limit($limit, $offset);
 		$posts->order('row_number');
 
 		$isLocked = $this->topic->locked;
@@ -100,13 +128,21 @@ class ForumPresenter extends LayerPresenter{
 		return new PostsListControl($posts, $isLocked, $search);
 	}
 
-	public function actionTopic($id, $q = null){
+	/**
+	 * @param int $id
+	 * @param string|null $q
+	 */
+	public function actionTopic(int $id, string $q = null) {
 		$topic = $this->forumService->getTopicById($id);
 		$this->checkTopic($topic);
 		$this->topic = $topic;
 	}
 
-	public function renderTopic($id, $q = null){
+	/**
+	 * @param int $id
+	 * @param string|NULL $q
+	 */
+	public function renderTopic(int $id, string $q = null) {
 		$this->template->topic = $this->topic;
 		$this->template->title = $this->topic->title;
 
@@ -114,19 +150,24 @@ class ForumPresenter extends LayerPresenter{
 
 		$vp = new \VisualPaginator($this, 'vp');
 		$paginator = $vp->getPaginator();
-		$paginator->setItemsPerPage(self::postPerPage);
+		$paginator->setItemsPerPage(self::POST_PER_PAGE);
 		$paginator->setItemCount($count);
 		$this->template->paginator = $paginator;
 
-    	$this['addPostForm']['forum_topic_id']->setDefaultValue($id);  
-    	$this['addPostForm']['forum_id']->setDefaultValue($this->topic->forum_id);
+		$this['addPostForm']['forum_topic_id']->setDefaultValue($id);
+		$this['addPostForm']['forum_id']->setDefaultValue($this->topic->forum_id);
 
 		$this['searchForm']['q']->setDefaultValue($q);
 	}
 
-	public function renderSearch($q, $forum_id = null, $subject = 'posts'){
+	/**
+	 * @param string|NULL $q
+	 * @param int|NULL $forum_id
+	 * @param string $subject
+	 */
+	public function renderSearch(string $q = NULL, int $forum_id = NULL, string $subject = 'posts') {
 		$vp = new \VisualPaginator($this, 'vp');
-		$vp->getPaginator()->setItemsPerPage(self::postPerPage);
+		$vp->getPaginator()->setItemsPerPage(self::POST_PER_PAGE);
 
 		$this->template->subject = $subject;
 		$this->template->forum_id = $forum_id;
@@ -137,11 +178,16 @@ class ForumPresenter extends LayerPresenter{
 		$this['searchForumForm']['subject']->setDefaultValue($subject);
 	}
 
-	protected function createComponentSearchPostsList(){
+	/**
+	 * @return PostsListControl
+	 */
+	protected function createComponentSearchPostsList() {
 		$q = $this->getParameter('q');
 		$forum_id = $this->getParameter('forum_id');
 
-		$posts = $this->forumService->searchPosts($q,$forum_id);
+		$posts = $this->forumService->searchPosts($q, $forum_id);
+
+		/* @var Paginator $paginator*/
 		$paginator = $this['vp']->getPaginator();
 		$paginator->setItemCount(count($posts));
 
@@ -154,11 +200,16 @@ class ForumPresenter extends LayerPresenter{
 		return new PostsListControl($posts, TRUE, $q);
 	}
 
-	protected function createComponentSearchTopicsList(){
+	/**
+	 * @return TopicsListControl
+	 */
+	protected function createComponentSearchTopicsList() {
 		$q = $this->getParameter('q');
 		$forum_id = $this->getParameter('forum_id');
 
-		$topics = $this->forumService->searchTopics($q,$forum_id);
+		$topics = $this->forumService->searchTopics($q, $forum_id);
+
+		/** @var Paginator $paginator */
 		$paginator = $this['vp']->getPaginator();
 		$paginator->setItemCount(count($topics));
 
@@ -171,17 +222,20 @@ class ForumPresenter extends LayerPresenter{
 		return new TopicsListControl($topics, $q);
 	}
 
-	protected function createComponentSearchForm(){
+	/**
+	 * @return Form
+	 */
+	protected function createComponentSearchForm() {
 		$form = new Form;
 
 		$form->addText('q', NULL, 20)
-			->setAttribute('placeholder','Hledaný výraz')
+			->setAttribute('placeholder', 'Hledaný výraz')
 			->setRequired('Zadejte prosím hledaný výraz')
 			->setType('search')
-			->setAttribute('class','search');
+			->setAttribute('class', 'search');
 
 		$form->addSubmit('ok')
-			->getControlPrototype()->setName('button')->setHtml('<svg class="icon icon-search"><use xlink:href="'.$this->template->baseUri.'/img/symbols.svg#icon-search"></use></svg>');
+			->getControlPrototype()->setName('button')->setHtml('<svg class="icon icon-search"><use xlink:href="' . $this->template->baseUri . '/img/symbols.svg#icon-search"></use></svg>');
 
 		$form->onSuccess[] = [$this, 'processSearchForm'];
 
@@ -194,7 +248,10 @@ class ForumPresenter extends LayerPresenter{
 		return $form;
 	}
 
-	public function processSearchForm(Form $form){
+	/**
+	 * @param Form $form
+	 */
+	public function processSearchForm(Form $form) {
 		$action = $this->getAction();
 		$values = $form->getValues();
 		$id = $this->getParameter('id');
@@ -202,14 +259,17 @@ class ForumPresenter extends LayerPresenter{
 		$this->redirect($action, $id, $values->q);
 	}
 
-	protected function createComponentSearchForumForm(){
+	/**
+	 * @return Form
+	 */
+	protected function createComponentSearchForumForm() {
 		$form = $this->createComponentSearchForm();
 
-		$form->addSelect('forum_id','Kategorie:',
-			$this->forumService->getForum()->fetchPairs('id','title')
+		$form->addSelect('forum_id', 'Kategorie:',
+			$this->forumService->getForum()->fetchPairs('id', 'title')
 		)->setPrompt('Všechny kategorie');
 
-		$form->addSelect('subject','Hledat:', ['posts' => 'Příspěvky', 'topics' => 'Témata'])
+		$form->addSelect('subject', 'Hledat:', ['posts' => 'Příspěvky', 'topics' => 'Témata'])
 			->setRequired('Zadejte prosím co vyhledávat');
 
 		$form->onSuccess = [[$this, 'processSearchForumForm']];
@@ -217,7 +277,10 @@ class ForumPresenter extends LayerPresenter{
 		return $form;
 	}
 
-	public function processSearchForumForm(Form $form){
+	/**
+	 * @param Form $form
+	 */
+	public function processSearchForumForm(Form $form) {
 		$values = $form->getValues();
 		$this->redirect('search', $values->q, $values->forum_id, $values->subject);
 	}
@@ -226,8 +289,8 @@ class ForumPresenter extends LayerPresenter{
 	 * @param bool $class
 	 * @allow(member)
 	 */
-	public function actionTexyPreview($class = FALSE){
-	    if ($this->isAjax()){
+	public function actionTexyPreview(bool $class = FALSE) {
+		if ($this->isAjax()) {
 
 			$httpRequest = $this->context->getByType('Nette\Http\Request');
 
@@ -236,173 +299,187 @@ class ForumPresenter extends LayerPresenter{
 			$div->id = 'texyPreview';
 
 			$this->sendResponse(new TextResponse($div));
-	    }
+		}
 	}
-	
-	private function checkPost($post){		
+
+	/**
+	 * @param IRow|ActiveRow $post
+	 * @throws BadRequestException
+	 */
+	private function checkPost(IRow $post) {
 		if ($post->row_number == 0) {
-        	throw new BadRequestException('Příspěvek neexistuje');
-        }
+			throw new BadRequestException('Příspěvek neexistuje');
+		}
 	}
 
 	/**
 	 * @param int $id
 	 * @allow(member)
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
 	 */
-	public function renderEdit($id){
+	public function renderEdit(int $id) {
 		if (!$id) {
-        	throw new BadRequestException('Nebyl vybrán žádný příspěvek');
-        }
-        
+			throw new BadRequestException('Nebyl vybrán žádný příspěvek');
+		}
+
+		/* @var ActiveRow $post*/
 		$post = $this->forumService->getPostById($id);
-		
+
 		$this->checkPost($post);
 
-		if ((!$this->getUser()->isInRole('admin'))and($post->member_id!=$this->getUser()->getId())) {
-            	throw new ForbiddenRequestException('Nemáte práva na tuto akci');
-        }
+		if ((!$this->getUser()->isInRole('admin')) and ($post->member_id != $this->getUser()->getId())) {
+			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
+		}
 
 		$this->template->isEdit = TRUE;
-		
+
 		if ($post->id == $post->forum_topic_id) {
 			$topic = $post;
 			$this['addTopicForm']->setDefaults($post);
 			$this->template->isTopic = TRUE;
-		}else{ 
-			$topic = $post->ref('forum_post','forum_topic_id'); 
-			$this['addPostForm']->setDefaults($post);	
-		}	
-    	
-    	$this->template->topic = $topic;
+		} else {
+			$topic = $post->ref('forum_post', 'forum_topic_id');
+			$this['addPostForm']->setDefaults($post);
+		}
 
-  		$this->checkTopic($topic,TRUE);
+		$this->template->topic = $topic;
 
-        $this->template->title = $topic->title;
+		$this->checkTopic($topic, TRUE);
+
+		$this->template->title = $topic->title;
 	}
 
 	/**
 	 * @param int $id
 	 * @allow(member)
+	 * @throws BadRequestException
 	 */
-	public function renderCite($id){
+	public function renderCite(int $id) {
 		if (!$id) {
-        	throw new BadRequestException('Nebyl vybrán žádný příspěvek');
-        }
+			throw new BadRequestException('Nebyl vybrán žádný příspěvek');
+		}
 
-        $post = $this->forumService->getPostById($id);
-
-        $this->checkPost($post);
-
-		if ($post->id == $post->forum_topic_id) $topic = $post; else $topic = $post->ref('forum_post','forum_topic_id');
-		$this->template->topic = $topic;
-
-		$this->checkTopic($topic,TRUE);
-    	
-    	$this->setView('edit');
-
-    	$text = '> '.$post->member->surname . ' ' . $post->member->name . " napsal(a):\n>\n";
-    	$text .= preg_replace('~^~m','> $0',trim($post->text))."\n\n";
-
-		$this['addPostForm']['text']->setDefaultValue($text);  
-    	$this['addPostForm']['forum_topic_id']->setDefaultValue($post->forum_topic_id);  
-    	$this['addPostForm']['forum_id']->setDefaultValue($post->forum_id);
-
-	}
-
-	/**
-	 * @param int $id
-	 * @allow(member)
-	 */
-	public function renderAdd($id){
-		$topic = $this->forumService->getTopicById($id);
-
-		$this->checkTopic($topic,TRUE);
-		
-		$this->template->topic = $topic;
-    	$this->setView('edit');
-
-    	$this['addPostForm']['forum_topic_id']->setDefaultValue($topic->id);  
-    	$this['addPostForm']['forum_id']->setDefaultValue($topic->forum_id);
-	}
-
-	/**
-	 * @param int $id
-	 * @allow(member)
-	 */
-	public function actionDelete($id){
+		/* @var ActiveRow $post*/
 		$post = $this->forumService->getPostById($id);
 
-	if ((!$this->getUser()->isInRole('admin'))and($post->member_id!=$this->getUser()->getId())) {
-		throw new ForbiddenRequestException('Nemáte práva na tuto akci');
+		$this->checkPost($post);
+
+		if ($post->id == $post->forum_topic_id) $topic = $post; else $topic = $post->ref('forum_post', 'forum_topic_id');
+		$this->template->topic = $topic;
+
+		$this->checkTopic($topic, TRUE);
+
+		$this->setView('edit');
+
+		$text = '> ' . $post->member->surname . ' ' . $post->member->name . " napsal(a):\n>\n";
+		$text .= preg_replace('~^~m', '> $0', trim($post->text)) . "\n\n";
+
+		$this['addPostForm']['text']->setDefaultValue($text);
+		$this['addPostForm']['forum_topic_id']->setDefaultValue($post->forum_topic_id);
+		$this['addPostForm']['forum_id']->setDefaultValue($post->forum_id);
+
 	}
 
-	 if ($post->id != $post->forum_topic_id) {		
-		$this->forumService->getPostsByTopicId($post->forum_topic_id)
-			->where('row_number > ?', $post->row_number)
-			->update(['row_number' => new SqlLiteral('row_number - 1')]);
+	/**
+	 * @param int $id
+	 * @allow(member)
+	 */
+	public function renderAdd(int $id) {
+		/* @var ActiveRow $topic*/
+		$topic = $this->forumService->getTopicById($id);
 
-	 	$post->update(['row_number' => 0, 'hidden' => 1]);
+		$this->checkTopic($topic, TRUE);
 
-	 	$this->redirect('Forum:topic', $post->forum_topic_id);
-	 }
-	 else {
-	 	$this->forumService->getPostsByTopicId($post->id)->update(['row_number' => 0, 'hidden' => 1]);
-	 	$this->redirect('Forum:topic',$post->forum_id);
-	 }
+		$this->template->topic = $topic;
+		$this->setView('edit');
+
+		$this['addPostForm']['forum_topic_id']->setDefaultValue($topic->id);
+		$this['addPostForm']['forum_id']->setDefaultValue($topic->forum_id);
+	}
+
+	/**
+	 * @param int $id
+	 * @allow(member)
+	 * @throws ForbiddenRequestException
+	 */
+	public function actionDelete(int $id) {
+		/* @var ActiveRow $post*/
+		$post = $this->forumService->getPostById($id);
+
+		if ((!$this->getUser()->isInRole('admin')) and ($post->member_id != $this->getUser()->getId())) {
+			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
+		}
+
+		if ($post->id != $post->forum_topic_id) {
+			$this->forumService->getPostsByTopicId($post->forum_topic_id)
+				->where('row_number > ?', $post->row_number)
+				->update(['row_number' => new SqlLiteral('row_number - 1')]);
+
+			$post->update(['row_number' => 0, 'hidden' => 1]);
+
+			$this->redirect('Forum:topic', $post->forum_topic_id);
+		} else {
+			$this->forumService->getPostsByTopicId($post->id)->update(['row_number' => 0, 'hidden' => 1]);
+			$this->redirect('Forum:topic', $post->forum_id);
+		}
 	}
 
 	/**
 	 * @param int $id
 	 * @param bool $lock
 	 * @allow(member)
+	 * @throws ForbiddenRequestException
 	 */
-	public function actionLockTopic($id, $lock){
+	public function actionLockTopic(int $id, bool $lock) {
+		/* @var ActiveRow $post*/
 		$post = $this->forumService->getPostById($id);
 
-		if ((!$this->getUser()->isInRole('admin'))and($post->member_id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('admin')) and ($post->member_id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
 		}
 
 		$post->update(['locked' => $lock]);
-		$this->redirect('topic',$post->forum_topic_id);
+		$this->redirect('topic', $post->forum_topic_id);
 	}
 
 	/**
 	 * @return JavaScriptLoader
 	 * @allow(member)
 	 */
-	protected function createComponentTexylaJs(){
-	    $files = new FileCollection(WWW_DIR . '/texyla/js');
-	    $files->addFiles(['texyla.js','selection.js','texy.js','buttons.js','cs.js','dom.js','view.js','window.js']);
-	    $files->addFiles(['../plugins/emoticon/emoticon.js']);
-	    $files->addFiles([WWW_DIR . '/js/texyla_forum.js']);
-	    $files->addFiles([WWW_DIR . '/js/jquery-ui.custom.min.js']);
+	protected function createComponentTexylaJs() {
+		$files = new FileCollection(WWW_DIR . '/texyla/js');
+		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
+		$files->addFiles(['../plugins/emoticon/emoticon.js']);
+		$files->addFiles([WWW_DIR . '/js/texyla_forum.js']);
+		$files->addFiles([WWW_DIR . '/js/jquery-ui.custom.min.js']);
 
-	    $compiler = Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-	    $compiler->addFileFilter(new JsMinFilter());
+		$compiler = Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
+		$compiler->addFileFilter(new JsMinFilter());
 
-	    return new JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+		return new JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
 
 	/**
 	 * @return Form
 	 * @allow(member)
 	 */
-	protected function createComponentAddTopicForm(){
+	protected function createComponentAddTopicForm() {
 		$form = new Form;
-		
+
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
 		$form->addText('title')
-			->setAttribute('placeholder','Název tématu')
-			->setAttribute('spellcheck', 'true')			
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+			->setAttribute('placeholder', 'Název tématu')
+			->setAttribute('spellcheck', 'true')
 			->setRequired('Zadejte prosím předmet');
 		$form->addTextArea('text')
 			->setRequired('Zadejte prosím text zprávy')
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla');
 
-		$form->onSuccess[]= [$this, 'processAddTopicForm'];
+		$form->onSuccess[] = [$this, 'processAddTopicForm'];
 		return $form;
 	}
 
@@ -410,39 +487,37 @@ class ForumPresenter extends LayerPresenter{
 	 * @param Form $form
 	 * @allow(member)
 	 */
-	public function processAddTopicForm(Form $form){
+	public function processAddTopicForm(Form $form) {
 		$values = $form->getValues();
 		$datum = new DateTime();
 		$values->date_update = $datum;
 
-		$values->title = ucfirst($values->title);
-
 		$akce = $this->getAction();
 
-		if ($akce == 'edit'){
+		if ($akce == 'edit') {
 			$id = (int) $this->getParameter('id');
 			$this->forumService->getTopicById($id)->update($values);
-        	$this->flashMessage('Téma bylo upraveno');
-        	$this->redirect('topic',$id);
-        }
-		
-		if ($akce == 'category'){
+			$this->flashMessage('Téma bylo upraveno');
+			$this->redirect('topic', $id);
+		}
+
+		if ($akce == 'category') {
 			$values->date_add = $datum;
-			$values->forum_id = (int) $this->getParameter('id');
+			$values->forum_id = (int)$this->getParameter('id');
 			$values->member_id = $this->getUser()->getId();
 			$this->forumService->addTopic($values);
-        	$this->flashMessage('Bylo přidáno další téma');
-        	$this->redirect('this'); 
-		}         
+			$this->flashMessage('Bylo přidáno další téma');
+			$this->redirect('this');
+		}
 	}
 
 	/**
 	 * @return Form
 	 * @allow(member)
 	 */
-	protected function createComponentAddPostForm(){
+	protected function createComponentAddPostForm() {
 		$form = new Form;
-		
+
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
 		$form->addTextArea('text')
@@ -450,11 +525,11 @@ class ForumPresenter extends LayerPresenter{
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla');
 
-		$form->addHidden('id',0);
+		$form->addHidden('id', 0);
 		$form->addHidden('forum_topic_id');
 		$form->addHidden('forum_id');
 
-		$form->onSuccess[]= [$this, 'processAddPostForm'];
+		$form->onSuccess[] = [$this, 'processAddPostForm'];
 		return $form;
 	}
 
@@ -462,28 +537,26 @@ class ForumPresenter extends LayerPresenter{
 	 * @param $form Form
 	 * @allow(member)
 	 */
-	public function processAddPostForm(Form $form){
+	public function processAddPostForm(Form $form) {
 		$values = $form->values;
 		$datum = new DateTime();
 		$values->date_update = $datum;
 
-		//$values->title = ucfirst($values->title);
-
-		$id = (int) $values['id'];
+		$id = (int)$values['id'];
 		unset($values['id']);
 
 		if ($id > 0) {
-        	$row = $this->forumService->getPostById($id);
-        	$row->update($values);
-        	$this->flashMessage('Příspěvek byl upraven');
-        } else {
-        	$values->member_id = $this->getUser()->getIdentity()->getId();	
+			$row = $this->forumService->getPostById($id);
+			$row->update($values);
+			$this->flashMessage('Příspěvek byl upraven');
+		} else {
+			$values->member_id = $this->getUser()->getIdentity()->getId();
 			$values->date_add = $datum;
 
-        	$row = $this->forumService->addPost($values);
-        	$this->flashMessage('Byl přidán další příspěvek');
-        }
+			$row = $this->forumService->addPost($values);
+			$this->flashMessage('Byl přidán další příspěvek');
+		}
 
-		$this->showPost($row);        
+		$this->showPost($row);
 	}
 }

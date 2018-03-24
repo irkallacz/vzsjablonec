@@ -3,6 +3,7 @@
 namespace App\CronModule\Presenters;
 
 use App\Model\GalleryService;
+use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Finder;
 
 class PhotoPresenter extends BasePresenter{
@@ -15,7 +16,10 @@ class PhotoPresenter extends BasePresenter{
 
     	$times = [];
     	foreach ($albums as $album) {
-	    	foreach ($album->related('photo.album_id') as $photo) {
+			/** @var ActiveRow $album*/
+    		foreach ($album->related('photo.album_id') as $photo) {
+				/** @var ActiveRow $photo*/
+
 	    		if (!$photo->date_taken){
 		            $exif = exif_read_data('albums/'.$album->id.'/'.$photo->filename);
 

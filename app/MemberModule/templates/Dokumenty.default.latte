@@ -10,7 +10,7 @@
 		li.file .file-icon { vertical-align: bottom; }
 		li.dir .icon { font-size: 16px}
 	</style>
-	<script type="text/javascript">
+	<script type="text/javascript" n:nonce>
 		$(function() {
 			open = document.querySelector('.icon-folder-open').outerHTML;
 			close = document.querySelector('.icon-folder').outerHTML;
@@ -30,11 +30,11 @@
 	{foreach $dir->related($TABLE_DIRECTORIES)->order('name') as $file}
 			<li class="dir">
 				<a id="{$file->id}" class="toogleDir">
-					<span>{include svg name => $root ? 'folder-open' : 'folder'}</span>
+					<span>{include svg icon => $root ? 'folder-open' : 'folder'}</span>
 					<strong>{$file->name}</strong>
 				</a>
 				<a n:if="$user->isInRole('board')and($root)" class="float-right" href="{$file->webViewLink}" target="_blank" title="otevřít">
-					{include svg name => chain} otevřít
+					{include svg icon => chain} otevřít
 				</a>
 			</li>
 			<ol id="folder-{$file->id}" n:class="!$root ? hide">
@@ -44,11 +44,11 @@
 	{foreach $dir->related($TABLE_DOKUMENTY)->order('name') as $file}
 			<li id="{$file->id}" n:class="file, hoverLike, $file->modifiedTime > $user->getIdentity()->date_last ? 'new'">
 				<img class="file-icon" height="16" width="16" src="{$file->iconLink}" title="{$file->mimeType}" alt="{$file->mimeType}">
-				<a class="link" title="Datum změny: {$file->modifiedTime|date:'d.m.Y H:i:s'}" href="{$file->webViewLink}">{$file->name}</a>
+				<a class="link" target="_blank" title="Datum změny: {$file->modifiedTime|date:'d.m.Y H:i:s'}" href="{$file->webViewLink}">{$file->name}</a>
 				{if ($file->webContentLink)and(!Nette\Utils\Strings::startsWith($file->mimeType, 'application/vnd.google-apps'))}
-					<a class="float-right" href="{$file->webContentLink}" title="stáhnout">{include svg name => download} stáhnout</a>
+					<a class="float-right" href="{$file->webContentLink}" title="stáhnout">{include svg icon => download} stáhnout</a>
 				{else}
-					<a class="float-right" n:href="getPdf $file->id" title="stáhnout jako PDF">{include svg name => download} stáhnout</a>
+					<a class="float-right" n:href="getPdf $file->id" title="stáhnout jako PDF">{include svg icon => download} stáhnout</a>
 				{/if}
 				<small class="description">{$file->description}</small>
 			</li>

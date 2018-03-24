@@ -7,7 +7,9 @@ use Joseki\Webloader\JsMinFilter;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
+use Nette\Database\Table\ActiveRow;
 use Nette\Utils\DateTime;
+use WebLoader;
 use Tracy\Debugger;
 
 /** @allow(member) */
@@ -16,15 +18,20 @@ class AnketyPresenter extends LayerPresenter {
 	/** @var AnketyService @inject */
 	public $anketyService;
 
+	/**
+	 *
+	 */
 	public function renderDefault() {
 		$ankety = $this->anketyService->getAnkety();
 		$this->template->ankety = $ankety;
 	}
 
-	public function renderView($id) {
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 */
+	public function renderView(int $id) {
 		$anketa = $this->anketyService->getAnketaById($id);
-
-		$user_id = $this->getUser()->getId();
 
 		if (!$anketa) {
 			throw new BadRequestException('Anekta nenalezena!');
@@ -37,16 +44,26 @@ class AnketyPresenter extends LayerPresenter {
 		$this->template->title = $anketa->title;
 	}
 
+	/**
+	 *
+	 */
 	public function renderAdd() {
 		$this->setView('edit');
 		$this->template->nova = TRUE;
 	}
 
-	public function renderEdit($id) {
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 * @throws ForbiddenRequestException
+	 */
+	public function renderEdit(int $id) {
 		$this->template->nova = false;
 
+		/** @var Form $form*/
 		$form = $this['anketaForm'];
 		if (!$form->isSubmitted()) {
+
 			$anketa = $this->anketyService->getAnketaById($id);
 
 			if (!$anketa) {
@@ -57,7 +74,7 @@ class AnketyPresenter extends LayerPresenter {
 				throw new ForbiddenRequestException('Nemáte právo editovat tuto anketu');
 			}
 
-			$odpovedi = $this->anketyService->getOdpovediByAnketaId($id);
+			//$odpovedi = $this->anketyService->getOdpovediByAnketaId($id);
 
 			$form->setDefaults($anketa);
 			//$form['users']->setValues($odpovedi);
@@ -66,9 +83,12 @@ class AnketyPresenter extends LayerPresenter {
 		}
 	}
 
-	public function handleVote($odpoved) {
-		$id = (int)$this->getParameter('id');
-		$odpoved = (int)$odpoved;
+	/**
+	 * @param int $odpoved
+	 * @throws BadRequestException
+	 */
+	public function handleVote(int $odpoved) {
+		$id = (int) $this->getParameter('id');
 
 		$anketa = $this->anketyService->getAnketaById($id);
 
@@ -93,7 +113,11 @@ class AnketyPresenter extends LayerPresenter {
 		$this->redirect('view', $id);
 	}
 
-	public function actionDeleteVote($id) {
+	/**
+	 * @param int $id
+	 * @throws BadRequestException
+	 */
+	public function actionDeleteVote(int $id) {
 		$anketa = $this->anketyService->getAnketaById($id);
 
 		if ((!$anketa) or ($anketa->locked)) {
@@ -110,7 +134,11 @@ class AnketyPresenter extends LayerPresenter {
 		$this->redirect('Ankety:view', $id);
 	}
 
-	public function actionDelete($id) {
+	/**
+	 * @param int $id
+	 * @throws ForbiddenRequestException
+	 */
+	public function actionDelete(int $id) {
 		$anketa = $this->anketyService->getAnketaById($id);
 
 		if ((!$this->getUser()->isInRole('admin')) and ($anketa->member_id != $this->getUser()->getId())) {
@@ -121,7 +149,12 @@ class AnketyPresenter extends LayerPresenter {
 		$this->redirect('Ankety:default');
 	}
 
-	public function actionLock($id, $lock) {
+	/**
+	 * @param int $id
+	 * @param bool $lock
+	 * @throws ForbiddenRequestException
+	 */
+	public function actionLock(int $id, bool $lock) {
 		$anketa = $this->anketyService->getAnketaById($id);
 
 		if ((!$this->getUser()->isInRole('admin')) and ($anketa->member_id != $this->getUser()->getId())) {
@@ -132,8 +165,11 @@ class AnketyPresenter extends LayerPresenter {
 		$this->redirect('Ankety:view', $id);
 	}
 
+	/**
+	 * @return \WebLoader\Nette\JavaScriptLoader
+	 */
 	public function createComponentTexylaJs() {
-		$files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
+		$files = new WebLoader\FileCollection(WWW_DIR . '/texyla/js');
 		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
 		$files->addFiles(['../plugins/table/table.js']);
 		$files->addFiles(['../plugins/color/color.js']);
@@ -142,23 +178,29 @@ class AnketyPresenter extends LayerPresenter {
 		$files->addFiles([WWW_DIR . '/js/texyla_anketa.js']);
 
 
-		$compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
+		$compiler = WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
 		$compiler->addFileFilter(new JsMinFilter());
 
-		return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+		return new WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
 	}
 
+	/**
+	 * @return Form
+	 */
 	protected function createComponentAnketaForm() {
 		$form = new Form;
 
 		$form->addText('title', 'Název', 30)
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setAttribute('spellcheck', 'true');
 
 		$form->addTextArea('text', 'Otázka', 60)
+			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setAttribute('spellcheck', 'true');
 
 		$users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) {
 			$user->addText('text', 'Odpověď', 30)
+				->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 				->setAttribute('spellcheck', 'true');
 
 			$user->addHidden('id');
@@ -187,14 +229,18 @@ class AnketyPresenter extends LayerPresenter {
 		return $form;
 	}
 
+	/**
+	 *
+	 */
 	public function addAnketaFormSubmitted() {
-		$id = (int)$this->getParameter('id');
+		$id = (int) $this->getParameter('id');
 
-		$values = $this['anketaForm']->getValues();
+		/** @var Form $form*/
+		$form = $this['anketaForm'];
+		$values = $form->getValues();
+
 		$datum = new DateTime();
 		$values->date_update = $datum;
-
-		$values->title = ucfirst($values->title);
 
 		$pocet = $values->pocet;
 		unset($values->pocet);
@@ -202,7 +248,8 @@ class AnketyPresenter extends LayerPresenter {
 		unset($values->users);
 
 		if ($id) {
-			$this->anketyService->getAnketaById($id)->update($values);
+			$anketa = $this->anketyService->getAnketaById($id);
+			$anketa->update($values);
 			$anketa_id = $id;
 			$this->flashMessage('Anketa byla aktualizována');
 		} else {
@@ -222,18 +269,22 @@ class AnketyPresenter extends LayerPresenter {
 			}
 
 			foreach ($odpovedi as $odpoved) {
-				$array = ['anketa_id' => $anketa_id, 'text' => ucfirst($odpoved->text)];
+				$array = ['anketa_id' => $anketa_id, 'text' => $odpoved->text];
 				$this->anketyService->addOdpoved($array);
 			}
 		} else {
 			foreach ($odpovedi as $odpoved) {
-				$this->anketyService->getOdpovedById($odpoved->id)->update(['text' => ucfirst($odpoved->text)]);
+				$row = $this->anketyService->getOdpovedById($odpoved->id);
+				$row->update(['text' => $odpoved->text]);
 			}
 		}
 
 		$this->redirect('view', $anketa_id);
 	}
 
+	/**
+	 * @return AnketaControl
+	 */
 	public function createComponentAnketa() {
 		$id = $this->getParameter('id');
 		return new AnketaControl($id, $this->anketyService);

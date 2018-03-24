@@ -1,18 +1,29 @@
 {import '../templates/@svg.latte'}
 
+<script type="text/javascript" n:nonce>
+	$(function () {
+		$.nette.init();
+
+		$('#change-button').click(function() {
+			$('#change-form').show();
+			$('#change-button').hide();
+		})
+	});
+</script>
+
 {define #userList}
 	<p n:if="($akce->date_deatline > date_create())and($user->isInRole('member'))">
 		{if $isAllowLogin}
 			{if !$isLogged}
-				<a n:href="logSelf! $isOrg" class="buttonLike ajax">{include svg name => check} Přihlásit se</a>
+				<a n:href="logSelf! $isOrg" class="buttonLike ajax">{include svg icon => check} Přihlásit se</a>
 			{else}
-				<a n:href="unlogSelf! $isOrg" class="buttonLike ajax">{include svg name => close} Odhlásit se</a>
+				<a n:href="unlogSelf! $isOrg" class="buttonLike ajax">{include svg icon => close} Odhlásit se</a>
 			{/if}
 		{else}
 			{if !$isLogged}
-				<span class="buttonLike gray">{include svg name => check} Přihlásit se</span>
+				<span class="buttonLike gray">{include svg icon => check} Přihlásit se</span>
 			{else}
-				<span class="buttonLike gray">{include svg name => close} Odhlásit se</span>
+				<span class="buttonLike gray">{include svg icon => close} Odhlásit se</span>
 			{/if}
 		{/if}
 	</p>
@@ -28,12 +39,12 @@
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 <div class="float-left list-component">
-	<h3>Účastníci {include svg name => user}</h3>
+	<h3>Účastníci {include svg icon => user}</h3>
 	{include #userList isOrg => FALSE, isAllowLogin => $isUserAllow, isLogged => $userIsInUserList, items => clone $items}
 </div>
 
 <div class="float-left list-component">
-	<h3>Organizátoři {include svg name => user-o}</span></h3>
+	<h3>Organizátoři {include svg icon => user-o}</span></h3>
 	{include #userList isOrg => TRUE, isAllowLogin => $isOrgAllow, isLogged => $userIsInOrgList}
 </div>
 {/snippet}
@@ -41,7 +52,7 @@
 <div class="clearfix"></div>
 
 {if $user->isInRole('member')and(($userIsInOrgList)or($user->isInRole('admin')))}
-	<button id="change-button" class="buttonLike">{include svg name => group} upravit účastníky</button>
+	<button id="change-button" class="buttonLike">{include svg icon => group} upravit účastníky</button>
 	<div id="change-form" class="hide">
 		<h3>Upravit účastníky</h3>
 		<div n:snippet="logginForm">
@@ -49,7 +60,7 @@
 				{input member}
 				{input organizator}
 				<button n:name="ok" class="buttonLike">
-					{include svg name => user-plus} přidat
+					{include svg icon => user-plus} přidat
 				</button>
 			{/form}
 		</div>
@@ -58,7 +69,7 @@
 			{form unLogginForm class => ajax}
 			{input member}
 			<button n:name="ok" class="buttonLike">
-				{include svg name => user-times} odebrat
+				{include svg icon => user-times} odebrat
 			</button>
 			{/form}
 		</div>

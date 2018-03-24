@@ -18,18 +18,16 @@
 
 <script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
 
-<script type="text/javascript">
-//<![CDATA[
-$.texyla.setDefaults({
-	baseDir: {$basePath}+'/texyla',
-	previewPath: {link texyPreview}
-});
+<script type="text/javascript" n:nonce>
+	$.texyla.setDefaults({
+		baseDir: {$basePath}+'/texyla',
+		previewPath: {link texyPreview}
+	});
 
-$(function () {
-	$('.texyla').textareaAutoSize();
-	$('.texyla').texyla(forum);
-});
-//]]>
+	$(function () {
+		$('.texyla').textareaAutoSize();
+		$('.texyla').texyla(forum);
+	});
 </script>
 
 {/block}

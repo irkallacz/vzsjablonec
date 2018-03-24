@@ -6,8 +6,12 @@
 
 namespace App\Model;
 
+use Nette\Database\ResultSet;
+use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
+use Nette\Utils\ArrayHash;
+use Nette\Utils\DateTime;
 
 class AnketyService extends DatabaseService {
 
@@ -19,121 +23,135 @@ class AnketyService extends DatabaseService {
 	}
 
 	/**
-	 * @param $id
-	 * @return IRow
+	 * @param int $id
+	 * @return IRow|ActiveRow
 	 */
-	public function getAnketaById($id) {
+	public function getAnketaById(int $id) {
 		return $this->getAnkety()->get($id);
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @return Selection
 	 */
-	public function getOdpovediByAnketaId($id) {
+	public function getOdpovediByAnketaId(int $id) {
 		return $this->database->table('anketa_odpoved')->where('anketa_id', $id)->order('text');
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @return array
 	 */
-	public function getMemberListByAnketaId($id) {
-		return $this->database->table('anketa_member')->where('anketa_id', $id)->fetchPairs('member_id', 'anketa_odpoved_id');
+	public function getOdpovediCountByAnketaId(int $id) {
+		return $this->database->table('anketa_member')
+			->select('anketa_odpoved_id, COUNT(member_id)AS pocet')
+			->where('anketa_id', $id)
+			->group('anketa_odpoved_id')
+			->fetchPairs('anketa_odpoved_id', 'pocet');
 	}
 
-	public function getOdpovedIdByAnketaId($anketa_id, $user_id) {
-		$odpoved = $this->database->table('anketa_member')->where(['member_id', $user_id, 'anketa_id' => $anketa_id])->fetch();
+	/**
+	 * @param int $anketa_id
+	 * @param int $user_id
+	 * @return int
+	 */
+	public function getOdpovedIdByAnketaId(int $anketa_id, int $user_id) {
+		$odpoved = $this->database->table('anketa_member')
+			->where('member_id', $user_id)
+			->where('anketa_id', $anketa_id)
+			->fetch();
 		if ($odpoved) return $odpoved->anketa_odpoved_id; else return 0;
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 * @return Selection
 	 */
-	public function getMembersByAnketaId($id) {
+	public function getMembersByAnketaId(int $id) {
 		return $this->database->table('member')
 			->select('id, CONCAT(surname," ",name)AS jmeno, :anketa_member.anketa_odpoved_id')
 			->where(':anketa_member.anketa_id', $id);
 	}
 
 	/**
-	 * @param \Nette\Utils\DateTime $date
+	 * @param DateTime $date
 	 * @return Selection
 	 */
-	public function getAnketyNews(\Nette\Utils\DateTime $date) {
+	public function getAnketyNews(DateTime $date) {
 		return $this->getAnkety()->where('date_add > ?', $date);
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 */
-	public function deleteAnketaById($id) {
+	public function deleteAnketaById(int $id) {
 		$this->database->table('anketa_member')->where('anketa_id', $id)->delete();
 		$this->database->table('anketa_odpoved')->where('anketa_id', $id)->delete();
 		$this->database->table('anketa')->where('id', $id)->delete();
 	}
 
 	/**
-	 * @param $values
+	 * @param ArrayHash $values
 	 * @return bool|int|IRow
 	 */
-	public function addAnketa($values) {
+	public function addAnketa(ArrayHash $values) {
 		return $this->getAnkety()->insert($values);
 	}
 
 	/**
-	 * @param $id
-	 * @return IRow
+	 * @param int $id
+	 * @return IRow|ActiveRow
 	 */
-	public function getOdpovedById($id) {
+	public function getOdpovedById(int $id) {
 		return $this->database->table('anketa_odpoved')->get($id);
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 */
-	public function deleteOdpovediByAnketaId($id) {
+	public function deleteOdpovediByAnketaId(int $id) {
 		$this->database->table('anketa_odpoved')->where('anketa_id', $id)->delete();
 	}
 
 	/**
-	 * @param $values
+	 * @param array $values
 	 * @return bool|int|IRow
 	 */
-	public function addOdpoved($values) {
+	public function addOdpoved(array $values) {
 		return $this->database->table('anketa_odpoved')->insert($values);
 	}
 
 	/**
-	 * @param $values
-	 * @return bool|int|IRow
+	 * @param array $values
+	 * @return ResultSet
 	 */
-	public function addVote($values) {
-		$this->database->query('INSERT INTO anketa_member', $values);
+	public function addVote(array $values) {
+		return $this->database->query('INSERT INTO anketa_member', $values);
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id
 	 */
-	public function deleteVotesByAnketaId($id) {
+	public function deleteVotesByAnketaId(int $id) {
 		$this->database->table('anketa_member')->where('anketa_id', $id)->delete();
 	}
 
+
 	/**
-	 * @param $anketa_id
-	 * @param $member_id
+	 * @param int $anketa_id
+	 * @param int $member_id
+	 * @return int
 	 */
-	public function deleteMemberVote($anketa_id, $member_id) {
-		$this->database->table('anketa_member')->where('anketa_id', $anketa_id)->where('member_id', $member_id)->delete();
+	public function deleteMemberVote(int $anketa_id, int $member_id) {
+		return $this->database->table('anketa_member')->where('anketa_id', $anketa_id)->where('member_id', $member_id)->delete();
 	}
 
 	/**
-	 * @param $anketa_id
-	 * @param $member_id
+	 * @param int $anketa_id
+	 * @param int $member_id
 	 * @return bool|mixed|IRow
 	 */
-	public function getMemberVote($anketa_id, $member_id) {
+	public function getMemberVote(int $anketa_id, int $member_id) {
 		return $this->database->table('anketa_member')->where('anketa_id', $anketa_id)->where('member_id', $member_id)->fetch();
 	}
 }

@@ -22,6 +22,9 @@ class NewsPresenter extends LayerPresenter{
         /** @var Model\AnketyService @inject */
         public $anketyService;
 
+		/** @var Model\MessageService @inject */
+		public $messageService;
+
 		/** @var Model\GalleryService @inject */
 		public $galleryService;
 
@@ -34,9 +37,11 @@ class NewsPresenter extends LayerPresenter{
                     $this->template->novinky = $this->wordpressService->getLastNews();
                 }
 
+                /**@var DateTime $datum */
                 $datum = $this->getUser()->getIdentity()->date_last;
 
-                $user_id = $this->getUser()->getId();
+				/**@var int $id */
+				$user_id = $this->getUser()->getId();
 
                 $this->template->lastDate = $datum;
                 $this->template->nowDate = new DateTime();
@@ -51,6 +56,8 @@ class NewsPresenter extends LayerPresenter{
 
                 $this->template->feedbackList = $this->akceService->getFeedbackRequests($datum, $user_id);
                 $this->template->reportList = $this->akceService->getReportRequests($datum, $user_id);
+
+                $this->template->messageList = $this->messageService->getMessagesNews($datum, $user_id);
 
                 $this->template->albumList = $this->galleryService->getAlbumNews($datum);
         }
