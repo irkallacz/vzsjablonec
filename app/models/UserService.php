@@ -27,7 +27,6 @@ class UserService extends DatabaseService {
 	const LOGIN_METHOD_GOOGLE = 2;
 	const LOGIN_METHOD_FACEBOOK = 3;
 
-	const LOGIN_METHOD = ['password', 'google', 'facebook'];
 
 	/**
 	 * @return Selection
@@ -170,11 +169,23 @@ class UserService extends DatabaseService {
 	 * @param DateTime $datetime
 	 * @param string $method
 	 */
-	public function addUserLogin(int $user_id, DateTime $datetime, $method = self::LOGIN_METHOD_PASSWORD) {
+	public function addUserLogin(int $user_id, $method = self::LOGIN_METHOD_PASSWORD) {
 		$this->database->query('INSERT INTO user_log', [
 			'member_id' => $user_id,
-			'date_add' => $datetime,
+			'date_add' => new SqlLiteral('NOW()'),
 			'method_id' => $method
+		]);
+	}
+
+	/**
+	 * @param int $user_id
+	 * @param DateTime $datetime
+	 * @param string $method
+	 */
+	public function addMemberLogin(int $user_id) {
+		$this->database->query('INSERT INTO member_log', [
+			'member_id' => $user_id,
+			'date_add' => new SqlLiteral('NOW()')
 		]);
 	}
 

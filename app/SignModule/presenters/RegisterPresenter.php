@@ -6,7 +6,7 @@
  * Time: 10:04
  */
 
-namespace App\MemberModule\Presenters;
+namespace App\SignModule\Presenters;
 
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\MessageService;

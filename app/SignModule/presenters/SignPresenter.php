@@ -8,28 +8,30 @@
 
 namespace App\SignModule\Presenters;
 
+use App\Model\MessageService;
 use App\Model\UserService;
 use App\SignModule\StateCryptor;
+use App\Template\LatteFilters;
 use Nette\Application\BadRequestException;
-use Nette\Application\UI\Presenter;
 use Nette\Http\Request;
+use Nette\Security\AuthenticationException;
+use Nette\Security\IUserStorage;
+use Nette\Security\Passwords;
 use Nette\Utils\DateTime;
 use Nette\Utils\Random;
 use Nette\Utils\Strings;
+use Nette\Utils\Arrays;
 use App\Authenticator\CredentialsAuthenticator;
 use App\Authenticator\EmailAuthenticator;
 use App\Authenticator\SsoAuthenticator;
 use Nette\Application\UI\Form;
 use Nette\InvalidArgumentException;
-use Nette\Mail\IMailer;
-use Nette\Utils\Arrays;
-use Nette\Security as NS;
 use Vencax\FacebookLogin;
 use Vencax\GoogleLogin;
 use Tracy\Debugger;
 
 
-class SignPresenter extends Presenter {
+class SignPresenter extends BasePresenter {
 
 	const REDIRECTS = [':Member:Sign:ssoLogin', ':Photo:Sign:ssoLogin'];
 
@@ -38,6 +40,9 @@ class SignPresenter extends Presenter {
 
 	/** @var UserService @inject */
 	public $userService;
+
+	/** @var MessageService @inject */
+	public $messageService;
 
 	/** @var GoogleLogin @inject */
 	public $googleLogin;
@@ -56,9 +61,6 @@ class SignPresenter extends Presenter {
 
 	/** @var StateCryptor @inject */
 	public $stateCryptor;
-
-	/** @var IMailer @inject */
-	public $mailer;
 
 	/** @persistent */
 	public $backlink = '';
@@ -80,31 +82,29 @@ class SignPresenter extends Presenter {
 	}
 
 
-	public function actionGoogleLogin($code, $state = NULL) {
+	public function actionGoogleLogin(string $code, string $state = NULL) {
 		try {
 			if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'google');
 			$me = $this->googleLogin->getMe($code);
 			$this->emailAuthenticator->login($me->email);
-			$this->user->identity->loginMethod = 'google';
-			$this->afterLogin();
-		} catch (NS\AuthenticationException $e) {
+			$this->afterLogin(UserService::LOGIN_METHOD_GOOGLE);
+		} catch (AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('in');
 		}
 	}
 
-	public function actionFacebookLogin($state = NULL) {
+	public function actionFacebookLogin(string $state = NULL) {
 		try {
 			if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'facebook');
 			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
 			$email = Arrays::get($me, 'email');
 			$this->emailAuthenticator->login($email);
-			$this->user->identity->loginMethod = 'facebook';
-			$this->afterLogin();
+			$this->afterLogin(UserService::LOGIN_METHOD_FACEBOOK);
 		} catch (InvalidArgumentException $e) {
 			$this->flashMessage('Pravděpodobně jste aplikaci VZS JBC na Facebooku odebrali právo přistupovat k vašemu emailu. Odeberte aplikaci a znovu se pokuste přihlásit.', 'error');
 			$this->redirect('in');
-		} catch (NS\AuthenticationException $e) {
+		} catch (AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('in');
 		}
@@ -139,23 +139,22 @@ class SignPresenter extends Presenter {
 		try {
 			$values = $form->getValues();
 			$this->credentialsAuthenticator->login($values->mail, $values->password);
-			$this->user->identity->loginMethod = 'password';
-			$this->afterLogin();
+			$this->afterLogin(UserService::LOGIN_METHOD_PASSWORD);
 
-		} catch (NS\AuthenticationException $e) {
+		} catch (AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
 	}
 
-	private function afterLogin() {
+	private function afterLogin(int $loginMethod = UserService::LOGIN_METHOD_PASSWORD) {
 		$userId = $this->getUser()->getId();
-		$this->getUser()->setExpiration('6 hours', NS\IUserStorage::CLEAR_IDENTITY, TRUE);
+		$this->getUser()->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
+		$this->getUser()->getIdentity()->login_method_id = $loginMethod;
 
-		$this->getUser()->getIdentity()->date_last = $this->userService->getLastLoginByUserId($userId);
-		$this->userService->addUserLogin($userId, new DateTime(), $this->user->identity->loginMethod);
+		$this->userService->addUserLogin($userId, $loginMethod);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
-		else $this->redirect('News:default');
+		else $this->redirect('Memmber:News:default');
 	}
 
 	/**
@@ -191,22 +190,26 @@ class SignPresenter extends Presenter {
 
 		$member = $this->userService->getUserByEmail($values->mail);
 
-		if (!$member) $form->addError('E-mail nenalezen');
-		else {
-			$session = $this->userService->addPasswordSession($member->id);
-			$this->backlink = '';
-			$this->sendRestoreMail($member, $session);
-			$this->flashMessage('Na Váši e-mailovou adresu byly odeslány údaje pro změnu hesla');
+		if ($member) {
+			if (!$this->userService->haveActivePasswordSession($member->id)) {
+				$next = $this->messageService->getNextSendTime();
+				$minutes = intval($next->diff(new DateTime())->i) + 40;
+				$session = $this->userService->addPasswordSession($member->id, "$minutes MINUTE");
+				$this->backlink = '';
+				$this->addRestoreMail($member, $session);
 
-			$this->redirect('Sign:in');
-		}
+				$this->flashMessage('Na Váši e-mailovou adresu bude '.LatteFilters::timeAgoInWords($next).' odeslán odkaz pro změnu hesla');
+				$this->redirect('in');
+
+			} $form->addError('Na tomto účtu je již aktivní jiná obnova hesla');
+		} else $form->addError('E-mail nenalezen');
 	}
 
 	/**
 	 * @param $pubkey
 	 * @throws BadRequestException
 	 */
-	public function renderRestorePassword($pubkey) {
+	public function renderRestorePassword(string $pubkey) {
 		$session = $this->userService->getPasswordSession($pubkey);
 
 		if (!$session) {
@@ -269,7 +272,7 @@ class SignPresenter extends Presenter {
 				if ((!$member) or (is_null($member->role))) {
 					throw new BadRequestException('Uživatel nenalezen');
 				} else {
-					$hash = NS\Passwords::hash($values->password);
+					$hash = Passwords::hash($values->password);
 					$member->update(['hash' => $hash]);
 					$session->delete();
 					$this->flashMessage('Vaše heslo bylo změněno');
@@ -286,7 +289,7 @@ class SignPresenter extends Presenter {
 		$this->redirect('in');
 	}
 
-	public function actionSso($redirect, $link = '') {
+	public function actionSso(string $redirect, string $link = '') {
 		if (!in_array($redirect, self::REDIRECTS))
 			throw new BadRequestException('Redirect nemá povolenou hodnotu');
 
@@ -294,12 +297,11 @@ class SignPresenter extends Presenter {
 			throw new BadRequestException('Nesouhlasí doména původu');
 
 		if ($this->getUser()->isLoggedIn()) {
-			$user = $this->getUser();
-			$this->userService->addUserLogin($user->id, new DateTime(), $user->identity->loginMethod);
 			$code = $this->generateCode();
-			$signature = $this->ssoAuthenticator->getSignature($user, $code);
+			$timestamp = time();
+			$signature = $this->ssoAuthenticator->getSignature($this->user->getIdentity(), $code, $timestamp);
 
-			$this->redirect($redirect, ['code' => $code, 'userId' => $user->id, 'signature' => $signature, 'backlink' => $link]);
+			$this->redirect($redirect, ['code' => $code, 'userId' => $this->user->id, 'timestamp' => $timestamp, 'signature' => $signature, 'backlink' => $link]);
 		} else {
 			$this->backlink = $this->storeRequest();
 			$this->redirect('in');
