@@ -31,7 +31,7 @@ class StateCryptor extends Object {
 	 * @return string
 	 */
 	public function encryptState($state, $key){
-		$iv = $this->getID($key);
+		$iv = mb_substr($this->getID($key), 0, 16);
 		$secret = $this->getSecret($key);
 
 		$ciphertext = openssl_encrypt($state, 'AES-128-CBC', $secret, $options=OPENSSL_RAW_DATA, $iv);
@@ -44,7 +44,7 @@ class StateCryptor extends Object {
 	 * @return string
 	 */
 	public function decryptState($state, $key){
-		$iv = $this->getID($key);
+		$iv = mb_substr($this->getID($key), 0, 16);
 		$secret = $this->getSecret($key);
 
 		$ciphertext = base64_decode($state);

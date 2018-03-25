@@ -28,7 +28,7 @@ class LocalRouterFactory{
 		$cron[] = new Route('cron/<presenter>/<action>[/<id>]', 'Cron:default');
 
 		$sign = new RouteList('Sign');
-		$sing[] = new Route('sign/<presenter>/<action>[/<id>]', 'Sign:default');
+		$sign[] = new Route('sign/<presenter>/<action>[/<id>]', 'Sign:default');
 
 		$router[] = $member;
 		$router[] = $photo;

@@ -39,9 +39,9 @@ class SsoAuthenticator extends BaseAuthenticator {
 	 * @param  string $signature
 	 * @throws AuthenticationException
 	 */
-	public function login(string $code, int $userId, int $timestamp, string $signature) {
+	public function login(int $userId, string $code, int $timestamp, string $signature) {
 		if (time() - $timestamp > 60) {
-			throw new AuthenticationException('Příliš starý požadavek');
+			throw new AuthenticationException('Neplatná časová značka');
 		}
 
 		$user = $this->userService->getUserById($userId);

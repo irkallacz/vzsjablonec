@@ -18,6 +18,9 @@ class SignPresenter extends BasePresenter {
 	/** @var Request @inject */
 	public $httpRequest;
 
+	/** @var IRouter @inject */
+	public $router;
+
 	/** @var UserService @inject */
 	public $userService;
 
@@ -31,14 +34,13 @@ class SignPresenter extends BasePresenter {
 	/**
 	 * @throws \Nette\Application\AbortException
 	 */
-	public function actionSignIn() {
+	public function actionIn() {
 		if ($this->getUser()->isLoggedIn()) {
 			if ($this->backlink) $this->restoreRequest($this->backlink);
 			$this->redirect('News:');
 		}
-		//TODO set $backlink to referer
 
-		$this->redirect(':Sign:Sign:sso', ['redirect' => ':Member:Sign:ssoLogin', 'link' => $this->backlink]);
+		$this->redirect(':Sign:Sign:sso', ['redirect' => ':Member:Sign:ssoLogIn', 'link' => $this->backlink]);
 	}
 
 	/**
@@ -49,17 +51,18 @@ class SignPresenter extends BasePresenter {
 	 * @throws BadRequestException
 	 * @throws \Nette\Application\AbortException
 	 */
-	public function actionSSsoLogin(string $code, int $userId, int $timestamp, string $signature) {
-		if ($this->httpRequest->getReferer()->host != $this->httpRequest->url->host)
-			throw new BadRequestException('Nesouhlasí doména původu');
+	public function actionSSoLogIn(string $code, int $userId, int $timestamp, string $signature) {
+		$referer = $this->httpRequest->getReferer();
 
-		/** @var IRouter $router */
-		$router = $this->context->getService('router');
-		$request = new Request(new UrlScript($this->httpRequest->getReferer()->getAbsoluteUrl()));
-		$request = $router->match($request);
+		if ($referer) {
+			if ($referer->host != $this->httpRequest->url->host)
+				throw new BadRequestException('Nesouhlasí doména původu');
 
-		if ($request->getPresenterName() !== ':Sign:Sing') {
-			throw new BadRequestException('Nesouhlasí místo původu');
+			$httpRequest = new Request(new UrlScript($referer->getAbsoluteUrl()));
+			$appRequest = $this->router->match($httpRequest);
+
+			if (($appRequest)and($appRequest->getPresenterName() !== ':Sign:Sign'))
+				throw new BadRequestException('Nesouhlasí místo původu');
 		}
 
 		try {
@@ -83,6 +86,7 @@ class SignPresenter extends BasePresenter {
 	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste odhlášen');
-		$this->redirect('in');
+		$this->redirect('default');
 	}
+
 }

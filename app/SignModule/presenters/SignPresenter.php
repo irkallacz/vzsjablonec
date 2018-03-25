@@ -33,7 +33,7 @@ use Tracy\Debugger;
 
 class SignPresenter extends BasePresenter {
 
-	const REDIRECTS = [':Member:Sign:ssoLogin', ':Photo:Sign:ssoLogin'];
+	const REDIRECTS = [':Member:Sign:ssoLogIn', ':Photo:Sign:ssoLogIn'];
 
 	/** @var Request @inject */
 	public $httpRequest;
@@ -293,7 +293,7 @@ class SignPresenter extends BasePresenter {
 		if (!in_array($redirect, self::REDIRECTS))
 			throw new BadRequestException('Redirect nemá povolenou hodnotu');
 
-		if ($this->httpRequest->getReferer()->host != $this->httpRequest->url->host)
+		if (($this->httpRequest->getReferer())and($this->httpRequest->getReferer()->host != $this->httpRequest->url->host))
 			throw new BadRequestException('Nesouhlasí doména původu');
 
 		if ($this->getUser()->isLoggedIn()) {
