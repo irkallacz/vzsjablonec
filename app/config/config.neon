@@ -29,7 +29,7 @@ parameters:
 			callbackURL: http://localhost/vzsjablonec/member/sign/googlelogin
 	facebook:
 		login:
-			appId: 129653264393659
+			appId: 1296532643936590
 			appSecret: 987654321
 			callbackURL: http://localhost/vzsjablonec/member/sign/facebooklogin
 			defaultFbGraphVersion: 'v2.11'
@@ -84,6 +84,9 @@ http:
 		style-src:
 			- self
 			- unsafe-inline
+
+routing:
+    cache: true
 
 services:
 	router: RouterFactory::createRouter
