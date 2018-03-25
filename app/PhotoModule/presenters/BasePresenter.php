@@ -61,6 +61,8 @@ abstract class BasePresenter extends Presenter {
 	 * @throws ForbiddenRequestException
 	 */
 	public function checkRequirements($element) {
+		$this->getUser()->getStorage()->setNamespace('photo');
+
 		if ($element->hasAnnotation('allow')) {
 			if ($this->getUser()->isLoggedIn()) {
 				$role = $element->getAnnotation('allow');

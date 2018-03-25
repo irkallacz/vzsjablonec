@@ -27,5 +27,9 @@ abstract class BasePresenter extends Presenter {
 		}
 	}
 
+	public function checkRequirements($element) {
+		$this->getUser()->getStorage()->setNamespace('sign');
+		parent::checkRequirements($element);
+	}
 
 }
