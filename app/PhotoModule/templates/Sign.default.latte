@@ -2,17 +2,15 @@
 
 <h2 n:block="title">Přihlášení</h2>
 
-<style type="text/css" n:syntax="off">
-    form th { text-align: left }
-</style>
+{*<p>Pro přístup do zabezpečené části fotografie se musíte přihlásit!</p>*}
+{*<p>Po přihlášení můžete do galerie nahrávat nové fotky, upravovat alba a také prohlížet alba i fotografie, které jsou neviditelné pro veřejnost.</p>*}
 
-{if $backlink}
-<p>Pro přístup do zabezpečené části fotografie se musíte přihlásit!</p>
-{else}
-<p>Po přihlášení můžete do galerie nahrávat nové fotky, upravovat alba a také prohlížet alba i fotografie, které jsou neviditelné pro veřejnost.</p>
-{/if}
-
-{control signInForm}
+<p>{if $user->isLoggedIn()}
+	Aktuálně jste přihlášen. <a n:href="Sign:out">Odhlásit</a>
+	{else}
+	Aktuálně nejste přihlášen. <a n:href="Sign:in">Přihlásit</a>
+	{/if}
+</p>
 
 {/block}
   
