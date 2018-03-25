@@ -11,6 +11,7 @@ use Nette\Utils\DateTime;
 use Nette\Database\Table\Selection;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\ActiveRow;
+use Nette\Database\SqlLiteral;
 use Nette\Utils\ArrayHash;
 
 class GalleryService extends Nette\Object {
@@ -122,9 +123,11 @@ class GalleryService extends Nette\Object {
 
 	/**
 	 * @param int $user_id
-	 * @param DateTime $datetime
 	 */
 	public function addMemberLogin(int $user_id) {
-		$this->database->query('INSERT INTO member_log VALUES(?, ?) ON DUPLICATE KEY UPDATE date_add = ?', $user_id);
+		$this->database->query('INSERT INTO member_log', [
+			'member_id' => $user_id,
+			'date_add' => new SqlLiteral('NOW()')
+		]);
 	}
 }
