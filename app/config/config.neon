@@ -18,6 +18,8 @@ parameters:
 			dbname: wordpress
 			user: root
 			password:
+	sso:
+		secret: gC4kWZXJxqLAEB0afYqmcgAp1WVemzfpSfSdfZVr
 	google:
 		account: info@vzs-jablonec.cz
 		driveDir: olqBGlusVSO2QWsuaOq0WpazaQqK
@@ -27,7 +29,7 @@ parameters:
 			callbackURL: http://localhost/vzsjablonec/member/sign/googlelogin
 	facebook:
 		login:
-			appId: 129653264393659
+			appId: 1296532643936590
 			appSecret: 987654321
 			callbackURL: http://localhost/vzsjablonec/member/sign/facebooklogin
 			defaultFbGraphVersion: 'v2.11'
@@ -83,14 +85,19 @@ http:
 			- self
 			- unsafe-inline
 
+routing:
+    cache: true
+
 services:
 	router: RouterFactory::createRouter
 	nette.latteFactory:
 		setup:
 			- addFilter(null, App\Template\LatteFilters::loader)
 
+	- App\Authenticator\SsoAuthenticator(%sso.secret%)
 	- App\Authenticator\CredentialsAuthenticator
 	- App\Authenticator\EmailAuthenticator
+	- App\SignModule\StateCryptor({google: %google.login%, facebook: %facebook.login%})
 
 	- App\MemberModule\Forms\UserFormFactory
 

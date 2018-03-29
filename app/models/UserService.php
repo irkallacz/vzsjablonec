@@ -11,6 +11,7 @@ use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 use Nette\Security\Passwords;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Database\SqlLiteral;
 
@@ -25,6 +26,7 @@ class UserService extends DatabaseService {
 	const LOGIN_METHOD_PASSWORD = 1;
 	const LOGIN_METHOD_GOOGLE = 2;
 	const LOGIN_METHOD_FACEBOOK = 3;
+
 
 	/**
 	 * @return Selection
@@ -158,19 +160,32 @@ class UserService extends DatabaseService {
 	 * @param int $id
 	 * @return DateTime
 	 */
-	public function getLastLoginByUserId(int $id) {
-		return $this->database->table('user_log')->where('member_id', $id)->max('date_add');
+	public function getLastLoginByUserId($id) {
+		return $this->database->table('member_log')->where('member_id', $id)->max('date_add');
 	}
 
 	/**
 	 * @param int $user_id
 	 * @param DateTime $datetime
+	 * @param string $method
 	 */
-	public function addUserLogin(int $user_id, DateTime $datetime, $method = self::LOGIN_METHOD_PASSWORD) {
+	public function addUserLogin(int $user_id, $method = self::LOGIN_METHOD_PASSWORD) {
 		$this->database->query('INSERT INTO user_log', [
 			'member_id' => $user_id,
-			'date_add' => $datetime,
+			'date_add' => new SqlLiteral('NOW()'),
 			'method_id' => $method
+		]);
+	}
+
+	/**
+	 * @param int $user_id
+	 * @param DateTime $datetime
+	 * @param string $method
+	 */
+	public function addMemberLogin(int $user_id) {
+		$this->database->query('INSERT INTO member_log', [
+			'member_id' => $user_id,
+			'date_add' => new SqlLiteral('NOW()')
 		]);
 	}
 

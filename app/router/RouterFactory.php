@@ -29,9 +29,13 @@ class RouterFactory{
 		$cron = new RouteList('Cron');
 		$cron[] = new Route('//cron.%domain%/<presenter>/<action>[/<id>]', 'Cron:default');
 
+		$sign = new RouteList('Sign');
+		$sign[] = new Route('//sign.%domain%/<presenter>/<action>[/<id>]', 'Sign:default');
+
 		$router[] = $member;
 		$router[] = $photo;
 		$router[] = $cron;
+		$router[] = $sign;
 
 		return $router;
 	}

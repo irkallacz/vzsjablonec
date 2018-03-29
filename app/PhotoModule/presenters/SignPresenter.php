@@ -2,82 +2,90 @@
 
 namespace App\PhotoModule\Presenters;
 
-use App\Authenticator\CredentialsAuthenticator;
+use App\Authenticator\SsoAuthenticator;
 use App\Model\GalleryService;
-use Nette\Application\UI\Form;
+use Nette\Application\BadRequestException;
+use Nette\Application\IRouter;
+use Nette\Http\Request;
+use Nette\Http\UrlScript;
+use Nette\Security\AuthenticationException;
+use Nette\Security\IUserStorage;
 use Nette\Utils\DateTime;
-use Nette\Security;
-
+use Tracy\Debugger;
 
 class SignPresenter extends BasePresenter {
-	/** @persistent */
-	public $backlink = '';
+
+	/** @var Request @inject */
+	public $httpRequest;
+
+	/** @var IRouter @inject */
+	public $router;
 
 	/** @var GalleryService @inject */
 	public $galleryService;
 
-	/** @var CredentialsAuthenticator @inject */
-	public $credentialsAuthenticator;
+	/** @var SsoAuthenticator @inject */
+	public $ssoAuthenticator;
+
+	/** @persistent */
+	public $backlink = '';
+
+
+	/**
+	 * @throws \Nette\Application\AbortException
+	 */
+	public function actionIn() {
+		if ($this->getUser()->isLoggedIn()) {
+			if ($this->backlink) $this->restoreRequest($this->backlink);
+			$this->redirect('Album:default');
+		}
+
+		$this->redirect(':Sign:Sign:sso', ['redirect' => ':Photo:Sign:ssoLogIn', 'link' => $this->backlink]);
+	}
+
+	/**
+	 * @param string $code
+	 * @param int $userId
+	 * @param int $timestamp
+	 * @param string $signature
+	 * @throws BadRequestException
+	 * @throws \Nette\Application\AbortException
+	 */
+	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
+		$referer = $this->httpRequest->getReferer();
+
+		if ($referer) {
+			if ($referer->host != $this->httpRequest->url->host)
+				throw new BadRequestException('Nesouhlasí doména původu');
+
+			$httpRequest = new Request(new UrlScript($referer->getAbsoluteUrl()));
+			$appRequest = $this->router->match($httpRequest);
+
+			if (($appRequest)and($appRequest->getPresenterName() !== ':Sign:Sign'))
+				throw new BadRequestException('Nesouhlasí místo původu');
+		}
+
+		try {
+			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature);
+		} catch (AuthenticationException $e) {
+			$this->flashMessage($e->getMessage(), 'error');
+			$this->redirect('default');
+		}
+
+		$this->getUser()->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
+
+		$dateLast = $this->galleryService->getLastLoginByMemberId($userId);
+		$this->getUser()->getIdentity()->date_last = $dateLast ? $dateLast : new DateTime();
+		$this->galleryService->addMemberLogin($userId);
+
+		if ($this->backlink) $this->restoreRequest($this->backlink);
+		else $this->redirect('Album:default');
+	}
+
 
 	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste odhlášen');
-		$this->redirect('Album:default');
+		$this->redirect('default');
 	}
-
-	public function renderIn() {
-		$this->template->backlink = $this->backlink;
-	}
-
-	/**
-	 * Sign in form component factory.
-	 * @return Form
-	 */
-	protected function createComponentSignInForm() {
-		$form = new Form;
-		$form->addText('mail', 'Email:', 30)
-			->setRequired('Vyplňte váš email')
-			->setType('email')
-			->addRule(FORM::EMAIL, 'Vyplňte správnou e-mailovou adresu');
-
-		$form->addPassword('password', 'Heslo:', 30)
-			->setRequired('Vyplňte heslo');
-
-		$form->addSubmit('send', 'Přihlásit');
-		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
-
-		$form->onSuccess[] = [$this, 'signInFormSubmitted'];
-		return $form;
-	}
-
-	/**
-	 * @param Form $form
-	 */
-	public function signInFormSubmitted(Form $form) {
-		try {
-			$values = $form->getValues();
-			$this->credentialsAuthenticator->login($values->mail, $values->password);
-			$this->afterLogin();
-
-		} catch (Security\AuthenticationException $e) {
-			$form->addError($e->getMessage());
-		}
-	}
-
-	private function afterLogin() {
-		$this->getUser()->setExpiration('6 hours', TRUE);
-
-		$user_id = $this->getUser()->getId();
-
-		$this->getUser()->getIdentity()->date_last = $this->galleryService->getLastLoginByMemberId($user_id);
-		$this->galleryService->addMemberLogin($user_id, new DateTime());
-
-		if ($this->backlink) {
-			$this->restoreRequest($this->backlink);
-		} else {
-			$this->redirect('Album:');
-		}
-
-	}
-
 }

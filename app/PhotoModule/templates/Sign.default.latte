@@ -1,0 +1,17 @@
+{block #content}
+
+<h2 n:block="title">Přihlášení</h2>
+
+{*<p>Pro přístup do zabezpečené části fotografie se musíte přihlásit!</p>*}
+{*<p>Po přihlášení můžete do galerie nahrávat nové fotky, upravovat alba a také prohlížet alba i fotografie, které jsou neviditelné pro veřejnost.</p>*}
+
+<p>{if $user->isLoggedIn()}
+	Aktuálně jste přihlášen. <a n:href="Sign:out">Odhlásit</a>
+	{else}
+	Aktuálně nejste přihlášen. <a n:href="Sign:in">Přihlásit</a>
+	{/if}
+</p>
+
+{/block}
+  
+  

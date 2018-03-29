@@ -1,5 +1,3 @@
-{import '@svg.latte'}
-
 {block #head}
 <link rel="stylesheet" href="{$baseUri}/css/symbols.css">
 
@@ -26,8 +24,6 @@
 		</p>
 	</div>
 	<hr>
-
-	<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 	<p>Pokud jsi zapomněl/a své přihlašovací jméno a heslo, tak zadej svůj e-mail, a na něj ti přijdou instrukce k jeho obnovení.</p>
 

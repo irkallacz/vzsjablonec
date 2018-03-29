@@ -1,0 +1,91 @@
+body {margin: 0; padding: 0;} 
+body, body table {font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-size: 90%;}
+
+svg.icon { margin: 0 0.4ex; vertical-align: -5%}
+
+.left {text-align: left;}
+.right {text-align: right;}
+.float-right {float: right;}
+.float-left {float: left;}
+.center {text-align: center;}
+.no-wrap {white-space: nowrap;}
+.clearfix {clear: both;}
+
+.show {display: block;}
+.hide {display: none;}
+
+.hint {border-bottom: 1px black dashed; cursor: help;}
+
+.red {color: red;}
+.green {color: green;}
+
+.update {font-size: 0.9em; text-align: right; color: gray;}
+
+div.flash:before {font-size: 120%; line-height: 50%; speak: none;}
+
+
+.buttonMenu {padding: 0; text-align: right;}
+.buttonMenu li {float: right; display: inline; list-style-type: none; margin-left: 1ex; margin-bottom: 1ex;}
+
+h2 {font-size: 1.3em; margin-top: 1ex;}
+h3 {font-size: 1em;}
+
+dl dt {font-weight: bold;}
+
+body a {color: #0065c6; text-decoration: none;}
+body a:hover, body a:focus, body a:active {text-decoration: underline;}
+
+input[type='text'], input[type='password'], input[type='date'], input[type='datetime'], input[type='email'], input[type='number'],
+input[type='time'], input[type='search'], input[type='tel'], select {
+background-color: #eee; border: 1px solid gray; border-radius: 2px; color: #404040;}
+
+textarea { border: 1px solid gray; background-color: white;
+	background-image: -moz-linear-gradient(top,#c6c5d7,white 20%);
+	background-image: -webkit-linear-gradient(top,#c6c5d7,white 20%);
+	background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0,#c6c5d7),color-stop(0.2,white));
+	background-image: linear-gradient(top,#c6c5d7,white 20%);
+}
+
+textarea { min-height: 10em; height: auto; }
+
+textarea.texyla {background-image: none; border: none;}
+
+input[type='text']:hover, input[type='password']:hover, input[type='date']:hover, input[type='datetime']:hover, 
+input[type='email']:hover, input[type='number']:hover, input[type='time']:hover, textarea:hover, select:hover,
+input[type='tel']:hover, input[type='tel']:focus,
+input[type='text']:focus, input[type='password']:focus, input[type='date']:focus, input[type='datetime']:focus, 
+input[type='email']:focus, input[type='number']:focus, input[type='time']:focus, textarea:focus, select:hover
+{border-color: darkorange;}
+
+input[type='date'], input.date {text-align: center}
+
+a img {border: none;}  
+
+div.flash{color: black; background: #fff9d7; border: 1px solid #e2c822; padding: 1ex 1em; margin: 1em 0;}
+
+div.flash.info{color: green; border: 1px solid greenyellow; }
+div.flash.info:before {content: '✔'; margin-right: 1ex;}
+
+div.flash.error{color: red; border: 1px solid firebrick; background-color: salmon;}
+div.flash.error:before {content: '✘'; margin-right: 1ex;}
+
+ul.error li {color: red;}
+
+.loader { background-image: url('../img/loading.gif'); background-repeat: no-repeat; display: inline-block; height: 24px; width: 24px; background-position: center;}
+
+.buttonLike {color: white; font-weight: bold; padding: 0.5ex 1ex; border-radius: 10px; background-color: #0089d2;
+white-space: nowrap; display: inline-block; border: none;
+	background-image: -moz-linear-gradient(#60afe4,#0089d2); 
+	background-image: -webkit-linear-gradient(#60afe4,#0089d2);
+	background-image: linear-gradient(#60afe4,#0089d2);  
+}
+
+a.head {background-color: #12397e; font-size: 2ex; border: 1px solid black;
+	background-image: -moz-linear-gradient(#0089d2,#12397e); 
+	background-image: -webkit-linear-gradient(#0089d2,#12397e);
+	background-image: linear-gradient(#0089d2,#12397e);
+}
+
+table { margin: 0 auto; text-align: left; }
+#hlavni { max-width: 30em; margin: 0 auto; text-align: center; }
+#nahore { height: 95px; margin: 1em auto 1em auto; padding: 0 4em; overflow: hidden; }
