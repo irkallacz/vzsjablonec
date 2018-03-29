@@ -209,7 +209,7 @@ class AlbumPresenter extends BasePresenter {
 
 		$plupload->maxFileSize = '5mb';
 		$plupload->maxChunkSize = '1mb';
-		$plupload->allowedExtensions = 'jpg';
+		$plupload->allowedExtensions = 'jpg,jpeg,gif,png';
 
 		$slug = (string)$this->getParameter('slug');
 		$id = parent::getIdFromSlug($slug);
@@ -228,10 +228,14 @@ class AlbumPresenter extends BasePresenter {
 				'date_add' => new DateTime
 			];
 
-			$exif = exif_read_data($filepath);
-			if (array_key_exists('DateTimeOriginal', $exif)) {
-				$datetime = new Datetime($exif['DateTimeOriginal']);
-				if ($datetime != FALSE) $values['date_taken'] = $datetime;
+			$ext = pathinfo($name, PATHINFO_EXTENSION);
+
+			if (($ext == 'jpg')or($ext == 'jpeg')) {
+				$exif = exif_read_data($filepath);
+				if (array_key_exists('DateTimeOriginal', $exif)) {
+					$datetime = new Datetime($exif['DateTimeOriginal']);
+					if ($datetime != FALSE) $values['date_taken'] = $datetime;
+				}
 			}
 
 			$this->gallery->addPhoto($values);
