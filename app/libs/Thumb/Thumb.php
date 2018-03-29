@@ -59,7 +59,7 @@ abstract class LayoutHelpers extends Nette\Object
             // doslo ke zmenseni -> ulozime miniaturu
             if ($newWidth !== $origWidth || $newHeight !== $origHeight) {
 
-                $image->save($thumbPath);
+                $image->save($thumbPath, 80, Image::JPEG);
 
                 if (is_file($thumbPath))
                     return $thumbUri;
@@ -90,7 +90,8 @@ abstract class LayoutHelpers extends Nette\Object
     {
         $sep = '.';
         $tmp = explode($sep, $relPath);
-        $ext = array_pop($tmp);
+		//$ext = array_pop($tmp);
+		$ext = 'jpg';
 
         // cesta k obrazku (ale bez pripony)
         $relPath = implode($sep, $tmp);
