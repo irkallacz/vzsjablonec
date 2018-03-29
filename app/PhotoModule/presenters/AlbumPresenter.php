@@ -249,49 +249,6 @@ class AlbumPresenter extends BasePresenter {
 	}
 
 	/**
-	 * @param FileUpload $file
-	 */
-	public function pluploadSubmbited(FileUpload $file) {
-		$slug = (string) $this->getParameter('slug');
-		$id = parent::getIdFromSlug($slug);
-
-		$datum = new DateTime();
-
-		$name = $file->getName();
-
-		if ($file->isImage()) {
-			if ($file->isOk()) {
-				$filename = self::photoDir . '/' . $id . '/' . $name;
-				$filepath = WWW_DIR . '/' . $filename;
-				$file->move($filepath);
-
-				$values = [
-					'filename' => $name,
-					'album_id' => $id,
-					'date_add' => $datum
-				];
-
-				$exif = exif_read_data($filepath);
-				if (array_key_exists('DateTimeOriginal', $exif)) {
-					$datetime = new Datetime($exif['DateTimeOriginal']);
-					if ($datetime != FALSE) $values['date_taken'] = $datetime;
-				}
-
-				$this->gallery->addPhoto($values);
-
-				\LayoutHelpers::$thumbDirUri = 'albums/thumbs';
-				\LayoutHelpers::thumb($filename, 150, 100);
-			} else {
-				$this->flashMessage('Soubor ' . $file->name . ' nebyl v pořádnu nahrán');
-				$this->redirect('edit', $slug);
-			}
-		} else {
-			$this->flashMessage('Soubor ' . $file->name . ' není obrázek');
-			$this->redirect('edit', $slug);
-		}
-	}
-
-	/**
 	 * @return Form
 	 * @allow(member)
 	 */
