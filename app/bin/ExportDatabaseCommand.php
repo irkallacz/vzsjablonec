@@ -6,6 +6,7 @@ use Rah\Danpu\Dump;
 use Rah\Danpu\Export;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tracy\Debugger;
@@ -26,11 +27,18 @@ class ExportDatabaseCommand extends Command {
 
 	protected function configure() {
 		$this->setName('database:export')
-			->setDescription('Export database structure into .sql file');
+			->setDescription('Export database structure into .sql file')
+			->addArgument('only_db', InputArgument::OPTIONAL, 'Specify the name of database (in config)');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$connections = $this->databaseConfig->getConnections();
+
+		$only_db = $input->getArgument('only_db');
+		if (($only_db)and(array_key_exists($only_db, $connections))) {
+			$connections = [$only_db => $connections[$only_db]];
+		}
+
 		$count = count($connections);
 
 		$bar = new ProgressBar($output, $count);
