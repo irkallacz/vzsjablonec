@@ -1,4 +1,4 @@
--- 2018-03-22T20:20:54+01:00 - mysql:host=localhost;dbname=vzsjablonec
+-- 2018-03-30T00:31:48+02:00 - mysql:host=localhost;dbname=vzsjablonec
 
 -- Table structure for table `akce`
 
@@ -264,6 +264,15 @@ CREATE TABLE `kvalifikace_member` (
   PRIMARY KEY (`kvalifikace_id`,`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
+-- Table structure for table `member_log`
+
+DROP TABLE IF EXISTS `member_log`;
+CREATE TABLE `member_log` (
+  `member_id` smallint(5) unsigned NOT NULL,
+  `date_add` datetime NOT NULL,
+  PRIMARY KEY (`member_id`,`date_add`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
 -- Table structure for table `message`
 
 DROP TABLE IF EXISTS `message`;
@@ -298,7 +307,7 @@ DROP TABLE IF EXISTS `message_user`;
 CREATE TABLE `message_user` (
   `message_id` int(10) unsigned NOT NULL,
   `user_id` smallint(5) unsigned NOT NULL,
-  KEY `message_id` (`message_id`),
+  PRIMARY KEY (`message_id`,`user_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `message_user_ibfk_1` FOREIGN KEY (`message_id`) REFERENCES `message` (`id`) ON DELETE CASCADE,
   CONSTRAINT `message_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
@@ -460,4 +469,4 @@ SET NEW.pubkey = MD5(UUID())
 //
 DELIMITER ;
 
--- Completed on: 2017-12-03T21:21:35+01:00
+-- Completed on: 2018-03-30T00:31:48+02:00
