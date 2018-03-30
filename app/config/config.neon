@@ -21,24 +21,24 @@ parameters:
 	sso:
 		secret: gC4kWZXJxqLAEB0afYqmcgAp1WVemzfpSfSdfZVr
 	google:
-		account: info@vzs-jablonec.cz
+		account: 'info@vzs-jablonec.cz'
 		driveDir: olqBGlusVSO2QWsuaOq0WpazaQqK
 		login:
-			clientId: 698488418952-95tac0912e96pdk6mlhme3i143i5kgvg.apps.googleusercontent.com
+			clientId: '698488418952-95tac0912e96pdk6mlhme3i143i5kgvg.apps.googleusercontent.com'
 			clientSecret: 123456789
-			callbackURL: http://localhost/vzsjablonec/member/sign/googlelogin
+			callbackURL: 'http://localhost/vzsjablonec/member/sign/googlelogin'
 	facebook:
 		login:
 			appId: 1296532643936590
 			appSecret: 987654321
-			callbackURL: http://localhost/vzsjablonec/member/sign/facebooklogin
+			callbackURL: 'http://localhost/vzsjablonec/member/sign/facebooklogin'
 			defaultFbGraphVersion: 'v2.11'
 	recaptcha:
 		siteKey: GrcZy3jKLti1aKGi0hLJuaRxBX3rxOxcb44p5rZV
 		secretKey: kKtcntSs85ITBXqZVwwZTFMVPb6xcRCTrmokMTWF
 	idoklad:
-			clientId: 12345678-abcd-efgh-ijkl-098765432100
-			clientSecret: 98765432-lkji-hgfe-dcba-001234567890
+			clientId: '12345678-abcd-efgh-ijkl-098765432100'
+			clientSecret: '98765432-lkji-hgfe-dcba-001234567890'
 			redirectUri: ''
 			credentialsFile: '%tempDir%/idoklad/credentials.json'
 
