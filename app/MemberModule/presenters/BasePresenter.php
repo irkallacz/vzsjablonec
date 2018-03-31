@@ -21,7 +21,6 @@ abstract class BasePresenter extends Presenter {
 	protected function afterRender() {
 		parent::afterRender();
 		if (!$this->context->parameters['productionMode']) {
-			parent::afterRender();
 			$this->template->basePath .= '/member';
 			$this->template->baseUrl .= '/member';
 		}
