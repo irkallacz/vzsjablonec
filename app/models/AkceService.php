@@ -113,7 +113,7 @@ class AkceService extends DatabaseService {
 	 * @return string
 	 */
 	public function getAkceMessageDefault() {
-		return "<!-- Celý tento řádek smažte a napište sem, co se stalo -->\n\nPočasí:\n\nZásahy (na břehu, ve vodě, na záchranu majetku):\n\nOšetření (drobné, větší, s odvozem):\n\nPoužitý materiál na akce v majetku místní skupiny:\n\nDalší použitý materiál:\n\nZtráty a poškození materiálu:\n\nDoprava na akci a způsob její úhrady:";
+		return "<!-- Celý tento řádek smažte a napište sem, co se stalo -->\n\nPočasí:\n\nZásahy (na břehu, ve vodě, na záchranu majetku):\n\nOšetření (drobné, větší, s odvozem):\n\nPoužitý materiál na akce v majetku pobočného spolku:\n\nDalší použitý materiál:\n\nZtráty a poškození materiálu:\n\nDoprava na akci a způsob její úhrady:";
 	}
 
 	/**
