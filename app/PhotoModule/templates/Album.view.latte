@@ -1,5 +1,5 @@
 {block #head}
-<link rel="stylesheet" href="{$baseUri}/css/jquery.fancybox.min.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="{$baseUrl}/css/jquery.fancybox.min.css" type="text/css" media="screen" />
 
 <style type="text/css" n:syntax="off">
 	#photoBottom { clear: both; padding-top: 1em; }
@@ -8,8 +8,8 @@
 	.icon { vertical-align: bottom; }
 </style>
 
-<script src="{$baseUri}/js/confirm.js" type="text/javascript"></script>
-	<script src="{$baseUri}/js/jquery.fancybox.min.js" type="text/javascript"></script>
+<script src="{$baseUrl}/js/confirm.js" type="text/javascript"></script>
+	<script src="{$baseUrl}/js/jquery.fancybox.min.js" type="text/javascript"></script>
 	<script type="text/javascript" n:syntax="off" n:nonce>
 		$(document).ready(function() {
 			$().fancybox({
@@ -40,7 +40,7 @@
 
 <ul class="photoList" n:inner-foreach="$photos as $image">
 	<li>
-		<a id="{$image->filename}" data-fancybox="images" data-type="image" data-caption="{$image->text}" n:class="($album->visible and $user->isLoggedIn()) ? 'visible'.$image->visible" href="{$baseUri}/{$photoDir}/{$image->album_id}/{$image->filename}" title="{$image->text}">
+		<a id="{$image->filename}" data-fancybox="images" data-type="image" data-caption="{$image->text}" n:class="($album->visible and $user->isLoggedIn()) ? 'visible'.$image->visible" href="{$baseUrl}/{$photoDir}/{$image->album_id}/{$image->filename}" title="{$image->text}">
 			{include #image, image => $image}
 		</a>
 	</li>
@@ -51,12 +51,12 @@
 </div>
 
 <p n:if="$album->visible">
-	<a title="Sdílet na Facebook" href="http://www.facebook.com/sharer.php?u={link //Album:view $slug}"><img class="icon" src="{$baseUri}/img/facebook.svg" alt="Facebook"></a>
-	<a title="Sdílet na Google+" href="https://plus.google.com/share?url={link //Album:view $slug}"><img class="icon" src="{$baseUri}/img/google+.svg" alt="Google+"></a>
+	<a title="Sdílet na Facebook" href="http://www.facebook.com/sharer.php?u={link //this}"><img class="icon" src="{$baseUrl}/img/facebook.svg" alt="Facebook"></a>
+	<a title="Sdílet na Google+" href="https://plus.google.com/share?url={link //this}"><img class="icon" src="{$baseUrl}/img/google+.svg" alt="Google+"></a>
 </p>
 
 <p n:if="$user->isLoggedIn()">
-    <a title="Sdílet" n:href="Album:view,$slug,$album->pubkey"><img class="icon" src="{$baseUri}/img/link.svg"> Odkaz pro sdílení</a>
+    <a title="Sdílet" n:href="Album:view,$slug,$album->pubkey"><img class="icon" src="{$baseUrl}/img/link.svg"> Odkaz pro sdílení</a>
 </p>
 
 {/block}

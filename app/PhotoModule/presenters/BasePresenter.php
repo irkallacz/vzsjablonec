@@ -21,7 +21,7 @@ abstract class BasePresenter extends Presenter {
 
 		if (!$this->context->parameters['productionMode']) {
 			$this->template->basePath .= '/photo/';
-			$this->template->baseUri .= '/photo';
+			$this->template->baseUrl .= '/photo';
 		}
 	}
 

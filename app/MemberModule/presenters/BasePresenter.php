@@ -23,7 +23,7 @@ abstract class BasePresenter extends Presenter {
 		if (!$this->context->parameters['productionMode']) {
 			parent::afterRender();
 			$this->template->basePath .= '/member';
-			$this->template->baseUri .= '/member';
+			$this->template->baseUrl .= '/member';
 		}
 	}
 

@@ -2,7 +2,7 @@
  * @package    MyApplication
  *
  * @param string   $robots   tell robots how to index the content of a page (optional)
- * @param string   $baseUri web base path
+ * @param string   $baseUrl web base path
  * @param array    $flashes  flash messages
  * @param Nette\Web\User $user  current user
  *}
@@ -12,18 +12,18 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="initial-scale=1, width=device-width">
 	<meta name="format-detection" content="telephone=no">
-	<link rel="shortcut icon" href="{$baseUri}/img/favicon.ico" type="image/x-icon">
-	<link rel="icon" sizes="any" href="{$baseUri}/img/favicon.svg" type="image/svg+xml">
-	<link rel="stylesheet" href="{$baseUri}/css/photo.css" type="text/css">
+	<link rel="shortcut icon" href="{$baseUrl}/img/favicon.ico" type="image/x-icon">
+	<link rel="icon" sizes="any" href="{$baseUrl}/img/favicon.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="{$baseUrl}/css/photo.css" type="text/css">
 
-	<link rel="stylesheet" href="{$baseUri}/css/photo.mobile.css" type="text/css" media="screen and (max-width: 750px)">
-	<link rel="stylesheet" href="{$baseUri}/css/photo.mobile.css" type="text/css" media="screen and (orientation: portrait)">
+	<link rel="stylesheet" href="{$baseUrl}/css/photo.mobile.css" type="text/css" media="screen and (max-width: 750px)">
+	<link rel="stylesheet" href="{$baseUrl}/css/photo.mobile.css" type="text/css" media="screen and (orientation: portrait)">
 
-	<!--[if IE]><link rel="stylesheet" href="{$baseUri}/css/ie.css" type="text/css"><![endif]-->
+	<!--[if IE]><link rel="stylesheet" href="{$baseUrl}/css/ie.css" type="text/css"><![endif]-->
 
 	<link rel="alternate" title="VZS Jablonec Fotogalerie" n:href="//:Member:Feed:albums" type="application/rss+xml" n:if="$user->isLoggedIn()">
 
-	<script src="{$baseUri}/js/jquery-3.2.1.min.js" type="text/javascript"></script>
+	<script src="{$baseUrl}/js/jquery-3.2.1.min.js" type="text/javascript"></script>
 
 	<title>{block #title|stripHtml|trim}{/block} | VZS Jablonec Fotogalerie</title>
 
@@ -40,8 +40,8 @@
 
 	<div id="header">
 		<a n:href="News:" title="Vzs Jablonec Fotogalerie">
-			<img src="{$baseUri}/img/vzs.svg" alt="VZS ČČK" width="80" height="80">
-			<img src="{$baseUri}/img/zralok.svg" alt="VZS JBC" width="80" height="80">
+			<img src="{$baseUrl}/img/vzs.svg" alt="VZS ČČK" width="80" height="80">
+			<img src="{$baseUrl}/img/zralok.svg" alt="VZS JBC" width="80" height="80">
 		</a>
 		<h1><span></span>VZS Jablonec Fotogalerie</h1>
 	</div>
@@ -83,7 +83,7 @@
 {/define}
 
 {define image}
-<img src="{$baseUri}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" width="150" height="100" alt="{$image->filename}">
+<img src="{$baseUrl}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" width="150" height="100" alt="{$image->filename}">
 {/define}
 
 {define photoList}

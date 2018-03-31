@@ -14,16 +14,16 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="initial-scale=1, width=device-width"/>
-	<link rel="shortcut icon" href="{$baseUri}/img/favicon.ico" type="image/x-icon">
-	<link rel="icon" sizes="any" href="{$baseUri}/img/favicon.svg" type="image/svg+xml">
-	<link rel="stylesheet" href="{$baseUri}/css/member.css" type="text/css">
-	<link rel="stylesheet" href	="{$baseUri}/css/member.mobile.css" type="text/css" media="screen and (max-width: 900px)">
-	<link rel="stylesheet" href="{$baseUri}/css/member.mobile.css" type="text/css" media="screen and (orientation: portrait)">
-	<link rel="stylesheet" href="{$baseUri}/css/member-symbols.css">
+	<link rel="shortcut icon" href="{$baseUrl}/img/favicon.ico" type="image/x-icon">
+	<link rel="icon" sizes="any" href="{$baseUrl}/img/favicon.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="{$baseUrl}/css/member.css" type="text/css">
+	<link rel="stylesheet" href	="{$baseUrl}/css/member.mobile.css" type="text/css" media="screen and (max-width: 900px)">
+	<link rel="stylesheet" href="{$baseUrl}/css/member.mobile.css" type="text/css" media="screen and (orientation: portrait)">
+	<link rel="stylesheet" href="{$baseUrl}/css/member-symbols.css">
 
-	<script src="{$baseUri}/js/jquery.min.js" type="text/javascript"></script>
-	<script src="{$baseUri}/js/jquery.nette.js" type="text/javascript"></script>
-	<script src="{$baseUri}/js/netteForms.js" type="text/javascript"></script>
+	<script src="{$baseUrl}/js/jquery.min.js" type="text/javascript"></script>
+	<script src="{$baseUrl}/js/jquery.nette.js" type="text/javascript"></script>
+	<script src="{$baseUrl}/js/netteForms.js" type="text/javascript"></script>
 
 	<title>{if isset($title)}{$title} | {/if}{block #title|stripHtml|trim}{/block} | VZS Jablonec</title>
 	{block #head}{/block}
@@ -41,8 +41,8 @@
 				<a n:href="Sign:in">přihlásit</a>
 			{/if}
 		</div>
-		<img src="{$baseUri}/img/vzs.svg" alt="VZS ČČK" height="85" width="85">
-		<img src="{$baseUri}/img/zralok.svg" alt="VZS JBC" height="85" width="85">
+		<img src="{$baseUrl}/img/vzs.svg" alt="VZS ČČK" height="85" width="85">
+		<img src="{$baseUrl}/img/zralok.svg" alt="VZS JBC" height="85" width="85">
 		{include #title}
 	</div>
 
@@ -60,7 +60,7 @@
 	</div>
 
 </div>
-<script defer src="{$baseUri}/js/svgxuse.js" type="text/javascript"></script>
+<script defer src="{$baseUrl}/js/svgxuse.js" type="text/javascript"></script>
 {block #bottom}{/block}
 </body>
 </html>
