@@ -7,6 +7,7 @@ use Nette\Security\IAuthenticator;
 use Nette\Security\Identity;
 use Nette\Security\Passwords;
 use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 
 /**
@@ -50,7 +51,8 @@ class CredentialsAuthenticator extends BaseAuthenticator {
 		if ($attempts) $attempts->delete();
 
 		$rights = $this->userService->getRightsForUser($user);
+		$data = $this->userService->getDataForUser($user);
 
-		$this->user->login(new Identity($user->id, $rights, $user->toArray()));
+		$this->user->login(new Identity($user->id, $rights, $data));
 	}
 }

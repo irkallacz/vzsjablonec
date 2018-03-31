@@ -23,7 +23,7 @@ class EmailAuthenticator extends BaseAuthenticator {
 		}
 
 		$rights = $this->userService->getRightsForUser($user);
-		$data = $user->toArray();
+		$data = $this->userService->getDataForUser($user);
 
 		$this->user->login(new Security\Identity($user->id, $rights, $data));
 	}

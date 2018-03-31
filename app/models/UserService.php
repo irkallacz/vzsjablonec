@@ -14,6 +14,7 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Database\SqlLiteral;
+use Tracy\Debugger;
 
 class UserService extends DatabaseService {
 
@@ -101,12 +102,22 @@ class UserService extends DatabaseService {
 
 	/**
 	 * @param string $mail
+	 * @param int $userLevel
 	 * @return bool|mixed|IRow
 	 */
-	public function getUserByEmail(string $mail) {
-		return $this->getUsers()->select('id, hash, name, surname, mail, mail2, role')->where('mail = ? OR mail2 = ?', $mail, $mail)->fetch();
+	public function getUserByEmail(string $mail, int $userLevel = self::USER_LEVEL) {
+		return $this->getUsers($userLevel)->where('mail = ? OR mail2 = ?', $mail, $mail)->fetch();
 	}
 
+	/**
+	 * @param IRow|ActiveRow
+	 * @return array
+	 */
+	public function getDataForUser($user){
+		$array = $user->toArray();
+		$keys = ['id', 'hash', 'name', 'surname', 'mail', 'mail2', 'role'];
+		return array_intersect_key($array, array_flip($keys));
+	}
 
 	/**
 	 * @param int $id
