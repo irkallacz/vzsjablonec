@@ -8,13 +8,9 @@
 
 namespace App\MemberModule\Presenters;
 
-use App\MemberModule\Components\AnketaControl;
 use Nette\Application\ForbiddenRequestException;
-use Nette\Reflection\ClassType;
-use Nette\Reflection\Method;
 use Nette\Security\IUserStorage;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\Reflection;
 use Tracy\Debugger;
 
 abstract class LayerPresenter extends BasePresenter {
@@ -58,7 +54,7 @@ abstract class LayerPresenter extends BasePresenter {
 			['title' => 'ankety',   	'link' => 'Ankety:',    	'current' => 'Ankety:*',    	'role'=> 'member', 	'icon' => 'list-ul'			],
 			['title' => 'hlasovani',	'link' => 'Hlasovani:', 	'current' => 'Hlasovani:*', 	'role'=> 'member', 	'icon' => 'balance-scale'	],
 			['title' => 'zprávy', 		'link' => 'Mail:', 			'current' => 'Mail:*', 			'role'=> 'member',	'icon' => 'envelope-o'		],
-			['title' => 'galerie', 		'link' => ':Photo:Album:',	'current' => ':Photo:Album:*', 	'role'=> 'member',	'icon' => 'image'			],
+			['title' => 'galerie', 		'link' => ':Photo:Sign:in',	'current' => ':Photo:Album:*', 	'role'=> 'member',	'icon' => 'image'			],
 		];
 
 		$this->template->mainMenu = ArrayHash::from($mainMenu);
