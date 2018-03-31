@@ -17,7 +17,7 @@ parameters:
 			dbname: d133882_photo
 			user: w133882_photo
 			password: rJFWjhEP
-			photoUri: http://photo.vzs-jablonec.cz
+			photoUri: 'http://photo.vzs-jablonec.cz'
 		wordpress:
 			host: wm119.wedos.net
 			dbname: d133882_bde69a3
@@ -27,11 +27,11 @@ parameters:
 		driveDir: olqBGlusVSO2QWsuaOq0WpazaQqK
 		login:
 			clientSecret: 123456789
-			callbackURL: https://member.vzs-jablonec.cz/sign/googlelogin
+			callbackURL: 'https://sign.vzs-jablonec.cz/sign/googlelogin'
 	facebook:
 		login:
 			appSecret: 987654321
-			callbackURL: https://member.vzs-jablonec.cz/sign/facebooklogin
+			callbackURL: 'https://sign.vzs-jablonec.cz/sign/facebooklogin'
 	idoklad:
 		clientId: 12345678-abcd-efgh-ijkl-098765432100
 		clientSecret: 98765432-lkji-hgfe-dcba-001234567890
@@ -41,7 +41,7 @@ parameters:
 		secretKey: kKtcntSs85ITBXqZVwwZTFMVPb6xcRCTrmokMTWF
 
 tracy:
-	email: webmaster@vzs-jablonec.cz
+	email: 'webmaster@vzs-jablonec.cz'
 
 session:
 #	cookieDomain: 'vzs-jablonec.cz'

@@ -26,12 +26,12 @@ parameters:
 		login:
 			clientId: '698488418952-95tac0912e96pdk6mlhme3i143i5kgvg.apps.googleusercontent.com'
 			clientSecret: 123456789
-			callbackURL: 'http://localhost/vzsjablonec/member/sign/googlelogin'
+			callbackURL: 'http://localhost/vzsjablonec/sign/sign/googlelogin'
 	facebook:
 		login:
 			appId: 1296532643936590
 			appSecret: 987654321
-			callbackURL: 'http://localhost/vzsjablonec/member/sign/facebooklogin'
+			callbackURL: 'http://localhost/vzsjablonec/sign/sign/facebooklogin'
 			defaultFbGraphVersion: 'v2.11'
 	recaptcha:
 		siteKey: GrcZy3jKLti1aKGi0hLJuaRxBX3rxOxcb44p5rZV
