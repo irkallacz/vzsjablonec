@@ -8,10 +8,10 @@
 <h1 n:block="title">Přihlášení</h1>
 
 {block #content}
-		<p class="center">{if $user->isLoggedIn()}
-				Aktuálně jste přihlášen.
-			{else}
-				Aktuálně nejste přihlášen.
-			{/if}
-		</p>
+	<p class="center">{if $user->isLoggedIn()}
+			Aktuálně jste přihlášen.
+		{else}
+			Aktuálně nejste přihlášen.
+		{/if}
+	</p>
 {/block}
