@@ -31,6 +31,12 @@ class SignPresenter extends BasePresenter {
 	public $backlink = '';
 
 
+	public function beforeRender() {
+		parent::beforeRender();
+
+		$this->template->mainMenu = [];
+	}
+
 	/**
 	 * @throws \Nette\Application\AbortException
 	 */

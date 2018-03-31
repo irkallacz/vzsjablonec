@@ -32,10 +32,14 @@
 <div id="main">
 	<div id="top">
 		<div id="top-right">
-			<span id="profile">
+			<span id="profile" n:if="$user->isLoggedIn()">
 			  <a n:href="User:profile"><b>{$user->identity->name} {$user->identity->surname}</b></a> ({$user->id})
 			</span>
-			<a n:href="Sign:out">odhlásit</a>
+			{if $user->isLoggedIn()}
+				<a n:href="Sign:out">odhlásit</a>
+			{else}
+				<a n:href="Sign:in">přihlásit</a>
+			{/if}
 		</div>
 		<img src="{$baseUri}/img/vzs.svg" alt="VZS ČČK" height="85" width="85">
 		<img src="{$baseUri}/img/zralok.svg" alt="VZS JBC" height="85" width="85">
