@@ -293,8 +293,8 @@ class SignPresenter extends BasePresenter {
 		if (!in_array($redirect, self::REDIRECTS))
 			throw new BadRequestException('Redirect nemá povolenou hodnotu');
 
-		if (($this->httpRequest->getReferer())and($this->httpRequest->getReferer()->host != $this->httpRequest->url->host))
-			throw new BadRequestException('Nesouhlasí doména původu');
+//		if (($this->httpRequest->getReferer())and($this->httpRequest->getReferer()->host != $this->httpRequest->url->host))
+//			throw new BadRequestException('Nesouhlasí doména původu');
 
 		if ($this->getUser()->isLoggedIn()) {
 			$code = $this->generateCode();

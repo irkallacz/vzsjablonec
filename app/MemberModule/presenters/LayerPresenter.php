@@ -36,6 +36,8 @@ abstract class LayerPresenter extends BasePresenter {
 	}
 
 	public function checkRequirements($element) {
+		parent::checkRequirements($element);
+
 		$this->checkLogin();
 
 		if ($element->hasAnnotation('allow')) {
@@ -44,8 +46,6 @@ abstract class LayerPresenter extends BasePresenter {
 				throw new ForbiddenRequestException('Na tuto akci nemáte právo');
 			}
 		}
-
-		parent::checkRequirements($element);
 	}
 
 	protected function beforeRender() {

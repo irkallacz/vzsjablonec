@@ -51,17 +51,17 @@ class SignPresenter extends BasePresenter {
 	 * @throws BadRequestException
 	 * @throws \Nette\Application\AbortException
 	 */
-	public function actionSSoLogIn(string $code, int $userId, int $timestamp, string $signature) {
+	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
 		$referer = $this->httpRequest->getReferer();
 
 		if ($referer) {
-			if ($referer->host != $this->httpRequest->url->host)
-				throw new BadRequestException('Nesouhlasí doména původu');
+//			if ($referer->host != $this->httpRequest->url->host)
+//				throw new BadRequestException('Nesouhlasí doména původu');
 
 			$httpRequest = new Request(new UrlScript($referer->getAbsoluteUrl()));
 			$appRequest = $this->router->match($httpRequest);
 
-			if (($appRequest)and($appRequest->getPresenterName() !== ':Sign:Sign'))
+			if (($appRequest)and($appRequest->getPresenterName() !== 'Sign:Sign'))
 				throw new BadRequestException('Nesouhlasí místo původu');
 		}
 

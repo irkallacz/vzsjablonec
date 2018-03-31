@@ -10,7 +10,9 @@ use Nette\Http\Request;
 use Nette\Http\UrlScript;
 use Nette\Security\AuthenticationException;
 use Nette\Security\IUserStorage;
+use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
+use Nette\Utils\Strings;
 use Tracy\Debugger;
 
 class SignPresenter extends BasePresenter {
@@ -52,18 +54,18 @@ class SignPresenter extends BasePresenter {
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
-		$referer = $this->httpRequest->getReferer();
-
-		if ($referer) {
-			if ($referer->host != $this->httpRequest->url->host)
-				throw new BadRequestException('Nesouhlasí doména původu');
-
-			$httpRequest = new Request(new UrlScript($referer->getAbsoluteUrl()));
-			$appRequest = $this->router->match($httpRequest);
-
-			if (($appRequest)and($appRequest->getPresenterName() !== ':Sign:Sign'))
-				throw new BadRequestException('Nesouhlasí místo původu');
-		}
+//		$referer = $this->httpRequest->getReferer();
+//
+//		if ($referer) {
+//			if ($referer->host != $this->httpRequest->url->host)
+//				throw new BadRequestException('Nesouhlasí doména původu');
+//
+//			$httpRequest = new Request(new UrlScript($referer->getAbsoluteUrl()));
+//			$appRequest = $this->router->match($httpRequest);
+//
+//			if (($appRequest)and($appRequest->getPresenterName() !== 'Sign:Sign'))
+//				throw new BadRequestException('Nesouhlasí místo původu');
+//		}
 
 		try {
 			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature);
@@ -79,7 +81,26 @@ class SignPresenter extends BasePresenter {
 		$this->galleryService->addMemberLogin($userId);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
-		else $this->redirect('Album:default');
+		else {
+			$referer = $this->httpRequest->getReferer();
+			if ($referer) {
+				$httpRequest = new Request(new UrlScript($referer->getAbsoluteUrl()));
+				$appRequest = $this->router->match($httpRequest);
+
+				if (($appRequest) and (Strings::startsWith($appRequest->presenterName, 'Photo'))) {
+					Debugger::barDump($appRequest);
+					$code = ':' . $appRequest->presenterName;
+					$param = $appRequest->parameters;
+					if (array_key_exists('action', $param)) {
+						$action = Arrays::pick($param, 'action');
+						$code .= ':' . $action;
+					}
+					$this->redirect($code, $param);
+				}
+
+				$this->redirect('Album:default');
+			}
+		}
 	}
 
 
