@@ -29,7 +29,7 @@ parameters:
 			callbackURL: 'http://localhost/vzsjablonec/sign/sign/googlelogin'
 	facebook:
 		login:
-			appId: 1296532643936590
+			appId: 129653264393659
 			appSecret: 987654321
 			callbackURL: 'http://localhost/vzsjablonec/sign/sign/facebooklogin'
 			defaultFbGraphVersion: 'v2.11'
