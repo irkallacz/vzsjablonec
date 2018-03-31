@@ -8,13 +8,15 @@
 
 namespace App\SignModule;
 
-use Nette\Object;
+use Nette\SmartObject;
 
-class StateCryptor extends Object {
+class StateCryptor {
 
-	/**
-	 * @var array $params
-	 */
+	use SmartObject;
+
+	const CRYPT_METHOD = 'AES-128-CBC';
+
+	/** @var array $params */
 	private $params;
 
 	/**
@@ -30,12 +32,12 @@ class StateCryptor extends Object {
 	 * @param string $key
 	 * @return string
 	 */
-	public function encryptState($state, $key){
-		$iv = mb_substr($this->getID($key), 0, 16);
+	public function encryptState($state, $key) {
+		$iv = $this->getIV($this->getID($key));
 		$secret = $this->getSecret($key);
 
-		$ciphertext = openssl_encrypt($state, 'AES-128-CBC', $secret, $options=OPENSSL_RAW_DATA, $iv);
-		return  base64_encode($ciphertext);
+		$ciphertext = openssl_encrypt($state, self::CRYPT_METHOD, $secret, $options = OPENSSL_RAW_DATA, $iv);
+		return base64_encode($ciphertext);
 	}
 
 	/**
@@ -43,19 +45,27 @@ class StateCryptor extends Object {
 	 * @param string $key
 	 * @return string
 	 */
-	public function decryptState($state, $key){
-		$iv = mb_substr($this->getID($key), 0, 16);
+	public function decryptState($state, $key) {
+		$iv = $this->getIV($this->getID($key));
 		$secret = $this->getSecret($key);
 
 		$ciphertext = base64_decode($state);
-		return openssl_decrypt($ciphertext, 'AES-128-CBC', $secret, $options=OPENSSL_RAW_DATA, $iv);
+		return openssl_decrypt($ciphertext, self::CRYPT_METHOD, $secret, $options = OPENSSL_RAW_DATA, $iv);
+	}
+
+	/**
+	 * @param string $string
+	 * @return string
+	 */
+	private function getIV(string $string) {
+		return mb_substr(str_pad($string, 16, '0'), 0, 16);
 	}
 
 	/**
 	 * @param string $key
 	 * @return string
 	 */
-	private function getID($key){
+	private function getID($key) {
 		$params = $this->params[$key];
 		$keys = array_keys($params);
 		return $params[$keys[0]];
@@ -65,7 +75,7 @@ class StateCryptor extends Object {
 	 * @param string $key
 	 * @return string
 	 */
-	private function getSecret($key){
+	private function getSecret($key) {
 		$params = $this->params[$key];
 		$keys = array_keys($params);
 		return $params[$keys[1]];
