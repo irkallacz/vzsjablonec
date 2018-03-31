@@ -154,7 +154,7 @@ class SignPresenter extends BasePresenter {
 		$this->userService->addUserLogin($userId, $loginMethod);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
-		else $this->redirect('Memmber:News:default');
+		else $this->redirect('Sign:default');
 	}
 
 	/**
