@@ -8,9 +8,10 @@
 
 namespace App\Model\MessageService;
 
-use Nette\Object;
+use Nette\SmartObject;
 
-class Message extends Object {
+class Message {
+	use SmartObject;
 
 	const CUSTOM_MESSAGE_TYPE	= 1;
 	const EVENT_MESSAGE_TYPE	= 2;

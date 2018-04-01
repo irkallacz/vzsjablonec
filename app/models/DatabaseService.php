@@ -7,9 +7,10 @@
 namespace App\Model;
 
 use Nette\Database\Context;
-use Nette\Object;
+use Nette\SmartObject;
 
-abstract class DatabaseService extends Object {
+abstract class DatabaseService {
+	use SmartObject;
 
 	/** @var Context */
 	public $database;

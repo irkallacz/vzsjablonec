@@ -11,11 +11,13 @@ namespace App\MemberModule\Forms;
 use App\Model\UserService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\BaseControl;
-use Nette\Object;
+use Nette\SmartObject;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
 
-class UserFormFactory extends Object {
+class UserFormFactory {
+	use SmartObject;
+
 	/** @var UserService */
 	private $userService;
 

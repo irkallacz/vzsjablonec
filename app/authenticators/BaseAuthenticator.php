@@ -3,14 +3,14 @@
 namespace App\Authenticator;
 
 use App\Model\UserService;
-use Nette\Object;
 use Nette\Security;
-
+use Nette\SmartObject;
 
 /**
  * Users authenticator .
  */
-abstract class BaseAuthenticator extends Object {
+abstract class BaseAuthenticator {
+	use SmartObject;
 
 	/**@var UserService */
 	protected $userService;

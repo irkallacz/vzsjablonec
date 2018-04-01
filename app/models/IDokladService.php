@@ -16,9 +16,10 @@ use malcanek\iDoklad\auth\iDokladCredentials;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Http\Response;
-use Nette\Object;
+use Nette\SmartObject;
 
-class IDokladService extends Object {
+class IDokladService {
+	use SmartObject;
 
 	const PAGE_SIZE = 200;
 

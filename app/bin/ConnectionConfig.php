@@ -8,9 +8,10 @@
 
 namespace App\Model;
 
-use Nette\Object;
+use Nette\SmartObject;
 
-class ConnectionConfig extends Object {
+class ConnectionConfig {
+	use SmartObject;
 
 	/** @var array */
 	private $connections;
