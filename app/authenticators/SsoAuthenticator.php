@@ -40,7 +40,7 @@ class SsoAuthenticator extends BaseAuthenticator {
 	 * @throws AuthenticationException
 	 */
 	public function login(int $userId, string $code, int $timestamp, string $signature) {
-		if (time() - $timestamp > 60) {
+		if (abs(time() - $timestamp) > 60) {
 			throw new AuthenticationException('Neplatná časová značka');
 		}
 
