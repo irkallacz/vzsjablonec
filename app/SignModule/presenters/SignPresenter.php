@@ -66,6 +66,13 @@ class SignPresenter extends BasePresenter {
 	public $backlink = '';
 
 
+	public function actionIn() {
+		if ($this->getUser()->isLoggedIn()) {
+			if ($this->backlink) $this->restoreRequest($this->backlink);
+			$this->redirect('default');
+		}
+	}
+
 	public function renderIn() {
 		if ($this->backlink) {
 			$googleState = $this->stateCryptor->encryptState($this->backlink, 'google');
@@ -303,8 +310,8 @@ class SignPresenter extends BasePresenter {
 
 			$this->redirect($redirect, ['code' => $code, 'userId' => $this->user->id, 'timestamp' => $timestamp, 'signature' => $signature, 'backlink' => $link]);
 		} else {
-			$this->backlink = $this->storeRequest();
-			$this->redirect('in');
+			$backlink = $this->storeRequest();
+			$this->redirect('in', ['backlink' => $backlink]);
 		}
 	}
 
