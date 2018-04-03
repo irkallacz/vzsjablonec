@@ -80,7 +80,7 @@ http:
 			- self
 			- nonce
 		frame-ancestors: none
-		form-action: self
+#		form-action: self
 		style-src:
 			- self
 			- unsafe-inline
