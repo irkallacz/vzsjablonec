@@ -1,17 +1,10 @@
 {block #content}
 
 <h2 n:block="title">Přihlášení</h2>
-
-{*<p>Pro přístup do zabezpečené části fotografie se musíte přihlásit!</p>*}
-{*<p>Po přihlášení můžete do galerie nahrávat nové fotky, upravovat alba a také prohlížet alba i fotografie, které jsou neviditelné pro veřejnost.</p>*}
-
-<p>{if $user->isLoggedIn()}
-	Aktuálně jste přihlášen. <a n:href="Sign:out">Odhlásit</a>
+	{if $user->isLoggedIn()}
+		<p>Aktuálně jste přihlášen.</p>
 	{else}
-	Aktuálně nejste přihlášen. <a n:href="Sign:in">Přihlásit</a>
+		<p>Aktuálně nejste přihlášen. <span n:if="$presenter->action == out">Pokud se odhlašujete na cizím počítači, odhlašte se raději i z <a n:href=":Account:Sign:">vašeho účtu.</a></span></p>
 	{/if}
-</p>
-
 {/block}
-  
   

@@ -8,10 +8,10 @@
 <h1 n:block="title">Přihlášení</h1>
 
 {block #content}
-	<p class="center">{if $user->isLoggedIn()}
-			Aktuálně jste přihlášen.
-		{else}
-			Aktuálně nejste přihlášen.
-		{/if}
-	</p>
+	{if $user->isLoggedIn()}
+		<p class="center">Aktuálně jste přihlášen.</p>
+	{else}
+		<p class="center">Aktuálně nejste přihlášen. <span n:if="$presenter->action == out" class="center">Pokud se odhlašujete na cizím počítači, odhlašte se raději i z <a n:href=":Account:Sign:">vašeho účtu.</a></span>
+		</p>
+	{/if}
 {/block}
