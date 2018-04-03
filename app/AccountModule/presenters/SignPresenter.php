@@ -6,11 +6,11 @@
  * Time: 12:41
  */
 
-namespace App\SignModule\Presenters;
+namespace App\AccountModule\Presenters;
 
+use App\AccountModule\StateCryptor;
 use App\Model\MessageService;
 use App\Model\UserService;
-use App\SignModule\StateCryptor;
 use App\Template\LatteFilters;
 use Nette\Application\BadRequestException;
 use Nette\Http\Request;
@@ -90,22 +90,26 @@ class SignPresenter extends BasePresenter {
 
 
 	public function actionGoogleLogin(string $code, string $state = NULL) {
+		if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'google');
+		$me = $this->googleLogin->getMe($code);
+
 		try {
-			if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'google');
-			$me = $this->googleLogin->getMe($code);
 			$this->emailAuthenticator->login($me->email);
 			$this->afterLogin(UserService::LOGIN_METHOD_GOOGLE);
 		} catch (AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('in');
 		}
+
 	}
 
 	public function actionFacebookLogin(string $state = NULL) {
+		if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'facebook');
+
+		$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
+		$email = Arrays::get($me, 'email');
+
 		try {
-			if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'facebook');
-			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
-			$email = Arrays::get($me, 'email');
 			$this->emailAuthenticator->login($email);
 			$this->afterLogin(UserService::LOGIN_METHOD_FACEBOOK);
 		} catch (InvalidArgumentException $e) {
@@ -115,6 +119,7 @@ class SignPresenter extends BasePresenter {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('in');
 		}
+
 	}
 
 	/**
@@ -143,11 +148,11 @@ class SignPresenter extends BasePresenter {
 	 * @param Form $form
 	 */
 	public function signInFormSubmitted(Form $form) {
+		$values = $form->getValues();
+
 		try {
-			$values = $form->getValues();
 			$this->credentialsAuthenticator->login($values->mail, $values->password);
 			$this->afterLogin(UserService::LOGIN_METHOD_PASSWORD);
-
 		} catch (AuthenticationException $e) {
 			$form->addError($e->getMessage());
 		}
@@ -161,7 +166,7 @@ class SignPresenter extends BasePresenter {
 		$this->userService->addUserLogin($userId, $loginMethod);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
-		else $this->redirect('Sign:default');
+		$this->redirect('Sign:default');
 	}
 
 	/**

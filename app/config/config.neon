@@ -97,7 +97,7 @@ services:
 	- App\Authenticator\SsoAuthenticator(%sso.secret%)
 	- App\Authenticator\CredentialsAuthenticator
 	- App\Authenticator\EmailAuthenticator
-	- App\SignModule\StateCryptor({google: %google.login%, facebook: %facebook.login%})
+	- App\AccountModule\StateCryptor({google: %google.login%, facebook: %facebook.login%})
 
 	- App\MemberModule\Forms\UserFormFactory
 

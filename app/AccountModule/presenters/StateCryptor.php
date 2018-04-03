@@ -6,7 +6,7 @@
  * Time: 19:00
  */
 
-namespace App\SignModule;
+namespace App\AccountModule;
 
 use Nette\SmartObject;
 

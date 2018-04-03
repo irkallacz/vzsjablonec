@@ -42,7 +42,7 @@ class SignPresenter extends BasePresenter {
 			$this->redirect('Album:default');
 		}
 
-		$this->redirect(':Sign:Sign:sso', ['redirect' => ':Photo:Sign:ssoLogIn', 'link' => $this->backlink]);
+		$this->redirect(':Account:Sign:sso', ['redirect' => ':Photo:Sign:ssoLogIn', 'link' => $this->backlink]);
 	}
 
 	/**

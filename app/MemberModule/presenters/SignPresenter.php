@@ -46,7 +46,7 @@ class SignPresenter extends BasePresenter {
 			$this->redirect('News:');
 		}
 
-		$this->redirect(':Sign:Sign:sso', ['redirect' => ':Member:Sign:ssoLogIn', 'link' => $this->backlink]);
+		$this->redirect(':Account:Sign:sso', ['redirect' => ':Member:Sign:ssoLogIn', 'link' => $this->backlink]);
 	}
 
 	/**

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\SignModule\Presenters;
+namespace App\AccountModule\Presenters;
 
 use App\Model\MessageService;
 use App\Template\LatteFilters;
@@ -22,8 +22,8 @@ abstract class BasePresenter extends Presenter {
 		parent::afterRender();
 		if (!$this->context->parameters['productionMode']) {
 			parent::afterRender();
-			$this->template->basePath .= '/sign';
-			$this->template->baseUri .= '/sign';
+			$this->template->basePath	.= '/account';
+			$this->template->baseUrl 	.= '/account';
 		}
 	}
 
