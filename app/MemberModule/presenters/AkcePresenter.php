@@ -275,7 +275,7 @@ class AkcePresenter extends LayerPresenter {
 	 */
 	public function addConfirmMail($akce) {
 		$template = $this->createTemplate();
-		$template->setFile(__DIR__ . '/../templates/Mail/akceConfirm.latte');
+		$template->setFile(__DIR__ . '/../../presenters/templates/Mail/akceConfirm.latte');
 		$template->akce = $akce;
 
 		$message = new Model\MessageService\Message(Model\MessageService\Message::EVENT_CONFIRM_TYPE);

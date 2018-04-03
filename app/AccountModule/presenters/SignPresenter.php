@@ -13,6 +13,8 @@ use App\Model\MessageService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
 use Nette\Application\BadRequestException;
+use Nette\Database\IRow;
+use Nette\Database\Table\ActiveRow;
 use Nette\Http\Request;
 use Nette\Security\AuthenticationException;
 use Nette\Security\IUserStorage;
@@ -216,6 +218,29 @@ class SignPresenter extends BasePresenter {
 			} $form->addError('Na tomto účtu je již aktivní jiná obnova hesla');
 		} else $form->addError('E-mail nenalezen');
 	}
+
+
+	/**
+	 * @param IRow|ActiveRow $user
+	 * @param IRow|ActiveRow $session
+	 */
+	public function addRestoreMail(IRow $user, IRow $session) {
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . '/../../presenters/templates/Mail/restorePassword.latte');
+		$template->session = $session;
+
+		$message = new MessageService\Message();
+		$message->setType(MessageService\Message::PASSWORD_RESET_TYPE);
+		$message->setSubject('Obnova hesla');
+		$message->setText($template);
+		$message->setAuthor($user->id);
+		$message->addRecipient($user->id);
+		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id]);
+
+		$this->messageService->addMessage($message);
+
+	}
+
 
 	/**
 	 * @param $pubkey

@@ -309,7 +309,7 @@ class HlasovaniPresenter extends LayerPresenter {
 	 */
 	protected function addHlasovaniMail($hlasovani, $odpovedi) {
 		$template = $this->createTemplate();
-		$template->setFile(__DIR__ . '/../templates/Mail/newHlasovani.latte');
+		$template->setFile(__DIR__ . '/../../presenters/templates/Mail/newHlasovani.latte');
 		$template->hlasovani = $hlasovani;
 		$template->odpovedi = $odpovedi;
 

@@ -189,7 +189,7 @@ class UserPresenter extends LayerPresenter {
 	 */
 	public function addLoggingMail(IRow $user, IRow $session) {
 		$template = $this->createTemplate();
-		$template->setFile(__DIR__ . '/../templates/Mail/newMember.latte');
+		$template->setFile(__DIR__ . '/../../presenters/templates/Mail/newMember.latte');
 		$template->session = $session;
 
 		$message = new MessageService\Message(MessageService\Message::USER_NEW_TYPE);
@@ -221,6 +221,27 @@ class UserPresenter extends LayerPresenter {
 		$next = $this->messageService->getNextSendTime();
 		$this->flashMessage('Uživateli bude '.LatteFilters::timeAgoInWords($next).' minut odelán email pro změnu hesla');
 		$this->redirect('view', $user->id);
+	}
+
+	/**
+	 * @param IRow|ActiveRow $user
+	 * @param IRow|ActiveRow $session
+	 */
+	public function addRestoreMail(IRow $user, IRow $session) {
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . '/../../presenters/templates/Mail/restorePassword.latte');
+		$template->session = $session;
+
+		$message = new MessageService\Message();
+		$message->setType(MessageService\Message::PASSWORD_RESET_TYPE);
+		$message->setSubject('Obnova hesla');
+		$message->setText($template);
+		$message->setAuthor($this->getUser()->isLoggedIn() ? $this->user->id : $user->id);
+		$message->addRecipient($user->id);
+		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id]);
+
+		$this->messageService->addMessage($message);
+
 	}
 
 	/**

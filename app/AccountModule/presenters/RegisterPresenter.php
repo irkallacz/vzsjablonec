@@ -84,7 +84,7 @@ class RegisterPresenter extends BasePresenter {
 	 */
 	private function addRegistrationMail(IRow $user){
 		$template = $this->createTemplate();
-		$template->setFile(__DIR__ . '/../templates/Mail/newRegistration.latte');
+		$template->setFile(__DIR__ . '/../../presenters/templates/Mail/newRegistration.latte');
 		$template->user = $user;
 
 		$message = new MessageService\Message(MessageService\Message::REGISTRATION_NEW_TYPE);

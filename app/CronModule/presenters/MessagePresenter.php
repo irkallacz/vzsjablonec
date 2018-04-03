@@ -47,7 +47,7 @@ class MessagePresenter extends BasePresenter {
 			if ($message->message_type_id == MessageService\Message::CUSTOM_MESSAGE_TYPE) $mail->addBcc($author->mail, self::getFullName($author));
 
 			$template = $this->createTemplate();
-			$template->setFile(__DIR__ . '/../templates/Mail/newMail.latte');
+			$template->setFile(__DIR__ . '/../../presenters/templates/Mail/newMail.latte');
 			$template->text = $message->text;
 			$mail->setHtmlBody($template);
 
