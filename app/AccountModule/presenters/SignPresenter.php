@@ -273,11 +273,13 @@ class SignPresenter extends BasePresenter {
 		$form = new Form;
 
 		$form->addPassword('password', 'Nové heslo:', 20)
+			->setAttribute('autofocus')
+			->setRequired('Vyplňte prosím heslo')
 			->addCondition(Form::FILLED)
 			->addRule(Form::PATTERN, 'Heslo musí mít alespoň 8 znaků, musí obsahovat číslice, malá a velká písmena', '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$');
 
 		$form->addPassword('confirm', 'Potvrzení hesla:', 20)
-			->setRequired(TRUE)
+			->setRequired('Vyplňte prosím změnu hesla')
 			->addRule(Form::EQUAL, 'Zadaná hesla se neschodují', $form['password'])
 			->addCondition(Form::FILLED)
 			->addRule(Form::MIN_LENGTH, 'Heslo musí mít alespoň %d znaků', 8);
