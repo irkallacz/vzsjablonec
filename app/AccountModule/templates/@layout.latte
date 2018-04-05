@@ -19,8 +19,12 @@
 <body>
 	<div id="main" class="box column">
 		<header id="top" class="box">
-			<div><img class="left" src="{$baseUrl}/img/vzs.svg" alt="Vodní záchranná služba ČČK" width="95" height="95"></div>
-			<div><img class="float-right" src="{$baseUrl}/img/zralok.svg" alt="VZS Jablonec nad Nisou" width="95" height="95"></div>
+			<figure>
+				<img class="left" src="{$baseUrl}/img/vzs.svg" alt="Vodní záchranná služba ČČK" width="95" height="95">
+			</figure>
+			<figure>
+				<img class="float-right" src="{$baseUrl}/img/zralok.svg" alt="VZS Jablonec nad Nisou" width="95" height="95">
+			</figure>
 		</header>
 
 		<div n:foreach="$flashes as $flash" class="flash row {$flash->type}">{$flash->message}</div>
@@ -40,7 +44,6 @@
 				<li><a n:href=":Account:Sign:">ACCOUNT</a></li>
 			</ul>
 		</nav>
-
 	</div>
 	</body>
 </html>

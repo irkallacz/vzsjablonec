@@ -95,7 +95,10 @@ label.required { font-weight: bold}
 .grow { flex-grow: 1}
 
 #main { max-width: 32em; margin: 0 auto; text-align: center; padding: 1em;}
-#top { justify-content: space-around; padding-bottom: 1em; border-bottom: 1px solid gray;}
+#top { justify-content: space-around; padding-bottom: 1em; border-bottom: 1px solid gray; margin-bottom: 1ex;}
 #menu { justify-content: space-around; padding: 0; border-top: 1px solid gray;}
 #menu li { list-style-type: none;}
 #menu li a { color: #555555}
+
+#content article { margin: 1em 0; padding: 1em; border: 1px solid silver; }
+#content article:first-child { background-color: #e2e2e2;}

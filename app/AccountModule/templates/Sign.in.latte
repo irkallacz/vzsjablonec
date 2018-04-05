@@ -1,20 +1,19 @@
 {block #head}
-<link rel="stylesheet" href="{$baseUrl}/css/symbols.css">
+<link rel="stylesheet" href="{$baseUrl}/css/account-symbols.css">
 
 <style type="text/css" media="screen" n:syntax="off">
 	.facebook { background-color: #3C5A99;}
 	.google { background-color: #DC4A38;}
+	.social-login { margin-top: 2em; }
 	.social-login a { margin: 0 auto; padding: 0.6ex 0; font-size: 0.95em; color: white; display: block; width: 18em; }
-	#content .row { margin: 1em 0; padding: 1em; border: 1px solid silver; }
-	#content .row:nth-child(1) { background-color: #e2e2e2;}
 </style>
 {/block}
 
 {block #content}
-	<div class="row">
+	<article>
 		{control signInForm}
 
-		<div class="social-login">
+		<section class="social-login">
 			<p>
 				<a rel="nofollow" n:class="google, $googleLastLogin ? last-login" title="Přihlásit se pomocí Googlu" href="{$googleLoginUrl}">
 					{include svg icon => google-plus} Přihlásit se přes Google
@@ -25,16 +24,16 @@
 					{include svg icon => facebook} Přihlásit se přes Facebook
 				</a>
 			</p>
-		</div>
-	</div>
+		</section>
+	</article>
 
-	<div class="row">
+	<article>
 		<p>Pokud jsi zapomněl/a své přihlašovací jméno a heslo, tak zadej svůj e-mail, a na něj ti přijdou instrukce k jeho obnovení.</p>
 
 		<p>{control forgotPassForm}</p>
-	</div>
+	</article>
 
-	<div class="row">
+	<article>
 		<p><strong><a n:href="Register:default">Registrace nového člena</a></strong></p>
-	</div>
+	</article>
 {/block}
