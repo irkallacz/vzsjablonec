@@ -1,5 +1,8 @@
 <?php
 
+// uncomment this line if you must temporarily take down your site for maintenance
+//require __DIR__ . '/.maintenance.php'; 
+
 require __DIR__ . '/../vendor/autoload.php';
 
 setlocale(LC_ALL,'cs_CZ.utf8');
