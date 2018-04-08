@@ -43,8 +43,8 @@ class MessagePresenter extends BasePresenter {
 
 			$author = $this->userService->getUserById($message->user_id);
 
-			$mail->addReplyTo($author->mail, self::getFullName($author));
-			if ($message->message_type_id == MessageService\Message::CUSTOM_MESSAGE_TYPE) $mail->addBcc($author->mail, self::getFullName($author));
+			$mail->addReplyTo($author->mail, UserService::getFullName($author));
+			if ($message->message_type_id == MessageService\Message::CUSTOM_MESSAGE_TYPE) $mail->addBcc($author->mail, UserService::getFullName($author));
 
 			$template = $this->createTemplate();
 			$template->setFile(__DIR__ . '/../../presenters/templates/Mail/newMail.latte');
