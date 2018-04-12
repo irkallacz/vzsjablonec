@@ -42,9 +42,7 @@ border-bottom: 1px solid #89520c; border-bottom: 1px solid black;  background-co
 
 #content {margin-left: 0; padding-top: 1em; float: none;}
 
-.spinner {background: transparent url('../img/loading.gif') no-repeat 50% 50%; z-index: 10; }
-
-#load-more-button .spinner {position: relative; left: -1em; padding: 15px;}
+#load-more-button  img { vertical-align: middle; margin-right: 1ex; }
 
 .photoList { list-style-type: none; padding: 0; }
 .photoList li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 150px; height: 100px; text-align: center; font-size: 1em;}
