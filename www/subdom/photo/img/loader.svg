@@ -1,16 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg"  xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="600" viewBox="0 0 600 600">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="600" viewBox="0 0 600 600">
 <style>
 .a {stroke: gray; stroke-width: 5;}
 </style>
 <g>
-<circle	cx="300"	cy="50" 	r="50" class="a" fill="#111"/>
-<circle	cx="462"	cy="138"  	r="50" class="a" fill="#222"/>
-<circle	cx="550"	cy="300"  	r="50" class="a" fill="#444"/>
-<circle	cx="462"	cy="462"  	r="50" class="a" fill="#666"/>
-<circle	cx="300"	cy="550"  	r="50" class="a" fill="#aaa"/>
-<circle	cx="138"	cy="462"  	r="50" class="a" fill="#ccc"/>
-<circle	cx="50"		cy="300" 	r="50" class="a" fill="#eee"/>
-<circle	cx="138"	cy="138"  	r="50" class="a" fill="#fff"/>
+<circle cx="300" cy="50"  r="50" class="a" fill="#111"/>
+<circle cx="478" cy="124" r="50" class="a" fill="#222"/>
+<circle cx="550" cy="300" r="50" class="a" fill="#444"/>
+<circle cx="478" cy="478" r="50" class="a" fill="#666"/>
+<circle cx="300" cy="550" r="50" class="a" fill="#aaa"/>
+<circle cx="124" cy="478" r="50" class="a" fill="#ccc"/>
+<circle cx="50"  cy="300" r="50" class="a" fill="#eee"/>
+<circle cx="124" cy="124" r="50" class="a" fill="#fff"/>
 <animateTransform attributeName="transform" type="rotate" from="0 300 300" to="360 300 300" dur="1.2s" repeatCount="indefinite" />
 </g>
 </svg>
