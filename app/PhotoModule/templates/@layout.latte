@@ -83,7 +83,7 @@
 {/define}
 
 {define image}
-<img src="{$baseUrl}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" width="150" height="100" alt="{$image->filename}">
+<img src="{$baseUrl}/{$image|thumb}" width="150" height="100" alt="{$image->filename}" n:class="isset($class) ? $class">
 {/define}
 
 {define photoList}

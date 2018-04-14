@@ -4,13 +4,18 @@ namespace App\PhotoModule\Presenters;
 
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Presenter;
+use Nette\Database\IRow;
+use Nette\Database\Table\ActiveRow;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Image;
+use Nette\Utils\Strings;
 
 /**
  * @property-read \Nette\Bridges\ApplicationLatte\Template|\stdClass $template
  */
 abstract class BasePresenter extends Presenter {
 
+	/** @var string */
 	const photoDir = 'albums';
 
 	/**
@@ -31,9 +36,8 @@ abstract class BasePresenter extends Presenter {
 	protected function beforeRender() {
 		parent::beforeRender();
 
-		\LayoutHelpers::$thumbDirUri = self::photoDir . '/thumbs';
-		$this->template->addFilter('thumb', 'LayoutHelpers::thumb');
 		$this->template->photoDir = self::photoDir;
+		$this->template->addFilter('thumb', [$this, 'getThumbName']);
 
 		$mainMenu = [
 			['title' => 'novinky',		'link' => 'News:',					'current' => 'News:*',				'role' => NULL		],
@@ -46,6 +50,42 @@ abstract class BasePresenter extends Presenter {
 		];
 
 		$this->template->mainMenu = ArrayHash::from($mainMenu);
+	}
+
+	/**
+	 * @param IRow|ActiveRow $photo
+	 * @return string
+	 */
+	public function getThumbName($photo){
+		$thumbDir = self::photoDir . '/thumbs/' . $photo->album_id . '/';
+		$fileDir = self::photoDir . '/' . $photo->album_id . '/';
+
+		if ($photo->thumb) {
+			$filename = $photo->thumb;
+		}else {
+			try {
+				$image = Image::fromFile(WWW_DIR . '/' . $fileDir . $photo->filename);
+
+				// zachovani pruhlednosti u PNG
+				$image->alphaBlending(FALSE);
+				$image->saveAlpha(TRUE);
+				$image->resize(150, 100,Image::EXACT)
+					->sharpen();
+
+				$filename = pathinfo($photo->filename, PATHINFO_FILENAME);
+				$filename = Strings::webalize($filename).'.jpg';
+
+				if (!file_exists(WWW_DIR . '/' .$thumbDir)) mkdir(WWW_DIR . '/' .$thumbDir);
+
+				$image->save(WWW_DIR . '/' . $thumbDir . $filename, 80, Image::JPEG);
+				$photo->update(['thumb' => $filename]);
+
+			} catch (\Exception $e) {
+				return $fileDir . $photo->filename;
+			}
+		}
+
+		return $thumbDir . $filename;
 	}
 
 	/**

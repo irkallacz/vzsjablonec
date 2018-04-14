@@ -41,14 +41,8 @@ class AlbumPreviewControl extends Control {
 			$this->template->photos = $photos->limit(5);
 		}
 
-		$photoDir = 'albums';
-		$photoUri = $this->presenter->link('//:Photo:News:');
-
-		\LayoutHelpers::$thumbDirUri = 'albums/thumbs';
-		$this->template->addFilter('thumb', 'LayoutHelpers::thumb');
-
-		$this->template->photoDir = $photoDir;
-		$this->template->photoUri = $photoUri;
+		$this->template->photoDir = 'albums';
+		$this->template->photoUri = $this->presenter->link('//:Photo:News:');
 
 		$this->template->render();
 	}

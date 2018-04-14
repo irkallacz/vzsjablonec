@@ -92,7 +92,7 @@
 <ul id="list" class="photoList" n:inner-foreach="$photos as $image">
 	<li>
 		<label n:name="photos-$image->id-selected" n:class="(($album->visible) and (!$image->visible)) ? 'hidden'">
-			<img src="{$baseUrl}/{$photoDir.'/'.$image->album_id.'/'.$image->filename|thumb:150:100}" alt="{$image->filename}" class="image">
+			{include image image => $image, class => image}
 		</label>
 		<input n:name="photos-$image->id-selected" class="selected">
 		<div><input n:name="photos-$image->id-text" class="title" data-date="{$image->date_taken ? $image->date_taken->format('d.m.Y H:i:s')}" data-title="{$image->text}"></div>
