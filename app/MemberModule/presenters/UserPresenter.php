@@ -219,7 +219,7 @@ class UserPresenter extends LayerPresenter {
 
 		$this->addRestoreMail($user, $session);
 		$next = $this->messageService->getNextSendTime();
-		$this->flashMessage('Uživateli bude '.LatteFilters::timeAgoInWords($next).' minut odelán email pro změnu hesla');
+		$this->flashMessage('Uživateli bude '.LatteFilters::timeAgoInWords($next).' odelán email pro změnu hesla');
 		$this->redirect('view', $user->id);
 	}
 
