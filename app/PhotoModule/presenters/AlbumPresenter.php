@@ -59,7 +59,7 @@ class AlbumPresenter extends BasePresenter {
 
 		if (!$this->getUser()->isLoggedIn()) {
 			$albums->where('visible', TRUE);
-		} else $this->template->member = $this->userService->getUsersArray(UserService::DELETED_LEVEL);
+		}
 
 		$albums->limit(self::LOAD_COUNT, $this->offset);
 
@@ -81,18 +81,10 @@ class AlbumPresenter extends BasePresenter {
 	 * @allow(user)
 	 */
 	public function renderUsers() {
-		$albums = $this->gallery->getAlbums()->order('member_id, date DESC');
+		$users = $this->userService->getUsers(UserService::DELETED_LEVEL)
+			->order('surname, name');
 
-		$membersAlbums = $albums->fetchPairs('member_id', 'id');
-
-		$member = $this->userService->getUsersArray(UserService::DELETED_LEVEL);
-		asort($member);
-
-		$membersAlbums = array_intersect_key($member, $membersAlbums);
-
-		$this->template->albums = $albums;
-		$this->template->member = $member;
-		$this->template->membersAlbums = $membersAlbums;
+		$this->template->users = $users;
 	}
 
 	/**
@@ -112,14 +104,10 @@ class AlbumPresenter extends BasePresenter {
 
 		$photos = $this->gallery->getPhotosByAlbumId($album->id)->order('order, date_add');
 
-		$member = $this->userService->getTable()->get($album->member_id);
-
 		if (!(($this->getUser()->isLoggedIn()) or ($pubkeyCheck))) $photos->where('visible', TRUE);
 
 		$this->template->photos = $photos;
 		$this->template->slug = $slug;
-		$this->template->member = $member;
-
 	}
 
 	/**
@@ -132,7 +120,7 @@ class AlbumPresenter extends BasePresenter {
 		$album = $this->getAlbumById($slug);
 		$this->template->album = $album;
 
-		if (!(($album->member_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
+		if (!(($album->user_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
 			throw new ForbiddenRequestException('Nemáte právo toho album upravovat');
 		}
 
@@ -211,7 +199,7 @@ class AlbumPresenter extends BasePresenter {
 		$plupload->maxChunkSize = '1mb';
 		$plupload->allowedExtensions = 'jpg,jpeg,gif,png';
 
-		$slug = (string)$this->getParameter('slug');
+		$slug = (string) $this->getParameter('slug');
 		$id = parent::getIdFromSlug($slug);
 
 		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($id) {
@@ -225,7 +213,8 @@ class AlbumPresenter extends BasePresenter {
 			$values = [
 				'filename' => $name,
 				'album_id' => $id,
-				'date_add' => new DateTime
+				'date_add' => new DateTime,
+				'user_id' => $this->user->id
 			];
 
 			$ext = pathinfo($name, PATHINFO_EXTENSION);
@@ -238,10 +227,8 @@ class AlbumPresenter extends BasePresenter {
 				}
 			}
 
-			$this->gallery->addPhoto($values);
-
-			\LayoutHelpers::$thumbDirUri = 'albums/thumbs';
-			\LayoutHelpers::thumb($filename, 150, 100);
+			$photo = $this->gallery->addPhoto($values);
+			$this->getThumbName($photo);
 		};
 
 		$plupload->onUploadComplete[] = function (UploadQueue $uploadQueue) use ($slug) {
@@ -388,11 +375,11 @@ class AlbumPresenter extends BasePresenter {
 	}
 
 	/**
-	 * @param $angle
+	 * @param float $angle
 	 * @return array
 	 * @allow(member)
 	 */
-	private function superFormImagesTurn($angle) {
+	private function superFormImagesTurn(float $angle) {
 		$selected = $this->getSuperFromSelected();
 
 		$photos = $this->gallery->getPhotos()->where('id', $selected);
@@ -413,6 +400,8 @@ class AlbumPresenter extends BasePresenter {
 				$outputExifFile->setExif($exif);
 				$outputExifFile->saveFile($filename);
 			}
+
+			$photo->update(['thumb' => NULL]);
 		}
 
 		return $selected;
@@ -424,7 +413,7 @@ class AlbumPresenter extends BasePresenter {
 	public function superFormTurnLeft() {
 		$selected = $this->superFormImagesTurn(90);
 
-		$slug = (string)$this->params['slug'];
+		$slug = (string) $this->params['slug'];
 		$this->flashMessage('Doleva bylo otočeno ' . count($selected) . ' fotografií');
 		$this->redirect('edit', $slug);
 	}
@@ -435,7 +424,7 @@ class AlbumPresenter extends BasePresenter {
 	public function superFormTurnRight() {
 		$selected = $this->superFormImagesTurn(-90);
 
-		$slug = (string)$this->params['slug'];
+		$slug = (string) $this->params['slug'];
 		$this->flashMessage('Doprava bylo otočeno ' . count($selected) . ' fotografií');
 		$this->redirect('edit', $slug);
 	}

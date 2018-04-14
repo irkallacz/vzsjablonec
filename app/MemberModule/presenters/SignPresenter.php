@@ -15,12 +15,6 @@ use Tracy\Debugger;
 
 class SignPresenter extends BasePresenter {
 
-	/** @var Request @inject */
-	public $httpRequest;
-
-	/** @var IRouter @inject */
-	public $router;
-
 	/** @var UserService @inject */
 	public $userService;
 
@@ -58,19 +52,6 @@ class SignPresenter extends BasePresenter {
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
-//		$referer = $this->httpRequest->getReferer();
-//
-//		if ($referer) {
-//			if ($referer->host != $this->httpRequest->url->host)
-//				throw new BadRequestException('Nesouhlasí doména původu');
-//
-//			$httpRequest = new Request(new UrlScript($referer->getAbsoluteUrl()));
-//			$appRequest = $this->router->match($httpRequest);
-//
-//			if (($appRequest)and($appRequest->getPresenterName() !== 'Sign:Sign'))
-//				throw new BadRequestException('Nesouhlasí místo původu');
-//		}
-
 		try {
 			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature);
 		} catch (AuthenticationException $e) {
@@ -80,9 +61,9 @@ class SignPresenter extends BasePresenter {
 
 		$this->getUser()->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
 
-		$dateLast = $this->userService->getLastLoginByUserId($userId);
+		$dateLast = $this->userService->getLastLoginByUserId($userId, UserService::MODULE_MEMBER);
 		$this->getUser()->getIdentity()->date_last = $dateLast ? $dateLast : new DateTime();
-		$this->userService->addMemberLogin($userId);
+		$this->userService->addModuleLogin($userId, UserService::MODULE_MEMBER);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
 		else $this->redirect('News:default');

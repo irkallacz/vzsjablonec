@@ -17,7 +17,7 @@ class PhotoPresenter extends BasePresenter{
     	$times = [];
     	foreach ($albums as $album) {
 			/** @var ActiveRow $album*/
-    		foreach ($album->related('photo.album_id') as $photo) {
+    		foreach ($album->related('album_photo.album_id') as $photo) {
 				/** @var ActiveRow $photo*/
 
 	    		if (!$photo->date_taken){

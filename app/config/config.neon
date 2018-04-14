@@ -6,12 +6,6 @@ parameters:
 			dbname: vzsjablonec
 			user: root
 			password:
-		photo:
-			driver: mysql
-			host: localhost
-			dbname: photo
-			user: root
-			password:
 		wordpress:
 			driver: mysql
 			host: localhost
@@ -37,10 +31,10 @@ parameters:
 		siteKey: GrcZy3jKLti1aKGi0hLJuaRxBX3rxOxcb44p5rZV
 		secretKey: kKtcntSs85ITBXqZVwwZTFMVPb6xcRCTrmokMTWF
 	idoklad:
-			clientId: '12345678-abcd-efgh-ijkl-098765432100'
-			clientSecret: '98765432-lkji-hgfe-dcba-001234567890'
-			redirectUri: ''
-			credentialsFile: '%tempDir%/idoklad/credentials.json'
+		clientId: '12345678-abcd-efgh-ijkl-098765432100'
+		clientSecret: '98765432-lkji-hgfe-dcba-001234567890'
+		redirectUri: ''
+		credentialsFile: '%tempDir%/idoklad/credentials.json'
 
 
 application:
@@ -53,10 +47,6 @@ database:
 		dsn: '%database.default.driver%:host=%database.default.host%;dbname=%database.default.dbname%'
 		user: %database.default.user%
 		password: %database.default.password%
-	photo:
-		dsn: '%database.photo.driver%:host=%database.photo.host%;dbname=%database.photo.dbname%'
-		user: %database.photo.user%
-		password: %database.photo.password%
 	wordpress:
 		dsn: '%database.wordpress.driver%:host=%database.wordpress.host%;dbname=%database.wordpress.dbname%'
 		user: %database.wordpress.user%
@@ -110,7 +100,7 @@ services:
 	- App\Model\RatingService
 	- App\Model\MessageService
 	- App\Model\HlasovaniService
-	- App\Model\GalleryService(@database.photo.context)
+	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
 
 	googleClient:

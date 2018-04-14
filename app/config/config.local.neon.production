@@ -9,15 +9,9 @@ parameters:
 	database:
 		default:
 			host: wm119.wedos.net
-			dbname: d133882_member
-			user: w133882_member
+			dbname: d133882_vzsjablonec
+			user: w133882_vzsjablonec
 			password: aS82MMPN
-		photo:
-			host: wm119.wedos.net
-			dbname: d133882_photo
-			user: w133882_photo
-			password: rJFWjhEP
-			photoUri: 'http://photo.vzs-jablonec.cz'
 		wordpress:
 			host: wm119.wedos.net
 			dbname: d133882_bde69a3

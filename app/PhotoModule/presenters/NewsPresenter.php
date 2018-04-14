@@ -24,8 +24,8 @@ class NewsPresenter extends BasePresenter {
 
 		if (!$this->getUser()->isLoggedIn()) {
 			$albums->where('visible', TRUE);
-			$photos->where('photo.visible', TRUE)->where('album.visible', TRUE);
-		} else $this->template->member = $this->userService->getUsersArray(UserService::DELETED_LEVEL);;
+			$photos->where('album_photo.visible', TRUE)->where('album.visible', TRUE);
+		}
 
 		$this->template->albums = $albums;
 		$this->template->photos = $photos;

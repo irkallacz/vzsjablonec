@@ -11,10 +11,10 @@ use Nette\Utils\DateTime;
 use Nette\Database\Table\Selection;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\ActiveRow;
-use Nette\Database\SqlLiteral;
 use Nette\Utils\ArrayHash;
 
-class GalleryService extends Nette\Object {
+class GalleryService {
+	use Nette\SmartObject;
 
 	/** @var Nette\Database\Context */
 	public $database;
@@ -46,7 +46,7 @@ class GalleryService extends Nette\Object {
 	 * @return Selection
 	 */
 	public function getAlbumsPhotosCount() {
-		return $this->getAlbums()->select('album.id, COUNT(:photo.id)AS pocet')->group('album.id');
+		return $this->getAlbums()->select('album.id, COUNT(:album_photo.id)AS pocet')->group('album.id');
 	}
 
 
@@ -63,7 +63,7 @@ class GalleryService extends Nette\Object {
 	 * @return Selection
 	 */
 	public function getPhotoNews(DateTime $datetime) {
-		return $this->getAlbums()->group('album.id')->where(':photo.date_add > ?', $datetime);
+		return $this->getAlbums()->group('album.id')->where(':album_photo.date_add > ?', $datetime);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class GalleryService extends Nette\Object {
 	 * @return Selection
 	 */
 	public function getPhotos() {
-		return $this->database->table('photo');
+		return $this->database->table('album_photo');
 	}
 
 	/**
@@ -111,23 +111,5 @@ class GalleryService extends Nette\Object {
 	 */
 	public function getPhotosByAlbumId(int $id) {
 		return $this->getPhotos()->select('*')->where('album_id', $id);
-	}
-
-	/**
-	 * @param int $id
-	 * @return DateTime
-	 */
-	public function getLastLoginByMemberId(int $id) {
-		return $this->database->table('member_log')->where('member_id', $id)->max('date_add');
-	}
-
-	/**
-	 * @param int $user_id
-	 */
-	public function addMemberLogin(int $user_id) {
-		$this->database->query('INSERT INTO member_log', [
-			'member_id' => $user_id,
-			'date_add' => new SqlLiteral('NOW()')
-		]);
 	}
 }

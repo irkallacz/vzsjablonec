@@ -4,12 +4,14 @@ namespace App\PhotoModule\Presenters;
 
 use App\Authenticator\SsoAuthenticator;
 use App\Model\GalleryService;
+use App\Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\IRouter;
 use Nette\Http\Request;
 use Nette\Http\UrlScript;
 use Nette\Security\AuthenticationException;
 use Nette\Security\IUserStorage;
+use Nette\Security\User;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
@@ -23,8 +25,8 @@ class SignPresenter extends BasePresenter {
 	/** @var IRouter @inject */
 	public $router;
 
-	/** @var GalleryService @inject */
-	public $galleryService;
+	/** @var UserService @inject */
+	public $userService;
 
 	/** @var SsoAuthenticator @inject */
 	public $ssoAuthenticator;
@@ -76,9 +78,9 @@ class SignPresenter extends BasePresenter {
 
 		$this->getUser()->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
 
-		$dateLast = $this->galleryService->getLastLoginByMemberId($userId);
+		$dateLast = $this->userService->getLastLoginByUserId($userId, UserService::MODULE_PHOTO);
 		$this->getUser()->getIdentity()->date_last = $dateLast ? $dateLast : new DateTime();
-		$this->galleryService->addMemberLogin($userId);
+		$this->userService->addModuleLogin($userId, UserService::MODULE_PHOTO);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
 		else {

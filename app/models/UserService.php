@@ -18,16 +18,18 @@ use Tracy\Debugger;
 
 class UserService extends DatabaseService {
 
-	const DELETED_LEVEL = 0;
-	const USER_LEVEL = 1;
-	const MEMBER_LEVEL = 2;
-	const BOARD_LEVEL = 3;
-	const ADMIN_LEVEL = 4;
+	const DELETED_LEVEL	= 0;
+	const USER_LEVEL 	= 1;
+	const MEMBER_LEVEL 	= 2;
+	const BOARD_LEVEL 	= 3;
+	const ADMIN_LEVEL 	= 4;
 
-	const LOGIN_METHOD_PASSWORD = 1;
-	const LOGIN_METHOD_GOOGLE = 2;
-	const LOGIN_METHOD_FACEBOOK = 3;
+	const LOGIN_METHOD_PASSWORD	= 1;
+	const LOGIN_METHOD_GOOGLE 	= 2;
+	const LOGIN_METHOD_FACEBOOK	= 3;
 
+	const MODULE_MEMBER = 1;
+	const MODULE_PHOTO 	= 2;
 
 	/**
 	 * @return Selection
@@ -171,8 +173,11 @@ class UserService extends DatabaseService {
 	 * @param int $id
 	 * @return DateTime
 	 */
-	public function getLastLoginByUserId($id) {
-		return $this->database->table('member_log')->where('member_id', $id)->max('date_add');
+	public function getLastLoginByUserId($id, int $module) {
+		return $this->database->table('module_log')
+			->where('user_id', $id)
+			->where('module_id', $module)
+			->max('date_add');
 	}
 
 	/**
@@ -180,7 +185,7 @@ class UserService extends DatabaseService {
 	 * @param DateTime $datetime
 	 * @param string $method
 	 */
-	public function addUserLogin(int $user_id, $method = self::LOGIN_METHOD_PASSWORD) {
+	public function addUserLogin(int $user_id, int $method = self::LOGIN_METHOD_PASSWORD) {
 		$this->database->query('INSERT INTO user_log', [
 			'member_id' => $user_id,
 			'date_add' => new SqlLiteral('NOW()'),
@@ -193,9 +198,10 @@ class UserService extends DatabaseService {
 	 * @param DateTime $datetime
 	 * @param string $method
 	 */
-	public function addMemberLogin(int $user_id) {
-		$this->database->query('INSERT INTO member_log', [
-			'member_id' => $user_id,
+	public function addModuleLogin(int $user_id, int $module) {
+		$this->database->query('INSERT INTO module_log', [
+			'user_id' => $user_id,
+			'module_id' => $module,
 			'date_add' => new SqlLiteral('NOW()')
 		]);
 	}

@@ -59,9 +59,9 @@
 {define albumMenu}
 	<li><a class="buttonLike" n:href="Album:add,$album->id.'-'.$album->slug">přidat fotky</a></li>
   	{if $user->isInRole('member')}
-		<li n:if="($album->member_id==$user->getId())or($user->isInRole('admin'))"><a class="buttonLike confirm" n:href="Album:deleteAlbum,$album->id" data-query="Opravdu chcete vymazat toto album?">odebrat album</a></li>
+		<li n:if="($album->user_id==$user->getId())or($user->isInRole('admin'))"><a class="buttonLike confirm" n:href="Album:deleteAlbum,$album->id" data-query="Opravdu chcete vymazat toto album?">odebrat album</a></li>
 		<li n:if="$user->isInRole('admin')"><a class="buttonLike" n:href="Album:setAlbumVisibility,$album->id.'-'.$album->slug,!$album->visible">{if $album->visible}zneviditelnit{else}zviditelnit{/if}</a></li>
-		<li n:if="(($album->member_id==$user->getId()))or($user->isInRole('admin'))"><a class="buttonLike" n:href="Album:edit,$album->id.'-'.$album->slug">upravit</a></li>
+		<li n:if="(($album->user_id==$user->getId()))or($user->isInRole('admin'))"><a class="buttonLike" n:href="Album:edit,$album->id.'-'.$album->slug">upravit</a></li>
 	{/if}
 {/define}
 
@@ -73,8 +73,8 @@
   <span class="no-wrap" title="{$album->date_update|date:'%d. %B %Y %H:%M'}" n:if="$album->date_update != $album->date_add"><b>Upraveno:</b> {$album->date_update|timeAgoInWords}</span>
   {if $user->isLoggedIn()}
   <span class="no-wrap"><b>{if $album->visible}Viditelné veřejnosti{else}Neviditelné pro veřejnost{/if}</b></span>
-    {if isset($member)}
-    {var $name = is_array($member) ? $member[$album->member_id] : $member->surname.' '.$member->name}
+    {if $album->user}
+    {var $name = $album->user->surname.' '.$album->user->name}
     {var $fragment = ($name|webalize)}
     <span class="no-wrap float_right member" n:if="$user->isLoggedIn()"><a n:href="Album:users#$fragment">{$name}</a></span>
     {/if}
@@ -90,7 +90,7 @@
 {if}
 <a n:href="//Album:view $album->id.'-'.$album->slug" title="{$album->text|truncate:70}" class="round">
 	<h3>{$album->name}</h3>
-	{var $photos = $album->related('photo')}
+	{var $photos = $album->related('album_photo')}
 	{if ($album->visible) and (!$user->isLoggedIn())}{php $photos->where('visible', TRUE)}{/if}
 	{var $images = clone $photos}
 

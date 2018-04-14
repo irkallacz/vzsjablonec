@@ -28,9 +28,9 @@ class MyselfPresenter extends BasePresenter {
 		/** @var DateTime $date_last*/
 		$date_last = $this->getUser()->getIdentity()->date_last;
 
-		$albums = $this->gallery->getAlbums()->order('date_add DESC')->where('member_id', $user_id);
+		$albums = $this->gallery->getAlbums()->order('date_add DESC')->where('user_id', $user_id);
 
-		$pocet = $this->gallery->getAlbumsPhotosCount()->where('member_id', $user_id);
+		$pocet = $this->gallery->getAlbumsPhotosCount()->where('album.user_id', $user_id);
 		$pocet = $pocet->fetchPairs('id', 'pocet');
 
 		$newAlbums = $this->gallery->getAlbumNews($date_last);
@@ -98,7 +98,7 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozý hodnot
 		$values->date_add = $datum;
 		$values->slug = Strings::webalize($values->name);
 
-		$values->member_id = $this->getUser()->getId();
+		$values->user_id = $this->getUser()->getId();
 
 		$album = $this->gallery->addAlbum($values);
 		$this->flashMessage('Album bylo přidáno');

@@ -120,13 +120,7 @@ class FeedPresenter extends BasePresenter {
 	 *
 	 */
 	public function renderAlbums() {
-		$albums = $this->galleryService->getAlbums()->order('date_add DESC');
-		$users = $this->userService->getUsers(UserService::DELETED_LEVEL)->select('id,name,surname,mail')
-			->where('id', array_keys($albums->fetchPairs('member_id', 'id')))
-			->fetchPairs('id');
-
-		$this->template->items = $albums;
-		$this->template->users = $users;
+		$this->template->items = $this->galleryService->getAlbums()->order('date_add DESC');
 	}
 
 }
