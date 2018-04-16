@@ -149,7 +149,7 @@ class MailPresenter extends LayerPresenter {
 		$this->template->isAkce = TRUE;
 
 		$this->template->pocet = ceil(count($users) / 3);
-		$this->setView('default');
+		$this->setView('add');
 	}
 
 	/**
