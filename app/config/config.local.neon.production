@@ -21,11 +21,11 @@ parameters:
 		driveDir: olqBGlusVSO2QWsuaOq0WpazaQqK
 		login:
 			clientSecret: 123456789
-			callbackURL: 'https://sign.vzs-jablonec.cz/sign/googlelogin'
+			callbackURL: 'https://account.vzs-jablonec.cz/sign/googlelogin'
 	facebook:
 		login:
 			appSecret: 987654321
-			callbackURL: 'https://sign.vzs-jablonec.cz/sign/facebooklogin'
+			callbackURL: 'https://account.vzs-jablonec.cz/sign/facebooklogin'
 	idoklad:
 		clientId: 12345678-abcd-efgh-ijkl-098765432100
 		clientSecret: 98765432-lkji-hgfe-dcba-001234567890
