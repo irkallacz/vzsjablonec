@@ -6,7 +6,7 @@
 	.slidesjs-container { text-align: center; }
  	#slides .photoList { position: absolute; top: 25%; min-width: 22em; width: 99%; text-align: center;}
 	.slide img { vertical-align: middle; max-height: 270px; max-width: 570px; border: 10px solid white;
-	border-radius: 5px; box-shadow: 7px 7px 0 #161b1c;}
+	border-radius: 5px; box-shadow: 7px 7px 0 #161b1c; background-color: black; background-size: 50px 50px;}
 </style>
 
 <script src="{$baseUrl}/js/jquery.slides.min.js" type="text/javascript"></script>
@@ -41,10 +41,10 @@
 	</ul>
 
 	<ul id="js-slides" class="slides-container" n:inner-foreach="$photos as $image">
-	<li><div class="slide spinner">
+	<li><div class="slide">
 		{var $album = $image->ref('album')}
 		<a n:href="Album:view#$image->filename,$album->id.'-'.$album->slug" title="{$album->name}">
-		<img src="{$baseUrl}/{$photoDir.'/'.$image->album_id.'/'.$image->filename}" alt="{$image->filename}">
+		<img src="{$baseUrl}/{$photoDir.'/'.$image->album_id.'/'.$image->filename}" alt="{$image->filename}" class="spinner">
 		</a>
 	</div></li>
 	</ul>

@@ -75,6 +75,8 @@ label acronym {cursor: help;}
 
 #ui-datepicker-div {font-size: 0.9em;}
 
+.spinner {background-image: url('../img/loader.svg'); background-position: center center; background-repeat: no-repeat;}
+
 .update {font-size: 0.9em; font-style: italic; text-align: right; color: gray;}
 
 .char, div.flash:before {font-size: 150%; line-height: 50%; speak: none;}
