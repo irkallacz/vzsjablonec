@@ -75,7 +75,7 @@ abstract class BasePresenter extends Presenter {
 				$filename = pathinfo($photo->filename, PATHINFO_FILENAME);
 				$filename = Strings::webalize($filename).'.jpg';
 
-				if (!file_exists(WWW_DIR . '/' .$thumbDir)) mkdir(WWW_DIR . '/' .$thumbDir);
+				//if (!file_exists(WWW_DIR . '/' .$thumbDir)) mkdir(WWW_DIR . '/' .$thumbDir);
 
 				$image->save(WWW_DIR . '/' . $thumbDir . $filename, 80, Image::JPEG);
 				$photo->update(['thumb' => $filename]);
