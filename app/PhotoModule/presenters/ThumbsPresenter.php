@@ -22,12 +22,12 @@ class ThumbsPresenter extends BasePresenter {
 		$photos = $this->galleryService->getPhotos()
 			->where('thumb', NULL)
 			->order('album_id, id')
-			->limit(100);
+			->limit(30);
 
 		$this->template->items = [];
 
 		foreach ($photos as $photo){
-			$thumbDir 	=	self::photoDir 	.'/thumbs2/'	.$photo->album_id . '/';
+			$thumbDir 	=	self::photoDir 	.'/thumbs/'	.$photo->album_id . '/';
 			$fileDir 	= 	self::photoDir 	.'/' 			.$photo->album_id . '/';
 
 			$image = Image::fromFile(WWW_DIR . '/' . $fileDir . $photo->filename);
