@@ -93,7 +93,13 @@ class SignPresenter extends BasePresenter {
 
 	public function actionGoogleLogin(string $code, string $state = NULL) {
 		if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'google');
-		$me = $this->googleLogin->getMe($code);
+
+		try {
+			$me = $this->googleLogin->getMe($code);
+		} catch (\Exception $e) {
+			$this->flashMessage('Přihlášení ne nezdařilo', 'error');
+			$this->redirect('in');
+		}
 
 		try {
 			$this->emailAuthenticator->login($me->email);
@@ -108,7 +114,13 @@ class SignPresenter extends BasePresenter {
 	public function actionFacebookLogin(string $state = NULL) {
 		if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'facebook');
 
-		$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
+		try {
+			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
+		} catch (\Exception $e) {
+			$this->flashMessage('Přihlášení ne nezdařilo', 'error');
+			$this->redirect('in');
+		}
+
 		$email = Arrays::get($me, 'email');
 
 		try {
