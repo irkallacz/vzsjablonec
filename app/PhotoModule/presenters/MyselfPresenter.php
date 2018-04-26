@@ -28,10 +28,13 @@ class MyselfPresenter extends BasePresenter {
 		/** @var DateTime $date_last*/
 		$date_last = $this->getUser()->getIdentity()->date_last;
 
-		$albums = $this->gallery->getAlbums()->order('date_add DESC')->where('user_id', $user_id);
+		$albums = $this->gallery->getAlbums()
+			->where('user_id', $user_id)
+			->order('date_add DESC');
 
-		$pocet = $this->gallery->getAlbumsPhotosCount()->where('album.user_id', $user_id);
-		$pocet = $pocet->fetchPairs('id', 'pocet');
+		$pocet = $this->gallery->getAlbumsPhotosCount()
+			->where('album.user_id', $user_id)
+			->fetchPairs('id', 'pocet');
 
 		$newAlbums = $this->gallery->getAlbumNews($date_last);
 		$newPhotos = $this->gallery->getPhotoNews($date_last);
