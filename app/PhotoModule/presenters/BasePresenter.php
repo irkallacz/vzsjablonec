@@ -16,7 +16,10 @@ use Nette\Utils\Strings;
 abstract class BasePresenter extends Presenter {
 
 	/** @var string */
-	const photoDir = 'albums';
+	const PHOTO_DIR = 'albums';
+
+	/** @var string */
+	const THUMB_DIR = 'thumbs';
 
 	/**
 	 *
@@ -36,7 +39,7 @@ abstract class BasePresenter extends Presenter {
 	protected function beforeRender() {
 		parent::beforeRender();
 
-		$this->template->photoDir = self::photoDir;
+		$this->template->photoDir = self::PHOTO_DIR;
 		$this->template->addFilter('thumb', [$this, 'getThumbName']);
 
 		$mainMenu = [
@@ -57,8 +60,8 @@ abstract class BasePresenter extends Presenter {
 	 * @return string
 	 */
 	public function getThumbName($photo){
-		$thumbDir = self::photoDir . '/thumbs/' . $photo->album_id . '/';
-		$fileDir = self::photoDir . '/' . $photo->album_id . '/';
+		$thumbDir = self::PHOTO_DIR . '/thumbs/' . $photo->album_id . '/';
+		$fileDir = self::PHOTO_DIR . '/' . $photo->album_id . '/';
 
 		if ($photo->thumb) {
 			$filename = $photo->thumb;

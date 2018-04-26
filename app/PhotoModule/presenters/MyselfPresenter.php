@@ -101,8 +101,8 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozý hodnot
 		$values->user_id = $this->getUser()->getId();
 
 		$album = $this->gallery->addAlbum($values);
-		mkdir(WWW_DIR . '/' . self::photoDir . '/' . $album->id, 0755);
-		mkdir(WWW_DIR . '/' . self::photoDir . '/thumb/' . $album->id, 0755);
+		mkdir(WWW_DIR . '/' . self::PHOTO_DIR . '/' . $album->id, 0755);
+		mkdir(WWW_DIR . '/' . self::PHOTO_DIR . '/thumb/' . $album->id, 0755);
 		
 		$this->flashMessage('Album bylo přidáno');
 

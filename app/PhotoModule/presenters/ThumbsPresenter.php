@@ -29,6 +29,8 @@ class ThumbsPresenter extends BasePresenter {
 		foreach ($photos as $photo){
 			$thumbDir 	=	self::photoDir 	.'/thumbs/'	.$photo->album_id . '/';
 			$fileDir 	= 	self::photoDir 	.'/' 			.$photo->album_id . '/';
+			$thumbDir	=	self::PHOTO_DIR . DIRECTORY_SEPARATOR . 	self::THUMB_DIR . DIRECTORY_SEPARATOR .	$photo->album_id . DIRECTORY_SEPARATOR;
+			$fileDir	=	self::PHOTO_DIR . DIRECTORY_SEPARATOR .												$photo->album_id . DIRECTORY_SEPARATOR;
 
 			$image = Image::fromFile(WWW_DIR . '/' . $fileDir . $photo->filename);
 

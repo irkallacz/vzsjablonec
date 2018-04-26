@@ -206,7 +206,7 @@ class AlbumPresenter extends BasePresenter {
 			$upload = $uploadQueue->getLastUpload();
 
 			$name = $upload->getName();
-			$filename = self::photoDir . '/' . $id . '/' . $name;
+			$filename = self::PHOTO_DIR . '/' . $id . '/' . $name;
 			$filepath = WWW_DIR . '/' . $filename;
 			$upload->move($filepath);
 
@@ -385,7 +385,7 @@ class AlbumPresenter extends BasePresenter {
 		$photos = $this->gallery->getPhotos()->where('id', $selected);
 
 		foreach ($photos as $photo) {
-			$filename = self::photoDir . '/' . $photo->album_id . '/' . $photo->filename;
+			$filename = self::PHOTO_DIR . '/' . $photo->album_id . '/' . $photo->filename;
 
 			$inputExifFile = new PelJpeg($filename);
 			$exif = $inputExifFile->getExif();
