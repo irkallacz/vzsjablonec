@@ -75,7 +75,7 @@ class MyselfPresenter extends BasePresenter {
 		$form->addText('date', 'Datum', 10)
 			->setRequired('Vyplňte datum začátku akce')
 			->setType('date')
-			->setDefaultValue(date_create()->format('Y-m-d'))
+			->setDefaultValue(date('Y-m-d'))
 			->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
 			->setAttribute('class', 'date')
 			->caption = Html::el('acronym')->setText('Datum')->title('Datum by mělo přibližně odpovídat času, kdy byli fotky pořízeny. 
