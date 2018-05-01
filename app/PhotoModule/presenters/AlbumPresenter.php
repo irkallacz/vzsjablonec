@@ -135,7 +135,7 @@ class AlbumPresenter extends BasePresenter {
 		$this->template->slug = $slug;
 
 		/** @var Form $form*/
-		$form = $this['superForm'];
+		$form = $this['photoForm'];
 		if (!$form->isSubmitted()) {
 			$form->setDefaults($album);
 			$form['date']->setValue($album->date->format('Y-m-d'));
@@ -243,7 +243,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @return Form
 	 * @allow(member)
 	 */
-	protected function createComponentSuperForm() {
+	protected function createComponentPhotoForm() {
 		$form = new Form;
 
 		$form->addText('name', 'Název', 30, 50)
@@ -274,19 +274,19 @@ class AlbumPresenter extends BasePresenter {
 		}, 0);
 
 		$form->addSubmit('save', 'uložit změny')
-			->onClick[] = [$this, 'SuperFormSave'];
+			->onClick[] = [$this, 'PhotoFormSave'];
 
 		$form->addSubmit('delete', 'vymazat vybrané')
-			->onClick[] = [$this, 'SuperFormDelete'];
+			->onClick[] = [$this, 'PhotoFormDelete'];
 
 		$form->addSubmit('visible', 'změnit viditelnost')
-			->onClick[] = [$this, 'SuperFormVisible'];
+			->onClick[] = [$this, 'PhotoFormVisible'];
 
 		$form->addSubmit('turnLeft', 'otočit o 90° doleva')
-			->onClick[] = [$this, 'SuperFormTurnLeft'];
+			->onClick[] = [$this, 'PhotoFormTurnLeft'];
 
 		$form->addSubmit('turnRight', 'otočit o 90° doprava')
-			->onClick[] = [$this, 'SuperFormTurnRight'];
+			->onClick[] = [$this, 'PhotoFormTurnRight'];
 
 
 		$album = $this->getAlbumById($this->getParameter('slug'));
@@ -299,12 +299,12 @@ class AlbumPresenter extends BasePresenter {
 	/**
 	 * @allow(member)
 	 */
-	public function superFormSave() {
-		$slug = (string) $this->params['slug'];
-		$id = parent::getIdFromSlug($slug);
+	public function photoFormSave() {
+		$slug = $this->getParameter('slug');
+		$id = self::getIdFromSlug($slug);
 
 		/** @var Form $form*/
-		$form = $this['superForm'];
+		$form = $this['photoForm'];
 		$values = $form->getValues();
 		$values->date_update = new Datetime();
 		$values->slug = Strings::webalize($values->name);
@@ -338,13 +338,12 @@ class AlbumPresenter extends BasePresenter {
 	 * @return array
 	 * @allow(member)
 	 */
-	private function getSuperFromSelected() {
-		$photos = $values = $this['superForm']->getValues()->photos;
+	private function getPhotoFromSelectedPhotos() {
+		$photos = $values = $this['photoForm']->getValues()->photos;
 
 		if (!$photos) {
-			$slug = (string)$this->params['slug'];
-			$this->flashMessage('Musíte vybrat nějaká fotografie', 'error');
-			$this->redirect('edit', $slug);
+			$this->flashMessage('Musíte vybrat nějaké fotografie', 'error');
+			$this->redirect('this');
 		}
 
 		$selected = [];
@@ -364,12 +363,12 @@ class AlbumPresenter extends BasePresenter {
 	/**
 	 * @allow(member)
 	 */
-	public function superFormDelete() {
-		$selected = $this->getSuperFromSelected();
+	public function photoFormDelete() {
+		$selected = $this->getPhotoFromSelectedPhotos();
 
 		$this->gallery->deletePhotos($selected);
 
-		$slug = (string)$this->params['slug'];
+		$slug = $this->getParameter('slug');
 		$this->flashMessage('Bylo smazáno ' . count($selected) . ' fotografií');
 		$this->redirect('view', $slug);
 	}
@@ -379,8 +378,8 @@ class AlbumPresenter extends BasePresenter {
 	 * @return array
 	 * @allow(member)
 	 */
-	private function superFormImagesTurn(float $angle) {
-		$selected = $this->getSuperFromSelected();
+	private function photoFormImagesTurn(float $angle) {
+		$selected = $this->getPhotoFromSelectedPhotos();
 
 		$photos = $this->gallery->getPhotos()->where('id', $selected);
 
@@ -410,34 +409,32 @@ class AlbumPresenter extends BasePresenter {
 	/**
 	 * @allow(member)
 	 */
-	public function superFormTurnLeft() {
-		$selected = $this->superFormImagesTurn(90);
+	public function photoFormTurnLeft() {
+		$selected = $this->photoFormImagesTurn(90);
 
-		$slug = (string) $this->params['slug'];
 		$this->flashMessage('Doleva bylo otočeno ' . count($selected) . ' fotografií');
-		$this->redirect('edit', $slug);
+		$this->redirect('this');
 	}
 
 	/**
 	 * @allow(member)
 	 */
-	public function superFormTurnRight() {
-		$selected = $this->superFormImagesTurn(-90);
+	public function photoFormTurnRight() {
+		$selected = $this->photoFormImagesTurn(-90);
 
-		$slug = (string) $this->params['slug'];
 		$this->flashMessage('Doprava bylo otočeno ' . count($selected) . ' fotografií');
-		$this->redirect('edit', $slug);
+		$this->redirect('this');
 	}
 
 	/**
 	 * @allow(member)
 	 */
-	public function superFormVisible() {
-		$selected = $this->getSuperFromSelected();
+	public function photoFormVisible() {
+		$selected = $this->getPhotoFromSelectedPhotos();
 
 		$this->gallery->getPhotos()->where('id', $selected)->update(['visible' => new SqlLiteral('NOT(`visible`)')]);
 
-		$slug = (string)$this->params['slug'];
+		$slug = $this->getParameter('slug');
 		$this->flashMessage('Bylo změněna viditelnost ' . count($selected) . ' fotografií');
 		$this->redirect('view', $slug);
 	}
