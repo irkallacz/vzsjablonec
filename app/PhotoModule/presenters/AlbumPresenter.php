@@ -177,7 +177,7 @@ class AlbumPresenter extends BasePresenter {
 	public function actionDeleteAlbum(int $id) {
 		$album = $this->gallery->getAlbumById($id);
 
-		if (!(($album->member_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
+		if (!(($album->user_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
 			throw new ForbiddenRequestException('Nemáte právo toto album smazat');
 		}
 
@@ -256,7 +256,7 @@ class AlbumPresenter extends BasePresenter {
 			->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
 			->setAttribute('class', 'date');
 
-		$form->addSelect('member_id', 'Uživatel', $this->userService->getUsersArray(UserService::DELETED_LEVEL));
+		$form->addSelect('user_id', 'Uživatel', $this->userService->getUsersArray(UserService::DELETED_LEVEL));
 
 		$form->addCheckBox('show_date', 'Upravit datum pořízení')
 			->setDefaultValue(FALSE)
