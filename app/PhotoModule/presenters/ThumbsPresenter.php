@@ -10,7 +10,9 @@ namespace App\PhotoModule\Presenters;
 
 use App\Model\GalleryService;
 use Nette\Utils\Image;
+use Nette\Utils\ImageException;
 use Nette\Utils\Strings;
+use Tracy\Debugger;
 
 class ThumbsPresenter extends BasePresenter {
 
@@ -21,7 +23,7 @@ class ThumbsPresenter extends BasePresenter {
 
 		$photos = $this->galleryService->getPhotos()
 			->where('thumb', NULL)
-			->order('album_id, id')
+			->order('date_add DESC')
 			->limit(100);
 
 		$this->template->items = [];
@@ -30,23 +32,28 @@ class ThumbsPresenter extends BasePresenter {
 			$thumbDir	=	self::PHOTO_DIR . DIRECTORY_SEPARATOR . 	self::THUMB_DIR . DIRECTORY_SEPARATOR .	$photo->album_id . DIRECTORY_SEPARATOR;
 			$fileDir	=	self::PHOTO_DIR . DIRECTORY_SEPARATOR .												$photo->album_id . DIRECTORY_SEPARATOR;
 
-			$image = Image::fromFile(WWW_DIR . '/' . $fileDir . $photo->filename);
+			try{
+				$image = Image::fromFile(WWW_DIR . '/' . $fileDir . $photo->filename);
 
-			// zachovani pruhlednosti u PNG
-			$image->alphaBlending(FALSE);
-			$image->saveAlpha(TRUE);
-			$image->resize(150, 100, Image::EXACT)
-				->sharpen();
+				// zachovani pruhlednosti u PNG
+				$image->alphaBlending(FALSE);
+				$image->saveAlpha(TRUE);
+				$image->resize(150, 100, Image::EXACT)
+					->sharpen();
 
-			$filename = pathinfo($photo->filename, PATHINFO_FILENAME);
-			$filename = Strings::webalize($filename) . '.jpg';
+				$filename = pathinfo($photo->filename, PATHINFO_FILENAME);
+				$filename = Strings::webalize($filename) . '.jpg';
 
-			//if (!file_exists(WWW_DIR . '/' .$thumbDir)) mkdir(WWW_DIR . '/' .$thumbDir);
+				//if (!file_exists(WWW_DIR . '/' .$thumbDir)) mkdir(WWW_DIR . '/' .$thumbDir);
 
-			$image->save(WWW_DIR . '/' . $thumbDir . $filename, 80, Image::JPEG);
-			$photo->update(['thumb' => $filename]);
+				$image->save(WWW_DIR . '/' . $thumbDir . $filename, 80, Image::JPEG);
 
-			$this->template->items[] = $thumbDir . $filename;
+				$photo->update(['thumb' => $filename]);
+
+				$this->template->items[] = $thumbDir . $filename;
+			} catch (ImageException $e){
+				Debugger::log($photo->id . ' '. $photo->album_id . '/'. $photo->filename);
+			}
 		}
 	}
 
