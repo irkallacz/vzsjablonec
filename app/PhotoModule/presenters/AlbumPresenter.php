@@ -246,7 +246,7 @@ class AlbumPresenter extends BasePresenter {
 	protected function createComponentPhotoForm() {
 		$form = new Form;
 
-		$form->addText('name', 'Název', 30, 50)
+		$form->addText('name', 'Název', 50, 50)
 			->setRequired('Vyplňte %label');
 
 		$form->addText('date', 'Datum', 10, 10)
@@ -263,10 +263,16 @@ class AlbumPresenter extends BasePresenter {
 			->setHtmlId('swap-title');
 
 		$form->addTextArea('text', 'Popis', 30)
+			->setAttribute('placeholder','Popis alba')
+			->setNullable();
+
+		$form->addTextArea('private', 'Jen pro členy', 30)
+			->setAttribute('placeholder', 'Text viditelný jen pro přihlášené')
 			->setNullable();
 
 		$form->addMultiplier('photos', function (\Nette\Forms\Container $photo) {
-			$photo->addText('text', 'Popis', 30, 50);
+			$photo->addText('text', 'Popis', 30, 50)
+				->setNullable();
 			$photo->addHidden('id');
 			$photo->addCheckBox('selected')
 				->setAttribute('class', 'select')
@@ -352,9 +358,8 @@ class AlbumPresenter extends BasePresenter {
 		}
 
 		if (empty($selected)) {
-			$slug = (string)$this->params['slug'];
 			$this->flashMessage('Musíte vybrat nějaké fotografie', 'error');
-			$this->redirect('edit', $slug);
+			$this->redirect('this');
 		}
 
 		return $selected;

@@ -36,7 +36,9 @@
 
 <h2 n:block="title">{$album->name}</h2>
 
-<p n:if="$album->text">{$album->text|texy|noescape}</p>
+<div n:if="$album->text">{$album->text|texy|noescape}</div>
+
+<div n:if="($album->private)and($user->isLoggedIn())">{$album->private|texy|noescape}</div>
 
 <ul class="photoList" n:inner-foreach="$photos as $image">
 	<li>

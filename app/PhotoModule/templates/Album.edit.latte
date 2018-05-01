@@ -7,8 +7,8 @@
 	.photoList li input.title { width: 98%; position: absolute; bottom: 0; right: 0; font-size: 0.8em; background-color: rgba(0,0,0,0.5); z-index: 2; text-align: right;}
 	.photoList li input.selected { position: absolute; top: 0; left: 0; z-index: 2;}
 	#frm-superForm label { font-weight: bold;}
-	#frm-superForm-name { font-size: 1.5em; font-weight: bold;}
-	#frm-superForm-text { width: 98%; font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-size: 1em; height: 3em;}
+	.album-name { font-size: 1.5em; font-weight: bold;}
+	.album-text { width: 98%; font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-size: 1em; height: 1.5em;}
 	.clearel { clear: both;}
 	#fistrRow { line-height: 2em}
 	.date { text-align: center;}
@@ -34,7 +34,7 @@
 			;
 		});
 
-		$('#frm-superForm-text').textareaAutoSize();
+		$('.album-text').textareaAutoSize();
 
 		$(document).bind('keydown', 'ctrl+a', function(){
 			$('input.selected').attr('checked','true');
@@ -67,7 +67,7 @@
 </ul>
 
 
-<p id="fistrRow">{input name} <span class="no-wrap">{label date /} {input date}</span></p>
+<p id="fistrRow">{input name class => album-name}</p>
 
 <ul class="menu float_right">
 	<li>{input turnLeft class => buttonLike}</li>
@@ -76,8 +76,9 @@
 
 <p>{label user_id /} {input user_id} <span class="no-wrap">{label date /} {input date}</span></p>
 
+<p>{input text class => album-text}</p>
 
-<p id="photoText">{input text}</p>
+<p>{input private class => album-text}</p>
 
 <ul class="menu float_right">
 	<li>{input show_date}</li>
