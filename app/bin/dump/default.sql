@@ -1,4 +1,4 @@
--- 2018-04-14T15:58:44+02:00 - mysql:host=localhost;dbname=vzsjablonec
+-- 2018-05-01T22:19:34+02:00 - mysql:host=localhost;dbname=vzsjablonec
 
 -- Table structure for table `akce`
 
@@ -97,6 +97,7 @@ CREATE TABLE `album` (
   `name` varchar(50) COLLATE utf8_czech_ci NOT NULL DEFAULT '',
   `slug` varchar(50) COLLATE utf8_czech_ci NOT NULL DEFAULT '',
   `text` text COLLATE utf8_czech_ci,
+  `private` text COLLATE utf8_czech_ci,
   `visible` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `user_id` smallint(5) unsigned NOT NULL,
   `date` date NOT NULL,
@@ -467,4 +468,4 @@ SET NEW.pubkey = MD5(UUID())
 //
 DELIMITER ;
 
--- Completed on: 2018-04-14T15:58:44+02:00
+-- Completed on: 2018-05-01T22:19:34+02:00
