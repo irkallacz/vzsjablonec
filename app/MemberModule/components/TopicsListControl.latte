@@ -38,7 +38,7 @@
 
             <td class="col author right">
                 <div class="no-wrap">
-                    <a title="profil uživatele" href="{plink User:view $topic->member_id}">
+                    <a n:tag-if="$topic->member->role" title="profil uživatele" href="{plink User:view $topic->member_id}">
 						{include svg icon => user-o} {$topic->member->surname} {$topic->member->name}
                     </a>
                 </div>
