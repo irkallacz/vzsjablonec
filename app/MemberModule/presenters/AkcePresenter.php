@@ -344,29 +344,18 @@ class AkcePresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Vyplňte %label akce');
 
-		$form->addComponent(new \DateTimeInput('Začátek'), 'date_start');
-
 		/** @var \DateTimeInput $dateTimeInput*/
-		$dateTimeInput = $form['date_start'];
+		$dateTimeInput = $form['date_start'] = new \DateTimeInput('Začátek');
 		$dateTimeInput->setRequired(TRUE)
 			->setDefaultValue($datum);
-//		$form->getComponent('date_start')->setRequired(TRUE);
-//		$form->getComponent('date_start')->setDefaultValue($datum);
-//		$form['date_start'] = new \DateTimeInput('Začátek');
-//		$form['date_start']->setRequired(TRUE);
-//		$form['date_start']->setDefaultValue($datum);
 
-		$form->addComponent(new \DateTimeInput('Konec'), 'date_end');
 		/** @var \DateTimeInput $dateTimeInput*/
-		$dateTimeInput = $form['date_end'];
+		$dateTimeInput = $form['date_end'] = new \DateTimeInput('Konec');
 		$dateTimeInput->setRequired(TRUE)
 			->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
 				return $item->value >= $arg;
 			}, 'Datum konce akce nesmí být menší než datum začátku akce', $form['date_start']);
-
-//		$form['date_end']->setRequired(TRUE);
-//		$form['date_end']->setDefaultValue($datum)
 
 		$form->addCheckbox('login_mem', 'Povoleno přihlašování účastníků')
 			->setDefaultValue(TRUE)
@@ -376,9 +365,8 @@ class AkcePresenter extends LayerPresenter {
 			->setDefaultValue(FALSE)
 			->setAttribute('onclick', 'doTheTrick()');
 
-		$form->addComponent(new \DateTimeInput('Přihlášení do'), 'date_deatline');
 		/** @var \DateTimeInput $dateTimeInput*/
-		$dateTimeInput = $form['date_deatline'];
+		$dateTimeInput = $form['date_deatline'] = new \DateTimeInput('Přihlášení do');
 		$dateTimeInput->setRequired(FALSE)
 			->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
@@ -391,31 +379,31 @@ class AkcePresenter extends LayerPresenter {
 			->addConditionOn($form['login_org'], Form::EQUAL, TRUE)
 			->addRule(Form::FILLED, 'Vyplňte datum konce přihlašování');
 
-		$form->addSelect('forum_topic_id', 'Fórum',
-			$this->forumService->getTopicsByForumId(self::FORUM_AKCE_ID)->fetchPairs('id', 'title')
-		)->setPrompt('');
+		$form->addSelect('forum_topic_id', 'Fórum')
+			->setItems($this->forumService->getTopicsByForumId(self::FORUM_AKCE_ID)->fetchPairs('id', 'title'))
+			->setPrompt('');
 
-		$form->addSelect('anketa_id', 'Anketa',
-			$this->anketyService->getAnkety()->fetchPairs('id', 'title')
-		)->setPrompt('');
+		$form->addSelect('anketa_id', 'Anketa')
+			->setItems($this->anketyService->getAnkety()->fetchPairs('id', 'title'))
+			->setPrompt('');
 
-		$form->addSelect('album_id', 'Album',
-			$this->galleryService->getAlbums()->order('date_add DESC')->fetchPairs('id', 'name')
-		)->setPrompt('');
+		$form->addSelect('album_id', 'Album')
+			->setItems($this->galleryService->getAlbums()->order('date_add DESC')->fetchPairs('id', 'name'))
+			->setPrompt('');
 
-		$form->addSelect('akce_for_id', 'Určeno',
-			$this->akceService->getAkceForInArray()
-		)->setDefaultValue(1);
+		$form->addSelect('akce_for_id', 'Určeno')
+			->setItems($this->akceService->getAkceForInArray())
+			->setDefaultValue(1);
 
 		$form->addCheckbox('visible', 'Viditelná veřejnosti')
 			->setDefaultValue(TRUE);
 
-		$form->addSelect('member_id', 'Zodpovědná osoba',
-			$this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
+		$form->addSelect('member_id', 'Zodpovědná osoba')
+			->setItems($this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
 			->setDefaultValue($this->getUser()->getId());
 
-		$form->addSelect('organizator', 'Organizátor',
-			$this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
+		$form->addSelect('organizator', 'Organizátor')
+			->setItems($this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
 			->setDefaultValue($this->getUser()->getId())
 			->setPrompt('není')
 			->addConditionOn($form['login_org'], Form::EQUAL, FALSE)
@@ -459,7 +447,9 @@ class AkcePresenter extends LayerPresenter {
 			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setRequired(FALSE);
 
-		$form->addSubmit('save', 'Ulož')->setAttribute('class', 'default');
+		$form->addSubmit('save', 'Ulož')
+			->setAttribute('class', 'default');
+
 		$form->onSuccess[] = [$this, 'akceFormSubmitted'];
 
 		return $form;
