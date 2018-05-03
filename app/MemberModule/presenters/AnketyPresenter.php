@@ -191,15 +191,18 @@ class AnketyPresenter extends LayerPresenter {
 		$form = new Form;
 
 		$form->addText('title', 'Název', 30)
+			->setRequired('Vyplňte prosím název ankety')
 			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setAttribute('spellcheck', 'true');
 
 		$form->addTextArea('text', 'Otázka', 60)
+			->setRequired('Vyplňte prosím text ankety')
 			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 			->setAttribute('spellcheck', 'true');
 
 		$users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) {
 			$user->addText('text', 'Odpověď', 30)
+				->setRequired('Vyplňte prosím text odpovědi')
 				->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
 				->setAttribute('spellcheck', 'true');
 
