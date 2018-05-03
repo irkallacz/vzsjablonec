@@ -9,8 +9,8 @@ parameters:
 	database:
 		default:
 			host: wm119.wedos.net
-			dbname: d133882_vzsjablonec
-			user: w133882_vzsjablonec
+			dbname: d133882_default
+			user: w133882_default
 			password: aS82MMPN
 		wordpress:
 			host: wm119.wedos.net
