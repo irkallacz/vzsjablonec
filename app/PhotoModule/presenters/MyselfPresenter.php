@@ -72,14 +72,12 @@ class MyselfPresenter extends BasePresenter {
 			->setRequired('Vyplňte %label')
 			->setAttribute('autofocus');
 
-		$form->addText('date', 'Datum', 10)
-			->setRequired('Vyplňte datum začátku akce')
-			->setType('date')
-			->setDefaultValue(date('Y-m-d'))
-			->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-			->setAttribute('class', 'date')
+		/** @var \DateInput $dateInput*/
+		$dateInput = $form['date'] = new \DateInput('Datum');
+		$dateInput->setRequired('Vyplňte datum začátku akce')
+			->setDefaultValue(new DateTime())
 			->caption = Html::el('acronym')->setText('Datum')->title('Datum by mělo přibližně odpovídat času, kdy byli fotky pořízeny. 
-Když neznáte datum akce, nebo datum není důležité, nechte výchozý hodnotu.');
+Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnotu.');
 
 		$form->addTextArea('text', 'Popis', 30);
 

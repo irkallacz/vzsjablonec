@@ -259,14 +259,12 @@ class AlbumPresenter extends BasePresenter {
 		$form->addText('name', 'Název', 50, 50)
 			->setRequired('Vyplňte %label');
 
-		$form->addText('date', 'Datum', 10, 10)
-			->setRequired('Vyplňte datum začátku akce')
-			->setType('date')
-			->setDefaultValue(date('Y-m-d'))
-			->addRule(Form::PATTERN, 'Datum musí být ve formátu RRRR-MM-DD', '[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
-			->setAttribute('class', 'date');
+		/** @var \DateInput $dateInput*/
+		$dateInput = $form['date'] = new \DateInput('Datum');
+		$dateInput->setRequired('Vyplňte datum začátku akce')
+			->setDefaultValue(new DateTime());
 
-		$form->addSelect('user_id', 'Uživatel', $this->userService->getUsersArray(UserService::DELETED_LEVEL));
+		$form->addSelect('user_id', 'Uživatel', $this->userService->getUsersArray($this->user->isInRole('admin') ? UserService::DELETED_LEVEL : UserService::MEMBER_LEVEL));
 
 		$form->addCheckBox('show_date', 'Upravit datum pořízení')
 			->setDefaultValue(FALSE)
