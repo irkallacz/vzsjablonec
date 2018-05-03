@@ -10,7 +10,9 @@ use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
+use Nette\InvalidArgumentException;
 use Nette\Mail\IMailer;
+use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 use WebLoader;
@@ -177,7 +179,16 @@ class AkcePresenter extends LayerPresenter {
 			$form['organizator']->getLabelPrototype()->class('hide');
 			$form['organizator']->getControlPrototype()->class('hide');
 
-			$form->setDefaults($this->akce);
+			$akce = $this->akce->toArray();
+			$member = Arrays::pick($akce,'member_id');
+
+			try{
+				$form['member_id']->setDefaultValue($member);
+			}catch (InvalidArgumentException $e){
+				$this->flashMessage('Některé již neplatné hodnoty byly vynechány', 'error');
+			}
+
+			$form->setDefaults($akce);
 
 			if ($this->akce->message) $form['addMessage']->setDefaultValue(TRUE);
 			else $form['message']->setDefaultValue($this->akceService->getAkceMessageDefault());

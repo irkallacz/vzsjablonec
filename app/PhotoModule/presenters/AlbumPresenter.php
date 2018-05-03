@@ -9,6 +9,8 @@ use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
+use Nette\InvalidArgumentException;
+use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Utils\Image;
 use Nette\Utils\Strings;
@@ -137,8 +139,16 @@ class AlbumPresenter extends BasePresenter {
 		/** @var Form $form*/
 		$form = $this['photoForm'];
 		if (!$form->isSubmitted()) {
+			$album = $album->toArray();
+			$member = Arrays::pick($album,'user_id');
+
+			try{
+				$form['user_id']->setDefaultValue($member);
+			}catch (InvalidArgumentException $e){
+				$this->flashMessage('Některé již neplatné hodnoty byly vynechány', 'error');
+			}
+
 			$form->setDefaults($album);
-			$form['date']->setValue($album->date->format('Y-m-d'));
 		}
 	}
 
