@@ -67,7 +67,7 @@
     </h3>
 
     <div n:if="(($akce->login_mem)or($akce->login_org))and($akce->date_deatline > date_create()) and (!$akceIsOld)">
-        <span class="icon-calendar-times-o" title="Přihlášení do"></span> přihlášení do: {$akce->date_deatline|date:'%A %d.%m.%Y'} ({$akce->date_deatline|timeAgoInWords})
+        <span class="icon-calendar-times-o" title="Přihlášení do"></span> přihlášení do: {$akce->date_deatline|date:'%A %d.%m.%Y %H:%M'} ({$akce->date_deatline|timeAgoInWords})
     </div>
 
     <p title="Místo">{include svg icon => map-marker} {$akce->place}
