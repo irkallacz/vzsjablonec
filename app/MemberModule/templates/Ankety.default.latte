@@ -40,7 +40,7 @@ table#items .first { font-size: 1.1em;}
 	 
 	<div class="right" n:if="$post">
 	<strong class="headerLike" title="{$post->date_add|timeAgoInWords}">
-		<time datetime="{$post->date_add|date:'c'}"{$post->date_add|date:'%H:%M %d.%m.%Y'}
+		<time datetime="{$post->date_add|date:'c'}">{$post->date_add|date:'%H:%M %d.%m.%Y'}</time>
 	</strong>
 	
 	<span n:if="$member" class="no-wrap">{$member->surname} {$member->name}</span>
