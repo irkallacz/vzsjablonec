@@ -326,22 +326,29 @@ class AlbumPresenter extends BasePresenter {
 		$show_date = $values->show_date;
 		unset($values->show_date);
 
-		$photos = $values->photos;
+		$images = $values->photos;
 		unset($values->photos);
 
 		$album = $this->gallery->getAlbumById($id);
 		$album->update($values);
 
-		foreach ($photos as $order => $photo) {
-			$update = ['order' => intval($order)];
+		$photos = $this->gallery->getPhotosByAlbumId($id)->fetchPairs('id');
+
+		foreach ($images as $order => $photo) {
+			$update = [];
+			$order = intval($order);
+
+			if ($photos[$photo->id]['order'] != $order) $update['order'] = $order;
 
 			if ($show_date) {
 				$datetime = $photo->text ? date_create($photo->text) : NULL;
 				if ($datetime == FALSE) $datetime = NULL;
-				$update['date_taken'] = $datetime;
-			} else $update['text'] = $photo->text;
+				if ($photos[$photo->id]['date_taken'] != $datetime) $update['date_taken'] = $datetime;
+			} else {
+				if ($photos[$photo->id]['text'] != $photo->text) $update['text'] = $photo->text;
+			}
 
-			$this->gallery->updatePhoto($photo->id, $update);
+			if (!empty($update)) $this->gallery->updatePhoto($photo->id, $update);
 		}
 
 		$this->flashMessage('Album bylo upraveno');
