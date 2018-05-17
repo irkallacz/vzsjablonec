@@ -98,6 +98,15 @@ class GalleryService {
 	}
 
 	/**
+	 * @param int $id
+	 * @param array $values
+	 * @return Nette\Database\ResultSet
+	 */
+	public function updatePhoto(int $id, array $values) {
+		return $this->database->query('UPDATE album_photo SET', $values, 'WHERE id = ?', $id);
+	}
+
+	/**
 	 * @param array $values
 	 * @return int
 	 */

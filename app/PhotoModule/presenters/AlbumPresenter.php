@@ -333,7 +333,7 @@ class AlbumPresenter extends BasePresenter {
 		$album->update($values);
 
 		foreach ($photos as $order => $photo) {
-			$update = ['order' => $order];
+			$update = ['order' => intval($order)];
 
 			if ($show_date) {
 				$datetime = $photo->text ? date_create($photo->text) : NULL;
@@ -341,7 +341,7 @@ class AlbumPresenter extends BasePresenter {
 				$update['date_taken'] = $datetime;
 			} else $update['text'] = $photo->text;
 
-			$this->gallery->getPhotoById($photo->id)->update($update);
+			$this->gallery->updatePhoto($photo->id, $update);
 		}
 
 		$this->flashMessage('Album bylo upraveno');
