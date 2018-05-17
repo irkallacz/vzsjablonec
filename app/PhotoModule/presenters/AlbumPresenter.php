@@ -288,19 +288,19 @@ class AlbumPresenter extends BasePresenter {
 		}, 0);
 
 		$form->addSubmit('save', 'uložit změny')
-			->onClick[] = [$this, 'PhotoFormSave'];
+			->onClick[] = [$this, 'photoFormSave'];
 
 		$form->addSubmit('delete', 'vymazat vybrané')
-			->onClick[] = [$this, 'PhotoFormDelete'];
+			->onClick[] = [$this, 'photoFormDelete'];
 
 		$form->addSubmit('visible', 'změnit viditelnost')
-			->onClick[] = [$this, 'PhotoFormVisible'];
+			->onClick[] = [$this, 'photoFormVisible'];
 
 		$form->addSubmit('turnLeft', 'otočit o 90° doleva')
-			->onClick[] = [$this, 'PhotoFormTurnLeft'];
+			->onClick[] = [$this, 'photoFormTurnLeft'];
 
 		$form->addSubmit('turnRight', 'otočit o 90° doprava')
-			->onClick[] = [$this, 'PhotoFormTurnRight'];
+			->onClick[] = [$this, 'photoFormTurnRight'];
 
 
 		$album = $this->getAlbumById($this->getParameter('slug'));
