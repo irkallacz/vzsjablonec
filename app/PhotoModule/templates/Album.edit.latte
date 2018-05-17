@@ -84,6 +84,10 @@
 	<li>{input show_date}</li>
 </ul>
 
+<ul class="errors" n:if="$form->hasErrors()">
+	<li n:foreach="$form->errors as $error">{$error}</li>
+</ul>
+
 <p>Seřadit podle: <a n:tag-if="$order != order" n:href="edit,$slug,order">pořadí</a> | <a n:tag-if="$order != date_add" n:href="edit,$slug,date_add">data nahrání</a> | <a n:tag-if="$order != date_taken" n:href="edit,$slug,date_taken">data pořízení</a></p>
 
 <ul class="error" n:if="$form->hasErrors()">
