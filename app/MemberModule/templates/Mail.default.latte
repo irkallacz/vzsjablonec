@@ -43,7 +43,7 @@
 				</th>
 				<th class="right">
 					{if ($message->date_send)}
-						<a href="#message/{$message->id}">{$message->date_send|date:'%A %d.%m.%Y %H:%M'}</a>
+						<a href="#message/{$message->id}"><time datetime="{$message->date_send|date:'c'}">{$message->date_send|date:'%A %d.%m.%Y %H:%M'}</time></a>
 					{else}
 						bude odesláno {$nextSendTime|timeAgoInWords}
 					{/if}

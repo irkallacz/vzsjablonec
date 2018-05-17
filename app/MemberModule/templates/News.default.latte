@@ -12,8 +12,8 @@
 
 {block #content}
 
-	<p>Dnes je: <b>{$nowDate|date:'%A %d.%m.%Y %H:%M'}</b>.
-	Naposledy jste byl přihlášen: <b>{$lastDate|date:'%A %d.%m.%Y %H:%M'}</b>.</p>
+	<p>Dnes je: <b><time datetime="{$nowDate|date:'c'}">{$nowDate|date:'%A %d.%m.%Y %H:%M'}</time></b>.
+		Naposledy jste byl přihlášen: <b><time datetime="{$lasDate|date:'c'}">{$lastDate|date:'%A %d.%m.%Y %H:%M'}</time></b>.</p>
 
 	{if ((isset($novinky))and($novinky))}
 		<h2>Aktuálně</h2>

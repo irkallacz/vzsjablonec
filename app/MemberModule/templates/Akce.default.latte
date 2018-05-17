@@ -44,8 +44,8 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 <th class="right">
 	<div title="{$akce->date_start|timeAgoInWords}">
 		{var $moreOneDay = $akce->date_start->format('Y-m-d') != $akce->date_end->format('Y-m-d')}
-		<span class="no-wrap">{$akce->date_start|date:'%A %d.%m.%Y'}</span> 
-		{if $moreOneDay} <br><span class="no-wrap">{$akce->date_end|date:'%A %d.%m.%Y'}</span>{/if}
+		<time datetime="{$akce->date_start|date:'c'}" class="no-wrap">{$akce->date_start|date:'%A %d.%m.%Y'}</time>
+		{if $moreOneDay} <br><time datetime="{$akce->date_end|date:'c'}" class="no-wrap">{$akce->date_end|date:'%A %d.%m.%Y'}</time>{/if}
 	</div>
 </th>
 </tr>

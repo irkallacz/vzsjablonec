@@ -61,13 +61,13 @@
     </div>
 
     <h3 title="{$akce->date_start|timeAgoInWords}">
-		{include svg icon => calendar} {$akce->date_start|date:'%A %d.%m.%Y %H:%M'} -
-        {if $moreOneDay}{$akce->date_end|date:'%A %d.%m.%Y %H:%M'} {else}{$akce->date_end|date:'%H:%M'}{/if}
-        ({$akce->date_start|durationInWords:$akce->date_end})
+		{include svg icon => calendar} <time datetime="{$akce->date_start|date:'c'}">{$akce->date_start|date:'%A %d.%m.%Y %H:%M'} -
+        {if $moreOneDay}{$akce->date_end|date:'%A %d.%m.%Y %H:%M'} {else}{$akce->date_end|date:'%H:%M'}{/if}</time>
+        (<time>{$akce->date_start|durationInWords:$akce->date_end}</time>)
     </h3>
 
     <div n:if="(($akce->login_mem)or($akce->login_org))and($akce->date_deatline > date_create()) and (!$akceIsOld)">
-        <span class="icon-calendar-times-o" title="Přihlášení do"></span> přihlášení do: {$akce->date_deatline|date:'%A %d.%m.%Y %H:%M'} ({$akce->date_deatline|timeAgoInWords})
+        <span class="icon-calendar-times-o" title="Přihlášení do"></span> přihlášení do: <time datetime="{$akce->date_deatline|date:'c'}">{$akce->date_deatline|date:'%A %d.%m.%Y %H:%M'}</time> ({$akce->date_deatline|timeAgoInWords})
     </div>
 
     <p title="Místo">{include svg icon => map-marker} {$akce->place}
@@ -82,7 +82,7 @@
     <p n:if="$akce->price">{include svg icon => dollar}{$akce->price} Kč</p>
 
 <p n:if="(!$akceIsOld) and ($akce->date_add != $akce->date_update)" 
-class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno ({$akce->date_update|date:'%d.%m.%Y %H:%M'})</p>
+        class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno (<time datetime="{$album->date|date:'c'}">{$akce->date_update|date:'%d.%m.%Y %H:%M'}</time>)</p>
 
 {if $akce->perex}
     <h3>Stručný popis akce</h3>

@@ -40,7 +40,7 @@
 {$anketa->text|texy|noescape}
 
 <p n:if="$anketa->date_add != $anketa->date_update" class="update"
-title="{$anketa->date_update|timeAgoInWords}">Upraveno ({$anketa->date_update|date:'%d.%m.%Y %H:%M'})</p>
+title="{$anketa->date_update|timeAgoInWords}">Upraveno (<time datetime="{$anketa->date_update|date:'c'}">{$anketa->date_update|date:'%d.%m.%Y %H:%M'}</time>)</p>
 </div>
 
 {if $locked}

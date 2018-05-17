@@ -26,8 +26,8 @@ ul { list-style: disc;}
 
 <h2 n:block="title">Můj účet</h2>
 
-<p>Dnes je: <b>{$date_now|date:'%A %d.%m.%Y %H:%M'}</b>. 
-Naposledy jste byl přihlášen: <b>{$date_last|date:'%A %d.%m.%Y %H:%M'}</b>.</p>
+<p>Dnes je: <b><time datetime="{$date_now|date:'c'}">{$date_now|date:'%A %d.%m.%Y %H:%M'}</time></b>.
+    Naposledy jste byl přihlášen: <b><time datetime="{$date_last|date:'c'}">{$date_last|date:'%A %d.%m.%Y %H:%M'}</time></b>.</p>
 
 {if}
 <h2>Novinky</h2>
