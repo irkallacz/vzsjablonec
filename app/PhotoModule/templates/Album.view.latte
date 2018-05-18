@@ -27,7 +27,7 @@
 
 <ul class="photoList" n:inner-foreach="$photos as $image">
 	<li>
-		<a id="{$image->filename}" data-fancybox="images" data-type="image" {if ($image->text)or($image->date_taken)}data-caption="{$image->text}{/if} {$image->date_taken|datetime}" n:class="(($album->visible)and($user->isLoggedIn())) ? 'visible'.$image->visible" href="{$baseUrl}/{$photoDir}/{$image->album_id}/{$image->filename}" title="{$image->text}">
+		<a id="{$image->filename}" data-fancybox="images" data-type="image" {if ($image->text)or($image->date_taken)}data-caption="{$image->text}{/if} {if $image->date_taken}{$image->date_taken|datetime}{/if}" n:class="(($album->visible)and($user->isLoggedIn())) ? 'visible'.$image->visible" href="{$baseUrl}/{$photoDir}/{$image->album_id}/{$image->filename}" title="{$image->text}">
 			{include #image, image => $image}
 		</a>
 	</li>
