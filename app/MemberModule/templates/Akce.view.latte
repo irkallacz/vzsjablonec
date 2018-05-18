@@ -62,7 +62,7 @@
 
     <h3 title="{$akce->date_start|timeAgoInWords}">
 		{include svg icon => calendar} <time datetime="{$akce->date_start|datetimeC}">{$akce->date_start|datetimeN} -
-        {if $moreOneDay}{$akce->date_end|datetimeN} {else}{$akce->date_end|date:'H:I'}{/if}</time>
+        {if $moreOneDay}{$akce->date_end|datetimeN} {else}{$akce->date_end|date:'H:i'}{/if}</time>
         (<time>{$akce->date_start|durationInWords:$akce->date_end}</time>)
     </h3>
 
