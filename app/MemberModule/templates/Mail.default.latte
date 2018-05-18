@@ -15,14 +15,14 @@
 
 {block #content}
 	<ul class="buttonMenu">
-		<li n:if="$user->isInRole('board')"><a class="buttonLike" n:href="add">{include svg icon => plus} nová zpráva</a></li>
-		<li n:if="$presenter->action == send"><a class="buttonLike" n:href="default">{include svg icon => envelope-o} doručené</a></li>
-		<li n:if="$presenter->action == default"><a class="buttonLike" n:href="send">{include svg icon => envelope-o} odeslané</a></li>
+		<li n:if="$user->isInRole('board')"><a class="buttonLike" n:href="add">{include svg plus} nová zpráva</a></li>
+		<li n:if="$presenter->action == send"><a class="buttonLike" n:href="default">{include svg envelope-o} doručené</a></li>
+		<li n:if="$presenter->action == default"><a class="buttonLike" n:href="send">{include svg envelope-o} odeslané</a></li>
 	</ul>
 
 	<p>{control yp}</p>
 
-	<h2>{include svg icon => envelope} {if $presenter->action == default}Doručené{else}Odeslané{/if}</h2>
+	<h2>{include svg envelope} {if $presenter->action == default}Doručené{else}Odeslané{/if}</h2>
 
 	{foreach $messages as $message}
 
@@ -52,18 +52,18 @@
 			<tr class="bottom">
 				<td colspan="2">
 					<div class="header">
-						<div><a n:href="User:view $message->user_id">{include svg icon => user} {$message->user->surname} {$message->user->name}</a></div>
+						<div><a n:href="User:view $message->user_id">{include svg user} {$message->user->surname} {$message->user->name}</a></div>
 						<div class="member" n:inner-foreach="$message->related('message_user')->order('user.surname, user.name DESC') as $member">
-							{first}{include svg icon => user-o}{/first} {$member->user->surname} {$member->user->name}{sep},{/sep}
+							{first}{include svg user-o}{/first} {$member->user->surname} {$member->user->name}{sep},{/sep}
 						</div>
 					</div>
 					<div class="texy">
 						{$message->text|texy|noescape}
 					</div>
-					<div class="file" n:ifset="$param->filename">{include svg icon => paperclip} <a href="{$baseUrl}/doc/message/{$param->filename}">{$param->filename}</a></div>
+					<div class="file" n:ifset="$param->filename">{include svg paperclip} <a href="{$baseUrl}/doc/message/{$param->filename}">{$param->filename}</a></div>
 					<ul class="buttonMenu" n:if="$presenter->action == 'send'">
-						<li n:if="!$message->date_send"><a class="buttonLike" n:href="edit $message->id">{include svg icon => pencil} editovat</a></li>
-						<li n:if="($user->isInRole('admin'))or(!$message->date_send)"><a class="buttonLike" n:href="delete $message->id">{include svg icon => trash} smazat</a></li>
+						<li n:if="!$message->date_send"><a class="buttonLike" n:href="edit $message->id">{include svg pencil} editovat</a></li>
+						<li n:if="($user->isInRole('admin'))or(!$message->date_send)"><a class="buttonLike" n:href="delete $message->id">{include svg trash} smazat</a></li>
 					</ul>
 				</td>
 			<tr>
@@ -73,7 +73,7 @@
 	{/foreach}
 
 	{*<p n:if="$year != INF">*}
-		{*<a class="buttonLike" n:href="this, yp-year => INF">{include svg icon => check} Zobrazit všechny zprávy</a>*}
+		{*<a class="buttonLike" n:href="this, yp-year => INF">{include svg check} Zobrazit všechny zprávy</a>*}
 	{*</p>*}
 
 {/block}

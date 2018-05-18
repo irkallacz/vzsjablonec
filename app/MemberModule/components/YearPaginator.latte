@@ -1,5 +1,5 @@
 {import '../templates/@svg.latte'}
 
-<span class="buttonLike gray" n:tag-if="!$prev"><a n:tag-if="$prev" class="buttonLike" href="{link this, 'year' => $prev}">{include svg icon => backward} Předchozí</a></span>
+<span class="buttonLike gray" n:tag-if="!$prev"><a n:tag-if="$prev" class="buttonLike" href="{link this, 'year' => $prev}">{include svg backward} Předchozí</a></span>
 <a n:foreach="$years as $y" n:tag-if="$year != $y" href="{link this, 'year' => $y}">{$y}</a>
-<span class="buttonLike gray" n:tag-if="!$next"><a n:tag-if="$next" class="buttonLike" href="{link this, 'year' => $next}">Další {include svg icon => forward}</a></span>
+<span class="buttonLike gray" n:tag-if="!$next"><a n:tag-if="$next" class="buttonLike" href="{link this, 'year' => $next}">Další {include svg forward}</a></span>

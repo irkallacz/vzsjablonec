@@ -44,24 +44,24 @@
 		<ul class="buttonMenu">
 			<li n:if="($user->isInRole('admin'))and(is_null($member->role))">
 				<a class="buttonLike confirm" n:href="activate $member->id" data-query="Opravdu chcete tohoto uživatele aktivovat?">
-					{include svg icon => check} aktivovat
+					{include svg check} aktivovat
 				</a>
 			</li>
 			{if ($user->isInRole('board'))and(!is_null($member->role))}
 			<li>
 				<a class="buttonLike" n:href="resetPassword $member->id">
-					{include svg icon => repeat} resetovat heslo
+					{include svg repeat} resetovat heslo
 				</a>
 			</li>
 			<li>
 				<a class="buttonLike confirm" n:href="delete $member->id" data-query="Opravdu chcete tohoto člena smazat? Tento krok může vrátit jen admin.">
-					{include svg icon => trash} smazat
+					{include svg trash} smazat
 				</a>
 			</li>
 			{/if}
 			<li n:if="(($user->isInRole('admin')or($member->id == $user->getId()))and(!is_null($member->role)))">
 				<a class="buttonLike" n:href="edit,$member->id">
-					{include svg icon => pencil} editovat
+					{include svg pencil} editovat
 				</a>
 			</li>
 		</ul>
@@ -97,22 +97,22 @@
 
 <div id="member">
 	{if $user->isInRole('board')}
-		<p n:if="$member->date_born">{include svg icon => calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$age->format('%y')} let)</p>
+		<p n:if="$member->date_born">{include svg calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$age->format('%y')} let)</p>
 		<ul class="bullet-less">
 			<li n:if="$member->date_add">
-				{include svg icon => calendar-plus-o} <b>Datum registrace:</b>
+				{include svg calendar-plus-o} <b>Datum registrace:</b>
 				<span title="{$member->date_add|timeAgoInWords}">
 					{$member->date_add|date:'d.m.Y'}
 				</span>
 			</li>
 			<li n:if="$member->date_update">
-				{include svg icon => calendar-o} <b>Datum úpravy:</b>
+				{include svg calendar-o} <b>Datum úpravy:</b>
 				<span title="{$member->date_update|timeAgoInWords}">
 					{$member->date_update|date:'d.m.Y'}
 				</span>
 			</li>
 			<li n:if="$last_login">
-				{include svg icon => calendar-check-o} <b>Datum posledního přihlášení:</b>
+				{include svg calendar-check-o} <b>Datum posledního přihlášení:</b>
 				<span title="{$last_login->date_add|timeAgoInWords}">
 					{$last_login->date_add|datetime}
 				</span>
@@ -122,33 +122,33 @@
 		<p n:if="$age"><b>Věk:</b> {$age->format('%y')}</p>
 	{/if}
 
-	<h3>{include svg icon => address-book-o} Kontakty:</h3>
+	<h3>{include svg address-book-o} Kontakty:</h3>
 	<ul class="bullet-less">
 		<li n:if="$member->mail">
-			{include svg icon => envelope} <b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a>
+			{include svg envelope} <b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a>
 		</li>
 		<li n:if="$member->telefon">
-			{include svg icon => phone} <b>Telefon:</b> {$member->telefon|number:0:'.':' '}
+			{include svg phone} <b>Telefon:</b> {$member->telefon|number:0:'.':' '}
 		</li>
 		<li n:if="$member->mail2">
-			{include svg icon => envelope-o} <b>Sekundární e-mail:</b> <a href="mailto:{$member->mail2}">{$member->mail2}</a>
+			{include svg envelope-o} <b>Sekundární e-mail:</b> <a href="mailto:{$member->mail2}">{$member->mail2}</a>
 		</li>
 		<li n:if="$member->telefon2">
-			{include svg icon => phone-square} <b>Sekundární telefon:</b> {$member->telefon2|number:0:'.':' '}
+			{include svg phone-square} <b>Sekundární telefon:</b> {$member->telefon2|number:0:'.':' '}
 		</li>
 	</ul>
 
-	<p>{include svg icon => building} <b>Zaměstnání/Škola:</b> {$member->zamestnani}</p>
+	<p>{include svg building} <b>Zaměstnání/Škola:</b> {$member->zamestnani}</p>
 
 	{if $user->isInRole('member')}
-		<h3>{include svg icon => map-marker} Adresa:</h3>
+		<h3>{include svg map-marker} Adresa:</h3>
 		<address class="out">
 			{$member->ulice}<br>
 			{$member->mesto}
 		</address>
 	{/if}
 
-	<p n:if="($user->isInRole('member'))"><a n:href="vcf $member->id" class="buttonLike">{include svg icon => address-card-o} stáhnout vizitku</a></p>
+	<p n:if="($user->isInRole('member'))"><a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a></p>
 
 	<div id="poznamka">
 		{$member->text|noescape|texy}

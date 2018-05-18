@@ -6,12 +6,12 @@
     <div id="post/{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
         <div class="top headerLike">
             <a class="float-right" href="{plink Forum:post $post->id}" title="{$post->date_add|timeAgoInWords}">
-                {include svg icon => comments} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
+                {include svg comments} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
             </a>
             <a n:tag-if="$post->member->role" href="{plink User:view $post->member_id}" title="profil uživatele">
                 <strong>
                     {$post->member->surname} {$post->member->name}
-                    {include svg icon => user}
+                    {include svg user}
                 </strong>
             </a>
         </div>
@@ -29,21 +29,21 @@
             {if $isTopic and $isAllow}
                 {if $isLocked}
                     <a class="buttonLike" href="{plink Forum:lockTopic $post->id,0}">
-                        {include svg icon => unlock-alt} odemknout
+                        {include svg unlock-alt} odemknout
                     </a>
                 {else}
                     <a class="buttonLike" href="{plink Forum:lockTopic $post->id,1}">
-                        {include svg icon => lock} zamknout
+                        {include svg lock} zamknout
                     </a>
                 {/if}
             {/if}
 
             {if !$isLocked}
                 {if $isAllow}
-                    <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete $post->id}">{include svg icon => trash} smazat</a>
-                    <a class="buttonLike" href="{plink Forum:edit $post->id}">{include svg icon => pencil} editovat</a>
+                    <a class="buttonLike confirm" data-query="Opravdu chete příspěvek smazat?" href="{plink Forum:delete $post->id}">{include svg trash} smazat</a>
+                    <a class="buttonLike" href="{plink Forum:edit $post->id}">{include svg pencil} editovat</a>
                 {/if}
-                <a class="buttonLike" href="{plink Forum:cite $post->id}">{include svg icon => quote-left} citace</a>
+                <a class="buttonLike" href="{plink Forum:cite $post->id}">{include svg quote-left} citace</a>
             {/if}
             </div>
 
