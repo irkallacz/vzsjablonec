@@ -4,7 +4,7 @@
 </head>
 <body>
 <div n:foreach="$akceList as $akce">
-<b>{$akce->name}</b> {$akce->date_start|date:'%d.%m.%Y'}{if $akce->date_start->diff($akce->date_end)->days}-{$akce->date_end|date:'%d.%m.%Y'}{/if}
+<b>{$akce->name}</b> {$akce->date_start|date:'d.m.Y'}{if $akce->date_start->diff($akce->date_end)->days}-{$akce->date_end|date:'d.m.Y'}{/if}
 {$akce->perex|texy|noescape}
 <br />
 </div>

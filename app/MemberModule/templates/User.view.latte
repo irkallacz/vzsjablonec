@@ -114,7 +114,7 @@
 			<li n:if="$last_login">
 				{include svg icon => calendar-check-o} <b>Datum posledního přihlášení:</b>
 				<span title="{$last_login->date_add|timeAgoInWords}">
-					{$last_login->date_add|date:'d.m.Y H:i'}
+					{$last_login->date_add|datetime'}
 				</span>
 			</li>
 		</ul>

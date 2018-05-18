@@ -44,7 +44,7 @@
 	{foreach $dir->related($TABLE_DOKUMENTY)->order('name') as $file}
 			<li id="{$file->id}" n:class="file, hoverLike, $file->modifiedTime > $user->getIdentity()->date_last ? 'new'">
 				<img class="file-icon" height="16" width="16" src="{$file->iconLink}" title="{$file->mimeType}" alt="{$file->mimeType}">
-				<a class="link" target="_blank" title="Datum změny: {$file->modifiedTime|date:'d.m.Y H:i:s'}" href="{$file->webViewLink}">{$file->name}</a>
+				<a class="link" target="_blank" title="Datum změny: {$file->modifiedTime|datetime}" href="{$file->webViewLink}">{$file->name}</a>
 				{if ($file->webContentLink)and(!Nette\Utils\Strings::startsWith($file->mimeType, 'application/vnd.google-apps'))}
 					<a class="float-right" href="{$file->webContentLink}" title="stáhnout">{include svg icon => download} stáhnout</a>
 				{else}

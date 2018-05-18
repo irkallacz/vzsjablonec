@@ -7,7 +7,7 @@
 <div id="otazka" class="texy">
     {$anketa->text|texy|noescape}
 
-    <p n:if="$anketa->date_add != $anketa->date_update" class="update" title="{$anketa->date_update|timeAgoInWords}">Upraveno (<time datetime="{$album->date|date:'c'}">{$anketa->date_update|date:'%d.%m.%Y %H:%M'}</time>)</p>
+    <p n:if="$anketa->date_add != $anketa->date_update" class="update" title="{$anketa->date_update|timeAgoInWords}">Upraveno (<time datetime="{$album->date|datetimeC}">{$anketa->date_update|datetime}</time>)</p>
 </div>
 {snippet odpovedi}
 <h3 n:if="$anketa->locked" class="center">{include svg icon => lock} Tato anketa je uzavřena.</h3>

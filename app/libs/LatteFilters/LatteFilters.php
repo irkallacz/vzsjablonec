@@ -11,7 +11,6 @@ class LatteFilters{
 	/**
 	 * @param $filter
 	 * @param $value
-	 * @return mixed
 	 */
 	public static function loader($filter, $value){
 		if (method_exists(__CLASS__, $filter)) {
@@ -21,7 +20,31 @@ class LatteFilters{
 		}
 	}
 
-    /**
+	/**
+	 * @param \DateTimeInterface $date
+	 * @return string
+	 */
+	public static function datetime(\DateTimeInterface $date) {
+		return $date->format('d.m.Y H:i');
+	}
+
+	/**
+	 * @param \DateTimeInterface $date
+	 * @return string
+	 */
+	public static function datetimeN(\DateTimeInterface $date) {
+		return strftime('%A %d.%m.%Y %H:%M', $date->format('U'));
+	}
+
+	/**
+	 * @param \DateTimeInterface $date
+	 * @return string
+	 */
+	public static function datetimeC(\DateTimeInterface $date) {
+		return $date->format('c');
+	}
+
+	/**
      * @param $time
      * @return string
      */

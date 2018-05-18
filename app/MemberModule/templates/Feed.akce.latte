@@ -11,8 +11,8 @@
 	<guid isPermaLink="false">{$item->id}@{link Akce:default}</guid>
 	<description>
 	&lt;p&gt;
-	{$item->date_start|date:'%A %d.%m.%Y %H:%M'} -
-	{if $item->date_start->diff($item->date_end)->days}{$item->date_end|date:'%A %d.%m.%Y %H:%M'} {else}{$item->date_end|date:'%H:%M'}{/if}
+	{$item->date_start|datetimeN} -
+	{if $item->date_start->diff($item->date_end)->days}{$item->date_end|datetimeN} {else}{$item->date_end|date:'%H:%M'}{/if}
 		&lt;/p&gt;
 		&lt;p&gt;{$item->akce_for->text}&lt;/p&gt;
 		&lt;hr /&gt;

@@ -33,7 +33,7 @@ table#items .forum_post { max-width: 45em; padding-left: 1ex }
         id="p{$iterator->getCounter()}">
     <td>
     <a href="#p{$iterator->getCounter()}" title="{$item->date_add|timeAgoInWords}" class="noLink">
-        <div class="headerLike"><time datetime="{$akce->date_start|date:'c'}"{$item->date_add|date:'%d.%m.%Y %H:%M'}</time></div>
+        <div class="headerLike"><time datetime="{$akce->date_start|datetimeC}"{$item->date_add|datetime}</time></div>
     </a>
     </td>
     <td class="right">

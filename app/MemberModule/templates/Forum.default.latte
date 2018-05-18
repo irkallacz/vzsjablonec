@@ -36,7 +36,7 @@
 			</div>
 			<div class="no-wrap">
 				<a title="{$post->date_add|timeAgoInWords}" n:href="Forum:post,$post->id">
-					{include svg icon => comments-o} <time datetime="{$post->date_add|date:'c'}">{$post->date_add|date:'%d.%m.%Y %H:%M'}</time>
+					{include svg icon => comments-o} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
 				</a>
 			</div>
 			<div class="no-wrap">

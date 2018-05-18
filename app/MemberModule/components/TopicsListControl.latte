@@ -30,7 +30,7 @@
                     </div>
                     <div class="no-wrap">
                         <a title="{$post->date_add|timeAgoInWords}" href="{plink Forum:post, $post->id}">
-							{include svg icon => comments-o} <time datetime="{$post->date_add|date:'c'}">{$post->date_add|date:'%d.%m.%Y %H:%M'}</time>
+							{include svg icon => comments-o} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
 						<a>
                     </div>
                 {/if}
@@ -43,7 +43,7 @@
                     </a>
                 </div>
                 <div class="no-wrap">
-                    <time datetime="{$topic->date_add|date:'c'}">{$topic->date_add|date:'%d.%m.%Y %H:%M'}</time>
+                    <time datetime="{$topic->date_add|datetimeC}">{$topic->date_add|datetime}</time>
                 </div>
             </td>
 

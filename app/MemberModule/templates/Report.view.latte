@@ -73,8 +73,8 @@
    
    <table class="col" cellspacing="3">
    <tr><th class="up">Datum akce</th><td class="bor1">
-    {$akce->date_start|date:'%d.%m.%Y'} 
-    {if $akce->date_start->diff($akce->date_end)->days} - {$akce->date_end|date:'%d.%m.%Y'}{/if}
+    {$akce->date_start|date:'d.m.Y'}
+    {if $akce->date_start->diff($akce->date_end)->days} - {$akce->date_end|date:'d.m.Y'}{/if}
    </td><th class="right up">Počasí</th><td id="poc" class="bor1" rowspan="3">
    {$akce->pocasi}
    </td></tr>
@@ -111,7 +111,7 @@
 
    <tr n:foreach="$members as $member">
    
-   {var $dateFormat = $member->date_start->diff($member->date_end)->days ? '%d.%m.%Y' :' H:i'}
+   {var $dateFormat = $member->date_start->diff($member->date_end)->days ? 'd.m.Y' :' H:i'}
    
    <td>{$member->surname} {$member->name}</td>
    <td>{$member->date_start|date:$dateFormat} - {$member->date_end|date:$dateFormat}</td>

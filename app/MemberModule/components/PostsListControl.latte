@@ -6,7 +6,7 @@
     <div id="post/{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
         <div class="top headerLike">
             <a class="float-right" href="{plink Forum:post $post->id}" title="{$post->date_add|timeAgoInWords}">
-                {include svg icon => comments} {$post->date_add|date:'%d.%m.%Y %H:%M'}
+                {include svg icon => comments} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
             </a>
             <a n:tag-if="$post->member->role" href="{plink User:view $post->member_id}" title="profil uživatele">
                 <strong>
@@ -48,7 +48,7 @@
             </div>
 
 			<div n:if="$isUpdated" class="update" title="{$post->date_update|timeAgoInWords}">
-				Upraveno {$post->date_update|date:'%d.%m.%Y %H:%M'}
+				Upraveno <time datetime="{$post->date_update|datetimeC}">{$post->date_update|datetime}</time>
 			</div>
 
 		</div>

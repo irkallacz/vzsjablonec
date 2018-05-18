@@ -9,9 +9,9 @@
     <span class="no-wrap"><b>Počet fotografií:</b> {$pocet}</span>
     <span class="no-wrap" title="{$album->date|date:'%d. %B %Y'}"><b>Datum:</b> <time datetime="{$album->date|date:'Y-m-d'}">{$album->date|timeAgoInWords}</time></span>
     <span class="no-wrap"
-          title="{$album->date_add|date:'%d. %B %Y %H:%M'}"><b>Přidáno:</b> <time datetime="{$album->date_add|date:'c'}">{$album->date_add|timeAgoInWords}</time></span>
+          title="{$album->date_add|date:'%d. %B %Y %H:%M'}"><b>Přidáno:</b> <time datetime="{$album->date_add|datetimeC}">{$album->date_add|timeAgoInWords}</time></span>
     <span class="no-wrap"
-          title="{$album->date_update|date:'%d. %B %Y %H:%M'}" n:if="$album->date_update != $album->date_add"><b>Upraveno:</b> <time datetime="{$album->date_update|date:'c'}">{$album->date_update|timeAgoInWords}</time></span>
+          title="{$album->date_update|date:'%d. %B %Y %H:%M'}" n:if="$album->date_update != $album->date_add"><b>Upraveno:</b> <time datetime="{$album->date_update|datetimeC}">{$album->date_update|timeAgoInWords}</time></span>
     <span class="no-wrap"><b>{if $album->visible}Viditelné veřejnosti{else}Neviditelné pro veřejnost{/if}</b></span>
 </div>
 </div>
