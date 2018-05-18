@@ -29,28 +29,10 @@ class ThumbsPresenter extends BasePresenter {
 		$this->template->items = [];
 
 		foreach ($photos as $photo) {
-			$thumbDir	=	self::PHOTO_DIR . DIRECTORY_SEPARATOR . 	self::THUMB_DIR . DIRECTORY_SEPARATOR .	$photo->album_id . DIRECTORY_SEPARATOR;
-			$fileDir	=	self::PHOTO_DIR . DIRECTORY_SEPARATOR .												$photo->album_id . DIRECTORY_SEPARATOR;
-
 			try{
-				$image = Image::fromFile(WWW_DIR . '/' . $fileDir . $photo->filename);
-
-				// zachovani pruhlednosti u PNG
-				$image->alphaBlending(FALSE);
-				$image->saveAlpha(TRUE);
-				$image->resize(150, 100, Image::EXACT)
-					->sharpen();
-
-				$filename = pathinfo($photo->filename, PATHINFO_FILENAME);
-				$filename = Strings::webalize($filename) . '.jpg';
-
-				//if (!file_exists(WWW_DIR . '/' .$thumbDir)) mkdir(WWW_DIR . '/' .$thumbDir);
-
-				$image->save(WWW_DIR . '/' . $thumbDir . $filename, 80, Image::JPEG);
-
-				$photo->update(['thumb' => $filename]);
-
-				$this->template->items[] = $thumbDir . $filename;
+				$filename = $this->getThumbName($photo->filename, $photo->album_id);
+				$this->galleryService->updatePhoto($photo->id, ['thumb' => $filename]);
+				$this->template->items[] = $photo->album_id . '/' . $filename;
 			} catch (ImageException $e){
 				Debugger::log($photo->id . ' '. $photo->album_id . '/'. $photo->filename);
 			}
@@ -63,7 +45,7 @@ class ThumbsPresenter extends BasePresenter {
 		$this->template->items = [];
 
 		foreach ($albums as $album) {
-			$dirname = WWW_DIR . DIRECTORY_SEPARATOR . self::PHOTO_DIR . DIRECTORY_SEPARATOR . self::THUMB_DIR . DIRECTORY_SEPARATOR . $album->id . DIRECTORY_SEPARATOR;
+			$dirname = WWW_DIR . '/' . self::PHOTO_DIR . '/' . self::THUMB_DIR . '/' . $album->id . '/';
 			if (!file_exists($dirname)) {
 				mkdir($dirname, 0755);
 				$this->template->items[] = $dirname;

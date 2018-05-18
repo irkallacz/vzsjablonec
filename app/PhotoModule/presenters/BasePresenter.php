@@ -40,7 +40,20 @@ abstract class BasePresenter extends Presenter {
 		parent::beforeRender();
 
 		$this->template->photoDir = self::PHOTO_DIR;
-		$this->template->addFilter('thumb', [$this, 'getThumbName']);
+
+		$this->template->addFilter('thumb', function ($photo){
+			if ($photo->thumb) {
+				$thumb = $photo->thumb;
+			}else {
+				try {
+					$thumb = $this->getThumbName($photo->filename, $photo->album_id);
+					$this->galleryService->updatePhoto($photo->id, ['thumb' => $thumb]);
+				} catch (\Exception $e) {
+					return self::PHOTO_DIR  .'/'. $photo->album_id  .'/'. $photo->filename;
+				}
+			}
+			return self::PHOTO_DIR . '/' . self::THUMB_DIR .'/' . $photo->album_id . '/' . $thumb;
+		});
 
 		$mainMenu = [
 			['title' => 'novinky',		'link' => 'News:',					'current' => 'News:*',				'role' => NULL		],
@@ -56,39 +69,28 @@ abstract class BasePresenter extends Presenter {
 	}
 
 	/**
-	 * @param IRow|ActiveRow $photo
+	 * @param string $filename
+	 * @param int $album_id
 	 * @return string
+	 * @throws \Nette\Utils\UnknownImageFileException
 	 */
-	public function getThumbName($photo){
-		$thumbDir = self::PHOTO_DIR . '/thumbs/' . $photo->album_id . '/';
-		$fileDir = self::PHOTO_DIR . '/' . $photo->album_id . '/';
+	public function getThumbName(string $filename, int $album_id) {
+		$image = Image::fromFile(WWW_DIR . '/' . self::PHOTO_DIR . 	'/' . $album_id . '/' . $filename);
 
-		if ($photo->thumb) {
-			$filename = $photo->thumb;
-		}else {
-			try {
-				$image = Image::fromFile(WWW_DIR . '/' . $fileDir . $photo->filename);
+		// zachovani pruhlednosti u PNG
+		$image->alphaBlending(FALSE);
+		$image->saveAlpha(TRUE);
+		$image->resize(150, 100,Image::EXACT)
+			->sharpen();
 
-				// zachovani pruhlednosti u PNG
-				$image->alphaBlending(FALSE);
-				$image->saveAlpha(TRUE);
-				$image->resize(150, 100,Image::EXACT)
-					->sharpen();
+		$thumb = pathinfo($filename, PATHINFO_FILENAME);
+		$thumb = Strings::webalize($thumb).'.jpg';
 
-				$filename = pathinfo($photo->filename, PATHINFO_FILENAME);
-				$filename = Strings::webalize($filename).'.jpg';
+		//if (!file_exists(WWW_DIR . '/' .$thumbDir)) mkdir(WWW_DIR . '/' .$thumbDir);
 
-				//if (!file_exists(WWW_DIR . '/' .$thumbDir)) mkdir(WWW_DIR . '/' .$thumbDir);
+		$image->save(WWW_DIR . '/' . self::PHOTO_DIR . 	'/' . self::THUMB_DIR .'/' . 	$album_id . '/' . $thumb, 80, Image::JPEG);
 
-				$image->save(WWW_DIR . '/' . $thumbDir . $filename, 80, Image::JPEG);
-				$photo->update(['thumb' => $filename]);
-
-			} catch (\Exception $e) {
-				return $fileDir . $photo->filename;
-			}
-		}
-
-		return $thumbDir . $filename;
+		return $thumb;
 	}
 
 	/**
@@ -102,6 +104,7 @@ abstract class BasePresenter extends Presenter {
 	/**
 	 * @param $element
 	 * @throws ForbiddenRequestException
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function checkRequirements($element) {
 		$this->getUser()->getStorage()->setNamespace('photo');

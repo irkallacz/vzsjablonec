@@ -220,11 +220,19 @@ class AlbumPresenter extends BasePresenter {
 			$filepath = WWW_DIR . '/' . $filename;
 			$upload->move($filepath);
 
+
+			try {
+				$thumb = $this->getThumbName($name, $id);
+			} catch (\Exception $e){
+				$thumb = NULL;
+			}
+
 			$values = [
 				'filename' => $name,
 				'album_id' => $id,
 				'date_add' => new DateTime,
-				'user_id' => $this->user->id
+				'user_id' => $this->user->id,
+				'thumb' => $thumb
 			];
 
 			$ext = pathinfo($name, PATHINFO_EXTENSION);
@@ -238,7 +246,6 @@ class AlbumPresenter extends BasePresenter {
 			}
 
 			$photo = $this->gallery->addPhoto($values);
-			$this->getThumbName($photo);
 		};
 
 		$plupload->onUploadComplete[] = function (UploadQueue $uploadQueue) use ($slug) {
@@ -420,7 +427,12 @@ class AlbumPresenter extends BasePresenter {
 				$outputExifFile->saveFile($filename);
 			}
 
-			$photo->update(['thumb' => NULL]);
+			try {
+				$thumb = $this->getThumbName($photo->filename, $photo->album_id);
+				$this->gallery->updatePhoto($photo->id, ['thumb' => $thumb]);
+			} catch (\Exception $e){
+				$this->gallery->updatePhoto($photo->id, ['thumb' => NULL]);
+			}
 		}
 
 		return $selected;
