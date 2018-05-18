@@ -124,10 +124,18 @@
 
 	<h3>{include svg icon => address-book-o} Kontakty:</h3>
 	<ul class="bullet-less">
-		<li n:if="$member->mail">{include svg icon => envelope} <b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a></li>
-		<li n:if="$member->telefon">{include svg icon => phone} <b>Telefon:</b> {$member->telefon|number:0:'.':' '}</li>
-		<li n:if="$member->mail2">{include svg icon => envelope-o} <b>Sekundární e-mail:</b> <a href="mailto:{$member->mail2}">{$member->mail2}</a></li>
-		<li n:if="$member->telefon2">{include svg icon => phone-square} <b>Sekundární telefon:</b> {$member->telefon2|number:0:'.':' '}</li>
+		<li n:if="$member->mail">
+			{include svg icon => envelope} <b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a>
+		</li>
+		<li n:if="$member->telefon">
+			{include svg icon => phone} <b>Telefon:</b> {$member->telefon|number:0:'.':' '}
+		</li>
+		<li n:if="$member->mail2">
+			{include svg icon => envelope-o} <b>Sekundární e-mail:</b> <a href="mailto:{$member->mail2}">{$member->mail2}</a>
+		</li>
+		<li n:if="$member->telefon2">
+			{include svg icon => phone-square} <b>Sekundární telefon:</b> {$member->telefon2|number:0:'.':' '}
+		</li>
 	</ul>
 
 	<p>{include svg icon => building} <b>Zaměstnání/Škola:</b> {$member->zamestnani}</p>
