@@ -130,14 +130,14 @@ class IDokladService {
 	 */
 	public static function setContactData($user) {
 		$data = [
-			'CompanyName' => UserService::getFullName($user),
-			'Firstname' => $user->name,
-			'Surname' => $user->surname,
-			'Email' => $user->mail,
-			'Mobile' => $user->telefon,
-			'City' => $user->mesto,
-			'Street' => $user->ulice,
-			'CountryId' => 2,
+			'CompanyName' 	=> UserService::getFullName($user),
+			'Firstname' 	=> $user->name,
+			'Surname' 		=> $user->surname,
+			'Email' 		=> $user->mail,
+			'Mobile'		=> $user->telefon,
+			'City'			=> $user->mesto,
+			'Street'		=> $user->ulice,
+			'CountryId' 	=> 2,
 		];
 		return $data;
 	}
