@@ -81,7 +81,7 @@
     <p n:if="$akce->price">{include svg dollar}{$akce->price} Kč</p>
 
 <p n:if="(!$akceIsOld) and ($akce->date_add != $akce->date_update)" 
-        class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno <time datetime="{$album->date|datetimeC}">{$akce->date_update|datetime}</time></p>
+        class="update" title="{$akce->date_update|timeAgoInWords}">Upraveno <time datetime="{$akce->date_update|datetimeC}">{$akce->date_update|datetime}</time></p>
 
 {if $akce->perex}
     <h3>Stručný popis akce</h3>
