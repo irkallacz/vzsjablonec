@@ -63,7 +63,7 @@ class MessagePresenter extends BasePresenter {
 			}
 
 			if (array_key_exists('filename', $parameters)) {
-				$filename = WWW_DIR . MessageService::DIR_ATTACHMENTS . $parameters['filename'];
+				$filename = WWW_DIR .'/../member/'. MessageService::DIR_ATTACHMENTS .'/'. $parameters['filename'];
 				$mail->addAttachment($filename);
 			}
 			$this->mailer->send($mail);

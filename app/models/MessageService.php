@@ -20,7 +20,7 @@ class MessageService extends DatabaseService {
 	const TABLE_MESSAGE_TYPE = 'message_type';
 	const TABLE_MESSAGE_USER = 'message_user';
 
-	const DIR_ATTACHMENTS = '/doc/message/';
+	const DIR_ATTACHMENTS = 'doc/message';
 
 	/**
 	 * @param Message $message

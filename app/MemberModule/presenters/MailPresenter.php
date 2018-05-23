@@ -223,7 +223,7 @@ class MailPresenter extends LayerPresenter {
 
 		if (($form['file']->isFilled()) and ($values->file->isOK())) {
 			$filename = $values->file->getSanitizedName();
-			$values->file->move(WWW_DIR . MessageService::DIR_ATTACHMENTS . $filename);
+			$values->file->move(WWW_DIR .'/'. MessageService::DIR_ATTACHMENTS .'/'. $filename);
 			$parameters['filename'] = $filename;
 		}
 
@@ -264,7 +264,7 @@ class MailPresenter extends LayerPresenter {
 
 		if (($form['file']->isFilled()) and ($values->file->isOK())) {
 			$filename = $values->file->getSanitizedName();
-			$values->file->move(WWW_DIR . MessageService::DIR_ATTACHMENTS . $filename);
+			$values->file->move(WWW_DIR .'/'. MessageService::DIR_ATTACHMENTS .'/'. $filename);
 			$parameters['filename'] = $filename;
 		}
 
