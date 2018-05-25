@@ -21,10 +21,11 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 </style>
 <script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.shortcuts.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
 
 {control texylaJs}
 
-<script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
 <script type="text/javascript" n:nonce>
 	$.Shortcuts.add({
 	    	mask: 'Ctrl+A',
@@ -53,6 +54,8 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 			}
 			$('#adresati').slideToggle('fast');
 		})
+
+		$('#frm-mailForm').areYouSure();
     });    
 </script>
 {/block}

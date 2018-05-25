@@ -10,8 +10,9 @@
 
 {control texylaJs}
 
-<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
-<script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/confirm.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
 
 <script type="text/javascript" n:nonce>
 	$.texyla.setDefaults({
@@ -20,6 +21,7 @@
 	});
 
 	$(function () {
+		$('#frm-addPostForm').areYouSure();
 		$('.texyla').textareaAutoSize();
 		$('.texyla').texyla(forum);
 	});

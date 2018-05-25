@@ -21,6 +21,7 @@ h2 { margin-top: 1ex;}
 
 <script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
 <script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
+<script type="text/javascript" src="{$basePath}/js/jquery.are-you-sure.js"></script>
 
 {control texylaJs}
 
@@ -37,6 +38,7 @@ h2 { margin-top: 1ex;}
 	});
 
 	$(function () {
+		$('#frm-anketaForm').areYouSure();
 		$('.texyla').texyla(anketa);
 
 		var elem = document.createElement('input');

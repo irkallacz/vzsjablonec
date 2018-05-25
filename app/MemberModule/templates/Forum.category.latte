@@ -9,6 +9,7 @@
 
 {control texylaJs}
 
+<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
 <script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
 
 <script type="text/javascript" n:nonce>
@@ -18,6 +19,7 @@
 	});
 
 	$(function () {
+		$('#frm-addTopicForm').areYouSure();
 		$('.texyla').textareaAutoSize();
 		$('.texyla').texyla(forum);
 	});

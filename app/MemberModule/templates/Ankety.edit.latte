@@ -14,6 +14,7 @@ div.texyla div.textarea-container { clear: right;}
 </style>
 
 <script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{$basePath}/js/jquery.are-you-sure.js"></script>
 
 {control texylaJs}
 
@@ -30,6 +31,7 @@ div.texyla div.textarea-container { clear: right;}
 	});
 
 	$(function () {
+		$('#frm-anketaForm').areYouSure();
 		$('.texyla').texyla(anketa);
 	});
 </script>
