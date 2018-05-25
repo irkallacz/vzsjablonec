@@ -29,7 +29,7 @@ table#items .forum_post { max-width: 45em; padding-left: 1ex }
 
 <table id="items">
 {foreach $ratings as $item}
-    <tr n:class="top,borderLike,$item->date_add > $user->getIdentity()->date_last ? 'new', $item->member_id == $user->getId() ? logged" 
+    <tr n:class="top,borderLike,$item->date_add > $user->getIdentity()->date_last ? 'new', $item->user_id == $user->getId() ? logged"
         id="p{$iterator->getCounter()}">
     <td>
     <a href="#p{$iterator->getCounter()}" title="{$item->date_add|timeAgoInWords}" class="noLink">
@@ -43,8 +43,8 @@ table#items .forum_post { max-width: 45em; padding-left: 1ex }
     <tr class="bottom">
     <td class="right">
         <span class="char">⇨</span> 
-        {if !$item->anonymous} od <a n:href="User:view,$item->member_id" class="noLink" title="profil uživatele">
-        {$item->member->surname} {$item->member->name}</a> {else}<b>Anonymní</b>{/if}
+        {if !$item->anonymous} od <a n:href="User:view,$item->user_id" class="noLink" title="profil uživatele">
+        {$item->user->surname} {$item->user->name}</a> {else}<b>Anonymní</b>{/if}
     </td>   
     <td class="forum_post">
     {$item->message|texy|noescape}

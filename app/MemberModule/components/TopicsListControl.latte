@@ -7,7 +7,7 @@
         {var $postCount = $post ? ($post->row_number - 1) : 0}
 
         <tr n:class="topic, hoverLike, (($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',
-	 (($post)and($post->member_id == $user->getId())) ? logged, $topic->member_id == $user->getId() ? logged">
+	 (($post)and($post->user_id == $user->getId())) ? logged, $topic->user_id == $user->getId() ? logged">
 
             <td class="col title">
                 <div class="headerLike">
@@ -26,7 +26,7 @@
             <td class="col post right">
                 {if $post}
                     <div class="no-wrap">
-                        {$post->member->surname} {$post->member->name}
+                        {$post->user->surname} {$post->user->name}
                     </div>
                     <div class="no-wrap">
                         <a title="{$post->date_add|timeAgoInWords}" href="{plink Forum:post, $post->id}">
@@ -38,8 +38,8 @@
 
             <td class="col author right">
                 <div class="no-wrap">
-                    <a n:tag-if="$topic->member->role" title="profil uživatele" href="{plink User:view $topic->member_id}">
-						{include svg user-o} {$topic->member->surname} {$topic->member->name}
+                    <a n:tag-if="$topic->user->role" title="profil uživatele" href="{plink User:view $topic->user_id}">
+						{include svg user-o} {$topic->user->surname} {$topic->user->name}
                     </a>
                 </div>
                 <div class="no-wrap">

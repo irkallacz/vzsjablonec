@@ -44,7 +44,7 @@ class AnketyService extends DatabaseService {
 	 */
 	public function getOdpovediCountByAnketaId(int $id) {
 		return $this->database->table('anketa_member')
-			->select('anketa_odpoved_id, COUNT(member_id)AS pocet')
+			->select('anketa_odpoved_id, COUNT(user_id)AS pocet')
 			->where('anketa_id', $id)
 			->group('anketa_odpoved_id')
 			->fetchPairs('anketa_odpoved_id', 'pocet');
@@ -57,7 +57,7 @@ class AnketyService extends DatabaseService {
 	 */
 	public function getOdpovedIdByAnketaId(int $anketa_id, int $user_id) {
 		$odpoved = $this->database->table('anketa_member')
-			->where('member_id', $user_id)
+			->where('user_id', $user_id)
 			->where('anketa_id', $anketa_id)
 			->fetch();
 		if ($odpoved) return $odpoved->anketa_odpoved_id; else return 0;
@@ -139,19 +139,19 @@ class AnketyService extends DatabaseService {
 
 	/**
 	 * @param int $anketa_id
-	 * @param int $member_id
+	 * @param int $user_id
 	 * @return int
 	 */
-	public function deleteMemberVote(int $anketa_id, int $member_id) {
-		return $this->database->table('anketa_member')->where('anketa_id', $anketa_id)->where('member_id', $member_id)->delete();
+	public function deleteMemberVote(int $anketa_id, int $user_id) {
+		return $this->database->table('anketa_member')->where('anketa_id', $anketa_id)->where('user_id', $user_id)->delete();
 	}
 
 	/**
 	 * @param int $anketa_id
-	 * @param int $member_id
+	 * @param int $user_id
 	 * @return bool|mixed|IRow
 	 */
-	public function getMemberVote(int $anketa_id, int $member_id) {
-		return $this->database->table('anketa_member')->where('anketa_id', $anketa_id)->where('member_id', $member_id)->fetch();
+	public function getMemberVote(int $anketa_id, int $user_id) {
+		return $this->database->table('anketa_member')->where('anketa_id', $anketa_id)->where('user_id', $user_id)->fetch();
 	}
 }

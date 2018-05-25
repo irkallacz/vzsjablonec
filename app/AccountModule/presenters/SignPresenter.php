@@ -265,7 +265,7 @@ class SignPresenter extends BasePresenter {
 			throw new BadRequestException('Neplatný identifikator session');
 		}
 
-		$member = $this->userService->getUserById($session->member_id);
+		$member = $this->userService->getUserById($session->user_id);
 
 		if ((!$member) or (is_null($member->role))) {
 			throw new BadRequestException('Uživatel nenalezen');
@@ -319,7 +319,7 @@ class SignPresenter extends BasePresenter {
 			if (!$session) {
 				throw new BadRequestException('Neplatný identifikator session');
 			} else {
-				$member = $this->userService->getUserById($session->member_id);
+				$member = $this->userService->getUserById($session->user_id);
 				if ((!$member) or (is_null($member->role))) {
 					throw new BadRequestException('Uživatel nenalezen');
 				} else {

@@ -18,7 +18,7 @@
 {foreach $forum as $category}
 	{var $post = $category->related('forum_post')->order('date_add DESC')->fetch()}
 
-	<tr n:class="topic,hoverLike,(($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',(($post)and($post->member_id == $user->getId())) ? logged">
+	<tr n:class="topic,hoverLike,(($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',(($post)and($post->user_id == $user->getId())) ? logged">
 
 		<td class="title">
 			<a title="{$category->title|firstUpper}" n:href="Forum:category,$category->id">
@@ -32,7 +32,7 @@
 		<td class="author right">
 		{if $post}
 			<div class="no-wrap">
-				{$post->member->surname} {$post->member->name}
+				{$post->user->surname} {$post->user->name}
 			</div>
 			<div class="no-wrap">
 				<a title="{$post->date_add|timeAgoInWords}" n:href="Forum:post,$post->id">

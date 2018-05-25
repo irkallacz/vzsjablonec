@@ -15,7 +15,7 @@
 
 {block #content}
 
-<ul class="buttonMenu" n:if="($user->id == $anketa->member_id) or ($user->isInRole('admin'))">
+<ul class="buttonMenu" n:if="($user->id == $anketa->user_id) or ($user->isInRole('admin'))">
 	<li><a n:href="edit,$anketa->id" class="buttonLike">{include svg pencil} editovat</a></li>
 	<li><a n:href="delete,$anketa->id" class="buttonLike confirm" data-query="Opravdu chcete tuto anketu smazat?">
 		{include svg trash} smazat</a></li>
@@ -39,7 +39,7 @@
 	<li>{$odpoved->text|firstUpper}
 	<ol id="members" n:inner-foreach="$odpoved->related('anketa_member','anketa_odpoved_id') as $item">
 		<li>
-			<a n:tag-if="$item->member->role" n:class="$item->member_id == $user->getId() ? logged" n:href="User:view,$item->member_id">
+			<a n:tag-if="$item->user->role" n:class="$item->user_id == $user->getId() ? logged" n:href="User:view,$item->user_id">
 				{$item->ref('member')->surname} {$item->ref('member')->name}
 			</a>
 		</li>
@@ -50,8 +50,8 @@
 {else}
 <ol id="members" n:inner-foreach="$members as $item">
 	<li>
-		<a n:tag-if="$item->member->role" n:class="$item->member_id == $user->getId() ? logged" n:href="User:view,$item->member_id">
-			{$item->ref('user','member_id')->surname} {$item->ref('user','member_id')->name}
+		<a n:tag-if="$item->user->role" n:class="$item->user_id == $user->getId() ? logged" n:href="User:view,$item->user_id">
+			{$item->ref('user','user_id')->surname} {$item->ref('user','user_id')->name}
 		</a>
 	</li>
 </ol>

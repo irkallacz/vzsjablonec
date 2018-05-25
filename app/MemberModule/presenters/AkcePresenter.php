@@ -170,7 +170,7 @@ class AkcePresenter extends LayerPresenter {
 		$form = $this['akceForm'];
 
 		if (!$form->isSubmitted()) {
-			$orgList = $this->akce->related('akce_member')->where('organizator', TRUE)->fetchPairs('member_id', 'member_id');
+			$orgList = $this->akce->related('akce_member')->where('organizator', TRUE)->fetchPairs('user_id', 'user_id');
 
 			if ((!array_key_exists($this->getUser()->getId(), $orgList)) and (!$this->getUser()->isInRole('admin'))) {
 				throw new ForbiddenRequestException('Nemáte právo tuto akci editovat');
@@ -180,10 +180,10 @@ class AkcePresenter extends LayerPresenter {
 			$form['organizator']->getControlPrototype()->class('hide');
 
 			$akce = $this->akce->toArray();
-			$member = Arrays::pick($akce,'member_id');
+			$member = Arrays::pick($akce,'user_id');
 
 			try{
-				$form['member_id']->setDefaultValue($member);
+				$form['user_id']->setDefaultValue($member);
 			}catch (InvalidArgumentException $e){
 				$this->flashMessage('Některé již neplatné hodnoty byly vynechány', 'error');
 			}
@@ -398,7 +398,7 @@ class AkcePresenter extends LayerPresenter {
 		$form->addCheckbox('visible', 'Viditelná veřejnosti')
 			->setDefaultValue(TRUE);
 
-		$form->addSelect('member_id', 'Zodpovědná osoba')
+		$form->addSelect('user_id', 'Zodpovědná osoba')
 			->setItems($this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
 			->setDefaultValue($this->getUser()->getId());
 

@@ -27,14 +27,14 @@
 
 	{if}<h3>Akce</h3>
 	<ol class="news" n:inner-foreach="$akceList as $akce">
-		<li><a n:class="$akce->member_id == $user->getId() ? logged" n:href="Akce:view,$akce->id"
+		<li><a n:class="$akce->user_id == $user->getId() ? logged" n:href="Akce:view,$akce->id"
 		title="{$akce->date_update|timeAgoInWords}">{$akce->name}</a></li>
 	</ol>
 	{/if isset($akce)}
 
 	{if}<h3>Příspěvky ve fóru</h3>
 	<ol class="news" n:inner-foreach="$forumList as $post">
-		<li><a n:class="$post->member_id == $user->getId() ? logged" n:href="Forum:post,$post->id"
+		<li><a n:class="$post->user_id == $user->getId() ? logged" n:href="Forum:post,$post->id"
 		title="{$post->date_add|timeAgoInWords}">{$post->ref('forum_post','forum_topic_id')->title} ({$post->forum->title})</a></li>
 	</ol>
 	{/if isset($post)}
@@ -64,21 +64,21 @@
 
 		{if}<h3>Ankety</h3>
 		<ol class="news" n:inner-foreach="$anketyList as $anketa">
-			<li><a n:class="$anketa->member_id == $user->getId() ? logged" n:href="Ankety:view,$anketa->id"
+			<li><a n:class="$anketa->user_id == $user->getId() ? logged" n:href="Ankety:view,$anketa->id"
 			title="{$anketa->date_add|timeAgoInWords}">{$anketa->title}</a></li>
 		</ol>
 		{/if isset($anketa)}
 
 		{if}<h3>Hlasováni</h3>
 		<ol class="news" n:inner-foreach="$hlasovaniList as $hlasovani">
-			<li><a n:class="$hlasovani->member_id == $user->getId() ? logged" n:href="Hlasovani:view,$hlasovani->id"
+			<li><a n:class="$hlasovani->user_id == $user->getId() ? logged" n:href="Hlasovani:view,$hlasovani->id"
 			title="{$hlasovani->date_update|timeAgoInWords}">{$hlasovani->title}</a></li>
 		</ol>
 		{/if isset($hlasovani)}
 
 		{if}<h3>Hodnocení akce</h3>
 		<ol class="news" n:inner-foreach="$ratingList as $rating">
-			<li><a n:class="$rating->rating_member_id == $user->getId() ? logged" n:href="Akce:view#rating-$rating->rating_member_id $rating->id"
+			<li><a n:class="$rating->rating_user_id == $user->getId() ? logged" n:href="Akce:view#rating-$rating->rating_user_id $rating->id"
 			title="{$rating->rating_date_add|timeAgoInWords}">{$rating->name}</a></li>
 		</ol>
 		{/if isset($rating)}

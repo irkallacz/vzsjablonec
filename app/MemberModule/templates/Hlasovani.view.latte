@@ -21,7 +21,7 @@
 
 {block #content}
 
-<ul class="menu_right" n:if="($user->id == $anketa->member_id) or ($user->isInRole('admin'))">
+<ul class="menu_right" n:if="($user->id == $anketa->user_id) or ($user->isInRole('admin'))">
 	<li><a n:href="edit,$anketa->id" class="buttonLike">
 		{include svg pencil} editovat</a>
 	</li>
@@ -40,7 +40,7 @@
 {$anketa->text|texy|noescape}
 
 <p n:if="$anketa->date_add != $anketa->date_update" class="update"
-title="{$anketa->date_update|timeAgoInWords}">Upraveno (<time datetime="{$anketa->date_update|datetimeC}">{$anketa->date_update|datetime}</time>)</p>
+title="{$anketa->date_update|timeAgoInWords}">Upraveno <time datetime="{$anketa->date_update|datetimeC}">{$anketa->date_update|datetime}</time></p>
 </div>
 
 {if $locked}
@@ -53,7 +53,7 @@ title="{$anketa->date_update|timeAgoInWords}">Upraveno (<time datetime="{$anketa
 <form action="{link this}" method="get">
 <table id="items">
 <tr n:foreach="$items as $item" n:class="$isLogged == $item->id ? logged">
-{var $odpovedi = $item->related('hlasovani_member')->count('member_id')}
+{var $odpovedi = $item->related('hlasovani_member')->count('user_id')}
 	<th class="min"><label for="odpoved_{$item->id}">{$item->text|firstUpper}</label></th>
 	<td n:if="!($locked or $isLogged)"><input id="odpoved_{$item->id}" type="radio" name="odpoved" n:attr="checked => $iterator->isFirst()" 
 	value="{$item->id}"></td>

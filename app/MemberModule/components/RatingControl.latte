@@ -22,7 +22,7 @@
                 {if ($rating->rating)or($rating->message)}
                     <h4>
                         {if !$rating->anonymous}
-                            <a href="{plink User:view $memberId}">{include svg user} {$rating->member->surname} {$rating->member->name}</a>
+                            <a href="{plink User:view $memberId}">{include svg user} {$rating->user->surname} {$rating->user->name}</a>
                         {else}
                             Anonymní:
                         {/if}

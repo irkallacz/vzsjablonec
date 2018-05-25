@@ -28,7 +28,7 @@ DTSTART;TZID=Europe/Prague:{$data->date_start|date:'Ymd\THis'}
 DTEND;TZID=Europe/Prague:{$data->date_end|date:'Ymd\THis'}
 DTSTAMP;TZID=Europe/Prague:{$data->date_add|date:'Ymd\THis'}
 LAST-MODIFIED;TZID=Europe/Prague:{$data->date_update|date:'Ymd\THis'}
-ORGANIZER;CN={$data->member->name} {$data->member->surname}:MAILTO:{$data->member->mail}
+ORGANIZER;CN={$data->user->name} {$data->user->surname}:MAILTO:{$data->user->mail}
 LOCATION:{$data->place|noescape}
 URL:{link //Akce:view, $data->id}
 SUMMARY:{$data->name|noescape}

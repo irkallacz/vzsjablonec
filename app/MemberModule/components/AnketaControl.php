@@ -98,7 +98,7 @@ class AnketaControl extends LayerControl {
 
 			if (in_array($odpovedId, $odpovedi)) {
 				$this->anketyService->addVote([
-					'member_id' => $userId, 'anketa_id' => $odpoved->anketa_id, 'anketa_odpoved_id' => $odpovedId, 'date_add' => new DateTime()
+					'user_id' => $userId, 'anketa_id' => $odpoved->anketa_id, 'anketa_odpoved_id' => $odpovedId, 'date_add' => new DateTime()
 				]);
 				$this->flashMessage('Váš hlas byl zaznamenán');
 			} else throw new BadRequestException('Pro tuto odpověď nemůžete hlasovat');

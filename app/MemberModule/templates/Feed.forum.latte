@@ -6,7 +6,7 @@
 <item n:foreach="$items as $item">
 	{var $topic = $item->ref('forum_post','forum_topic_id')}
 	<title>{$topic->title|firstUpper} ({$item->forum->title|firstUpper})</title>	
-	{var $member = $item->member}
+	{var $member = $item->user}
 	<author>{$member->mail} ({$member->surname} {$member->name})</author>
 	<link>{link //Forum:post,$item->id}</link>
 	<guid isPermaLink="false">{$item->id}@{link Forum:default}</guid>

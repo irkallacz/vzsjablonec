@@ -1,4 +1,4 @@
--- 2018-05-01T22:19:34+02:00 - mysql:host=localhost;dbname=vzsjablonec
+-- 2018-05-25T15:38:07+02:00 - mysql:host=localhost;dbname=vzsjablonec
 
 -- Table structure for table `akce`
 
@@ -22,7 +22,7 @@ CREATE TABLE `akce` (
   `visible` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `login_mem` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `login_org` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   `anketa_id` smallint(5) unsigned DEFAULT NULL,
   `forum_topic_id` smallint(5) unsigned DEFAULT NULL,
   `album_id` smallint(5) unsigned DEFAULT NULL,
@@ -34,16 +34,16 @@ CREATE TABLE `akce` (
   KEY `date_start` (`date_start`),
   KEY `enable` (`enable`),
   KEY `confirm` (`confirm`),
-  KEY `member_id` (`member_id`),
+  KEY `user_id` (`user_id`),
   KEY `akce_for_id` (`akce_for_id`),
   KEY `anketa_id` (`anketa_id`),
   KEY `album_id` (`album_id`),
   KEY `forum_topic_id` (`forum_topic_id`),
   CONSTRAINT `akce_ibfk_2` FOREIGN KEY (`akce_for_id`) REFERENCES `akce_for` (`id`),
-  CONSTRAINT `akce_ibfk_3` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `akce_ibfk_4` FOREIGN KEY (`anketa_id`) REFERENCES `anketa` (`id`) ON DELETE CASCADE,
   CONSTRAINT `akce_ibfk_5` FOREIGN KEY (`album_id`) REFERENCES `album` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `akce_ibfk_6` FOREIGN KEY (`forum_topic_id`) REFERENCES `forum_post` (`id`) ON DELETE CASCADE
+  CONSTRAINT `akce_ibfk_6` FOREIGN KEY (`forum_topic_id`) REFERENCES `forum_post` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `akce_ibfk_7` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=619 DEFAULT CHARSET=utf8;
 
 -- Table structure for table `akce_for`
@@ -60,15 +60,15 @@ CREATE TABLE `akce_for` (
 DROP TABLE IF EXISTS `akce_member`;
 CREATE TABLE `akce_member` (
   `akce_id` smallint(6) NOT NULL,
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   `organizator` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `date_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`akce_id`,`member_id`,`organizator`),
+  PRIMARY KEY (`akce_id`,`user_id`,`organizator`),
   KEY `akce_id` (`akce_id`),
-  KEY `member_id` (`member_id`),
+  KEY `user_id` (`user_id`),
   KEY `organizator` (`organizator`),
-  CONSTRAINT `akce_member_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `akce_member_ibfk_3` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE
+  CONSTRAINT `akce_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `akce_user_ibfk_3` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `akce_rating_member`
@@ -76,17 +76,17 @@ CREATE TABLE `akce_member` (
 DROP TABLE IF EXISTS `akce_rating_member`;
 CREATE TABLE `akce_rating_member` (
   `akce_id` smallint(6) NOT NULL,
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   `rating` tinyint(3) unsigned DEFAULT NULL,
   `message` text COLLATE utf8_czech_ci,
   `anonymous` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `public` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `date_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`akce_id`,`member_id`),
+  PRIMARY KEY (`akce_id`,`user_id`),
   KEY `akce_id` (`akce_id`),
-  KEY `member_id` (`member_id`),
-  CONSTRAINT `akce_rating_member_ibfk_1` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `akce_rating_member_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `akce_rating_user_ibfk_1` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `akce_rating_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `album`
@@ -107,7 +107,7 @@ CREATE TABLE `album` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `album_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=188 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `album_photo`
 
@@ -128,7 +128,7 @@ CREATE TABLE `album_photo` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `album_photo_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `album_photo_ibfk_2` FOREIGN KEY (`album_id`) REFERENCES `album` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13644 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20486 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `anketa`
 
@@ -140,26 +140,26 @@ CREATE TABLE `anketa` (
   `locked` tinyint(1) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
   `date_update` datetime NOT NULL,
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `member_id` (`member_id`),
-  CONSTRAINT `anketa_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `anketa_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `anketa_member`
 
 DROP TABLE IF EXISTS `anketa_member`;
 CREATE TABLE `anketa_member` (
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   `anketa_id` smallint(5) unsigned NOT NULL,
   `anketa_odpoved_id` smallint(5) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
-  PRIMARY KEY (`member_id`,`anketa_id`),
+  PRIMARY KEY (`user_id`,`anketa_id`),
   KEY `anketa_id` (`anketa_id`),
   KEY `anketa_odpoved_id` (`anketa_odpoved_id`),
-  CONSTRAINT `anketa_member_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `anketa_member_ibfk_2` FOREIGN KEY (`anketa_id`) REFERENCES `anketa` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `anketa_member_ibfk_3` FOREIGN KEY (`anketa_odpoved_id`) REFERENCES `anketa_odpoved` (`id`) ON DELETE CASCADE
+  CONSTRAINT `anketa_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `anketa_user_ibfk_2` FOREIGN KEY (`anketa_id`) REFERENCES `anketa` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `anketa_user_ibfk_3` FOREIGN KEY (`anketa_odpoved_id`) REFERENCES `anketa_odpoved` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `anketa_odpoved`
@@ -225,7 +225,7 @@ CREATE TABLE `forum_post` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `forum_id` tinyint(3) unsigned NOT NULL,
   `forum_topic_id` smallint(5) unsigned NOT NULL,
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   `row_number` smallint(5) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
   `date_update` datetime NOT NULL,
@@ -237,12 +237,12 @@ CREATE TABLE `forum_post` (
   KEY `forum_id` (`forum_id`),
   KEY `forum_topic_id` (`forum_topic_id`),
   KEY `row_number` (`row_number`),
-  KEY `member_id` (`member_id`),
+  KEY `user_id` (`user_id`),
   FULLTEXT KEY `title_text` (`title`,`text`),
   CONSTRAINT `forum_post_ibfk_4` FOREIGN KEY (`forum_id`) REFERENCES `forum` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `forum_post_ibfk_5` FOREIGN KEY (`forum_topic_id`) REFERENCES `forum_post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `forum_post_ibfk_6` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4152 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+  CONSTRAINT `forum_post_ibfk_6` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4153 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `hlasovani`
 
@@ -255,26 +255,26 @@ CREATE TABLE `hlasovani` (
   `date_deatline` date NOT NULL,
   `date_add` datetime NOT NULL,
   `date_update` datetime NOT NULL,
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `member_id` (`member_id`),
-  CONSTRAINT `hlasovani_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`)
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `hlasovani_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `hlasovani_member`
 
 DROP TABLE IF EXISTS `hlasovani_member`;
 CREATE TABLE `hlasovani_member` (
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   `hlasovani_id` tinyint(4) unsigned NOT NULL,
   `hlasovani_odpoved_id` tinyint(4) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
-  PRIMARY KEY (`member_id`,`hlasovani_id`),
+  PRIMARY KEY (`user_id`,`hlasovani_id`),
   KEY `hlasovani_id` (`hlasovani_id`),
   KEY `hlasovani_odpoved_id` (`hlasovani_odpoved_id`),
-  CONSTRAINT `hlasovani_member_ibfk_3` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `hlasovani_member_ibfk_4` FOREIGN KEY (`hlasovani_id`) REFERENCES `hlasovani` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `hlasovani_member_ibfk_6` FOREIGN KEY (`hlasovani_odpoved_id`) REFERENCES `hlasovani_odpoved` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `hlasovani_user_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `hlasovani_user_ibfk_4` FOREIGN KEY (`hlasovani_id`) REFERENCES `hlasovani` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `hlasovani_user_ibfk_6` FOREIGN KEY (`hlasovani_odpoved_id`) REFERENCES `hlasovani_odpoved` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table structure for table `hlasovani_odpoved`
@@ -306,7 +306,7 @@ CREATE TABLE `message` (
   KEY `message_type_id` (`message_type_id`),
   CONSTRAINT `message_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `message_ibfk_2` FOREIGN KEY (`message_type_id`) REFERENCES `message_type` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `message_type`
 
@@ -356,12 +356,12 @@ CREATE TABLE `password_attempt` (
 DROP TABLE IF EXISTS `password_session`;
 CREATE TABLE `password_session` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `member_id` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `user_id` smallint(5) unsigned NOT NULL DEFAULT '0',
   `pubkey` varchar(32) DEFAULT NULL,
   `date_end` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `member_id` (`member_id`),
-  CONSTRAINT `password_session_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`)
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `password_session_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table structure for table `report_member`
@@ -369,15 +369,15 @@ CREATE TABLE `password_session` (
 DROP TABLE IF EXISTS `report_member`;
 CREATE TABLE `report_member` (
   `report_id` smallint(5) unsigned NOT NULL,
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   `date_start` datetime NOT NULL,
   `date_end` datetime NOT NULL,
   `hodiny` float unsigned NOT NULL,
   `placeno` float unsigned NOT NULL,
-  PRIMARY KEY (`report_id`,`member_id`),
-  KEY `member_id` (`member_id`),
-  CONSTRAINT `report_member_ibfk_1` FOREIGN KEY (`report_id`) REFERENCES `report` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `report_member_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+  PRIMARY KEY (`report_id`,`user_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `report_user_ibfk_1` FOREIGN KEY (`report_id`) REFERENCES `report` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `report_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `report_type`
@@ -440,23 +440,23 @@ CREATE TABLE `user` (
 
 DROP TABLE IF EXISTS `user_log`;
 CREATE TABLE `user_log` (
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   `date_add` datetime NOT NULL,
   `method_id` tinyint(3) unsigned DEFAULT NULL,
-  PRIMARY KEY (`member_id`,`date_add`),
-  CONSTRAINT `user_log_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+  PRIMARY KEY (`user_id`,`date_add`),
+  CONSTRAINT `user_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `user_rights`
 
 DROP TABLE IF EXISTS `user_rights`;
 CREATE TABLE `user_rights` (
-  `member_id` smallint(5) unsigned NOT NULL,
+  `user_id` smallint(5) unsigned NOT NULL,
   `rights_id` tinyint(4) NOT NULL,
-  PRIMARY KEY (`member_id`,`rights_id`),
+  PRIMARY KEY (`user_id`,`rights_id`),
   KEY `rights_id` (`rights_id`),
   CONSTRAINT `user_rights_ibfk_1` FOREIGN KEY (`rights_id`) REFERENCES `rights` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `user_rights_ibfk_2` FOREIGN KEY (`member_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+  CONSTRAINT `user_rights_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Trigger structure `password_session_bi`
@@ -468,4 +468,4 @@ SET NEW.pubkey = MD5(UUID())
 //
 DELIMITER ;
 
--- Completed on: 2018-05-01T22:19:34+02:00
+-- Completed on: 2018-05-25T15:38:07+02:00

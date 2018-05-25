@@ -3,14 +3,14 @@
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 <div id="posts" n:inner-foreach="$posts as $post">
-    <div id="post/{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->member_id) ? logged">
+    <div id="post/{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->user_id) ? logged">
         <div class="top headerLike">
             <a class="float-right" href="{plink Forum:post $post->id}" title="{$post->date_add|timeAgoInWords}">
                 {include svg comments} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
             </a>
-            <a n:tag-if="$post->member->role" href="{plink User:view $post->member_id}" title="profil uživatele">
+            <a n:tag-if="$post->user->role" href="{plink User:view $post->user_id}" title="profil uživatele">
                 <strong>
-                    {$post->member->surname} {$post->member->name}
+                    {$post->user->surname} {$post->user->name}
                     {include svg user}
                 </strong>
             </a>
@@ -22,7 +22,7 @@
 
         {var $isTopic = ($post->id == $post->forum_topic_id)}
         {var $isUpdated = ($post->date_add != $post->date_update)}
-        {var $isAllow = (($user->id == $post->member_id) or ($user->isInRole('admin')))}
+        {var $isAllow = (($user->id == $post->user_id) or ($user->isInRole('admin')))}
 
         <div class="bottom">
             <div class="buttons float-right" n:if="(!$isLocked or $isTopic)and($user->isInRole('member'))">

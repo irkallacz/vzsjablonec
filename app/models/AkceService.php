@@ -106,7 +106,7 @@ class AkceService extends DatabaseService {
 	 * @return array
 	 */
 	public function getMemberListByAkceId(int $id, bool $org = FALSE) {
-		return $this->database->table(self::TABLE_AKCE_MEMBER_NAME)->where('akce_id', $id)->where('organizator', $org)->fetchPairs('member_id', 'member_id');
+		return $this->database->table(self::TABLE_AKCE_MEMBER_NAME)->where('akce_id', $id)->where('organizator', $org)->fetchPairs('user_id', 'user_id');
 	}
 
 	/**
@@ -117,22 +117,22 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
-	 * @param int $member_id
+	 * @param int $user_id
 	 * @param int $akce_id
 	 * @param bool $org
 	 */
-	public function addMemberToAction(int $member_id, int $akce_id, bool $org = FALSE) {
-		$values = ['member_id' => $member_id, 'akce_id' => $akce_id, 'organizator' => $org];
+	public function addMemberToAction(int $user_id, int $akce_id, bool $org = FALSE) {
+		$values = ['user_id' => $user_id, 'akce_id' => $akce_id, 'organizator' => $org];
 		$this->database->query('INSERT INTO `'.self::TABLE_AKCE_MEMBER_NAME.'`', $values);
 	}
 
 	/**
-	 * @param int $member_id
+	 * @param int $user_id
 	 * @param int $akce_id
 	 */
-	public function deleteMemberFromAction(int $member_id, int $akce_id) {
+	public function deleteMemberFromAction(int $user_id, int $akce_id) {
 		$this->database->table(self::TABLE_AKCE_MEMBER_NAME)
-			->where('member_id', $member_id)
+			->where('user_id', $user_id)
 			->where('akce_id', $akce_id)
 			->delete();
 	}
@@ -145,7 +145,7 @@ class AkceService extends DatabaseService {
 	public function getAkceByMemberId(int $id, bool $org = FALSE) {
 		return array_values($this->database->table(self::TABLE_AKCE_MEMBER_NAME)
 			->select('akce_id')
-			->where('member_id', $id)
+			->where('user_id', $id)
 			->where('organizator', $org)
 			->fetchPairs('akce_id', 'akce_id'));
 	}
@@ -159,7 +159,7 @@ class AkceService extends DatabaseService {
 		return $this->getAkce()
 			->where('enable', TRUE)
 			->where('confirm', TRUE)
-			->where(':akce_member.member_id', $user_id)
+			->where(':akce_member.user_id', $user_id)
 			->where(':akce_member.organizator', FALSE)
 			->where('date_end BETWEEN ? AND NOW()', $date);
 	}
@@ -172,8 +172,8 @@ class AkceService extends DatabaseService {
 	 */
 	public function getRatingNews(DateTime $date, int $user_id) {
 		return $this->getAkceByFuture(FALSE)
-			->select('id, name, :akce_rating_member.member_id AS rating_member_id, :akce_rating_member.date_add AS rating_date_add')
-			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.member_id', $user_id)
+			->select('id, name, :akce_rating_member.user_id AS rating_user_id, :akce_rating_member.date_add AS rating_date_add')
+			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.user_id', $user_id)
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.organizator', TRUE)
 			->where(':akce_rating_member.date_add > ?', $date);
 
@@ -188,7 +188,7 @@ class AkceService extends DatabaseService {
 		return $this->getAkce()
 			->where('enable', TRUE)
 			->where('confirm', TRUE)
-			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.member_id', $user_id)
+			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.user_id', $user_id)
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.organizator', TRUE)
 			->where('message', NULL)
 			->where('date_end BETWEEN ? AND NOW()', $date);

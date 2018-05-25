@@ -102,7 +102,7 @@ form textarea {width: 100%}
 
 <ul id="members" n:inner-foreach="$form['users']->containers as $id => $user">
     <li id="member-{$id}" class="high">
-      {input users-$id-member_id} 
+      {input users-$id-user_id}
       <span class="no-wrap">{label users-$id-date_start /} {input users-$id-date_start} {input users-$id-time_start}</span>
       <span class="no-wrap">{label users-$id-date_end /} {input users-$id-date_end} {input users-$id-time_end}</span> 
       <span class="no-wrap">{label users-$id-hodiny class => 'hint', title => 'Počet hodin ve službe a počet placených hodin' /} 

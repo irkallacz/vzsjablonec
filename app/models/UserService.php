@@ -147,7 +147,7 @@ class UserService extends DatabaseService {
 	 * @return array
 	 */
 	public function getRightsByUserId(int $id) {
-		return $this->database->table('user_rights')->select('rights.name, rights_id')->where('member_id', $id)->fetchPairs('rights_id', 'name');
+		return $this->database->table('user_rights')->select('rights.name, rights_id')->where('user_id', $id)->fetchPairs('rights_id', 'name');
 	}
 
 	/**
@@ -187,7 +187,7 @@ class UserService extends DatabaseService {
 	 */
 	public function addUserLogin(int $user_id, int $method = self::LOGIN_METHOD_PASSWORD) {
 		$this->database->query('INSERT INTO user_log', [
-			'member_id' => $user_id,
+			'user_id' => $user_id,
 			'date_add' => new SqlLiteral('NOW()'),
 			'method_id' => $method
 		]);
@@ -213,7 +213,7 @@ class UserService extends DatabaseService {
 	 */
 	public function haveActivePasswordSession(int $user_id) {
 		return (bool) $this->database->table('password_session')
-			->where('member_id', $user_id)
+			->where('user_id', $user_id)
 			->where('date_end >', new SqlLiteral('NOW()'))
 			->fetch();
 	}
@@ -224,9 +224,9 @@ class UserService extends DatabaseService {
 	 * @return bool|int|IRow
 	 */
 	public function addPasswordSession(int $user_id, string $interval = '40 MINUTE') {
-		$this->database->query('DELETE FROM `password_session` WHERE `member_id` = ?', $user_id);
+		$this->database->query('DELETE FROM `password_session` WHERE `user_id` = ?', $user_id);
 		return $this->database->table('password_session')->insert([
-			'member_id' => $user_id,
+			'user_id' => $user_id,
 			'date_end' => new SqlLiteral('NOW() + INTERVAL ' . $interval)
 		]);
 	}

@@ -328,7 +328,7 @@ class ForumPresenter extends LayerPresenter {
 
 		$this->checkPost($post);
 
-		if ((!$this->getUser()->isInRole('admin')) and ($post->member_id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('admin')) and ($post->user_id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
 		}
 
@@ -372,7 +372,7 @@ class ForumPresenter extends LayerPresenter {
 
 		$this->setView('edit');
 
-		$text = '> ' . $post->member->surname . ' ' . $post->member->name . " napsal(a):\n>\n";
+		$text = '> ' . $post->user->surname . ' ' . $post->user->name . " napsal(a):\n>\n";
 		$text .= preg_replace('~^~m', '> $0', trim($post->text)) . "\n\n";
 
 		$this['addPostForm']['text']->setDefaultValue($text);
@@ -407,7 +407,7 @@ class ForumPresenter extends LayerPresenter {
 		/* @var ActiveRow $post*/
 		$post = $this->forumService->getPostById($id);
 
-		if ((!$this->getUser()->isInRole('admin')) and ($post->member_id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('admin')) and ($post->user_id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
 		}
 
@@ -435,7 +435,7 @@ class ForumPresenter extends LayerPresenter {
 		/* @var ActiveRow $post*/
 		$post = $this->forumService->getPostById($id);
 
-		if ((!$this->getUser()->isInRole('admin')) and ($post->member_id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('admin')) and ($post->user_id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
 		}
 
@@ -504,7 +504,7 @@ class ForumPresenter extends LayerPresenter {
 		if ($akce == 'category') {
 			$values->date_add = $datum;
 			$values->forum_id = (int)$this->getParameter('id');
-			$values->member_id = $this->getUser()->getId();
+			$values->user_id = $this->getUser()->getId();
 			$this->forumService->addTopic($values);
 			$this->flashMessage('Bylo přidáno další téma');
 			$this->redirect('this');
@@ -550,7 +550,7 @@ class ForumPresenter extends LayerPresenter {
 			$row->update($values);
 			$this->flashMessage('Příspěvek byl upraven');
 		} else {
-			$values->member_id = $this->getUser()->getIdentity()->getId();
+			$values->user_id = $this->getUser()->getIdentity()->getId();
 			$values->date_add = $datum;
 
 			$row = $this->forumService->addPost($values);

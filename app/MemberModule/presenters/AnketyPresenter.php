@@ -70,7 +70,7 @@ class AnketyPresenter extends LayerPresenter {
 				throw new BadRequestException('Anekta nenalezena!');
 			}
 
-			if ((!$this->getUser()->isInRole('admin')) and ($anketa->member_id != $this->getUser()->getId())) {
+			if ((!$this->getUser()->isInRole('admin')) and ($anketa->user_id != $this->getUser()->getId())) {
 				throw new ForbiddenRequestException('Nemáte právo editovat tuto anketu');
 			}
 
@@ -103,7 +103,7 @@ class AnketyPresenter extends LayerPresenter {
 		}
 
 		$values = [
-			'member_id' => $this->getUser()->getId(),
+			'user_id' => $this->getUser()->getId(),
 			'anketa_id' => $id,
 			'anketa_odpoved_id' => $odpoved,
 			'date_add' => new Datetime
@@ -141,7 +141,7 @@ class AnketyPresenter extends LayerPresenter {
 	public function actionDelete(int $id) {
 		$anketa = $this->anketyService->getAnketaById($id);
 
-		if ((!$this->getUser()->isInRole('admin')) and ($anketa->member_id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('admin')) and ($anketa->user_id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
 		}
 		$this->anketyService->deleteAnketaById($id);
@@ -157,7 +157,7 @@ class AnketyPresenter extends LayerPresenter {
 	public function actionLock(int $id, bool $lock) {
 		$anketa = $this->anketyService->getAnketaById($id);
 
-		if ((!$this->getUser()->isInRole('admin')) and ($anketa->member_id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('admin')) and ($anketa->user_id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
 		}
 
@@ -256,7 +256,7 @@ class AnketyPresenter extends LayerPresenter {
 			$anketa_id = $id;
 			$this->flashMessage('Anketa byla aktualizována');
 		} else {
-			$values->member_id = $this->getUser()->getId();
+			$values->user_id = $this->getUser()->getId();
 			$values->date_add = $datum;
 			$values->locked = FALSE;
 

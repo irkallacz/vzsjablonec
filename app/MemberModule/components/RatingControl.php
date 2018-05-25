@@ -59,7 +59,7 @@ class RatingControl extends Control {
 			$this->template->rating_count = count($rating);
 		}
 
-		$ratings = $this->ratingService->getRatingByAkceId($this->akceId)->order('date_add')->fetchPairs('member_id');
+		$ratings = $this->ratingService->getRatingByAkceId($this->akceId)->order('date_add')->fetchPairs('user_id');
 		$myrating = Arrays::get($ratings, $this->userId, []);
 
 		$this['ratingForm']->setDefaults($myrating);

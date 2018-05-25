@@ -107,7 +107,7 @@ class HlasovaniPresenter extends LayerPresenter {
 				throw new ForbiddenRequestException('Nemáte právo editovat toto hlasování!');
 			}
 
-			if ((!$this->getUser()->isInRole('admin')) and ($anketa->member_id != $this->getUser()->getId())) {
+			if ((!$this->getUser()->isInRole('admin')) and ($anketa->user_id != $this->getUser()->getId())) {
 				throw new ForbiddenRequestException('Nemáte právo editovat toto hlasování!');
 			}
 
@@ -141,7 +141,7 @@ class HlasovaniPresenter extends LayerPresenter {
 		}
 
 		$values = [
-			'member_id' => $this->getUser()->getId(),
+			'user_id' => $this->getUser()->getId(),
 			'hlasovani_id' => $id,
 			'hlasovani_odpoved_id' => $odpoved,
 			'date_add' => new DateTime()
@@ -162,7 +162,7 @@ class HlasovaniPresenter extends LayerPresenter {
 			throw new ForbiddenRequestException('Nemáte právo smazat toto hlasování!');
 		}
 
-		if ((!$this->getUser()->isInRole('admin')) and ($anketa->member_id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('admin')) and ($anketa->user_id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
 		}
 
@@ -183,7 +183,7 @@ class HlasovaniPresenter extends LayerPresenter {
 			throw new ForbiddenRequestException('Nemáte právo měnit toto hlasování!');
 		}
 
-		if ((!$this->getUser()->isInRole('admin')) and ($anketa->member_id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('admin')) and ($anketa->user_id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte práva na tuto akci');
 		}
 
@@ -274,7 +274,7 @@ class HlasovaniPresenter extends LayerPresenter {
 
 			$this->flashMessage('Hlasování bylo aktualizováno');
 		} else {
-			$values->member_id = $this->getUser()->getId();
+			$values->user_id = $this->getUser()->getId();
 			$values->date_add = $datum;
 
 			$anketa = $this->hlasovani->addAnketa($values);

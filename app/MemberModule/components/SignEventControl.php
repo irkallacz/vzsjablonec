@@ -49,8 +49,8 @@ class SignEventControl extends Control {
 		$this->userService = $userService;
 		$this->akce = $akce;
 
-		$this->userList = $this->getMemberList(self::USER)->fetchPairs('member_id', 'member_id');
-		$this->orgList = $this->getMemberList(self::ORG)->fetchPairs('member_id', 'member_id');
+		$this->userList = $this->getMemberList(self::USER)->fetchPairs('user_id', 'user_id');
+		$this->orgList = $this->getMemberList(self::ORG)->fetchPairs('user_id', 'user_id');
 	}
 
 	public function render() {

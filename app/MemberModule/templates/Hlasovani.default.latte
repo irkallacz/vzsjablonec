@@ -26,17 +26,17 @@ table#items .first { font-size: 1.1em;}
 	{if $item->date_deatline < date_create()}{var $locked = TRUE}{/if}
 	{var $post = $item->related('hlasovani_member','hlasovani_id')->order('date_add DESC')->fetch()}
 	
-	{if $post}{var $member = $post->ref('member')}{else}{var $member = 0}{/if}
+	{if $post}{var $member = $post->ref('user')}{else}{var $member = 0}{/if}
 	
 	<tr n:class="borderLike,hoverLike,$item->date_add > $user->getIdentity()->date_last ? 'new', 
-	$item->member_id == $user->getId() ? logged">
+	$item->user_id == $user->getId() ? logged">
 	<td class="col"><a class="noLink" title="{$item->title}{if $locked} (uzamčeno){/if}" n:href="view,$item->id"><div>
 	<strong class="headerLike">
 		{if $locked}{include svg lock}{/if} {$item->title|firstUpper}
 	</strong>
-	<span class="no-wrap">{$item->member->surname} {$item->member->name}</span>
+	<span class="no-wrap">{$item->user->surname} {$item->user->name}</span>
 	</div></a></td>
-	<td class="center">{$item->related('hlasovani_member','hlasovani_id')->count('member_id')}</td>
+	<td class="center">{$item->related('hlasovani_member','hlasovani_id')->count('user_id')}</td>
 	<td class="col">
 	 
 	<div class="right" n:if="$post">
