@@ -103,7 +103,7 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnot
 
 		$album = $this->gallery->addAlbum($values);
 		mkdir(WWW_DIR . '/' . self::PHOTO_DIR . '/' . $album->id, 0755);
-		mkdir(WWW_DIR . '/' . self::PHOTO_DIR . '/thumb/' . $album->id, 0755);
+		mkdir(WWW_DIR . '/' . self::PHOTO_DIR . '/' . self::THUMB_DIR . '/' . $album->id, 0755);
 		
 		$this->flashMessage('Album bylo přidáno');
 
