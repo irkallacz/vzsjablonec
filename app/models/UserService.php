@@ -11,7 +11,6 @@ use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 use Nette\Security\Passwords;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Database\SqlLiteral;
 use Tracy\Debugger;
