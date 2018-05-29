@@ -15,6 +15,7 @@ use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Utils\DateTime;
+use Nette\Utils\Html;
 
 class RegisterPresenter extends BasePresenter {
 
@@ -41,6 +42,13 @@ class RegisterPresenter extends BasePresenter {
 
 		$form['telefon2']->caption = 'Druhý telefon';
 		$form['telefon2']->setOption('description','(na rodiče atd...)');
+
+		$form->addGroup(NULL);
+
+		$form->addCheckbox('check', Html::el()->setHtml('Souhlasím s <a target="_blank" href="gdpr">zpracováním osobních údajů'))
+			->setOmitted()
+			->setRequired('Musíte souhlasit se zpracováním osobních údajů')
+			->setDefaultValue(TRUE);
 
 		$form->addGroup('Oveření');
 
