@@ -331,6 +331,7 @@ class AkcePresenter extends LayerPresenter {
 	 */
 	protected function createComponentAkceForm() {
 		$datum = new Datetime();
+		$datum->setTime($datum->format('G'), 0);
 		$form = new Form;
 
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
