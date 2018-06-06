@@ -94,14 +94,6 @@ abstract class BasePresenter extends Presenter {
 	}
 
 	/**
-	 * @param string $slug
-	 * @return int
-	 */
-	public static function getIdFromSlug(string $slug) {
-		return (int) substr($slug, 0, strstr($slug, '-') - 1);
-	}
-
-	/**
 	 * @param $element
 	 * @throws ForbiddenRequestException
 	 * @throws \Nette\Application\AbortException

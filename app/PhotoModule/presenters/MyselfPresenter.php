@@ -79,7 +79,8 @@ class MyselfPresenter extends BasePresenter {
 			->caption = Html::el('acronym')->setText('Datum')->title('Datum by mělo přibližně odpovídat času, kdy byli fotky pořízeny. 
 Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnotu.');
 
-		$form->addTextArea('text', 'Popis', 30);
+		$form->addTextArea('text', 'Popis', 30)
+			->setNullable();
 
 		$form->addSubmit('save', 'Ulož');
 
@@ -102,11 +103,14 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnot
 		$values->user_id = $this->getUser()->getId();
 
 		$album = $this->gallery->addAlbum($values);
+
+		$album->update(['slug' => $album->id . '-' . $album->slug]);
+
 		mkdir(WWW_DIR . '/' . self::PHOTO_DIR . '/' . $album->id, 0755);
 		mkdir(WWW_DIR . '/' . self::PHOTO_DIR . '/' . self::THUMB_DIR . '/' . $album->id, 0755);
 		
 		$this->flashMessage('Album bylo přidáno');
 
-		$this->redirect('Album:view', $album->id . '-' . $values->slug);
+		$this->redirect('Album:view', $album->slug);
 	}
 }

@@ -35,17 +35,17 @@ ul { list-style: disc;}
 <div id="news">
 {if}<h3>Alba</h3>
 <ul n:inner-foreach="$newAlbums as $newAlbum">
-  <li><a n:href="Album:view,$newAlbum->id.'-'.$newAlbum->slug">{$newAlbum->name}</a></li>
+  <li><a n:href="Album:view $newAlbum->slug">{$newAlbum->name}</a></li>
 </ul>
 {/if isset($newAlbum)}
 
 {if}<h3>Fotografie</h3>
 <ul n:inner-foreach="$newPhotos as $album">
-  <li><a n:href="Album:view,$album->id.'-'.$album->slug">{$album->name}</a>
-    <ul n:inner-foreach="$album->related('album_photo.album_id')->where('date_add > ?',$date_last)->limit(15) as $image">
-      <li><a n:href="Album:view#$image->filename,$album->id.'-'.$album->slug">{$image->filename}</a></li>
+  <li><a n:href="Album:view $album->slug">{$album->name}</a>
+    <ul n:inner-foreach="$album->related('album_photo.album_id')->where('date_add > ?', $date_last)->limit(15) as $image">
+      <li><a n:href="Album:view#$image->filename $album->slug">{$image->filename}</a></li>
       {if $iterator->counter == 15}
-        <li><a n:href="Album:view $album->id.'-'.$album->slug">Další ...</a></li>
+        <li><a n:href="Album:view $album->slug">Další ...</a></li>
       {/if}
     </ul>  
   </li>

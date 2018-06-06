@@ -43,7 +43,7 @@
 </p>
 
 <p n:if="$user->isLoggedIn()">
-    <a title="Sdílet" n:href="Album:view,$slug,$album->pubkey"><img class="icon" src="{$baseUrl}/img/link.svg"> Odkaz pro sdílení</a>
+    <a title="Sdílet" n:href="Album:view $slug, $album->pubkey"><img class="icon" src="{$baseUrl}/img/link.svg"> Odkaz pro sdílení</a>
 </p>
 
 {/block}

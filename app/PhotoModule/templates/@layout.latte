@@ -57,11 +57,11 @@
 </html>
 
 {define albumMenu}
-	<li><a class="buttonLike" n:href="Album:add,$album->id.'-'.$album->slug">přidat fotky</a></li>
+	<li><a class="buttonLike" n:href="Album:add $album->slug">přidat fotky</a></li>
   	{if $user->isInRole('member')}
-		<li n:if="($album->user_id==$user->getId())or($user->isInRole('admin'))"><a class="buttonLike confirm" n:href="Album:deleteAlbum,$album->id" data-query="Opravdu chcete vymazat toto album?">odebrat album</a></li>
-		<li n:if="$user->isInRole('admin')"><a class="buttonLike" n:href="Album:setAlbumVisibility,$album->id.'-'.$album->slug,!$album->visible">{if $album->visible}zneviditelnit{else}zviditelnit{/if}</a></li>
-		<li n:if="(($album->user_id==$user->getId()))or($user->isInRole('admin'))"><a class="buttonLike" n:href="Album:edit,$album->id.'-'.$album->slug">upravit</a></li>
+		<li n:if="($album->user_id==$user->getId())or($user->isInRole('admin'))"><a class="buttonLike confirm" n:href="Album:deleteAlbum $album->id" data-query="Opravdu chcete vymazat toto album?">odebrat album</a></li>
+		<li n:if="$user->isInRole('admin')"><a class="buttonLike" n:href="Album:setAlbumVisibility $album->slug, !$album->visible">{if $album->visible}zneviditelnit{else}zviditelnit{/if}</a></li>
+		<li n:if="(($album->user_id==$user->getId()))or($user->isInRole('admin'))"><a class="buttonLike" n:href="Album:edit $album->slug">upravit</a></li>
 	{/if}
 {/define}
 
@@ -88,7 +88,7 @@
 
 {define photoList}
 {if}
-<a n:href="//Album:view $album->id.'-'.$album->slug" title="{$album->text|truncate:70}" class="round">
+<a n:href="//Album:view $album->slug" title="{$album->text|truncate:70}" class="round">
 	<h3>{$album->name}</h3>
 	{var $photos = $album->related('album_photo')}
 	{if ($album->visible) and (!$user->isLoggedIn())}{php $photos->where('visible', TRUE)}{/if}

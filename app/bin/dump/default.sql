@@ -94,8 +94,8 @@ CREATE TABLE `akce_rating_member` (
 DROP TABLE IF EXISTS `album`;
 CREATE TABLE `album` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE utf8_czech_ci NOT NULL DEFAULT '',
-  `slug` varchar(50) COLLATE utf8_czech_ci NOT NULL DEFAULT '',
+  `name` varchar(50) COLLATE utf8_czech_ci NOT NULL,
+  `slug` varchar(50) COLLATE utf8_czech_ci NOT NULL,
   `text` text COLLATE utf8_czech_ci,
   `private` text COLLATE utf8_czech_ci,
   `visible` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -103,8 +103,9 @@ CREATE TABLE `album` (
   `date` date NOT NULL,
   `date_add` datetime NOT NULL,
   `date_update` datetime NOT NULL,
-  `pubkey` varchar(32) COLLATE utf8_czech_ci NOT NULL DEFAULT '',
+  `pubkey` varchar(32) COLLATE utf8_czech_ci NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `album_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=188 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;

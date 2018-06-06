@@ -8,6 +8,8 @@
 	.photoList li input.selected { position: absolute; top: 0; left: 0; z-index: 2;}
 	#frm-superForm label { font-weight: bold;}
 	.album-name { font-size: 1.5em; font-weight: bold;}
+	input.album-slug { border-color: transparent;}
+	input.album-slug:focus { border-color: silver; }
 	.album-text { width: 98%; font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-size: 1em; height: 1.5em;}
 	.clearel { clear: both;}
 	#fistrRow { line-height: 2em}
@@ -66,8 +68,10 @@
 	<li>{input save class => buttonLike}</li>
 </ul>
 
-
-<p id="fistrRow">{input name class => album-name}</p>
+<p id="fistrRow">
+	{input name class => album-name}<br>
+	{input slug class => album-slug}
+</p>
 
 <ul class="menu float_right">
 	<li>{input turnLeft class => buttonLike}</li>
@@ -106,6 +110,8 @@
 {/form}
 
 <p class="clearel">&nbsp;</p>
+
+<p><a n:href="view $slug">← Zpět na album</a></p>
 
 <p>V popisu alba můžete používat <a href="http://texy.info/cs/syntax" target="_blank">Texy syntaxi</a>.<p>
 

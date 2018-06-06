@@ -43,6 +43,14 @@ class GalleryService {
 	}
 
 	/**
+	 * @param string $slug
+	 * @return IRow|ActiveRow
+	 */
+	public function getAlbumBySlug(string $slug) {
+		return $this->getAlbums()->where('slug', $slug)->fetch();
+	}
+
+	/**
 	 * @return Selection
 	 */
 	public function getAlbumsPhotosCount() {

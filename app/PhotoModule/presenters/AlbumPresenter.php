@@ -41,12 +41,10 @@ class AlbumPresenter extends BasePresenter {
 	 * @return IRow|ActiveRow
 	 * @throws BadRequestException
 	 */
-	public function getAlbumById(string $slug) {
-		$id = parent::getIdFromSlug($slug);
+	public function getAlbumBySlug(string $slug) {
+		$album = $this->gallery->getAlbumBySlug($slug);
 
-		$album = $this->gallery->getAlbumById($id);
-
-		if ((!$album) or ($slug != $album->id . '-' . $album->slug)) {
+		if ((!$album)) {
 			throw new BadRequestException('Zadané album neexistuje');
 		}
 
@@ -94,7 +92,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @param string|NULL $pubkey
 	 */
 	public function renderView(string $slug, string $pubkey = NULL) {
-		$album = $this->getAlbumById($slug);
+		$album = $this->getAlbumBySlug($slug);
 		$this->template->album = $album;
 
 		$pubkeyCheck = ($pubkey === $album->pubkey);
@@ -119,7 +117,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @throws ForbiddenRequestException
 	 */
 	public function renderEdit(string $slug, string $order = 'order') {
-		$album = $this->getAlbumById($slug);
+		$album = $this->getAlbumBySlug($slug);
 		$this->template->album = $album;
 
 		if (!(($album->user_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
@@ -157,7 +155,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @allow(user)
 	 */
 	public function renderAdd(string $slug) {
-		$album = $this->getAlbumById($slug);
+		$album = $this->getAlbumBySlug($slug);
 		$this->template->album = $album;
 		$this->template->slug = $slug;
 	}
@@ -168,9 +166,8 @@ class AlbumPresenter extends BasePresenter {
 	 * @allow(admin)
 	 */
 	public function actionSetAlbumVisibility(string $slug, bool $visible = FALSE) {
-		$id = parent::getIdFromSlug($slug);
+		$album = $this->gallery->getAlbumBySlug($slug);
 
-		$album = $this->gallery->getAlbumById($id);
 		$album->update(['visible' => $visible]);
 
 		$text = $visible ? null : 'ne';
@@ -210,26 +207,27 @@ class AlbumPresenter extends BasePresenter {
 		$plupload->allowedExtensions = 'jpg,jpeg,gif,png';
 
 		$slug = (string) $this->getParameter('slug');
-		$id = parent::getIdFromSlug($slug);
+		$album = $this->gallery->getAlbumBySlug($slug);
+		$album_id = $album->id;
 
-		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($id) {
+		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($album_id) {
 			$upload = $uploadQueue->getLastUpload();
 
 			$name = $upload->getName();
-			$filename = self::PHOTO_DIR . '/' . $id . '/' . $name;
+			$filename = self::PHOTO_DIR . '/' . $album_id . '/' . $name;
 			$filepath = WWW_DIR . '/' . $filename;
 			$upload->move($filepath);
 
 
 			try {
-				$thumb = $this->getThumbName($name, $id);
+				$thumb = $this->getThumbName($name, $album_id);
 			} catch (\Exception $e){
 				$thumb = NULL;
 			}
 
 			$values = [
 				'filename' => $name,
-				'album_id' => $id,
+				'album_id' => $album_id,
 				'date_add' => new DateTime,
 				'user_id' => $this->user->id,
 				'thumb' => $thumb
@@ -264,6 +262,9 @@ class AlbumPresenter extends BasePresenter {
 		$form = new Form;
 
 		$form->addText('name', 'Název', 50, 50)
+			->setRequired('Vyplňte %label');
+
+		$form->addText('slug', 'Slug', 50, 50)
 			->setRequired('Vyplňte %label');
 
 		/** @var \DateInput $dateInput*/
@@ -309,8 +310,8 @@ class AlbumPresenter extends BasePresenter {
 		$form->addSubmit('turnRight', 'otočit o 90° doprava')
 			->onClick[] = [$this, 'photoFormTurnRight'];
 
-
-		$album = $this->getAlbumById($this->getParameter('slug'));
+		$slug = $this->getParameter('slug');
+		$album = $this->gallery->getAlbumBySlug($slug);
 		$photos = $this->gallery->getPhotosByAlbumId($album->id)->fetchPairs('id');
 		$form->setDefaults(['photos' => $photos]);
 
@@ -321,14 +322,10 @@ class AlbumPresenter extends BasePresenter {
 	 * @allow(member)
 	 */
 	public function photoFormSave() {
-		$slug = $this->getParameter('slug');
-		$id = self::getIdFromSlug($slug);
-
 		/** @var Form $form*/
 		$form = $this['photoForm'];
 		$values = $form->getValues();
 		$values->date_update = new Datetime();
-		$values->slug = Strings::webalize($values->name);
 
 		$show_date = $values->show_date;
 		unset($values->show_date);
@@ -336,10 +333,11 @@ class AlbumPresenter extends BasePresenter {
 		$images = $values->photos;
 		unset($values->photos);
 
-		$album = $this->gallery->getAlbumById($id);
+		$slug = $this->getParameter('slug');
+		$album = $this->gallery->getAlbumBySlug($slug);
 		$album->update($values);
 
-		$photos = $this->gallery->getPhotosByAlbumId($id)->fetchPairs('id');
+		$photos = $this->gallery->getPhotosByAlbumId($album->id)->fetchPairs('id');
 
 		foreach ($images as $order => $photo) {
 			$update = [];
@@ -359,7 +357,7 @@ class AlbumPresenter extends BasePresenter {
 		}
 
 		$this->flashMessage('Album bylo upraveno');
-		$this->redirect('view', $id . '-' . $values->slug);
+		$this->redirect('view', $album->slug);
 	}
 
 	/**
