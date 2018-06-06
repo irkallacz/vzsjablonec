@@ -8,7 +8,8 @@ namespace App\Model;
 
 use Nette;
 
-class WordpressService extends Nette\Object{
+class WordpressService {
+	use Nette\SmartObject;
 
     const CATEGORY = 2;
 
