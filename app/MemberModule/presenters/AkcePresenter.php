@@ -524,15 +524,16 @@ class AkcePresenter extends LayerPresenter {
 	 * @allow(member)
 	 */
 	public function uploadBillFormSubmitted(Form $form) {
-		$id = (int)$this->getParameter('id');
+		$id = (int) $this->getParameter('id');
 		$data = $form->getValues();
 
 		$akce = $this->akceService->getAkceById($id);
 
 		if (($form['file']->isFilled()) and ($data->file->isOK())) {
-			$data->file->move(WWW_DIR . '/doc/vyuctovani/' . $id . '-' . Strings::webalize($akce->name) . '.xls');
+			$filename = $id . '-' . Strings::webalize($akce->name) . '.xls';
+			$data->file->move(WWW_DIR . '/doc/vyuctovani/' . $filename);
 
-			$akce->update(['bill' => 1]);
+			$akce->update(['bill' => $filename]);
 			$this->flashMessage('Vyúčtování nahráno');
 			$this->redirect('Akce:view', $id);
 		}

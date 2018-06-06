@@ -28,7 +28,7 @@ CREATE TABLE `akce` (
   `album_id` smallint(5) unsigned DEFAULT NULL,
   `calendarId` varchar(32) DEFAULT NULL,
   `report` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `bill` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `bill` varchar(60) DEFAULT '0',
   `file` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `date_start` (`date_start`),

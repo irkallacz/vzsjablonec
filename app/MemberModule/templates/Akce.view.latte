@@ -141,7 +141,7 @@
         {/form}
 
 			<p n:if="($akce->bill)and($user->isInRole('member'))">
-                <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->id}-{$akce->name|webalize}.xls">{include svg download} stáhnout</a>
+                <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->bill}">{include svg download} stáhnout</a>
             </p>
 
 		{/if}
