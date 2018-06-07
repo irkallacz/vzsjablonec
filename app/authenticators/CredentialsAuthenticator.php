@@ -25,7 +25,7 @@ class CredentialsAuthenticator extends BaseAuthenticator {
 		$user = $this->userService->getUserByEmail($email);
 
 		if (!$user) {
-			throw new AuthenticationException("Uživatel s e-mailem '$email' nenalezen", IAuthenticator::IDENTITY_NOT_FOUND);
+			throw new AuthenticationException('Uživatel s tímto e-mailem nenalezen', IAuthenticator::IDENTITY_NOT_FOUND);
 		}
 
 		$attempt = $this->userService->getPasswordAttempt($user->id);
