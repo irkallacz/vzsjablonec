@@ -468,8 +468,8 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `mail` (`mail`),
   UNIQUE KEY `mail2` (`mail2`),
+  UNIQUE KEY `mail_mail2` (`mail`, `mail2`),
   KEY `role` (`role`),
-  FULLTEXT KEY `name_surname_zamestnani_mesto_ulice_mail_telefon_text` (`name`,`surname`,`zamestnani`,`mesto`,`ulice`,`mail`,`telefon`,`text`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
