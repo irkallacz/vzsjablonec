@@ -243,7 +243,7 @@ class UserService extends DatabaseService {
 	 * @param string $user_id
 	 * @return false|ActiveRow
 	 */
-	public function getPasswordAttempts(string $user_id) {
+	public function getPasswordAttempt(string $user_id) {
 		$this->database->query('DELETE FROM `password_attempt` WHERE `date_end` < ?', new SqlLiteral('NOW()'));
 		return $this->database->table('password_attempt')->get($user_id);
 	}
@@ -253,7 +253,7 @@ class UserService extends DatabaseService {
 	 * @param int $count
 	 * @return \Nette\Database\ResultSet
 	 */
-	public function addPasswordAttempts(string $user_id, int $count = 1) {
+	public function addPasswordAttempt(string $user_id, int $count = 1) {
 		return $this->database->query('INSERT INTO `password_attempt` SET `user_id` = ?, `count` = ?', $user_id, $count);
 	}
 

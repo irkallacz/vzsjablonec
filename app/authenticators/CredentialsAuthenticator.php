@@ -28,19 +28,19 @@ class CredentialsAuthenticator extends BaseAuthenticator {
 			throw new AuthenticationException("Uživatel s e-mailem '$email' nenalezen", IAuthenticator::IDENTITY_NOT_FOUND);
 		}
 
-		$attempts = $this->userService->getPasswordAttempts($user->id);
+		$attempt = $this->userService->getPasswordAttempt($user->id);
 
-		if (($attempts)and($attempts->date_end)) {
-			throw new AuthenticationException('Příliš mnoho špatných pokusů. Další přihlášení bude možné až ' . $attempts->date_end->format('d.m.Y \v H:i'), IAuthenticator::NOT_APPROVED);
+		if (($attempt)and($attempt->date_end)) {
+			throw new AuthenticationException('Příliš mnoho špatných pokusů. Další přihlášení bude možné až ' . $attempt->date_end->format('d.m.Y \v H:i'), IAuthenticator::NOT_APPROVED);
 		}
 
 		if (!Passwords::verify($password, $user->hash)) {
-			if (!$attempts) {
-				$this->userService->addPasswordAttempts($user->id);
+			if (!$attempt) {
+				$this->userService->addPasswordAttempt($user->id);
 			} else {
-				$date_end = ($attempts->count >= 2) ? new DateTime('+ 20 minute') : NULL;
-				$attempts->update([
-					'count' => $attempts->count + 1,
+				$date_end = ($attempt->count >= 2) ? new DateTime('+ 20 minute') : NULL;
+				$attempt->update([
+					'count' => $attempt->count + 1,
 					'date_end' => $date_end
 				]);
 			}
@@ -48,7 +48,8 @@ class CredentialsAuthenticator extends BaseAuthenticator {
 			throw new AuthenticationException('Nesprávné heslo', IAuthenticator::INVALID_CREDENTIAL);
 		}
 
-		if ($attempts) $attempts->delete();
+		if ($attempt) $attempt->delete();
+
 		if (Passwords::needsRehash($user->hash)) {
 			$user->update(['hash' => Passwords::hash($password)]);
 		}
