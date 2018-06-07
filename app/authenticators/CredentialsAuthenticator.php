@@ -49,6 +49,9 @@ class CredentialsAuthenticator extends BaseAuthenticator {
 		}
 
 		if ($attempts) $attempts->delete();
+		if (Passwords::needsRehash($user->hash)) {
+			$user->update(['hash' => Passwords::hash($password)]);
+		}
 
 		$rights = $this->userService->getRightsForUser($user);
 		$data = $this->userService->getDataForUser($user);
