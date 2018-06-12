@@ -66,8 +66,10 @@ class PeoplePresenter extends BasePresenter {
 			}
 		}
 
+		$diffrerences = UserService::getDifferences(array_keys($users), array_keys($persons));
+
 		//if user is not in contacts
-		foreach (UserService::getDifferences(array_keys($users), array_keys($persons))['add'] as $id) {
+		foreach ($diffrerences['add'] as $id) {
 			$user = $users[$id];
 			$person = new Google_Service_PeopleService_Person();
 			$person = self::setID($person, $id);
@@ -76,7 +78,7 @@ class PeoplePresenter extends BasePresenter {
 		}
 
 		//if contact exists but user is not member anymore
-		foreach (UserService::getDifferences(array_keys($users), array_keys($persons))['delete'] as $id) {
+		foreach ($diffrerences['delete'] as $id) {
 			$resourceName = $persons[$id];
 			$this->peopleService->people->deleteContact($resourceName);
 			$items[$id] = $resourceName;
