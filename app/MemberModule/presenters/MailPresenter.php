@@ -286,7 +286,7 @@ class MailPresenter extends LayerPresenter {
 			->where('user_id', MessageService::getDifferences($users, $recipients)['delete'])
 			->delete();
 
-		$this->flashMessage('Zráva byla uložena');
+		$this->flashMessage('Zpráva byla uložena');
 		$this->redirect("send#message/$id");
 	}
 
