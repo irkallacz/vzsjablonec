@@ -75,6 +75,12 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
+	public function actionDefault() {
+		if (($this->getUser()->isLoggedIn())and($this->backlink)) {
+			$this->restoreRequest($this->backlink);
+		}
+	}
+
 	public function renderIn() {
 		if ($this->backlink) {
 			$googleState = $this->stateCryptor->encryptState($this->backlink, 'google');
