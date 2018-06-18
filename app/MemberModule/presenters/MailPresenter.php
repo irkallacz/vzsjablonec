@@ -187,7 +187,7 @@ class MailPresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla');
 
-		//$form->addSubmit('ok', 'Odeslat');
+		$form->addSubmit('ok', 'Odeslat');
 		$form->onSuccess[] = [$this, 'mailFormSubmitted'];
 
 		return $form;

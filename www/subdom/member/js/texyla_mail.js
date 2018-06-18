@@ -15,6 +15,7 @@ toolbar: [
     'syntax'
 ],
 bottomLeftToolbar: ['edit','preview'],
-bottomRightEditToolbar: ['submit'],
-emoticonWindowDimensions: [200, 200]
-	};
+bottomRightEditToolbar: [],
+emoticonWindowDimensions: [200, 200],
+tabs: true
+};
