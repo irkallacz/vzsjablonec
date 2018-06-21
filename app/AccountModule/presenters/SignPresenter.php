@@ -374,7 +374,7 @@ class SignPresenter extends BasePresenter {
 //			throw new BadRequestException('Nesouhlasí doména původu');
 
 		if ($this->getUser()->isLoggedIn()) {
-			$code = $this->generateCode();
+			$code = Random::generate();
 			$timestamp = time();
 			$signature = $this->ssoAuthenticator->getSignature($this->user->getIdentity(), $code, $timestamp);
 
@@ -385,7 +385,4 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
-	private function generateCode(){
-		return Random::generate();
-	}
 }
