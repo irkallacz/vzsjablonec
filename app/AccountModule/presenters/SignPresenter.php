@@ -97,6 +97,11 @@ class SignPresenter extends BasePresenter {
 	}
 
 
+	/**
+	 * @param string $code
+	 * @param string|NULL $state
+	 * @throws \Nette\Application\AbortException
+	 */
 	public function actionGoogleLogin(string $code, string $state = NULL) {
 		if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'google');
 
@@ -117,6 +122,10 @@ class SignPresenter extends BasePresenter {
 
 	}
 
+	/**
+	 * @param string|NULL $state
+	 * @throws \Nette\Application\AbortException
+	 */
 	public function actionFacebookLogin(string $state = NULL) {
 		if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'facebook');
 
@@ -178,6 +187,10 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 * @param int $loginMethod
+	 * @throws \Nette\Application\AbortException
+	 */
 	private function afterLogin(int $loginMethod = UserService::LOGIN_METHOD_PASSWORD) {
 		$userId = $this->getUser()->getId();
 		$this->getUser()->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
@@ -261,7 +274,7 @@ class SignPresenter extends BasePresenter {
 
 
 	/**
-	 * @param $pubkey
+	 * @param string $pubkey
 	 * @throws BadRequestException
 	 */
 	public function renderRestorePassword(string $pubkey) {
@@ -346,6 +359,13 @@ class SignPresenter extends BasePresenter {
 		$this->redirect('in');
 	}
 
+	/**
+	 * @param string $redirect
+	 * @param string $link
+	 * @throws BadRequestException
+	 * @throws \Nette\Application\AbortException
+	 * @throws \Nette\Utils\JsonException
+	 */
 	public function actionSso(string $redirect, string $link = '') {
 		if (!in_array($redirect, self::REDIRECTS))
 			throw new BadRequestException('Redirect nemá povolenou hodnotu');
