@@ -3,7 +3,8 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: samueldebruyn/debian-git
+image: vzsjablonec/debian-git
+#image: samueldebruyn/debian-git
 
 pipelines:
   branches:          
@@ -25,12 +26,12 @@ pipelines:
           script:
             - echo "Updating testing server"
             - apt-get update
-            - apt-get -qq install git-ftp
+            #- apt-get -qq install git-ftp
             - git ftp push --force --user $FTP_USER_TEST --passwd $FTP_PASSWD_TEST ftpes://$FTP_SERVER_TEST
-            - apt-get -qq install lftp
-            - mkdir ~/.lftp
-            - touch ~/.lftp/rc
-            - echo -n "set ssl:verify-certificate no" > ~/.lftp/rc
+            #- apt-get -qq install lftp
+            #- mkdir ~/.lftp
+            #- touch ~/.lftp/rc
+            #- echo -n "set ssl:verify-certificate no" > ~/.lftp/rc
             - lftp -e 'rm -r /tmp/cache; mkdir -p /tmp/cache; bye' -u $FTP_USER_TEST,$FTP_PASSWD_TEST $FTP_SERVER_TEST
             - echo "Testing server updated"
   custom:
@@ -50,10 +51,10 @@ pipelines:
         - step:
             script:
               - apt-get update
-              - apt-get -qq install git-ftp
+              #- apt-get -qq install git-ftp
               - git ftp init --user $FTP_USER_TEST --passwd $FTP_PASSWD_TEST ftpes://$FTP_SERVER_TEST
-              - apt-get -qq install lftp
-              - mkdir ~/.lftp
-              - touch ~/.lftp/rc
-              - echo -n "set ssl:verify-certificate no" > ~/.lftp/rc
+              #- apt-get -qq install lftp
+              #- mkdir ~/.lftp
+              #- touch ~/.lftp/rc
+              #- echo -n "set ssl:verify-certificate no" > ~/.lftp/rc
               - lftp -e 'rm -r /tmp/cache; mkdir -p /tmp/cache; bye' -u $FTP_USER_TEST,$FTP_PASSWD_TEST $FTP_SERVER_TEST
