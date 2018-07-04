@@ -225,12 +225,15 @@ class AlbumPresenter extends BasePresenter {
 				$thumb = NULL;
 			}
 
+			$order = $this->gallery->getPhotosCount($album_id);
+
 			$values = [
 				'filename' => $name,
 				'album_id' => $album_id,
 				'date_add' => new DateTime,
 				'user_id' => $this->user->id,
-				'thumb' => $thumb
+				'thumb' => $thumb,
+				'order' => $order
 			];
 
 			$ext = pathinfo($name, PATHINFO_EXTENSION);
