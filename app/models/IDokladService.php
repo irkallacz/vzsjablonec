@@ -18,7 +18,7 @@ use Nette\Database\Table\IRow;
 use Nette\Http\Response;
 use Nette\SmartObject;
 
-class IDokladService {
+class IdokladService {
 	use SmartObject;
 
 	const PAGE_SIZE = 200;
@@ -30,7 +30,7 @@ class IDokladService {
 	private $credentialsFilePath;
 
 	/**
-	 * IDokladService constructor.
+	 * IdokladService constructor.
 	 * @param iDoklad $iDoklad
 	 * @param string $credentialsFilePath
 	 */

@@ -8,7 +8,7 @@
 
 namespace App\CronModule\Presenters;
 
-use App\Model\IDokladService;
+use App\Model\IdokladService;
 use App\Model\UserService;
 use DateTimeZone;
 use malcanek\iDoklad\iDokladException;
@@ -19,15 +19,15 @@ use Nette\Utils\DateTime;
 use Tracy\Debugger;
 
 /**
- * Class IDokladPresenter
+ * Class IdokladPresenter
  * @package App\CronModule\presenters
  */
-class IDokladPresenter extends BasePresenter {
+class IdokladPresenter extends BasePresenter {
 
 	/** @var UserService @inject */
 	public $userService;
 
-	/** @var IDokladService @inject */
+	/** @var IdokladService @inject */
 	public $iDokladService;
 
 	/**
@@ -42,7 +42,7 @@ class IDokladPresenter extends BasePresenter {
 
 		$this->iDokladService->authenticate();
 		$request = $this->iDokladService->requestsContacts();
-		$request->setPageSize(IDokladService::PAGE_SIZE);
+		$request->setPageSize(IdokladService::PAGE_SIZE);
 		$response = $this->iDokladService->sendRequest($request);
 		$data = $this->iDokladService->getData($request, $response);
 
