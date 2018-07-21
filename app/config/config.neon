@@ -95,7 +95,7 @@ services:
 	- App\Model\ForumService
 	- App\Model\UserService
 	- App\Model\DokumentyService(%google.driveDir%)
-	- App\Model\IDokladService(%idoklad.credentialsFile%)
+	- App\Model\IdokladService(%idoklad.credentialsFile%)
 	- App\Model\AnketyService
 	- App\Model\RatingService
 	- App\Model\MessageService
