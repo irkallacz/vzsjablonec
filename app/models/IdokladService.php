@@ -116,7 +116,12 @@ class IdokladService {
 	 * @throws iDokladException
 	 */
 	public function sendRequest(iDokladRequest $request) {
-		$response = $this->iDoklad->sendRequest($request);
+		try {
+			$response = $this->iDoklad->sendRequest($request);
+		} catch (iDokladException $iDe) {
+			$this->iDoklad->authCCF();
+			$response = $this->iDoklad->sendRequest($request);
+		}
 
 		if ($response->getCode() != Response::S200_OK)
 			throw new iDokladException($response->getCode().' '.$response->getCodeText());
@@ -133,7 +138,7 @@ class IdokladService {
 			'CompanyName' 	=> UserService::getFullName($user),
 			'Firstname' 	=> $user->name,
 			'Surname' 		=> $user->surname,
-			'Email' 		=> $user->mail,
+			'Email' 		=> (($user->send_to_second) && (isset($user->mail2))) ? $user->mail2 : $user->mail,
 			'Mobile'		=> $user->telefon,
 			'City'			=> $user->mesto,
 			'Street'		=> $user->ulice,
