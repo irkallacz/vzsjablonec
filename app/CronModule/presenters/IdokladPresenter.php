@@ -34,8 +34,9 @@ class IdokladPresenter extends BasePresenter {
 	 * get all iDoklad contacts
 	 *  - create new if iDokladId not exists
 	 *  - update if there is a change
+	 * @param bool $force
 	 */
-	public function actionUpdate() {
+	public function actionUpdate(bool $force = FALSE) {
 		$this->setView('default');
 		$items = [];
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);
@@ -59,7 +60,7 @@ class IdokladPresenter extends BasePresenter {
 			} else {
 				$update_time = new DateTime($contacts[$user->iDokladId]['DateLastChange']);
 				$update_time->setTimezone(new DateTimeZone('+0100'));
-				if ($user->date_update > $update_time) {
+				if ($force || $user->date_update > $update_time) {
 					$this->iDokladService->updateContact($user->iDokladId, $user);
 					$items[$user->id] = UserService::getFullName($user) . ' - UPDATED';
 				} else {
