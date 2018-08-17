@@ -54,7 +54,7 @@ class HlasovaniService extends DatabaseService {
 	 */
 	public function getHlasovaniNews(DateTime $date, $isBoard = FALSE) {
 		$hlasovani = $this->getAnkety()->where('date_add > ?', $date);
-		if ($isBoard) $hlasovani->where('date_deatline < NOW() OR locked = ?', 1);
+		if (!$isBoard) $hlasovani->where('date_deatline < NOW() OR locked = ?', 1);
 		return $hlasovani;
 	}
 
