@@ -62,6 +62,7 @@ CREATE TABLE `akce_member` (
   `akce_id` smallint(6) NOT NULL,
   `user_id` smallint(5) unsigned NOT NULL,
   `organizator` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `created_by` smallint(5) unsigned NOT NULL,
   `date_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`akce_id`,`user_id`,`organizator`),
   KEY `akce_id` (`akce_id`),

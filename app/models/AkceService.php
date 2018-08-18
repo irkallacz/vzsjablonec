@@ -120,9 +120,11 @@ class AkceService extends DatabaseService {
 	 * @param int $user_id
 	 * @param int $akce_id
 	 * @param bool $org
+	 * @param int $created_by
 	 */
-	public function addMemberToAction(int $user_id, int $akce_id, bool $org = FALSE) {
+	public function addMemberToAction(int $user_id, int $akce_id, bool $org = FALSE, int $created_by = null) {
 		$values = ['user_id' => $user_id, 'akce_id' => $akce_id, 'organizator' => $org];
+		$values['created_by'] = ($created_by) ? $created_by : $user_id;
 		$this->database->query('INSERT INTO `'.self::TABLE_AKCE_MEMBER_NAME.'`', $values);
 	}
 

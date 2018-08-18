@@ -119,7 +119,7 @@ class SignEventControl extends Control {
 	 * @param bool $isOrg
 	 */
 	private function logUser(int $userId, bool $isOrg) {
-		$this->akceService->addMemberToAction($userId, $this->akce->id, $isOrg);
+		$this->akceService->addMemberToAction($userId, $this->akce->id, $isOrg, $this->getPresenter()->getUser()->getId());
 		if ($isOrg) $this->orgList[$userId] = $userId;
 		else $this->userList[$userId] = $userId;
 	}
