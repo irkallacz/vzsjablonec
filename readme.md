@@ -1,7 +1,5 @@
 # VZS Jablonec Web Project
 
-*This is backup of official repository at https://bitbucket.org/vzsjablonec/vzsjablonec/*
-
 VZS Jablonec has unique web architecture. Front web is static Wordpress installation, but there are bunch subdomains witch are endpoints for one big Nette framework application, where each subdomain is one module. In organization, Google Apps are widely used, so app make good use of that too. 
 
 More at https://member.vzs-jablonec.cz
