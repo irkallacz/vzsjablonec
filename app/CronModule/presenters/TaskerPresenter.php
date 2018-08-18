@@ -15,7 +15,7 @@ class TaskerPresenter extends BasePresenter {
 		0 => 'Calendar:default',
 		1 => 'Drive:default',
 		2 => 'People:update',
-		3 => 'IDoklad:update',
+		3 => 'Idoklad:update',
 		4 => ':Photo:Thumbs:default',
 	];
 

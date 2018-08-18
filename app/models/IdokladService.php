@@ -18,7 +18,7 @@ use Nette\Database\Table\IRow;
 use Nette\Http\Response;
 use Nette\SmartObject;
 
-class IDokladService {
+class IdokladService {
 	use SmartObject;
 
 	const PAGE_SIZE = 200;
@@ -30,7 +30,7 @@ class IDokladService {
 	private $credentialsFilePath;
 
 	/**
-	 * IDokladService constructor.
+	 * IdokladService constructor.
 	 * @param iDoklad $iDoklad
 	 * @param string $credentialsFilePath
 	 */
@@ -116,7 +116,12 @@ class IDokladService {
 	 * @throws iDokladException
 	 */
 	public function sendRequest(iDokladRequest $request) {
-		$response = $this->iDoklad->sendRequest($request);
+		try {
+			$response = $this->iDoklad->sendRequest($request);
+		} catch (iDokladException $iDe) {
+			$this->iDoklad->authCCF();
+			$response = $this->iDoklad->sendRequest($request);
+		}
 
 		if ($response->getCode() != Response::S200_OK)
 			throw new iDokladException($response->getCode().' '.$response->getCodeText());
@@ -133,7 +138,7 @@ class IDokladService {
 			'CompanyName' 	=> UserService::getFullName($user),
 			'Firstname' 	=> $user->name,
 			'Surname' 		=> $user->surname,
-			'Email' 		=> $user->mail,
+			'Email' 		=> (($user->send_to_second) && (isset($user->mail2))) ? $user->mail2 : $user->mail,
 			'Mobile'		=> $user->telefon,
 			'City'			=> $user->mesto,
 			'Street'		=> $user->ulice,

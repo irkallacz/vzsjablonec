@@ -8,7 +8,7 @@
 
 namespace App\CronModule\Presenters;
 
-use App\Model\IDokladService;
+use App\Model\IdokladService;
 use App\Model\UserService;
 use DateTimeZone;
 use malcanek\iDoklad\iDokladException;
@@ -19,30 +19,31 @@ use Nette\Utils\DateTime;
 use Tracy\Debugger;
 
 /**
- * Class IDokladPresenter
+ * Class IdokladPresenter
  * @package App\CronModule\presenters
  */
-class IDokladPresenter extends BasePresenter {
+class IdokladPresenter extends BasePresenter {
 
 	/** @var UserService @inject */
 	public $userService;
 
-	/** @var IDokladService @inject */
+	/** @var IdokladService @inject */
 	public $iDokladService;
 
 	/**
 	 * get all iDoklad contacts
 	 *  - create new if iDokladId not exists
 	 *  - update if there is a change
+	 * @param bool $force
 	 */
-	public function actionUpdate() {
+	public function actionUpdate(bool $force = FALSE) {
 		$this->setView('default');
 		$items = [];
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);
 
 		$this->iDokladService->authenticate();
 		$request = $this->iDokladService->requestsContacts();
-		$request->setPageSize(IDokladService::PAGE_SIZE);
+		$request->setPageSize(IdokladService::PAGE_SIZE);
 		$response = $this->iDokladService->sendRequest($request);
 		$data = $this->iDokladService->getData($request, $response);
 
@@ -59,7 +60,7 @@ class IDokladPresenter extends BasePresenter {
 			} else {
 				$update_time = new DateTime($contacts[$user->iDokladId]['DateLastChange']);
 				$update_time->setTimezone(new DateTimeZone('+0100'));
-				if ($user->date_update > $update_time) {
+				if ($force || $user->date_update > $update_time) {
 					$this->iDokladService->updateContact($user->iDokladId, $user);
 					$items[$user->id] = UserService::getFullName($user) . ' - UPDATED';
 				} else {
