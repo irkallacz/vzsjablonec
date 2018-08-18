@@ -38,16 +38,17 @@ class PeoplePresenter extends BasePresenter {
 	/**
 	 * go through the contacts, update if there is a change
 	 * work only on contact with ID field
+	 * @param bool $force
 	 */
-	public function actionUpdate() {
-		$this->setView('../Cron.default');
-
-		$items = [];
+	public function actionUpdate(bool $force = FALSE) {
+		//$this->setView('../Cron.default');
 
 		$me = $this->peopleService->people_connections->listPeopleConnections('people/me', ['personFields' => self::PERSON_FIELDS . ',metadata']);
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->fetchPairs('id');
 
 		$persons = [];
+		$items = [];
+
 		foreach ($me->getConnections() as $person) {
 			$id = self::getID($person);
 			if ($id) {
@@ -57,10 +58,10 @@ class PeoplePresenter extends BasePresenter {
 					$user = $users[$id];
 					$update_time = self::getUpdateTime($person);
 					//if there is a change
-					if ($user->date_update > $update_time) {
+					if (($force)or($user->date_update > $update_time)) {
 						$person = self::setPerson($person, $user);
 						$this->peopleService->people->updateContact($person->resourceName, $person, ['updatePersonFields' => self::PERSON_FIELDS]);
-						$items[$id] = $person->resourceName;
+						$item[$id] = $person->resourceName;
 					}
 				}
 			}
@@ -74,38 +75,35 @@ class PeoplePresenter extends BasePresenter {
 			$person = new Google_Service_PeopleService_Person();
 			$person = self::setID($person, $id);
 			$person = self::setPerson($person, $user);
-			$items[$id] = $this->peopleService->people->createContact($person)->resourceName;
+			$item[$id] = $this->peopleService->people->createContact($person)->resourceName;
 		}
 
 		//if contact exists but user is not member anymore
 		foreach ($diffrerences['delete'] as $id) {
 			$resourceName = $persons[$id];
 			$this->peopleService->people->deleteContact($resourceName);
-			$items[$id] = $resourceName;
+			$item[$id] = $resourceName;
 		}
 
-		$this->template->items = $items;
+		$this->template->add('items', $items);
 	}
 
 	/**
 	 * put all user to contacts
 	 */
 	public function actionDefaultSync() {
-		$this->setView('../Cron.default');
+		//$this->setView('../Cron.default');
 
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL);
 
-		$persons = [];
 		foreach ($users as $user) {
 			/** @var ActiveRow $user*/
 
 			$person = new Google_Service_PeopleService_Person;
 			$person = self::setID($person, $user->id);
 			$person = self::setPerson($person, $user);
-			$persons[$user->id] = $this->peopleService->people->createContact($person)->resourceName;
+			print $user->id .' '. $this->peopleService->people->createContact($person)->resourceName . "<br>\n";
 		}
-
-		$this->template->items = $persons;
 	}
 
 	/**
