@@ -144,7 +144,7 @@ class MailPresenter extends LayerPresenter {
 		$users = $this->userService->getUsersByAkceId($id)->where('NOT role', NULL);
 
 		$form['to']->setDefaultValue(join(',', $users->fetchPairs('id', 'mail')));
-		$form['subject']->setDefaultValue($akce->name . ': ');
+		$form['subject']->setDefaultValue($akce->name);
 
 		$this->template->isAkce = TRUE;
 
