@@ -45,7 +45,7 @@ class RegisterPresenter extends BasePresenter {
 
 		$form->addGroup(NULL);
 
-		$form->addCheckbox('check', Html::el()->setHtml('Souhlasím s <a target="_blank" href="gdpr">zpracováním osobních údajů'))
+		$form->addCheckbox('check', Html::el()->setHtml('Souhlasím se <a target="_blank" href="gdpr">zpracováním osobních údajů'))
 			->setOmitted()
 			->setRequired('Musíte souhlasit se zpracováním osobních údajů')
 			->setDefaultValue(TRUE);
@@ -63,7 +63,7 @@ class RegisterPresenter extends BasePresenter {
 		$form->onValidate[] = function (Form $form){
 			$values = $form->getValues();
 			if (($values->date_born->diff(date_create())->y < 18)and((!$values->mail2)or(!$values->telefon2))) {
-				$form->addError('U dětí je potřeba vyplnit e-mail a telefon rodičů');
+				$form->addError('U nezletilých je potřeba vyplnit e-mail a telefon rodičů');
 			}
 		};
 
@@ -78,7 +78,7 @@ class RegisterPresenter extends BasePresenter {
 			$values->date_add = $now;
 
 			$user = $this->userService->addUser($values, UserService::DELETED_LEVEL);
-			$this->flashMessage('Zánam byl uložen, čekejte prosím na e-mail od administrátora');
+			$this->flashMessage('Záznam byl uložen, čekejte prosím na e-mail od administrátora');
 
 			$this->addRegistrationMail($user);
 
