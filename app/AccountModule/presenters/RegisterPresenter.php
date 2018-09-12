@@ -53,7 +53,8 @@ class RegisterPresenter extends BasePresenter {
 		$form->addGroup('Oveření');
 
 		$form->addReCaptcha('recaptcha')
-			->setRequired('Potvrďte, že nejste robot');
+			->setRequired('Potvrďte, že nejste robot')
+			->setOmitted();
 
 		$form->addGroup(NULL);
 
