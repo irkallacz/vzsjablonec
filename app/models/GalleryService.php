@@ -93,7 +93,7 @@ class GalleryService {
 	 * @return int
 	 */
 	public function getPhotosCount($album_id) {
-		$result = $this->database->query('SELECT id FROM album_photo WHERE order IS NOT NULL AND album_id = ?', $album_id);
+		$result = $this->database->query('SELECT `id` FROM `album_photo` WHERE `order` IS NOT NULL AND `album_id` = ?', $album_id);
 		return $result->getRowCount();
 	}
 
