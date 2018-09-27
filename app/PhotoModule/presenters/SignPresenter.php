@@ -56,19 +56,6 @@ class SignPresenter extends BasePresenter {
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
-//		$referer = $this->httpRequest->getReferer();
-//
-//		if ($referer) {
-//			if ($referer->host != $this->httpRequest->url->host)
-//				throw new BadRequestException('Nesouhlasí doména původu');
-//
-//			$httpRequest = new Request(new UrlScript($referer->getAbsoluteUrl()));
-//			$appRequest = $this->router->match($httpRequest);
-//
-//			if (($appRequest)and($appRequest->getPresenterName() !== 'Sign:Sign'))
-//				throw new BadRequestException('Nesouhlasí místo původu');
-//		}
-
 		try {
 			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature);
 		} catch (AuthenticationException $e) {
@@ -90,7 +77,6 @@ class SignPresenter extends BasePresenter {
 				$appRequest = $this->router->match($httpRequest);
 
 				if (($appRequest) and (Strings::startsWith($appRequest->presenterName, 'Photo'))) {
-					Debugger::barDump($appRequest);
 					$code = ':' . $appRequest->presenterName;
 					$param = $appRequest->parameters;
 					if (array_key_exists('action', $param)) {
