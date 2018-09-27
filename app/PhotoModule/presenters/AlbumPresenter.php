@@ -4,6 +4,7 @@ namespace App\PhotoModule\Presenters;
 
 use App\Model\GalleryService;
 use App\Model\UserService;
+use App\PhotoModule\Image;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
@@ -12,12 +13,9 @@ use Nette\Database\Table\IRow;
 use Nette\InvalidArgumentException;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
-use Nette\Utils\Image;
-use Nette\Utils\Strings;
 use Nette\Database\SqlLiteral;
 use Echo511\Plupload;
 use Echo511\Plupload\Entity\UploadQueue;
-use Nette\Http\FileUpload;
 use lsolesen\pel\PelJpeg;
 use Tracy\Debugger;
 
@@ -202,49 +200,60 @@ class AlbumPresenter extends BasePresenter {
 	public function createComponentPlupload() {
 		$plupload = $this->controlFactory->create();
 
-		$plupload->maxFileSize = '5mb';
 		$plupload->maxChunkSize = '1mb';
 		$plupload->allowedExtensions = 'jpg,jpeg,gif,png';
 
 		$slug = (string) $this->getParameter('slug');
 		$album = $this->gallery->getAlbumBySlug($slug);
-		$album_id = $album->id;
+		$albumId = $album->id;
 
-		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($album_id) {
+		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($albumId) {
 			$upload = $uploadQueue->getLastUpload();
 
-			$name = $upload->getName();
-			$filename = self::PHOTO_DIR . '/' . $album_id . '/' . $name;
-			$filepath = WWW_DIR . '/' . $filename;
+			$filename = $upload->getName();
+			$filepath = WWW_DIR . '/' . Image::PHOTO_DIR . '/' . $albumId . '/' . $filename;
 			$upload->move($filepath);
 
-
-			try {
-				$thumb = $this->getThumbName($name, $album_id);
-			} catch (\Exception $e){
-				$thumb = NULL;
-			}
-
-			$order = $this->gallery->getPhotosCount($album_id);
-
-			$values = [
-				'filename' => $name,
-				'album_id' => $album_id,
-				'date_add' => new DateTime,
-				'user_id' => $this->user->id,
-				'thumb' => $thumb,
-				'order' => $order
-			];
-
-			$ext = pathinfo($name, PATHINFO_EXTENSION);
+			$ext = pathinfo($filename, PATHINFO_EXTENSION);
 
 			if (($ext == 'jpg')or($ext == 'jpeg')) {
 				$exif = exif_read_data($filepath);
+				if (array_key_exists('FileDateTime', $exif)) {
+					$datetime = new Datetime();
+					$datetime->setTimestamp($exif['FileDateTime']);
+				}
+				if (array_key_exists('DateTime', $exif)) {
+					$datetime = new Datetime($exif['DateTime']);
+					if ($datetime === FALSE) $datetime = NULL;
+				}
 				if (array_key_exists('DateTimeOriginal', $exif)) {
 					$datetime = new Datetime($exif['DateTimeOriginal']);
-					if ($datetime != FALSE) $values['date_taken'] = $datetime;
+					if ($datetime === FALSE) $datetime = NULL;
 				}
-			}
+			}else $datetime = NULL;
+
+			$image = new Image($filepath);
+			$needSave = FALSE;
+
+			if ($image->adaptiveResize()) $needSave = TRUE;
+			if ($image->fixOrientation()) $needSave = TRUE;
+
+			if ($needSave) $image->save($filepath);
+
+			$thumbname = $image->generateThumbnail($albumId);
+			$image->clear();
+
+			$order = $this->gallery->getPhotosCount($albumId);
+
+			$values = [
+				'filename' => $filename,
+				'album_id' => $albumId,
+				'date_add' => new DateTime,
+				'user_id' => $this->user->id,
+				'thumb' => $thumbname,
+				'order' => $order,
+				'date_taken' => $datetime
+			];
 
 			$photo = $this->gallery->addPhoto($values);
 		};
@@ -402,38 +411,30 @@ class AlbumPresenter extends BasePresenter {
 	}
 
 	/**
-	 * @param float $angle
+	 * @param int $degree
 	 * @return array
 	 * @allow(member)
 	 */
-	private function photoFormImagesTurn(float $angle) {
+	private function photoFormImagesTurn(int $degree) {
 		$selected = $this->getPhotoFromSelectedPhotos();
 
 		$photos = $this->gallery->getPhotos()->where('id', $selected);
 
 		foreach ($photos as $photo) {
-			$filename = self::PHOTO_DIR . '/' . $photo->album_id . '/' . $photo->filename;
+			$filename = WWW_DIR . '/' . Image::PHOTO_DIR . '/' . $photo->album_id . '/' . $photo->filename;
 
-			$inputExifFile = new PelJpeg($filename);
-			$exif = $inputExifFile->getExif();
-			unset($inputExifFile);
-
-			$image = Image::fromFile($filename);
-			$image->rotate($angle, 0);
-			$image->save($filename, 100, Image::JPEG);
-
-			if ($exif) {
-				$outputExifFile = new PelJpeg($filename);
-				$outputExifFile->setExif($exif);
-				$outputExifFile->saveFile($filename);
-			}
+			$image = new Image($filename);
+			$image->rotate($degree);
+			$image->save($filename);
 
 			try {
-				$thumb = $this->getThumbName($photo->filename, $photo->album_id);
+				$thumb = $image->generateThumbnail($photo->album_id);
 				$this->gallery->updatePhoto($photo->id, ['thumb' => $thumb]);
 			} catch (\Exception $e){
 				$this->gallery->updatePhoto($photo->id, ['thumb' => NULL]);
 			}
+
+			$image->clear();
 		}
 
 		return $selected;
@@ -443,7 +444,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @allow(member)
 	 */
 	public function photoFormTurnLeft() {
-		$selected = $this->photoFormImagesTurn(90);
+		$selected = $this->photoFormImagesTurn(-90);
 
 		$this->flashMessage('Doleva bylo otočeno ' . count($selected) . ' fotografií');
 		$this->redirect('this');
@@ -453,7 +454,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @allow(member)
 	 */
 	public function photoFormTurnRight() {
-		$selected = $this->photoFormImagesTurn(-90);
+		$selected = $this->photoFormImagesTurn( 90);
 
 		$this->flashMessage('Doprava bylo otočeno ' . count($selected) . ' fotografií');
 		$this->redirect('this');

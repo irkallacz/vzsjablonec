@@ -3,6 +3,7 @@
 namespace App\PhotoModule\Presenters;
 
 use App\Model\GalleryService;
+use App\PhotoModule\Image;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
@@ -106,8 +107,8 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnot
 
 		$album->update(['slug' => $album->id . '-' . $album->slug]);
 
-		mkdir(WWW_DIR . '/' . self::PHOTO_DIR . '/' . $album->id, 0755);
-		mkdir(WWW_DIR . '/' . self::PHOTO_DIR . '/' . self::THUMB_DIR . '/' . $album->id, 0755);
+		mkdir(WWW_DIR . '/' . Image::PHOTO_DIR . '/' . $album->id, 0755);
+		mkdir(WWW_DIR . '/' . Image::PHOTO_DIR . '/' . Image::THUMB_DIR . '/' . $album->id, 0755);
 		
 		$this->flashMessage('Album bylo přidáno');
 

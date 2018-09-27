@@ -9,9 +9,8 @@
 namespace App\PhotoModule\Presenters;
 
 use App\Model\GalleryService;
-use Nette\Utils\Image;
+use App\PhotoModule\Image;
 use Nette\Utils\ImageException;
-use Nette\Utils\Strings;
 use Tracy\Debugger;
 
 class ThumbsPresenter extends BasePresenter {
@@ -30,9 +29,13 @@ class ThumbsPresenter extends BasePresenter {
 
 		foreach ($photos as $photo) {
 			try{
-				$filename = $this->getThumbName($photo->filename, $photo->album_id);
-				$this->galleryService->updatePhoto($photo->id, ['thumb' => $filename]);
-				$this->template->items[] = $photo->album_id . '/' . $filename;
+				$filename = WWW_DIR . '../photo/' . Image::PHOTO_DIR . '/' . Image::THUMB_DIR . '/' . $photo->album_id . '/' . $photo->filename;
+				$image = new Image($filename);
+				$thumbname = $image->generateThumbnail($photo->album_id);
+				$image->clear();
+
+				$this->galleryService->updatePhoto($photo->id, ['thumb' => $thumbname]);
+				$this->template->items[] = $photo->album_id . '/' . $thumbname;
 			} catch (ImageException $e){
 				Debugger::log($photo->id . ' '. $photo->album_id . '/'. $photo->filename);
 			}
@@ -45,7 +48,7 @@ class ThumbsPresenter extends BasePresenter {
 		$this->template->items = [];
 
 		foreach ($albums as $album) {
-			$dirname = WWW_DIR . '/' . self::PHOTO_DIR . '/' . self::THUMB_DIR . '/' . $album->id . '/';
+			$dirname = WWW_DIR . '/' . Image::PHOTO_DIR . '/' . Image::THUMB_DIR . '/' . $album->id . '/';
 			if (!file_exists($dirname)) {
 				mkdir($dirname, 0755);
 				$this->template->items[] = $dirname;
