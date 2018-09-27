@@ -107,7 +107,7 @@
 					{$member->date_add|date:'d.m.Y'}
 				</span>
 			</li>
-			<li n:if="$member->date_update">
+			<li n:if="($member->date_update) and ($member->date_add != $member->date_update)">
 				{include svg calendar-o} <b>Datum úpravy:</b>
 				<span title="{$member->date_update|timeAgoInWords}">
 					{$member->date_update|date:'d.m.Y'}
