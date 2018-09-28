@@ -8,7 +8,9 @@ use Nette\Security\IAuthenticator;
 use Nette\Security\AuthenticationException;
 use Nette\Security\Identity;
 use Nette\Security\IIdentity;
+use Nette\Security\IUserStorage;
 use Nette\Security\User;
+use Nette\Utils\DateTime;
 use Nette\Utils\Json;
 
 
@@ -37,9 +39,10 @@ class SsoAuthenticator extends BaseAuthenticator {
 	 * @param  string $code
 	 * @param int $timestamp
 	 * @param  string $signature
+	 * @param int $module
 	 * @throws AuthenticationException
 	 */
-	public function login(int $userId, string $code, int $timestamp, string $signature) {
+	public function login(int $userId, string $code, int $timestamp, string $signature, int $module) {
 		if (abs(time() - $timestamp) > 60) {
 			throw new AuthenticationException('Neplatná časová značka');
 		}
@@ -56,7 +59,13 @@ class SsoAuthenticator extends BaseAuthenticator {
 		$rights = $this->userService->getRightsForUser($user);
 		$data = $this->userService->getDataForUser($user);
 
-		$this->user->login(new Identity($user->id, $rights, $data));
+		$dateLast = $this->userService->getLastLoginByUserId($userId, $module);
+		$data['date_last'] = $dateLast ? $dateLast : new DateTime();
+
+		$this->user->login(new Identity($userId, $rights, $data));
+		$this->user->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
+
+		$this->userService->addModuleLogin($userId, $module);
 	}
 
 	/**

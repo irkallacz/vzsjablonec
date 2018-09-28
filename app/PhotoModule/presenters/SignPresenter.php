@@ -3,17 +3,13 @@
 namespace App\PhotoModule\Presenters;
 
 use App\Authenticator\SsoAuthenticator;
-use App\Model\GalleryService;
 use App\Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\IRouter;
 use Nette\Http\Request;
 use Nette\Http\UrlScript;
 use Nette\Security\AuthenticationException;
-use Nette\Security\IUserStorage;
-use Nette\Security\User;
 use Nette\Utils\Arrays;
-use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 
@@ -56,18 +52,14 @@ class SignPresenter extends BasePresenter {
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
+		if ($this->getUser()->isLoggedIn()) $this->redirect('Album:default');
+
 		try {
-			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature);
+			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature, UserService::MODULE_PHOTO);
 		} catch (AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('default');
 		}
-
-		$this->getUser()->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
-
-		$dateLast = $this->userService->getLastLoginByUserId($userId, UserService::MODULE_PHOTO);
-		$this->getUser()->getIdentity()->date_last = $dateLast ? $dateLast : new DateTime();
-		$this->userService->addModuleLogin($userId, UserService::MODULE_PHOTO);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
 		else {

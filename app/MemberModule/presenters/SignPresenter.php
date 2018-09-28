@@ -4,12 +4,7 @@ namespace App\MemberModule\Presenters;
 
 use App\Authenticator\SsoAuthenticator;
 use Nette\Application\BadRequestException;
-use Nette\Application\IRouter;
-use Nette\Http\Request;
-use Nette\Http\UrlScript;
 use Nette\Security\AuthenticationException;
-use Nette\Security\IUserStorage;
-use Nette\Utils\DateTime;
 use App\Model\UserService;
 use Tracy\Debugger;
 
@@ -52,18 +47,14 @@ class SignPresenter extends BasePresenter {
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
+		if ($this->getUser()->isLoggedIn()) $this->redirect('News:');
+
 		try {
-			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature);
+			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature, UserService::MODULE_MEMBER);
 		} catch (AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('default');
 		}
-
-		$this->getUser()->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
-
-		$dateLast = $this->userService->getLastLoginByUserId($userId, UserService::MODULE_MEMBER);
-		$this->getUser()->getIdentity()->date_last = $dateLast ? $dateLast : new DateTime();
-		$this->userService->addModuleLogin($userId, UserService::MODULE_MEMBER);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
 		else $this->redirect('News:default');
