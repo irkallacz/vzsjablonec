@@ -16,7 +16,6 @@ use Nette\Utils\DateTime;
 use Nette\Database\SqlLiteral;
 use Echo511\Plupload;
 use Echo511\Plupload\Entity\UploadQueue;
-use lsolesen\pel\PelJpeg;
 use Tracy\Debugger;
 
 class AlbumPresenter extends BasePresenter {

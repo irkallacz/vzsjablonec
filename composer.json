@@ -26,7 +26,6 @@
 		"webchemistry/forms-multiplier": "^2.0",
 		"joseki/webloader-filters": "^1.1",
 		"echo511/plupload": "^2.1",
-		"lsolesen/pel": "^0.9.6",
 		"tedivm/stash": "^0.14.2",
 		"kertz/twitteroauth": "dev-master",
 		"venca-x/social-login": "^1.0",
