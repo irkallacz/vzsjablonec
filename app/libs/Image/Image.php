@@ -31,13 +31,6 @@ class Image extends \Imagick {
 	/** @var int */
 	const SIZE_THRESHOLD = 2;
 
-	/** @var array */
-	const ROTATIONS = [
-		\Imagick::ORIENTATION_BOTTOMRIGHT	=> 180,
-		\Imagick::ORIENTATION_RIGHTTOP		=>  90,
-		\Imagick::ORIENTATION_LEFTBOTTOM	=> -90,
-	];
-
 	/**
 	 * Image constructor.
 	 */
@@ -58,8 +51,9 @@ class Image extends \Imagick {
 	 */
 	public function adaptiveResize(){
 		$size = $this->getSize();
-		if ($size > 2) {
-			$ratio = 1 / floor($size / 2);
+		if ($size > self::SIZE_THRESHOLD) {
+			$ratio = 1 / floor($size / self::SIZE_THRESHOLD);
+			//$ratio = min(round((self::SIZE_THRESHOLD) / $size, 1),1);
 			$width = round($this->getImageWidth() * $ratio);
 			$this->adaptiveResizeImage($width, 0);
 			return TRUE;
