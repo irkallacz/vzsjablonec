@@ -164,23 +164,19 @@ class SignEventControl extends Control {
 		}
 	}
 
-
-	private function getLogginList(){
-		$logList = $this->getLocalMemberList();
-
-		$list = ($this->getPresenter()->getUser()->isInRole('admin')) ? $this->userService->getUsers() : $this->userService->getUsers(UserService::MEMBER_LEVEL);
-		$list->select('id, CONCAT(surname," ",name)AS jmeno')->order('surname, name');
-		if ($logList) $list->where('NOT id', $logList);
-
-		return $list->fetchPairs('id', 'jmeno');
-	}
 	/**
 	 * @return Form
 	 */
 	public function createComponentLogginForm() {
 		$form = new Form;
 
-		$list = $this->getLogginList();
+		$userLevel = ($this->getPresenter()->getUser()->isInRole('admin')) ? UserService::USER_LEVEL : UserService::MEMBER_LEVEL;
+		$list = $this->userService->getUsers($userLevel)->select('id, CONCAT(surname," ",name)AS jmeno')->order('surname, name');
+
+		$logList = $this->getLocalMemberList();
+		if ($logList) $list->where('NOT id', $logList);
+
+		$list = $list->fetchPairs('id', 'jmeno');
 
 		$form->addSelect('member', null, $list);
 		$form->addCheckbox('organizator', 'Organizátor')
