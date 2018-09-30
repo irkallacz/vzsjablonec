@@ -127,7 +127,7 @@ class SignEventControl extends Control {
 	/**
 	 * @param int $userId
 	 */
-	private function unlogUser(int $userId) {
+	private function unLogUser(int $userId) {
 		$this->akceService->deleteMemberFromAction($userId, $this->akce->id);
 		unset($this->orgList[$userId]);
 		unset($this->userList[$userId]);
@@ -140,7 +140,7 @@ class SignEventControl extends Control {
 		$userId = $this->getPresenter()->getUser()->getId();
 
 		if ($this->userIsAllowToLog($isOrg)) {
-			if ($this->userIsInList()) $this->unlogUser($userId);
+			if ($this->userIsInList()) $this->unLogUser($userId);
 			$this->logUser($userId, $isOrg);
 			$this->flashMessage('Byl si přihlášen na akci');
 			$this->redrawControl();
@@ -156,7 +156,7 @@ class SignEventControl extends Control {
 		$userId = $this->getPresenter()->getUser()->getId();
 
 		if ($this->userIsAllowToLog($isOrg)) {
-			$this->unlogUser($userId);
+			$this->unLogUser($userId);
 			$this->flashMessage('Byl si odhlášen z akce');
 			$this->redrawControl();
 		} else {
@@ -198,7 +198,7 @@ class SignEventControl extends Control {
 		if (($this->getPresenter()->getUser()->isInRole('admin')) or ($this->userIsInList(TRUE))) {
 			$values = $form->getValues();
 
-			if ($this->userIsInList()) $this->unlogUser($values->member);
+			if ($this->userIsInList()) $this->unLogUser($values->member);
 			$this->logUser($values->member, $values->organizator);
 
 			$list = $form['member']->getItems();
@@ -238,7 +238,7 @@ class SignEventControl extends Control {
 		if (($this->getPresenter()->getUser()->isInRole('admin')) or ($this->userIsInList(TRUE))) {
 			$values = $form->getValues();
 
-			$this->unlogUser($values->member);
+			$this->unLogUser($values->member);
 
 			$this->flashMessage('Osoba byla odebrána z akce');
 
