@@ -234,8 +234,8 @@ class AlbumPresenter extends BasePresenter {
 			$image = new Image($filepath);
 			$needSave = FALSE;
 
-			if ($image->adaptiveResize()) $needSave = TRUE;
 			if ($image->fixOrientation()) $needSave = TRUE;
+			if ($image->adaptiveResize()) $needSave = TRUE;
 
 			if ($needSave) $image->save($filepath);
 
