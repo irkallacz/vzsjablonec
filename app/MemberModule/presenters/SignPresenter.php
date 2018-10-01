@@ -2,9 +2,9 @@
 
 namespace App\MemberModule\Presenters;
 
-use App\Authenticator\SsoAuthenticator;
 use Nette\Application\BadRequestException;
 use Nette\Security\AuthenticationException;
+use App\Authenticator\SsoAuthenticator;
 use App\Model\UserService;
 use Tracy\Debugger;
 
@@ -18,7 +18,6 @@ class SignPresenter extends BasePresenter {
 
 	/** @persistent */
 	public $backlink = '';
-
 
 	public function beforeRender() {
 		parent::beforeRender();
@@ -35,7 +34,8 @@ class SignPresenter extends BasePresenter {
 			$this->redirect('News:');
 		}
 
-		$this->redirect(':Account:Sign:sso', ['redirect' => ':Member:Sign:ssoLogIn', 'link' => $this->backlink]);
+		$code = $this->ssoAuthenticator->generateCode();
+		$this->redirect(':Account:Sign:sso', ['code' => $code, 'redirect' => ':Member:Sign:ssoLogIn', 'link' => $this->backlink]);
 	}
 
 	/**

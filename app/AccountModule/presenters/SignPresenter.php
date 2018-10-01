@@ -360,13 +360,14 @@ class SignPresenter extends BasePresenter {
 	}
 
 	/**
+	 * @param string $code
 	 * @param string $redirect
 	 * @param string $link
 	 * @throws BadRequestException
 	 * @throws \Nette\Application\AbortException
 	 * @throws \Nette\Utils\JsonException
 	 */
-	public function actionSso(string $redirect, string $link = '') {
+	public function actionSso(string $code, string $redirect, string $link = '') {
 		if (!in_array($redirect, self::REDIRECTS))
 			throw new BadRequestException('Redirect nemá povolenou hodnotu');
 
@@ -374,7 +375,6 @@ class SignPresenter extends BasePresenter {
 //			throw new BadRequestException('Nesouhlasí doména původu');
 
 		if ($this->getUser()->isLoggedIn()) {
-			$code = Random::generate();
 			$timestamp = time();
 			$signature = $this->ssoAuthenticator->getSignature($this->user->getIdentity(), $code, $timestamp);
 

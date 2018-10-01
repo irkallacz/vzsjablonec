@@ -39,8 +39,8 @@ class SignPresenter extends BasePresenter {
 			if ($this->backlink) $this->restoreRequest($this->backlink);
 			$this->redirect('Album:default');
 		}
-
-		$this->redirect(':Account:Sign:sso', ['redirect' => ':Photo:Sign:ssoLogIn', 'link' => $this->backlink]);
+		$code = $this->ssoAuthenticator->generateCode();
+		$this->redirect(':Account:Sign:sso', ['code' => $code, 'redirect' => ':Photo:Sign:ssoLogIn', 'link' => $this->backlink]);
 	}
 
 	/**
