@@ -223,12 +223,11 @@ class AlbumPresenter extends BasePresenter {
 				}
 				if (array_key_exists('DateTime', $exif)) {
 					$datetime = new Datetime($exif['DateTime']);
-					if ($datetime === FALSE) $datetime = NULL;
 				}
 				if (array_key_exists('DateTimeOriginal', $exif)) {
 					$datetime = new Datetime($exif['DateTimeOriginal']);
-					if ($datetime === FALSE) $datetime = NULL;
 				}
+				if ($datetime === FALSE) $datetime = NULL;
 			}else $datetime = NULL;
 
 			$image = new Image($filepath);
