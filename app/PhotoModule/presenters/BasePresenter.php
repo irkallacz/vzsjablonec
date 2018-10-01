@@ -50,7 +50,7 @@ abstract class BasePresenter extends Presenter {
 					return $filename;
 				}
 			}
-			return Image::PHOTO_DIR . '/' . Image::THUMB_DIR .'/' . $photo->album_id . '/' . $thumb;
+			return Image::PHOTO_DIR . '/' . Image::THUMB_DIR . '/' . $photo->album_id . '/' . $thumb;
 		});
 
 		$mainMenu = [
