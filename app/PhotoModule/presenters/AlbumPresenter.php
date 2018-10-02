@@ -231,12 +231,11 @@ class AlbumPresenter extends BasePresenter {
 			}else $datetime = NULL;
 
 			$image = new Image($filepath);
-			$needSave = FALSE;
 
-			if ($image->fixOrientation()) $needSave = TRUE;
-			if ($image->adaptiveResize()) $needSave = TRUE;
+			$resize = $image->adaptiveResize();
+			$rotation = $image->fixOrientation();
 
-			if ($needSave) $image->save($filepath);
+			if (($resize)or($rotation)) $image->save($filepath);
 
 			$thumbname = $image->generateThumbnail($albumId);
 			$image->clear();

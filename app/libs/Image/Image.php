@@ -52,7 +52,7 @@ class Image extends \Imagick {
 	public function adaptiveResize(){
 		$size = $this->getSize();
 		if ($size > self::SIZE_THRESHOLD) {
-			$ratio = 1 / floor($size / self::SIZE_THRESHOLD);
+			$ratio = round(1 / ($size / self::SIZE_THRESHOLD),1);
 			//$ratio = min(round((self::SIZE_THRESHOLD) / $size, 1),1);
 			$width = round($this->getImageWidth() * $ratio);
 			$this->adaptiveResizeImage($width, 0);
