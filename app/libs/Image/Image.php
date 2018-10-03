@@ -42,7 +42,8 @@ class Image extends \Imagick {
 	 * @return float
 	 */
 	public function getSize(){
-		return $this->getImageLength() / (1024 * 1024);
+//		return $this->getImageLength() / (1024 * 1024);
+		return filesize($this->getFilename()) / (1024 * 1024);
 	}
 
 	/**
@@ -52,7 +53,7 @@ class Image extends \Imagick {
 	public function adaptiveResize(){
 		$size = $this->getSize();
 		if ($size > self::SIZE_THRESHOLD) {
-			$ratio = round(1 / ($size / self::SIZE_THRESHOLD),1);
+			$ratio = round(1 / floor($size / self::SIZE_THRESHOLD),1);
 			//$ratio = min(round((self::SIZE_THRESHOLD) / $size, 1),1);
 			$width = round($this->getImageWidth() * $ratio);
 			$this->adaptiveResizeImage($width, 0);
