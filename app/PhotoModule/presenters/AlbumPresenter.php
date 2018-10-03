@@ -217,16 +217,9 @@ class AlbumPresenter extends BasePresenter {
 
 			if (($ext == 'jpg')or($ext == 'jpeg')) {
 				$exif = exif_read_data($filepath);
-				if (array_key_exists('FileDateTime', $exif)) {
-					$datetime = new Datetime();
-					$datetime->setTimestamp($exif['FileDateTime']);
-				}
-				if (array_key_exists('DateTime', $exif)) {
-					$datetime = new Datetime($exif['DateTime']);
-				}
-				if (array_key_exists('DateTimeOriginal', $exif)) {
-					$datetime = new Datetime($exif['DateTimeOriginal']);
-				}
+				if (array_key_exists('FileDateTime', $exif)) $datetime = Datetime::from($exif['FileDateTime']);
+				if (array_key_exists('DateTime', $exif)) $datetime = Datetime::from($exif['DateTime']);
+				if (array_key_exists('DateTimeOriginal', $exif)) $datetime = Datetime::from($exif['DateTimeOriginal']);
 				if ($datetime === FALSE) $datetime = NULL;
 			}else $datetime = NULL;
 
