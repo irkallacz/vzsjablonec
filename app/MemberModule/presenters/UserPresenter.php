@@ -115,6 +115,10 @@ class UserPresenter extends LayerPresenter {
 		$this->template->member = $user;
 		$this->template->last_login = $user->related('user_log')->order('date_add DESC')->fetch();
 
+		$this->template->addFilter('phone', function($number){
+			return number_format($number,0,'',' ');
+		});
+
 		$fileName = self::getUserImageName($user);
 		$this->template->filename = file_exists(WWW_DIR . $fileName) ? $fileName : NULL;
 		$this->template->title = UserService::getFullName($user);
