@@ -2,7 +2,6 @@
 
 namespace App\MemberModule\Presenters;
 
-use Nette\Application\BadRequestException;
 use Nette\Security\AuthenticationException;
 use App\Authenticator\SsoAuthenticator;
 use App\Model\UserService;
@@ -43,7 +42,6 @@ class SignPresenter extends BasePresenter {
 	 * @param int $userId
 	 * @param int $timestamp
 	 * @param string $signature
-	 * @throws BadRequestException
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
