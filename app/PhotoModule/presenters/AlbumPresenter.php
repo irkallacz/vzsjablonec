@@ -10,6 +10,7 @@ use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
+use Nette\Forms\Controls\BaseControl;
 use Nette\InvalidArgumentException;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
@@ -261,13 +262,20 @@ class AlbumPresenter extends BasePresenter {
 	 * @allow(member)
 	 */
 	protected function createComponentPhotoForm() {
+		$slug = $this->getParameter('slug');
+		$album = $this->gallery->getAlbumBySlug($slug);
+
 		$form = new Form;
 
 		$form->addText('name', 'Název', 50, 50)
 			->setRequired('Vyplňte %label');
 
 		$form->addText('slug', 'Slug', 50, 50)
-			->setRequired('Vyplňte %label');
+			->setRequired('Vyplňte %label')
+			->addRule(function (BaseControl $item) use ($album){
+				$new = $this->gallery->getAlbumBySlug($item->getValue());
+				return !(($new)and($new->id != $album->id));
+			}, 'Url Alba musí být unikátní');
 
 		/** @var \DateInput $dateInput*/
 		$dateInput = $form['date'] = new \DateInput('Datum');
@@ -312,8 +320,6 @@ class AlbumPresenter extends BasePresenter {
 		$form->addSubmit('turnRight', 'otočit o 90° doprava')
 			->onClick[] = [$this, 'photoFormTurnRight'];
 
-		$slug = $this->getParameter('slug');
-		$album = $this->gallery->getAlbumBySlug($slug);
 		$photos = $this->gallery->getPhotosByAlbumId($album->id)->fetchPairs('id');
 		$form->setDefaults(['photos' => $photos]);
 
@@ -343,7 +349,7 @@ class AlbumPresenter extends BasePresenter {
 
 		foreach ($images as $order => $photo) {
 			$update = [];
-			$order = intval($order);
+			$order = (int) $order;
 
 			if ($photos[$photo->id]['order'] != $order) $update['order'] = $order;
 
