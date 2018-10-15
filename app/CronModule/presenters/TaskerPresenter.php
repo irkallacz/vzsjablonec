@@ -16,7 +16,7 @@ class TaskerPresenter extends BasePresenter {
 		1 => 'Drive:default',
 		2 => 'People:update',
 		3 => 'Idoklad:update',
-		4 => ':Photo:Thumbs:default',
+		4 => 'Thumbs:default',
 	];
 
 	public function actionDefault() {
