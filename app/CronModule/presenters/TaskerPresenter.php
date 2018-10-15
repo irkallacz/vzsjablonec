@@ -11,19 +11,25 @@ namespace App\CronModule\Presenters;
 
 class TaskerPresenter extends BasePresenter {
 
-	const TASKS = [
-		0 => 'Calendar:default',
-		1 => 'Drive:default',
-		2 => 'People:update',
-		3 => 'Idoklad:update',
-		4 => 'Thumbs:default',
-	];
+	/**
+	 * @var array
+	 */
+	private $tasks;
+
+	/**
+	 * TaskerPresenter constructor.
+	 * @param array $tasks
+	 */
+	public function __construct(array $tasks) {
+		parent::__construct();
+		$this->tasks = $tasks;
+	}
 
 	public function actionDefault() {
 		$hour = date('G');
 
-		if (array_key_exists($hour, self::TASKS)) {
-			$task = self::TASKS[$hour];
+		if (array_key_exists($hour, $this->tasks)) {
+			$task = $this->tasks[$hour];
 			$this->forward($task);
 		}
 	}

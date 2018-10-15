@@ -35,6 +35,12 @@ parameters:
 		clientSecret: '98765432-lkji-hgfe-dcba-001234567890'
 		redirectUri: ''
 		credentialsFile: '%tempDir%/idoklad/credentials.json'
+	cron:
+		- Calendar:default
+		- Drive:default
+		- People:update
+		- Idoklad:update
+		- :Photo:Thumbs:default
 
 
 application:
@@ -102,6 +108,8 @@ services:
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
+
+	- App\CronModule\Presenters\TaskerPresenter(%cron%)
 
 	googleClient:
 		class: Google_Client
