@@ -126,8 +126,7 @@ class AlbumPresenter extends BasePresenter {
 
 		if ($order == 'order') $order = $order . ', date_add';
 
-		$photos = $this->gallery->getPhotosByAlbumId($album->id)
-			->order($order);
+		$photos = $this->gallery->getPhotosByAlbumId($album->id)->order($order);
 
 		$this->template->photos = $photos;
 		$this->template->slug = $slug;
