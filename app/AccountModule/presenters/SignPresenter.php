@@ -133,6 +133,7 @@ class SignPresenter extends BasePresenter {
 			$me = $this->facebookLogin->getMe([FacebookLogin::ID, FacebookLogin::EMAIL]);
 		} catch (\Exception $e) {
 			$this->flashMessage('Přihlášení ne nezdařilo', 'error');
+			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('in');
 		}
 
