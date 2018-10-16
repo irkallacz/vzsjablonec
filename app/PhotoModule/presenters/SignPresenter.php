@@ -6,6 +6,7 @@ use App\Authenticator\SsoAuthenticator;
 use App\Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\IRouter;
+use Nette\Database\UniqueConstraintViolationException;
 use Nette\Http\Request;
 use Nette\Http\UrlScript;
 use Nette\Security\AuthenticationException;
@@ -30,6 +31,14 @@ class SignPresenter extends BasePresenter {
 	/** @persistent */
 	public $backlink = '';
 
+
+	public function actionDefault() {
+		if (($this->getUser()->isLoggedIn())and($this->backlink)) $this->restoreRequest($this->backlink);
+	}
+
+	public function renderDefault() {
+		$this->template->backlink = $this->backlink;
+	}
 
 	/**
 	 * @throws \Nette\Application\AbortException
@@ -59,6 +68,8 @@ class SignPresenter extends BasePresenter {
 		} catch (AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('default');
+		} catch (UniqueConstraintViolationException $e){
+			$this->flashMessage('Duplikátní příhlášení');
 		}
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);

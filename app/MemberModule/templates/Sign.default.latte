@@ -11,7 +11,9 @@
 	{if $user->isLoggedIn()}
 		<p class="center">Aktuálně jste přihlášen.</p>
 	{else}
-		<p class="center">Aktuálně nejste přihlášen. <span n:if="$presenter->action == out" class="center">Pokud se odhlašujete na cizím počítači, odhlašte se raději i z <a n:href=":Account:Sign:">vašeho účtu.</a></span>
+		<p class="center">Aktuálně nejste přihlášen.
+			<span n:if="$backlink">Možná se něco pokazilo při přihlášení, zkuste <strong>obnovit stránku</strong> (F5).</span>
+			<span n:if="$presenter->action == out" class="center">Pokud se odhlašujete na cizím počítači, odhlašte se raději i z <a n:href=":Account:Sign:">vašeho účtu.</a></span>
 		</p>
 	{/if}
 {/block}

@@ -2,6 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use Nette\Database\UniqueConstraintViolationException;
 use Nette\Security\AuthenticationException;
 use App\Authenticator\SsoAuthenticator;
 use App\Model\UserService;
@@ -22,6 +23,14 @@ class SignPresenter extends BasePresenter {
 		parent::beforeRender();
 
 		$this->template->mainMenu = [];
+	}
+
+	public function actionDefault() {
+		if (($this->getUser()->isLoggedIn())and($this->backlink)) $this->restoreRequest($this->backlink);
+	}
+
+	public function renderDefault() {
+		$this->template->backlink = $this->backlink;
 	}
 
 	/**
@@ -52,6 +61,8 @@ class SignPresenter extends BasePresenter {
 		} catch (AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), 'error');
 			$this->redirect('default');
+		} catch (UniqueConstraintViolationException $e){
+			$this->flashMessage('Duplikátní příhlášení');
 		}
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
