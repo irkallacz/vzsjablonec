@@ -38,10 +38,12 @@ class SignPresenter extends BasePresenter {
 	}
 
 	/**
+	 * @param bool $logout
 	 * @throws \Nette\Application\AbortException
 	 */
-	public function actionDefault(){
+	public function actionDefault($logout = FALSE){
 		$this->checkLogin();
+		$this->template->logout = $logout;
 	}
 
 	/**
@@ -82,9 +84,7 @@ class SignPresenter extends BasePresenter {
 	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste odhlášen');
-		$this->setView('default');
-
-		$this->checkLogin();
+		$this->redirect('default', ['logout' => TRUE]);
 	}
 
 }
