@@ -32,22 +32,36 @@ class SignPresenter extends BasePresenter {
 	public $backlink = '';
 
 
-	public function actionDefault() {
-		if (($this->getUser()->isLoggedIn())and($this->backlink)) $this->restoreRequest($this->backlink);
+	/**
+	 * @throws \Nette\Application\AbortException
+	 */
+	private function checkLogin(){
+		if ($this->getUser()->isLoggedIn()) {
+			if ($this->backlink) $this->restoreRequest($this->backlink);
+			$this->redirect('Album:default');
+		}
 	}
 
-	public function renderDefault() {
+	/**
+	 *
+	 */
+	public function beforeRender() {
+		parent::beforeRender();
 		$this->template->backlink = $this->backlink;
 	}
 
 	/**
 	 * @throws \Nette\Application\AbortException
 	 */
+	public function actionDefault(){
+		$this->checkLogin();
+	}
+
+	/**
+	 * @throws \Nette\Application\AbortException
+	 */
 	public function actionIn() {
-		if ($this->getUser()->isLoggedIn()) {
-			if ($this->backlink) $this->restoreRequest($this->backlink);
-			$this->redirect('Album:default');
-		}
+		$this->checkLogin();
 		$code = $this->ssoAuthenticator->generateCode();
 		$this->redirect(':Account:Sign:sso', ['code' => $code, 'redirect' => ':Photo:Sign:ssoLogIn', 'link' => $this->backlink]);
 	}
@@ -57,11 +71,10 @@ class SignPresenter extends BasePresenter {
 	 * @param int $userId
 	 * @param int $timestamp
 	 * @param string $signature
-	 * @throws BadRequestException
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
-		if ($this->getUser()->isLoggedIn()) $this->redirect('Album:default');
+		$this->checkLogin();
 
 		try {
 			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature, UserService::MODULE_PHOTO);
@@ -94,10 +107,14 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
-
+	/**
+	 * @throws \Nette\Application\AbortException
+	 */
 	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste odhlášen');
 		$this->setView('default');
+
+		$this->checkLogin();
 	}
 }

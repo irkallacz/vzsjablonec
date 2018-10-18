@@ -19,29 +19,36 @@ class SignPresenter extends BasePresenter {
 	/** @persistent */
 	public $backlink = '';
 
+	/**
+	 * @throws \Nette\Application\AbortException
+	 */
+	private function checkLogin(){
+		if ($this->getUser()->isLoggedIn()) {
+			if ($this->backlink) $this->restoreRequest($this->backlink);
+			$this->redirect('News:');
+		}
+	}
+
+	/**
+	 *
+	 */
 	public function beforeRender() {
 		parent::beforeRender();
-
-		$this->template->mainMenu = [];
-	}
-
-	public function actionDefault() {
-		if (($this->getUser()->isLoggedIn())and($this->backlink)) $this->restoreRequest($this->backlink);
-	}
-
-	public function renderDefault() {
 		$this->template->backlink = $this->backlink;
 	}
 
 	/**
 	 * @throws \Nette\Application\AbortException
 	 */
-	public function actionIn() {
-		if ($this->getUser()->isLoggedIn()) {
-			if ($this->backlink) $this->restoreRequest($this->backlink);
-			$this->redirect('News:');
-		}
+	public function actionDefault(){
+		$this->checkLogin();
+	}
 
+	/**
+	 * @throws \Nette\Application\AbortException
+	 */
+	public function actionIn() {
+		$this->checkLogin();
 		$code = $this->ssoAuthenticator->generateCode();
 		$this->redirect(':Account:Sign:sso', ['code' => $code, 'redirect' => ':Member:Sign:ssoLogIn', 'link' => $this->backlink]);
 	}
@@ -54,7 +61,7 @@ class SignPresenter extends BasePresenter {
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
-		if ($this->getUser()->isLoggedIn()) $this->redirect('News:');
+		$this->checkLogin();
 
 		try {
 			$this->ssoAuthenticator->login($userId, $code, $timestamp, $signature, UserService::MODULE_MEMBER);
@@ -65,15 +72,19 @@ class SignPresenter extends BasePresenter {
 			$this->flashMessage('Duplikátní příhlášení');
 		}
 
-		if ($this->backlink) $this->restoreRequest($this->backlink);
-		else $this->redirect('News:default');
+		$this->checkLogin();
 	}
 
 
+	/**
+	 * @throws \Nette\Application\AbortException
+	 */
 	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste odhlášen');
 		$this->setView('default');
+
+		$this->checkLogin();
 	}
 
 }
