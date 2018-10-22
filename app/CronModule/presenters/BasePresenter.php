@@ -3,9 +3,11 @@
 namespace App\CronModule\Presenters;
 
 use Nette\Application\UI\Presenter;
+use App\Template\TemplateProperty;
+
 
 /**
- * @property-read \Nette\Bridges\ApplicationLatte\Template|\stdClass $template
+ * @property-read TemplateProperty|\Nette\Bridges\ApplicationLatte\Template $template
  */
 abstract class BasePresenter extends Presenter {
 

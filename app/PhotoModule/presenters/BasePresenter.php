@@ -3,6 +3,7 @@
 namespace App\PhotoModule\Presenters;
 
 use App\PhotoModule\Image;
+use App\Template\TemplateProperty;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Presenter;
 use Nette\Database\IRow;
@@ -11,7 +12,7 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 
 /**
- * @property-read \Nette\Bridges\ApplicationLatte\Template|\stdClass $template
+ * @property-read TemplateProperty|\Nette\Bridges\ApplicationLatte\Template $template
  */
 abstract class BasePresenter extends Presenter {
 
