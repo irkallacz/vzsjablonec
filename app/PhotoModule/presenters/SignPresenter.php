@@ -55,7 +55,7 @@ class SignPresenter extends BasePresenter {
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionDefault($logout = FALSE){
-		$this->checkLogin();
+		if ($logout) $this->checkLogin();
 		$this->template->logout = $logout;
 	}
 

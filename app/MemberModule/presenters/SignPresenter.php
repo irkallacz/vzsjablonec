@@ -22,7 +22,7 @@ class SignPresenter extends BasePresenter {
 	/**
 	 * @throws \Nette\Application\AbortException
 	 */
-	private function checkLogin(){
+	private function checkLogin() {
 		if ($this->getUser()->isLoggedIn()) {
 			if ($this->backlink) $this->restoreRequest($this->backlink);
 			$this->redirect('News:');
@@ -41,8 +41,8 @@ class SignPresenter extends BasePresenter {
 	 * @param bool $logout
 	 * @throws \Nette\Application\AbortException
 	 */
-	public function actionDefault($logout = FALSE){
-		$this->checkLogin();
+	public function actionDefault($logout = FALSE) {
+		if ($logout) $this->checkLogin();
 		$this->template->logout = $logout;
 	}
 
