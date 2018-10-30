@@ -248,9 +248,9 @@ class AlbumPresenter extends BasePresenter {
 			$photo = $this->gallery->addPhoto($values);
 		};
 
-		$plupload->onUploadComplete[] = function (UploadQueue $uploadQueue) use ($slug) {
+		$plupload->onUploadComplete[] = function (UploadQueue $uploadQueue) {
 			$this->flashMessage('Fotografie byli v pořádku přidány');
-			$this->redirect('view', $slug);
+			$this->redrawControl('flash');
 		};
 
 		return $plupload;
