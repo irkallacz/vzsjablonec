@@ -213,7 +213,7 @@ class AlbumPresenter extends BasePresenter {
 			$filepath = WWW_DIR . '/' . Image::PHOTO_DIR . '/' . $albumId . '/' . $filename;
 			$upload->move($filepath);
 
-			$ext = pathinfo($filename, PATHINFO_EXTENSION);
+			$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
 			if (($ext == 'jpg')or($ext == 'jpeg')) {
 				$exif = exif_read_data($filepath);
