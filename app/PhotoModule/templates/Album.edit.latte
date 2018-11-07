@@ -96,7 +96,7 @@
 
 <ul id="list" class="photoList" n:inner-foreach="$photos as $image">
 	<li>
-		<label n:name="photos-$image->id-selected" n:class="(($album->visible) and (!$image->visible)) ? 'hidden'">
+		<label n:name="photos-$image->id-selected" n:class="(($album->visible) and (!$image->visible)) ? 'hidden'" title="Autor: {$image->user->surname} {$image->user->name}">
 			{include image image => $image, class => image}
 		</label>
 		<input n:name="photos-$image->id-selected" class="selected">
