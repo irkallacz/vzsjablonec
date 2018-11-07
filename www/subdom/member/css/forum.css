@@ -1,6 +1,5 @@
 table#items {border-collapse: collapse; width: 100%;}
 
-table#items .title .headerLike {border-radius: 0 0 1em 1em; padding: 1ex; margin-bottom: 1ex; }
 table#items tr.topic {border-top: 1px solid gray;}
 table#items tr, table#items td {padding: 0}
 

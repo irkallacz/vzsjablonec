@@ -8,4 +8,4 @@
   #top h1 {display: block; vertical-align: baseline;}
   #top #top-right {top: -1.25em;}
 
-  table#items .post, table#items .count {display: none}
+  table#items .post {display: none}

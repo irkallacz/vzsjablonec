@@ -1,7 +1,7 @@
 {import '../templates/@svg.latte'}
 
 <table id="items">
-    <tr class="first"><th>{*Téma*}</th><th class="post">Poslední příspěvek</th><th>Autor</th><th class="count"></th></tr>
+    <tr class="first"><th class="count"></th><th>{*Téma*}</th><th>Autor</th><th class="post">Poslední příspěvek</th></tr>
     {foreach $topics as $topic}
         {var $post = $topic->related('forum_post', 'forum_topic_id')->where('NOT row_number', 0)->where('id <> forum_topic_id')->order('row_number DESC')->fetch()}
         {var $postCount = $post ? ($post->row_number - 1) : 0}
@@ -9,31 +9,20 @@
         <tr n:class="topic, hoverLike, (($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',
 	 (($post)and($post->user_id == $user->getId())) ? logged, $topic->user_id == $user->getId() ? logged">
 
+			<td class="count center headerLike">
+				{$postCount}
+			</td>
+
             <td class="col title">
-                <div class="headerLike">
-                    <a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" href="{plink Forum:topic,$topic->id}">
-                        <strong>{if $topic->locked}{include svg lock}{/if}
-                            {if !$search}{$topic->title|firstUpper}{else}{$topic->title|replace:$search:'<em class="highlight">'.$search.'</em>'|firstUpper|noescape}{/if}
-                        </strong>
-                    </a>
+				<a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" href="{plink Forum:topic,$topic->id}">
+					<strong>{if $topic->locked}{include svg lock}{/if}
+						{if !$search}{$topic->title|firstUpper}{else}{$topic->title|replace:$search:'<em class="highlight">'.$search.'</em>'|firstUpper|noescape}{/if}
+					</strong>
+				</a>
 
-                    <span n:if="(isset($postPerPage))and($postCount > $postPerPage) and ($postCount/$postPerPage < 6)" class="no-wrap" >
-				        [ {for $i = 1; $i <= ceil($postCount/$postPerPage); $i++} <a href="{plink Forum:topic, $topic->id, vp-page => $i}">{$i}</a>{/for} ]
-			        </span>
-                </div>
-            </td>
-
-            <td class="col post right">
-                {if $post}
-                    <div class="no-wrap">
-                        {$post->user->surname} {$post->user->name}
-                    </div>
-                    <div class="no-wrap">
-                        <a title="{$post->date_add|timeAgoInWords}" href="{plink Forum:post, $post->id}">
-							{include svg comments-o} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
-						<a>
-                    </div>
-                {/if}
+				<span n:if="(isset($postPerPage))and($postCount > $postPerPage) and ($postCount/$postPerPage < 6)" class="no-wrap" >
+					[ {for $i = 1; $i <= ceil($postCount/$postPerPage); $i++} <a href="{plink Forum:topic, $topic->id, vp-page => $i}">{$i}</a>{/for} ]
+				</span>
             </td>
 
             <td class="col author right">
@@ -47,7 +36,19 @@
                 </div>
             </td>
 
-            <td class="count center">{$postCount}</td>
-        </tr>
+			<td class="col post right">
+				{if $post}
+					<div class="no-wrap">
+						{$post->user->surname} {$post->user->name}
+					</div>
+					<div class="no-wrap">
+						<a title="{$post->date_add|timeAgoInWords}" href="{plink Forum:post, $post->id}">
+							{include svg comments-o} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
+							<a>
+					</div>
+				{/if}
+			</td>
+
+		</tr>
     {/foreach}
 </table>

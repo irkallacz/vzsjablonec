@@ -5,6 +5,7 @@
 
 <style type="text/css" n:syntax="off">
 	table#items { margin-top: 1em; }
+	table#items .title .headerLike { border-radius: 0 0 1em 1em; padding: 1ex; margin-bottom: 1ex; }
 	.title a:hover { color: white; }
 </style>
 {/block}
@@ -18,7 +19,7 @@
 {foreach $forum as $category}
 	{var $post = $category->related('forum_post')->order('date_add DESC')->fetch()}
 
-	<tr n:class="topic,hoverLike,(($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',(($post)and($post->user_id == $user->getId())) ? logged">
+	<tr n:class="topic, hoverLike,(($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',(($post)and($post->user_id == $user->getId())) ? logged">
 
 		<td class="title">
 			<a title="{$category->title|firstUpper}" n:href="Forum:category,$category->id">
