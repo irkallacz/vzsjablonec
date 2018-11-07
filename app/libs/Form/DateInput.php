@@ -14,6 +14,9 @@ class DateInput extends Nette\Forms\Controls\BaseControl {
 
 	const DATE_FORMAT = 'Y-m-d';
 
+	/**
+	 * @var string
+	 */
 	private $date;
 
 	public function __construct($label = NULL){
@@ -34,9 +37,13 @@ class DateInput extends Nette\Forms\Controls\BaseControl {
 	 * @return DateTime|NULL
 	 */
 	public function getValue(){
-		return self::validateDate($this)
-			? DateTime::createFromFormat(self::DATE_FORMAT,$this->date)
-			: NULL;
+		if (self::validateDate($this)) {
+			$date = DateTime::createFromFormat(self::DATE_FORMAT, $this->date);
+			$date->setTime(0,0,0);
+			return $date;
+		}else {
+			return NULL;
+		}
 	}
 
 	public function loadHttpData(){
