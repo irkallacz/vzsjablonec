@@ -13,6 +13,7 @@ use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Security\Passwords;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
@@ -291,7 +292,7 @@ class UserPresenter extends LayerPresenter {
 	 */
 	public function actionEdit(int $id) {
 		/** @var Form $form*/
-		$form = $this['memberForm'];
+		$form = $this['editMemberForm'];
 		$form['name']->setAttribute('readonly');
 		$form['surname']->setAttribute('readonly');
 
@@ -335,8 +336,6 @@ class UserPresenter extends LayerPresenter {
 	public function renderEdit(int $id) {
 		$this->template->id = $id;
 
-		/**@var Form $form */
-		$form = $this['memberForm'];
 		$member = $this->userService->getUserById($id);
 
 		if (!$member) {
@@ -347,26 +346,17 @@ class UserPresenter extends LayerPresenter {
 			throw new ForbiddenRequestException('Nemáte právo editovat tohoto uživatele');
 		}
 
-		$form->setDefaults($member);
-	}
-
-
-	/** @allow(board) */
-	public function actionAdd() {
 		/**@var Form $form */
-		$form = $this['memberForm'];
-		unset($form['image']);
-		unset($form['text']);
-
-		$form->setCurrentGroup($form->getGroups()[' ']);
-		$form['date_add'] = new \DateInput('Datum registrace');
-		$form['date_add']->setRequired('Vyplňte datum registrace');
-		$form['date_add']->setDefaultValue(new DateTime());
-
+		$form = $this['editMemberForm'];
+		$form->setDefaults($member);
 	}
 
 	/** @allow(board) */
 	public function renderAdd() {
+		/**@var Form $form */
+		$form = $this['addMemberForm'];
+		if (!$form->hasErrors()) unset($form['skip']);
+
 		$this->setView('edit');
 	}
 
@@ -421,11 +411,9 @@ class UserPresenter extends LayerPresenter {
 		}
 	}
 	
-	protected function createComponentMemberForm() {
-		if ($this->action == 'edit') {
-			$this->userFormFactory->setUserId($this->getParameter('id'));
-		}
+	protected function createComponentEditMemberForm() {
 
+		$this->userFormFactory->setUserId($this->getParameter('id'));
 		$form = $this->userFormFactory->create();
 
 		$form->addGroup(' ');
@@ -448,10 +436,37 @@ class UserPresenter extends LayerPresenter {
 		return $form;
 	}
 
-	public function memberFormSubmitted(Form $form) {
-		$id = $this->getParameter('id');
 
-		$values = $form->getValues();
+	protected function createComponentAddMemberForm() {
+
+		$form = $this->userFormFactory->create();
+
+		$form->addGroup(' ');
+
+		$form->setCurrentGroup(NULL);
+
+		$input = $form['date_add'] = new \DateInput('Datum registrace');
+		$input->setRequired('Vyplňte datum registrace');
+		$input->setDefaultValue(new DateTime());
+
+		$form->addCheckbox('skip', 'Ignorovat upozornění')
+			->setDefaultValue(FALSE);
+
+		$form->onValidate[] = [$this->userFormFactory, 'uniqueCredentialsValidator'];
+
+		$form->addSubmit('ok', 'Ulož');
+		$form->onSuccess[] = [$this, 'memberFormSubmitted'];
+
+		return $form;
+	}
+
+	/**
+	 * @param Form $form
+	 * @param ArrayHash $values
+	 * @throws \Nette\Application\AbortException
+	 */
+	public function memberFormSubmitted(Form $form, ArrayHash $values) {
+		$id = $this->getParameter('id');
 
 		$values->date_update = new DateTime();
 
@@ -472,6 +487,8 @@ class UserPresenter extends LayerPresenter {
 			$this->flashMessage('Osobní profil byl změněn');
 			$this->redirect('view', $id);
 		} else {
+			if (isset($values->skip)) unset($values->skip);
+
 			$user = $this->userService->addUser($values);
 
 			$this->flashMessage('Byl přidán nový člen');

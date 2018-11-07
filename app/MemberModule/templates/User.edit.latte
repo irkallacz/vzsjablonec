@@ -2,7 +2,6 @@
 <link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
 
 <style type="text/css" n:syntax="off">
-<!--
 	fieldset { border: none;}
 	fieldset table { margin-left: 1em}
 	legend { font-weight: bold; margin-bottom: 1ex;}
@@ -14,14 +13,12 @@
  	.required label { font-weight: bold;}
 	#ui-datepicker-div { font-size: 1em;}
 	.error { color: red;}
--->
 </style>
 
 <script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.ui.datepicker-cs.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
-
-	<script type="text/javascript" n:nonce>
+<script type="text/javascript" n:nonce>
 	$(function() {		
 		var elem = document.createElement('input');
       	elem.setAttribute('type', 'date');
@@ -30,7 +27,8 @@
 			$('.date').datepicker();
 		}
 
-		$('#frm-memberForm').areYouSure();
+		$('#frm-editMemberForm').areYouSure();
+		$('#frm-addMemberForm').areYouSure();
 	});
 </script>
 {/block}
@@ -47,6 +45,12 @@
 		</li>
 	</ul>
 
-{control memberForm}
+{if $presenter->action == 'edit'}
+	{control editMemberForm}
+{/if}
+
+{if $presenter->action == 'add'}
+	{control addMemberForm}
+{/if}
 
 {/block}

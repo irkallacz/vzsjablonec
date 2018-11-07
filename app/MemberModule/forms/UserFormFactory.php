@@ -12,6 +12,7 @@ use App\Model\UserService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\BaseControl;
 use Nette\SmartObject;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
 
@@ -121,9 +122,21 @@ class UserFormFactory {
 
 	/**
 	 * @param BaseControl $item
-	 * @return bool|mixed|\Nette\Database\Table\IRow
+	 * @return bool
 	 */
 	public function uniqueMailValidator(BaseControl $item) {
 		return $this->userService->isEmailUnique($item->value, $this->userId);
+	}
+
+	/**
+	 * @param Form $form
+	 * @param ArrayHash $values
+	 */
+	public function uniqueCredentialsValidator(Form $form, ArrayHash $values) {
+		if ((!isset($values->skip))or((isset($values->skip))and(!$values->skip))) {
+
+			if (!$this->userService->isCredentialsUnique($values))
+				$form->addError('V databázi máme již podobného uživatele, jste si jistí, že nejde o tutéž osobu?');
+		}
 	}
 }

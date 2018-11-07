@@ -98,8 +98,19 @@ class UserService extends DatabaseService {
 	public function isEmailUnique(string $mail, int $userId = NULL) {
 		$user = $this->getUsers(self::DELETED_LEVEL)->where('mail = ? OR mail2 = ?', $mail, $mail);
 		if ($userId) $user->where('NOT id', $userId);
-		return (bool)!$user->fetch();
+		return !(bool) $user->fetch();
 	}
+
+	public function isCredentialsUnique(ArrayHash $values) {
+		$user = $this->userService->getUsers(self::DELETED_LEVEL)
+			->where('name', $values->name)
+			->where('surname', $values->surname)
+			->where('date_born', $values->date_born)
+			->fetch();
+
+		return !(bool) $user;
+	}
+
 
 	/**
 	 * @param string $mail
