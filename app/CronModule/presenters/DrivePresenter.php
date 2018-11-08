@@ -7,7 +7,7 @@ use Nette\Utils\DateTime;
 
 /**
  * Class CronPresenter
- * @package App\MemberModule\presenters
+ * @package App\CronModule\presenters
  */
 class DrivePresenter extends BasePresenter {
 
