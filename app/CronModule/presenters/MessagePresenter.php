@@ -4,6 +4,8 @@ namespace App\CronModule\Presenters;
 
 use App\Model\UserService;
 use App\Model\MessageService;
+use Google_Service_Gmail;
+use Google_Service_Gmail_Message;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Mail\IMailer;
@@ -24,7 +26,7 @@ class MessagePresenter extends BasePresenter {
 	/** @var MessageService @inject */
 	public $messageService;
 
-	/** @var IMailer @inject */
+	/** @var Google_Service_Gmail @inject */
 	public $mailer;
 
 	/**
@@ -38,7 +40,10 @@ class MessagePresenter extends BasePresenter {
 		foreach ($messages as $message) {
 			/** @var ActiveRow $message*/
 
-			$mail = $this->getNewMail();
+			$mail = new Message();
+			$mail->setFrom('info@vzs-jablonec.cz', 'VZS Jablonec');
+			$mail->addBcc('info@vzs-jablonec.cz');
+
 			$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
 
 			$author = $this->userService->getUserById($message->user_id);
@@ -66,7 +71,10 @@ class MessagePresenter extends BasePresenter {
 				$filename = WWW_DIR .'/../member/'. MessageService::DIR_ATTACHMENTS .'/'. $parameters['filename'];
 				$mail->addAttachment($filename);
 			}
-			$this->mailer->send($mail);
+			//$this->mailer->send($mail);
+			$gmail = new Google_Service_Gmail_Message();
+			$gmail->setRaw($mail->generateMessage());
+			$this->mailer->users_messages->send('me', $gmail);
 
 			$date = new DateTime();
 			$message->update(['date_send' => $date]);
@@ -75,17 +83,6 @@ class MessagePresenter extends BasePresenter {
 		}
 
 		$this->messageService->commitTransaction();
-	}
-
-	/**
-	 * @return Message
-	 */
-	private static function getNewMail() {
-		$mail = new Message();
-		$mail->setFrom('info@vzs-jablonec.cz', 'VZS Jablonec')
-			->addBcc('info@vzs-jablonec.cz');
-
-		return $mail;
 	}
 
 }

@@ -120,12 +120,14 @@ services:
 				Google_Service_Drive::DRIVE_READONLY
 				Google_Service_Calendar::CALENDAR
 				Google_Service_PeopleService::CONTACTS
+				Google_Service_Gmail::GMAIL_SEND
 			])
 			- setCache(Stash\Pool(Stash\Driver\FileSystem([path: %tempDir%/stash])))
 
 	- Google_Service_Drive
 	- Google_Service_Calendar
 	- Google_Service_PeopleService
+	- Google_Service_Gmail
 
 	googleLogin:
 		class: Vencax\GoogleLogin(%google.login%, vzsjablonec-social-login)
