@@ -40,7 +40,7 @@ parameters:
 		- Drive:default
 		- People:update
 		- Idoklad:update
-		- :Photo:Thumbs:default
+		- Thumbs:default
 
 
 application:
