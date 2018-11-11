@@ -17,12 +17,12 @@
 <table id="items">
 <tr class="first"><th></th><th>Poslední příspěvek</th><th></th></tr>
 {foreach $forum as $category}
-	{var $post = $category->related('forum_post')->order('date_add DESC')->fetch()}
+	{var $post = $category->related('forum_post')->where('NOT row_number', 0)->order('date_add DESC')->fetch()}
 
 	<tr n:class="topic, hoverLike,(($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',(($post)and($post->user_id == $user->getId())) ? logged">
 
 		<td class="title">
-			<a title="{$category->title|firstUpper}" n:href="Forum:category,$category->id">
+			<a title="{$category->title|firstUpper}" n:href="Forum:category $category->id">
 				<div class="headerLike">
 					<strong>{$category->title|firstUpper}</strong>
 				</div>
@@ -36,19 +36,19 @@
 				{$post->user->surname} {$post->user->name}
 			</div>
 			<div class="no-wrap">
-				<a title="{$post->date_add|timeAgoInWords}" n:href="Forum:post,$post->id">
+				<a title="{$post->date_add|timeAgoInWords}" n:href="Forum:post $post->id">
 					{include svg comments-o} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
 				</a>
 			</div>
 			<div class="no-wrap">
-				{$post->ref('forum_post','forum_topic_id')->title}
+				{$post->ref('forum_post', 'forum_topic_id')->title}
 			</div>
 		{/if}
 		</td>
 
 		<td class="count center" title="Témata / Příspěvky">
-			{$category->related('forum_post')->where('row_number = ?',1)->count('id')}<br>
-			{$category->related('forum_post')->where('row_number > ?',1)->count('id')}
+			{$category->related('forum_post')->where('row_number = ?', 1)->count('id')}<br>
+			{$category->related('forum_post')->where('row_number > ?', 1)->count('id')}
 		</td>
 	</tr>
 {/foreach}
