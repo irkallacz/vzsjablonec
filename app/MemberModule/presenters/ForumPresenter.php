@@ -101,11 +101,11 @@ class ForumPresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param IRow|ActiveRow $topic
+	 * @param IRow|ActiveRow|NULL $topic
 	 * @param bool $locked
 	 * @throws BadRequestException
 	 */
-	public function checkTopic(IRow $topic, bool $locked = FALSE) {
+	public function checkTopic($topic, bool $locked = FALSE) {
 		if ((!$topic) or ($topic->row_number == 0)) {
 			throw new BadRequestException('Téma neexistuje');
 		}
