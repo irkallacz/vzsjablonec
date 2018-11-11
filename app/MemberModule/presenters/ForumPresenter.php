@@ -59,7 +59,7 @@ class ForumPresenter extends LayerPresenter {
 		if ($post){
 			$this->showPost($post);
 		}else{
-			throw new BadRequestException('Post not found');
+			throw new BadRequestException('Příspěvek neexistuje');
 		}
 	}
 
