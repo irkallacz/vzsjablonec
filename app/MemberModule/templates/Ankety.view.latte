@@ -36,11 +36,11 @@
 {if $anketa->locked}
 <ul n:inner-foreach="$odpovedi as $odpoved" id="members">
 {if}
-	<li>{$odpoved->text|firstUpper}
+<li>{$odpoved->text|firstUpper}
 	<ol id="members" n:inner-foreach="$odpoved->related('anketa_member','anketa_odpoved_id') as $item">
 		<li>
 			<a n:tag-if="$item->user->role" n:class="$item->user_id == $user->getId() ? logged" n:href="User:view,$item->user_id">
-				{$item->ref('member')->surname} {$item->ref('member')->name}
+				{$item->user->surname} {$item->user->name}
 			</a>
 		</li>
 	</ol>
@@ -51,7 +51,7 @@
 <ol id="members" n:inner-foreach="$members as $item">
 	<li>
 		<a n:tag-if="$item->user->role" n:class="$item->user_id == $user->getId() ? logged" n:href="User:view,$item->user_id">
-			{$item->ref('user','user_id')->surname} {$item->ref('user','user_id')->name}
+			{$item->user->surname} {$item->user->name}
 		</a>
 	</li>
 </ol>
