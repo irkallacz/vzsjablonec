@@ -41,7 +41,10 @@ parameters:
 		- People:update
 		- Idoklad:update
 		- Thumbs:default
-
+	mail:
+		account: %google.account%
+		title: 'VZS Jablonec'
+		board: 'predstavenstvo@vzs-jablonec.cz'
 
 application:
 	errorPresenter: Error
@@ -86,9 +89,14 @@ routing:
 
 services:
 	router: RouterFactory::createRouter
+
 	nette.latteFactory:
 		setup:
 			- addFilter(null, App\Template\LatteFilters::loader)
+
+	nette.mailer:
+		class: Nette\Mail\IMailer
+		factory: App\Mailer\GmailMailer
 
 	- App\Authenticator\SsoAuthenticator(%sso.secret%)
 	- App\Authenticator\CredentialsAuthenticator
@@ -110,6 +118,7 @@ services:
 	- App\Model\WordpressService(@database.wordpress.context)
 
 	- App\CronModule\Presenters\TaskerPresenter(%cron%)
+	- App\CronModule\Presenters\MessagePresenter(%mail%)
 
 	googleClient:
 		class: Google_Client

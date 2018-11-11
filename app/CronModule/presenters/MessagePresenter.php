@@ -4,12 +4,10 @@ namespace App\CronModule\Presenters;
 
 use App\Model\UserService;
 use App\Model\MessageService;
-use Google_Service_Gmail;
-use Google_Service_Gmail_Message;
 use Nette\Database\Table\ActiveRow;
-use Nette\Database\Table\IRow;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 use Nette\Utils\Json;
 use Tracy\Debugger;
@@ -26,8 +24,20 @@ class MessagePresenter extends BasePresenter {
 	/** @var MessageService @inject */
 	public $messageService;
 
-	/** @var Google_Service_Gmail @inject */
+	/** @var IMailer @inject */
 	public $mailer;
+
+	/** @var ArrayHash */
+	private $settings;
+
+	/**
+	 * MessagePresenter constructor.
+	 * @param array $settings
+	 */
+	public function __construct(array $settings) {
+		parent::__construct();
+		$this->settings = ArrayHash::from($settings);
+	}
 
 	/**
 	 *
@@ -41,8 +51,8 @@ class MessagePresenter extends BasePresenter {
 			/** @var ActiveRow $message*/
 
 			$mail = new Message();
-			$mail->setFrom('info@vzs-jablonec.cz', 'VZS Jablonec');
-			$mail->addBcc('info@vzs-jablonec.cz');
+			$mail->setFrom($this->settings->account, $this->settings->title);
+			$mail->addBcc($this->settings->account);
 
 			$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
 
@@ -56,10 +66,10 @@ class MessagePresenter extends BasePresenter {
 			$template->text = $message->text;
 			$mail->setHtmlBody($template);
 
-			$mail->setSubject('[VZS Jablonec] ' . $message->subject);
+			$mail->setSubject('['.$this->settings->title.'] ' . $message->subject);
 
 			if ($message->message_type_id == MessageService\Message::VOTE_NEW_TYPE) {
-				$mail->addTo('predstavenstvo@vzs-jablonec.cz');
+				$mail->addTo($this->settings->board);
 			} else {
 				foreach ($message->related('message_user') as $recipient) {
 					$mail->addTo($recipient->user->mail, UserService::getFullName($recipient->user));
@@ -71,10 +81,8 @@ class MessagePresenter extends BasePresenter {
 				$filename = WWW_DIR .'/../member/'. MessageService::DIR_ATTACHMENTS .'/'. $parameters['filename'];
 				$mail->addAttachment($filename);
 			}
-			//$this->mailer->send($mail);
-			$gmail = new Google_Service_Gmail_Message();
-			$gmail->setRaw($mail->generateMessage());
-			$this->mailer->users_messages->send('me', $gmail);
+
+			$this->mailer->send($mail);
 
 			$date = new DateTime();
 			$message->update(['date_send' => $date]);
