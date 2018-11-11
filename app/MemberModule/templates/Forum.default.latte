@@ -19,7 +19,7 @@
 {foreach $forum as $category}
 	{var $post = $category->related('forum_post')->where('NOT row_number', 0)->order('date_add DESC')->fetch()}
 
-	<tr n:class="topic, hoverLike,(($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',(($post)and($post->user_id == $user->getId())) ? logged">
+	<tr n:class="topic, hoverLike, (($post)and($post->date_add > $user->getIdentity()->date_last)) ? 'new',(($post)and($post->user_id == $user->getId())) ? logged">
 
 		<td class="title">
 			<a title="{$category->title|firstUpper}" n:href="Forum:category $category->id">
