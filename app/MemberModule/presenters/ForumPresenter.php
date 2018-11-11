@@ -52,10 +52,15 @@ class ForumPresenter extends LayerPresenter {
 
 	/**
 	 * @param int $id
+	 * @throws BadRequestException
 	 */
 	public function actionPost(int $id) {
 		$post = $this->forumService->getPostById($id);
-		$this->showPost($post);
+		if ($post){
+			$this->showPost($post);
+		}else{
+			throw new BadRequestException('Post not found');
+		}
 	}
 
 	/**
