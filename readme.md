@@ -23,6 +23,7 @@ More at https://member.vzs-jablonec.cz
  - PHP 7.0
  - Nette 2.4
  - MySql/MariaDB
+ - Image Magic PHP extention
 
 More at [composer.json](composer.json)
 
