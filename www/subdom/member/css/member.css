@@ -46,6 +46,7 @@ svg.icon { margin: 0 0.4ex; vertical-align: -5%}
 .hint {border-bottom: 1px black dashed; cursor: help;}
 
 .red {color: red;}
+.blue {color: #0065c6}
 .green {color: green;}
 
 .update {font-size: 0.9em; text-align: right; color: gray;}
