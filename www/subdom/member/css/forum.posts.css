@@ -17,4 +17,6 @@
 .message h3 {font-size: 12px;}
 .message img {max-width: 100%}
 
+.message .copy {width: 1.5em; background-color: inherit;}
+
 #posts .clearfix {clear: right;}

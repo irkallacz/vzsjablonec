@@ -22,11 +22,10 @@
     hr { border: none; border-top: 1px solid #ccc; }
 
     textarea { min-height: 1em; box-sizing: border-box; padding: 1ex; }
-
 </style>
-<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
 <script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
-<script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
+<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
+<script type="text/javascript" src="{$basePath}/js/copy.js"></script>
 
 {/block}
 
@@ -90,12 +89,14 @@
 {if $akce->perex}
     <h3>Stručný popis akce</h3>
     <div class="texy">
+        {include copy $akce->perex}
         {$akce->perex|texy|noescape}
     </div>
 {/if}
 
 <h3>Podrobný popis akce</h3>
 <div class="texy">
+    {include copy $akce->description}
     {$akce->description|texy|noescape}
 </div>
 
@@ -119,6 +120,7 @@
         {if $akce->message}
             <h3>Zpráva z akce</h3>
             <div class="texy">
+                {include copy $akce->message}
                 {$akce->message|texy|noescape}
             </div>
             {*<p><a class="buttonLike" n:href="Akce:editReport $akce->id">{include svg pencil} editovat</a></p>*}

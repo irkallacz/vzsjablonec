@@ -54,7 +54,7 @@ svg.icon { margin: 0 0.4ex; vertical-align: -5%}
 div.flash:before {font-size: 120%; line-height: 50%; speak: none;}
 
 #text .texy {font-family: Cambria, 'Times New Roman', Times, Garamond, serif; color: #222; border: 1px solid #ccc; 
-padding: 0 1em; background-color: #fffff6; }
+padding: 0 1em; background-color: #fffff6; position: relative;}
 .texy table {border-collapse: collapse;}
 .texy table th {background-color: silver; }
 .texy table table, .texy table td, .texy table th {border: 1px solid gray; padding: 1ex;}
@@ -64,6 +64,10 @@ div#texyPreview.texy {border: none; padding: 0;}
 #text .texy h1 {font-size: 1.5em; text-transform: uppercase;}
 #text .texy h1, #text .texy h2, #text .texy h3, #text .texy h4 {margin-bottom: 0;}
 #text .texy img { max-width: 100% }
+
+.copy:hover svg, .copy:hover div, .copy.blue svg, .copy.blue div {display: block }
+.copy {position: absolute; bottom: 1ex; right: 1ex; width: 1.2em; height: 1.2em; overflow: hidden;}
+.copy svg, .copy div { display: none}
 
 .buttonMenu {padding: 0; text-align: right;}
 .buttonMenu li {float: right; display: inline; list-style-type: none; margin-left: 1ex; margin-bottom: 1ex;}

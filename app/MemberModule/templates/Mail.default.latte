@@ -9,6 +9,8 @@
 	article:target .member, .member:hover { overflow: visible; height: auto;}
 	article:target .member:before, .member:hover:before { display: none}
 </style>
+
+<script type="text/javascript" src="{$basePath}/js/copy.js"></script>
 {/block}
 
 <h1 n:block="title">Zprávy</h1>
@@ -58,6 +60,7 @@
 						</div>
 					</div>
 					<div class="texy">
+						{include copy $message->text}
 						{$message->text|texy|noescape}
 					</div>
 					<div class="file" n:ifset="$param->filename">{include svg paperclip} <a href="{$baseUrl}/doc/message/{$param->filename}">{$param->filename}</a></div>

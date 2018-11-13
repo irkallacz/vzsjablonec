@@ -1,4 +1,5 @@
 {import '../templates/@svg.latte'}
+{import '../templates/@copy.latte'}
 
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
@@ -17,7 +18,8 @@
         </div>
 
         <div class="message">
-            {if !$search}{$post->text|forumTexy|noescape}{else}{$post->text|replace:$search:"<mark>$search</mark>"|forumTexy|noescape}{/if}
+			{include copy $post->text}
+			{if !$search}{$post->text|forumTexy|noescape}{else}{$post->text|replace:$search:"<mark>$search</mark>"|forumTexy|noescape}{/if}
         </div>
 
         {var $isTopic = ($post->id == $post->forum_topic_id)}

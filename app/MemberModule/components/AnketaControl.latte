@@ -1,10 +1,12 @@
 {import '../templates/@svg.latte'}
+{import '../templates/@copy.latte'}
 
 {snippet flash}
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 {/snippet}
 
 <div id="otazka" class="texy">
+    {include copy $anketa->text}
     {$anketa->text|texy|noescape}
 
     <p n:if="$anketa->date_add != $anketa->date_update" class="update" title="{$anketa->date_update|timeAgoInWords}">Upraveno <time datetime="{$anketa->date_update|datetimeC}">{$anketa->date_update|datetime}</time></p>
