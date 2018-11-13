@@ -10,9 +10,11 @@
 #posts .message {padding: 0 1em; font-size: 90%}
 #posts .update {text-align: left;}
 
+.message {position: relative; margin-top: 1ex;}
 .message blockquote {margin: 0 1em 0 1em; border-left: 2px solid #0089d2; background-color: #e6f3f7; padding-left: 15px;}
 .message h1 {font-size: 16px;}
 .message h2 {font-size: 14px;}
 .message h3 {font-size: 12px;}
+.message img {max-width: 100%}
 
 #posts .clearfix {clear: right;}
