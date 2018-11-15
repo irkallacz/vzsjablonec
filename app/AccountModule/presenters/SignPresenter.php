@@ -137,9 +137,8 @@ class SignPresenter extends BasePresenter {
 			$this->redirect('in');
 		}
 
-		$email = Arrays::get($me, 'email');
-
 		try {
+			$email = Arrays::get($me, 'email');
 			$this->emailAuthenticator->login($email);
 			$this->afterLogin(UserService::LOGIN_METHOD_FACEBOOK);
 		} catch (InvalidArgumentException $e) {
