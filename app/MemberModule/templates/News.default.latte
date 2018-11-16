@@ -78,7 +78,7 @@
 
 		{if}<h3>Hodnocení akce</h3>
 		<ol class="news" n:inner-foreach="$ratingList as $rating">
-			<li><a n:class="$rating->rating_user_id == $user->getId() ? logged" n:href="Akce:view#rating-$rating->rating_user_id $rating->id"
+			<li><a n:class="$rating->rating_user_id == $user->getId() ? logged" n:href="Akce:view#rating/$rating->rating_user_id $rating->id"
 			title="{$rating->rating_date_add|timeAgoInWords}">{$rating->name}</a></li>
 		</ol>
 		{/if isset($rating)}
