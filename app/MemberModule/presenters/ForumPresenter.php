@@ -298,8 +298,6 @@ class ForumPresenter extends LayerPresenter {
 		if ($this->isAjax()) {
 
 			$httpRequest = $this->context->getByType('Nette\Http\Request');
-
-			LatteFilters::$root = $this->template->basePath;
 			$div = Html::el('div')->setHtml(LatteFilters::forumTexy($httpRequest->getPost('texy')));
 			$div->id = 'texyPreview';
 
@@ -456,7 +454,7 @@ class ForumPresenter extends LayerPresenter {
 		$files = new FileCollection(WWW_DIR . '/texyla/js');
 		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
 		$files->addFiles(['../plugins/img/img.js']);
-		$files->addFiles(['../plugins/emoticon/emoticon.js']);
+		$files->addFiles(['../plugins/emoji/emoji.js']);
 		$files->addFiles([WWW_DIR . '/js/texyla_forum.js']);
 		$files->addFiles([WWW_DIR . '/js/jquery-ui.custom.min.js']);
 

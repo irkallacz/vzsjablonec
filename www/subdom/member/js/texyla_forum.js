@@ -8,7 +8,7 @@ toolbar: [
     null,
     'left','right','center',
     null,
-    'emoticon',
+    'emoji',
     null,
     'ul', 'ol', ["olAlphabetSmall", "olAlphabetBig", "olRomans", "olRomansSmall"],
     null,

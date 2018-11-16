@@ -39,8 +39,6 @@ class PostsListControl extends Control {
 
 
 	public function render() {
-		LatteFilters::$root = $this->template->basePath;
-
 		$this->template->setFile(__DIR__ . '/PostsListControl.latte');
 		$this->template->posts = $this->posts;
 		$this->template->isLocked = $this->isLocked;

@@ -17,3 +17,5 @@ table#items .count, table#items .author, table#items .post {padding: 0 1ex;}
 
 .paginator {line-height: 2em;}
 .paginator .buttonLike {line-height: 1.2em;}
+
+.ui-widget .emoji { font-size: 1.5em;}

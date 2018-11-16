@@ -232,7 +232,7 @@ CREATE TABLE `forum_post` (
   `date_add` datetime NOT NULL,
   `date_update` datetime NOT NULL,
   `title` varchar(50) COLLATE utf8_czech_ci DEFAULT NULL,
-  `text` text COLLATE utf8_czech_ci NOT NULL,
+  `text` text COLLATE utf8mb4_czech_ci NOT NULL,
   `locked` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `hidden` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -243,7 +243,7 @@ CREATE TABLE `forum_post` (
   CONSTRAINT `forum_post_ibfk_4` FOREIGN KEY (`forum_id`) REFERENCES `forum` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `forum_post_ibfk_5` FOREIGN KEY (`forum_topic_id`) REFERENCES `forum_post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `forum_post_ibfk_6` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4153 DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4153 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `hlasovani`
 
