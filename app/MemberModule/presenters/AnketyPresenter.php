@@ -38,7 +38,7 @@ class AnketyPresenter extends LayerPresenter {
 		}
 
 		$this->template->anketa = $anketa;
-		$this->template->members = $anketa->related('anketa_member');
+		$this->template->members = $anketa->related('anketa_member')->order('date_add');
 		$this->template->odpovedi = $anketa->related('anketa_odpoved')->order('text');
 
 		$this->template->title = $anketa->title;
