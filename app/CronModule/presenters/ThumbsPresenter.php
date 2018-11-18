@@ -10,7 +10,6 @@ namespace App\PhotoModule\Presenters;
 
 use App\Model\GalleryService;
 use App\PhotoModule\Image;
-use Nette\Utils\ImageException;
 use Tracy\Debugger;
 
 class ThumbsPresenter extends BasePresenter {
@@ -36,7 +35,7 @@ class ThumbsPresenter extends BasePresenter {
 
 				$this->galleryService->updatePhoto($photo->id, ['thumb' => $thumbname]);
 				$this->template->items[] = $photo->album_id . '/' . $thumbname;
-			} catch (ImageException $e){
+			} catch (\Exception $e){
 				Debugger::log($photo->id . ' '. $photo->album_id . '/'. $photo->filename);
 			}
 		}
