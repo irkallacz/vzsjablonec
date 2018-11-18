@@ -65,9 +65,9 @@ div#texyPreview.texy {border: none; padding: 0;}
 #text .texy h1, #text .texy h2, #text .texy h3, #text .texy h4 {margin-bottom: 0;}
 #text .texy img { max-width: 100% }
 
-.copy:hover svg, .copy:hover div, .copy.blue svg, .copy.blue div {display: block }
 .copy {position: absolute; bottom: 1ex; right: 1ex; width: 1.2em; height: 1.2em; overflow: hidden;}
-.copy svg, .copy div { display: none}
+.copy svg, .copy .text {display: none}
+.copy:hover svg, .copy.blue svg {display: block}
 
 .buttonMenu {padding: 0; text-align: right;}
 .buttonMenu li {float: right; display: inline; list-style-type: none; margin-left: 1ex; margin-bottom: 1ex;}
