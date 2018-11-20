@@ -155,7 +155,7 @@ class CalendarPresenter extends Presenter {
 		$attendees = [];
 		foreach ($this->userService->getUsersByAkceId($akce->id)->where('NOT role', NULL) as $member) {
 			$attendee = new Google_Service_Calendar_EventAttendee();
-			$attendee->setDisplayName($member->surname . ' ' . $member->name);
+			$attendee->setDisplayName(UserService::getFullName($member));
 			$attendee->setEmail($member->mail);
 			$attendee->setResponseStatus('accepted');
 			$attendees[] = $attendee;
