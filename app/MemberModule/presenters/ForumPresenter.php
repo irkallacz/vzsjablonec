@@ -455,6 +455,7 @@ class ForumPresenter extends LayerPresenter {
 	protected function createComponentTexylaJs() {
 		$files = new FileCollection(WWW_DIR . '/texyla/js');
 		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
+		$files->addFiles(['../plugins/img/img.js']);
 		$files->addFiles(['../plugins/emoticon/emoticon.js']);
 		$files->addFiles([WWW_DIR . '/js/texyla_forum.js']);
 		$files->addFiles([WWW_DIR . '/js/jquery-ui.custom.min.js']);

@@ -4,7 +4,7 @@ toolbar: [
 	null,
 	'ul', 'ol',
     null,
-    'link',
+    'link', 'img',
     null,
     'left','right','center',
     null,
