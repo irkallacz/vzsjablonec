@@ -24,7 +24,10 @@ class ConnectionConfig {
 		$this->connections = $connections;
 	}
 
-	public function getConnections(){
+	/**
+	 * @return array
+	 */
+	public function getConnections() {
 		return $this->connections;
 	}
 
