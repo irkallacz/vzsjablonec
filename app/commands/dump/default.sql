@@ -240,7 +240,6 @@ CREATE TABLE `forum_post` (
   KEY `forum_topic_id` (`forum_topic_id`),
   KEY `row_number` (`row_number`),
   KEY `user_id` (`user_id`),
-  FULLTEXT KEY `title_text` (`title`,`text`),
   CONSTRAINT `forum_post_ibfk_4` FOREIGN KEY (`forum_id`) REFERENCES `forum` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `forum_post_ibfk_5` FOREIGN KEY (`forum_topic_id`) REFERENCES `forum_post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `forum_post_ibfk_6` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
