@@ -17,7 +17,7 @@
 		"nette/mail": "^2.4",
 		"nette/robot-loader": "^2.4",
 		"nette/security": "^2.4",
-		"nette/utils": "v2.4.9",
+		"nette/utils": "^2.5.1",
 		"latte/latte": "^2.4",
 		"tracy/tracy": "^2.4",
 		"texy/texy": "^2.9",
@@ -30,7 +30,7 @@
 		"kertz/twitteroauth": "dev-master",
 		"venca-x/social-login": "^1.0",
 		"malcanek/iDoklad-v2": "dev-master",
-		"minetro/recaptcha": "2.0.0"
+		"contributte/recaptcha": "^3.1"
 	},
 	"require-dev": {
 	  "nette/tester": "^2.0",

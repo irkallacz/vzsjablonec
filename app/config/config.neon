@@ -156,7 +156,7 @@ services:
 extensions:
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	- Echo511\Plupload\DI\PluploadExtension
-	recaptcha: Minetro\ReCaptcha\DI\ReCaptchaExtension
+	recaptcha: Contributte\ReCaptcha\DI\ReCaptchaExtension
 
 recaptcha:
 	siteKey: %recaptcha.siteKey%
