@@ -73,8 +73,8 @@
 	<div class="square">
 		<table>
 			<tr><td rowspan="4">
-					{if $filename}
-						<a href="{$baseUrl}/{$filename}" target="_blank"><img src="{$baseUrl}/{$filename}" alt="fotografie" height="150"></a>
+					{if $member->photo}
+						<a href="{$baseUrl}/img/photos/{$member->photo}" target="_blank"><img src="{$baseUrl}/img/photos/{$member->photo}" alt="fotografie" height="150"></a>
 					{else}
 						<div id="photo">FOTOGRAFIE</div>
 					{/if}

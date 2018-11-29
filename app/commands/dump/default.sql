@@ -463,6 +463,7 @@ CREATE TABLE `user` (
   `telefon2` char(9) COLLATE utf8_czech_ci DEFAULT NULL,
   `text` text COLLATE utf8_czech_ci,
   `role` tinyint(4) DEFAULT '0',
+  `photo` varchar(60) COLLATE utf8_czech_ci DEFAULT NULL,
   `date_add` date DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),

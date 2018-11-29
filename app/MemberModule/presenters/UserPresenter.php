@@ -120,8 +120,6 @@ class UserPresenter extends LayerPresenter {
 			return number_format($number,0,'',' ');
 		});
 
-		$fileName = self::getUserImageName($user);
-		$this->template->filename = file_exists(WWW_DIR . $fileName) ? $fileName : NULL;
 		$this->template->title = UserService::getFullName($user);
 	}
 
@@ -479,6 +477,7 @@ class UserPresenter extends LayerPresenter {
 				$image->resize(1000, NULL, Image::SHRINK_ONLY);
 				$filename = WWW_DIR . self::getUserImageName($user);
 				$image->save($filename, 90, Image::JPEG);
+				$values->photo = basename($filename);
 			}
 
 			unset($values->image);
