@@ -1,0 +1,25 @@
+{block head}
+	<style type="text/css">
+		#main { max-width: 180em;}
+		input.int { width: 2.7em}
+		.grid-global-actions { text-align: left;}
+		.grid table tr:nth-child(2n) td { background-color: #eee;}
+	</style>
+{/block}
+
+<h1 n:block="title">Tabulka uživatelů</h1>
+
+{block content}
+
+	{control userGrid}
+
+	<script type="text/javascript" defer n:nonce>
+		document.querySelector('#selectAll').addEventListener('click', function (event) {
+			document.querySelectorAll('.grid input[type="checkbox"][name^="actions[items]"]').forEach(function (el) {
+					el.checked = event.target.checked;
+				}
+			)
+		});
+	</script>
+
+{/block}

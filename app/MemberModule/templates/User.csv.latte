@@ -1,5 +1,0 @@
-{contentType text/csv}
-ID,Příjmení,Jméno,"Datum narození",Ulice,Město,E-mail,Telefon,Zaměstnání,"Sekundární E-mail", "Sekundární telefon,","Datum registrace"
-{foreach $users as $member}
-{$member->id},{$member->surname},{$member->name},"{$member->date_born|date:'d. m. Y'}",{$member->ulice},{$member->mesto},{$member->mail},{$member->telefon},"{$member->zamestnani}",{$member->mail2},{$member->telefon2},"{$member->date_add|date:'d. m. Y'}"
-{/foreach}

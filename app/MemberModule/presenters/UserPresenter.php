@@ -2,6 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\UserGridControl;
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\MessageService;
 use App\Model\UserService;
@@ -152,13 +153,10 @@ class UserPresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @allow(member)
+	 * @allow(board)
 	 */
-	public function renderCsv() {
-		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name');
+	public function actionTable() {
 
-		$httpResponse = $this->context->getByType('Nette\Http\Response');
-		$httpResponse->setHeader('Content-Disposition', 'attachment; filename="members.csv"');
 	}
 
 	/**
@@ -508,5 +506,9 @@ class UserPresenter extends LayerPresenter {
 	 */
 	private static function getUserImageName(IRow $user){
 		return '/img/photos/' . Strings::webalize(UserService::getFullName($user)) . '-' . $user->id . '.jpg';
+	}
+
+	protected function createComponentUserGrid(){
+		return new UserGridControl($this->userService, $this->getSession('userTable'));
 	}
 }

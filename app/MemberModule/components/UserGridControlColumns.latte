@@ -1,0 +1,92 @@
+{import '../templates/@svg.latte'}
+
+{define cell-phone}
+	{if $cell}{$cell|number:0:'':' '}{/if}
+{/define}
+
+{define cell-date}
+	{if $cell}{$cell|date:'d.m.Y'}{/if}
+{/define}
+
+{define cell-id}
+	<a href="{plink User:view id => $cell}">{include svg user-o} {$cell|padLeft:'3':0}</a>
+{/define}
+
+{define cell-date_born}
+	{include cell-date}
+{/define}
+
+{define cell-date_add}
+	{include cell-date}
+{/define}
+
+{define cell-date_update}
+	{include cell-date}
+{/define}
+
+{define cell-telefon}
+	{include cell-phone}
+{/define}
+
+{define cell-telefon2}
+	{include cell-phone}
+{/define}
+
+{define cell-age}
+	{if $row->date_born}{$row->date_born->diff(date_create())->y}{/if}
+{/define}
+
+{define col-yes-no}
+	<td class="center">
+		{if $cell}✓{else}✗{/if}
+	</td>
+{/define}
+
+{define col-photo}
+	<td class="center">
+		{if $cell}<a href="{$baseUrl}/img/photos/{$cell}">{include svg image}</a>{/if}
+	</td>
+{/define}
+
+{define col-hash}
+	{include col-yes-no}
+{/define}
+
+{define col-role}
+	<td class="right">
+		{$cell}
+	</td>
+{/define}
+
+{define pagination}
+	<div class="grid-paginator">
+		<a n:tag-if="!$paginator->isFirst()" href="{link paginate!, 'page' => 1}" class="buttonLike ajax">
+			<span n:tag-if="$paginator->isFirst()" class="buttonLike gray">
+				{include svg fast-backward} První
+			</span>
+		</a>
+
+		<a n:tag-if="!$paginator->isFirst()" href="{link paginate!, 'page' => $paginator->page - 1}" class="buttonLike ajax">
+			<span n:tag-if="$paginator->isFirst()" class="buttonLike gray">
+				{include svg backward} Předchozí
+			</span>
+		</a>
+
+		<span>
+			<span>{$paginator->page}</span> / <span>{$paginator->pageCount} ({$paginator->itemCount})</span>
+		</span>
+
+		<a n:tag-if="!$paginator->isLast()" href="{link paginate!, 'page' => $paginator->page + 1}" class="buttonLike ajax">
+			<span n:tag-if="$paginator->isLast()" class="buttonLike gray">
+				Další {include svg forward}
+			</span>
+		</a>
+
+		<a n:tag-if="!$paginator->isLast()" href="{link paginate!, 'page' => $paginator->pageCount}" class="buttonLike ajax">
+			<span n:tag-if="$paginator->isLast()" class="buttonLike gray">
+				Poslední {include svg fast-forward}
+			</span>
+		</a>
+
+	</div>
+{/define}

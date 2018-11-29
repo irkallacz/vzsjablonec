@@ -30,7 +30,9 @@
 		"kertz/twitteroauth": "dev-master",
 		"venca-x/social-login": "^1.0",
 		"malcanek/iDoklad-v2": "dev-master",
-		"contributte/recaptcha": "^3.1"
+		"contributte/recaptcha": "^3.1",
+		"nextras/datagrid": "^3.0",
+		"mk-j/php_xlsxwriter": "^0.37.0"
 	},
 	"require-dev": {
 	  "nette/tester": "^2.0",

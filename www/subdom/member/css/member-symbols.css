@@ -90,7 +90,6 @@ Single-colored icons can be modified like so:
 	width: 0.7857142857142857em;
 }
 
-
 .icon-map-marker {
   width: 0.5714285714285714em;
 }
@@ -273,4 +272,8 @@ Single-colored icons can be modified like so:
 
 .icon-google-plus {
   width: 1.2857142857142856em;
+}
+
+.icon-table {
+  width: 0.9285714285714285em;
 }
