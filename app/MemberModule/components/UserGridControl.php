@@ -214,8 +214,7 @@ class UserGridControl extends Control {
 			->setHtmlId('selectAll')
 			->setOmitted();
 
-		$form->addSubmit('save','Uložit')
-			->setHtmlAttribute('tabindex', '0');
+		$form->addSubmit('save','Uložit');
 
 		$columns = $form->addMultiplier('columns', function (\Nette\Forms\Container $column) use($items) {
 			$column->addSelect('column', NULL, $items);
@@ -303,7 +302,7 @@ class UserGridControl extends Control {
 		}
 
 		header('Content-disposition: attachment; filename="export.xlsx"');
-		header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		header('Content-Transfer-Encoding: binary');
 		header('Cache-Control: must-revalidate');
 		header('Pragma: public');
