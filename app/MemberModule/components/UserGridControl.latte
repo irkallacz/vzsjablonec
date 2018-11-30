@@ -1,4 +1,8 @@
-<table>
+{snippet flash}
+	<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+{/snippet}
+
+<table id="columnsForm">
 	{control columnsForm}
 </table>
 
