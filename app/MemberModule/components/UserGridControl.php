@@ -266,9 +266,10 @@ class UserGridControl extends Control {
 	public function export(array $ids){
 		$header = [' ' => 'integer'];
 		$widths = [5];
-		foreach ($this->columns as $column){
-			$header[self::COLUMNS[$column]['label']] = self::COLUMNS[$column]['format'];
-			$widths[] = self::COLUMNS[$column]['size'];
+		foreach ($this->columns as $name){
+			$column = ArrayHash::from(self::COLUMNS[$name]);
+			$header[$column->label] = $column->format;
+			$widths[] = $column->size;
 		}
 
 		$writer = new \XLSXWriter();
