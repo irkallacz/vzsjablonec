@@ -64,12 +64,13 @@ class UserGridControl extends Control {
 		'telefon' 		=> ['label' => 'Telefon', 		'size' => 12,	'format' => '000 000 000'],
 		'mail2' 		=> ['label' => 'E-mail2', 		'size' => 30,	'format' => 'string'],
 		'telefon2' 		=> ['label' => 'Telefon2', 		'size' => 12,	'format' => '000 000 000'],
+		'send_to_second'=> ['label' => 'Kopie', 		'size' =>  5,	'format' => 'string',	'order' => FALSE],
 		'ulice' 		=> ['label' => 'Ulice',			'size' => 20,	'format' => 'string'],
 		'mesto' 		=> ['label' => 'Město',			'size' => 20,	'format' => 'string'],
 		'zamestnani'	=> ['label' => 'Zaměstnání',	'size' => 20,	'format' => 'string'],
 		'photo' 		=> ['label' => 'Fotka',			'size' =>  5,	'format' => 'string',	'order' => FALSE],
-		'date_add' 		=> ['label' => 'Datum reg.', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
 		'hash' 			=> ['label' => 'Heslo', 		'size' =>  5,	'format' => 'string',	'order' => FALSE],
+		'date_add' 		=> ['label' => 'Datum reg.', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
 		'date_update'	=> ['label' => 'Datum akt.', 	'size' => 12,	'format' => 'DD.MM.YYYY HH:MM'],
 	];
 
@@ -123,6 +124,7 @@ class UserGridControl extends Control {
 				$item = ArrayHash::from($array);
 				switch($name){
 					case 'hash':
+					case 'send_to_second':
 					case 'photo':
 						$form->addSelect($name, $item->label, self::YES_NO_ARRAY)->setPrompt(' ');
 						break;
@@ -172,6 +174,7 @@ class UserGridControl extends Control {
 					$filters[$key] = NULL;
 					break;
 				case 'id':
+				case 'send_to_second':
 					$filters[$column] = $value;
 					break;
 				case 'mail':
@@ -283,6 +286,7 @@ class UserGridControl extends Control {
 						break;
 					case 'hash':
 					case 'photo':
+					case 'send_to_second':
 						$value = self::YES_NO_ARRAY[boolval($user->{$column})];
 						break;
 					case 'date_born':
