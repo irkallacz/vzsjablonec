@@ -45,13 +45,16 @@ class UserGridControl extends Control {
 	 * @var array $userLevels
 	 */
 	const USER_LEVELS = [
-		UserService::DELETED_LEVEL 	=> 'Smazaný',
+		UserService::DELETED_LEVEL 	=> 'Vše',
 		UserService::USER_LEVEL 	=> 'Uživatel',
 		UserService::MEMBER_LEVEL 	=> 'Člen',
 		UserService::BOARD_LEVEL 	=> 'Editor',
 		UserService::ADMIN_LEVEL 	=> 'Admin',
 	];
 
+	/**
+	 *
+	 */
 	const COLUMNS = [
 		'surname' 		=> ['label' => 'Příjmení',		'size' => 20,	'format' => 'string'],
 		'name' 			=> ['label' => 'Jméno',			'size' => 20,	'format' => 'string'],
