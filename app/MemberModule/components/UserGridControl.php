@@ -32,9 +32,9 @@ class UserGridControl extends Control {
 	private $session;
 
 	/**
-	 * @var ArrayHash $columns
+	 * @var array $columns
 	 */
-	private $columns;
+	private $columns = ['surname', 'name', 'date_born', 'age', 'mail', 'telefon', 'date_add'];
 
 	/**
 	 * @var int $itemsPerPage;
@@ -73,8 +73,9 @@ class UserGridControl extends Control {
 		'date_update'	=> ['label' => 'Datum akt.', 	'size' => 12,	'format' => 'DD.MM.YYYY HH:MM'],
 	];
 
-	const DEFAULT_COLUMNS = ['surname', 'name', 'date_born', 'age', 'mail', 'telefon', 'date_add'];
-
+	/**
+	 *
+	 */
 	const YES_NO_ARRAY = ['✗','✓'];
 
 	/**
@@ -89,11 +90,11 @@ class UserGridControl extends Control {
 
 		if ($session->columns) {
 			$this->columns = $session->columns;
-		}else {
-			$this->columns = $session->columns = self::DEFAULT_COLUMNS;
 		}
 
-		$this->itemsPerPage = $session->itemsPerPage ? $session->itemsPerPage : $this->itemsPerPage;
+		if ($session->itemsPerPage){
+			$this->itemsPerPage = $session->itemsPerPage;
+		}
 	}
 
 
