@@ -209,6 +209,7 @@ class UserGridControl extends Control {
 		}
 
 		$form = new Form();
+		//$form->getElementPrototype()->class = 'ajax';
 
 		$form->addCheckbox('all', NULL)
 			->setHtmlId('selectAll')
@@ -247,7 +248,11 @@ class UserGridControl extends Control {
 			$this->session->columns = $this->columns = $columns;
 			$this->session->itemsPerPage = $this->itemsPerPage = $values->itemsPerPage;
 
-			$this->getPresenter()->redirect('this');
+			if ($this->getPresenter()->isAjax()) {
+				$this->redrawControl('datagrid');
+			} else{
+				$this->getPresenter()->redirect('this');
+			}
 		};
 
 		$renderer = $form->getRenderer();

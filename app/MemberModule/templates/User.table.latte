@@ -6,6 +6,11 @@
 		.grid table tr:nth-child(2n) td { background-color: #eee;}
 		#columnsForm { margin-top: 1em;}
 	</style>
+
+	{*<script type="text/javascript" src="{$baseUrl}/js/jquery.nette.js"></script>*}
+	<script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
+	<script type="text/javascript" src="{$basePath}/js/nextras.datagrid.js"></script>
+
 {/block}
 
 <h1 n:block="title">Tabulka uživatelů</h1>
@@ -15,6 +20,8 @@
 	{control userGrid}
 
 	<script type="text/javascript" defer n:nonce>
+		$.nette.init();
+
 		document.querySelector('#selectAll').addEventListener('click', function (event) {
 			document.querySelectorAll('.grid input[type="checkbox"][name^="actions[items]"]').forEach(function (el) {
 					el.checked = event.target.checked;
