@@ -4,7 +4,7 @@ namespace App\Template;
 
 use Tracy\Debugger;
 
-class LatteFilters{
+class LatteFilters {
 
 	/**
 	 * @param $filter
@@ -94,9 +94,27 @@ class LatteFilters{
      * @param  int
      * @return mixed
      */
-    private static function plural($n){
+    public static function plural($n){
         $args = func_get_args();
         return $args[($n == 1) ? 1 : (($n >= 2 && $n <= 4) ? 2 : 3)];
+    }
+
+	/**
+	 * @param \DateTime $start
+	 * @param \DateTime $end
+	 * @param string $dateFormat
+	 * @param string $timeFormat
+	 * @return string
+	 */
+	public static function duration(\DateTime $start, \DateTime $end, string $dateFormat = 'd.m.Y', $timeFormat = 'H:i'){
+		$duration = $start->format($dateFormat.' '.$timeFormat.' - ');
+
+    	if ($start->format('Y-m-d') == $end->format('Y-m-d'))
+			$duration.= $end->format($timeFormat);
+    	else
+    		$duration.= $end->format($dateFormat.' '.$timeFormat);
+
+    	return $duration;
     }
 
     /**
