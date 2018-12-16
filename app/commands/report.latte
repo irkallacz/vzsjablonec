@@ -1,0 +1,67 @@
+{if ($akce->date_start != $report->date_start)or($akce->date_end != $report->date_end)}
+**Začátek akce:** {$report->date_start|datetime}
+ **Konec akce:** {$report->date_end|datetime}
+{/if}
+
+{if $report->report_type_id}**Druh akce:** {$report->report_type->title|firstUpper}{else}**Druh akce:** {$report->type_text|firstUpper}{/if}
+
+{if ($report->place)and($report->place != $akce->place)}
+**Místo konání:** {$report->place}
+{/if}
+
+{if ($report->public)and(!Nette\Utils\Strings::contains($report->popis, $report->public))}{$report->public|trim}{/if}
+
+{if $report->popis}{$report->popis|trim}{/if}
+
+{if $report->pocasi}
+**Počasí:**
+{$report->pocasi}
+{/if}
+
+{if $report->osetreni_drobne+$report->osetreni_vetsi+$report->osetreni_odvoz}
+**Ošetření:**
+{if $report->osetreni_drobne}- drobné: {$report->osetreni_drobne}x{/if}
+{if $report->osetreni_vetsi}- větší: {$report->osetreni_vetsi}x{/if}
+{if $report->osetreni_odvoz}- s odvozem: {$report->osetreni_odvoz}x{/if}
+{/if}
+
+{if $report->akce_breh+$report->akce_voda+$report->akce_majetek}
+**Záchranné akce:**
+{if $report->akce_breh}- na břehu: {$report->akce_breh}x{/if}
+{if $report->akce_voda}- na vodě: {$report->akce_voda}x{/if}
+{if $report->akce_majetek}- na záchranu majetku: {$report->akce_majetek}x{/if}
+{/if}
+
+{if $report->material_ms}
+**Použitý materiál na akce v majetku místní skupiny:**
+{foreach explode(PHP_EOL, $report->material_ms) as $line}
+{if $line}- {$line}{/if}
+{/foreach}
+{/if}
+
+{if $report->material_cizi}
+**Další použitý materiál:**
+{foreach explode(PHP_EOL, $report->material_cizi) as $line}
+{if $line}- {$line}{/if}
+{/foreach}
+{/if} 
+
+{if $report->material_ztraty}
+**Ztráty a poškození materiálu:**
+{$report->material_ztraty}
+{/if}
+
+{if $report->doprava}
+**Doprava na akci a způsob její úhrady:**
+{$report->doprava}
+{/if}
+
+{if $members}
+**Účastníci:**
+{foreach $members as $member}
+- {$member->user->surname} {$member->user->name} {if ($report->date_start->format('Y-m-d') == $member->date_start->format('Y-m-d'))and($report->date_start->format('Y-m-d') == $report->date_end->format('Y-m-d'))}{$member->date_start|date:'H:i'} - {$member->date_end|date:'H:i'}{else}{$member->date_start|duration:$member->date_end}{/if} ({$member->hodiny} hodin{if $member->placeno} / {$member->placeno} placeno{/if})
+{/foreach}
+{/if}
+
+**Zodpovědná osoba:** {$report->ref('user', 'zos_id')->surname} {$report->ref('user', 'zos_id')->name}
+ **Vyplnil:** {$report->user->surname} {$report->user->name}

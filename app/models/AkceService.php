@@ -15,6 +15,7 @@ use Nette\Utils\DateTime;
 class AkceService extends DatabaseService {
 	const TABLE_AKCE_NAME = 'akce';
 	const TABLE_AKCE_MEMBER_NAME = 'akce_member';
+	const TABLE_AKCE_REPORT = 'report';
 
 	/**
 	 * @return Selection
@@ -196,12 +197,20 @@ class AkceService extends DatabaseService {
 			->where('date_end BETWEEN ? AND NOW()', $date);
 	}
 
+
+	/**
+	 * @return Selection
+	 */
+	public function getReport(){
+		return $this->database->table(self::TABLE_AKCE_REPORT);
+	}
+
 	/**
 	 * @param int $id
 	 * @return IRow
 	 */
 	public function getReportById(int $id) {
-		return $this->database->table('report')->get($id);
+		$this->getReport()->get($id);
 	}
 
 	/**
@@ -209,7 +218,7 @@ class AkceService extends DatabaseService {
 	 * @return bool|int|IRow
 	 */
 	public function addReport(ArrayHash $values) {
-		return $this->database->table('report')->insert($values);
+		return $this->getReport()->insert($values);
 	}
 
 	/**
