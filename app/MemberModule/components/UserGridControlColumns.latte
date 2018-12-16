@@ -58,6 +58,10 @@
 	</td>
 {/define}
 
+{define cell-iDokladId}
+	<a href="https://app.idoklad.cz/Contact/Detail/{$cell}" target="_blank">{$cell}</a>
+{/define}
+
 {define pagination}
 	<div class="grid-paginator">
 		<a n:tag-if="!$paginator->isFirst()" href="{link paginate!, 'page' => 1}" class="buttonLike ajax">

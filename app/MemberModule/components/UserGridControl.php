@@ -70,6 +70,7 @@ class UserGridControl extends Control {
 		'zamestnani'	=> ['label' => 'Zaměstnání',	'size' => 20,	'format' => 'string'],
 		'photo' 		=> ['label' => 'Fotka',			'size' =>  5,	'format' => 'string',	'order' => FALSE],
 		'hash' 			=> ['label' => 'Heslo', 		'size' =>  5,	'format' => 'string',	'order' => FALSE],
+		'iDokladId' 	=> ['label' => 'iDokladID', 	'size' =>  8,	'format' => 'integer'],
 		'date_add' 		=> ['label' => 'Datum reg.', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
 		'date_update'	=> ['label' => 'Datum akt.', 	'size' => 12,	'format' => 'DD.MM.YYYY HH:MM'],
 	];
