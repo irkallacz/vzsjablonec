@@ -11,7 +11,6 @@ use Joseki\Webloader\JsMinFilter;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
-use Nette\Database\Table\ActiveRow;
 use Nette\Mail\IMailer;
 use Nette\Utils\Json;
 use Tracy\Debugger;
@@ -38,15 +37,27 @@ class MailPresenter extends LayerPresenter {
 	/** @var IMailer @inject */
 	public $mailer;
 
-	/** @allow(board) */
-	public function renderAdd() {
-		$users = $this->userService->getUsers()->order('surname,name');
+
+	/**
+	 * @param array $recipients
+	 * @allow(board)
+	 */
+	public function renderAdd(array $recipients = []) {
+		$users = $this->userService->getUsers()->order('surname,name')->fetchPairs('id');
 		$this->template->members = $users;
 
 		/** @var Form $form */
 		$form = $this['mailForm'];
 		if (!$form->isSubmitted()) {
 			$this->template->pocet = ceil(count($users) / 3);
+		}
+
+		if (!empty($recipients)) {
+			$to = '';
+			foreach ($recipients as $recipient) $to .= $users[$recipient]->mail . ',';
+
+			$form['users']->setDefaultValue($recipients);
+			$form['to']->setDefaultValue($to);
 		}
 	}
 
@@ -64,6 +75,9 @@ class MailPresenter extends LayerPresenter {
 	}
 
 
+	/**
+	 * @return YearPaginator
+	 */
 	public function createComponentYp() {
 		return new YearPaginator(2017, NULL, 1, intval(date('Y')));
 	}

@@ -148,6 +148,7 @@ class UserGridControl extends Control {
 		$grid->addCellsTemplate(__DIR__ . '/UserGridControlColumns.latte');
 
 		$grid->addGlobalAction('export', 'export', [$this, 'export']);
+		$grid->addGlobalAction('mail', 'mail', [$this, 'mail']);
 
 		return $grid;
 	}
@@ -315,6 +316,14 @@ class UserGridControl extends Control {
 		$writer->writeToStdOut();
 
 		$this->presenter->terminate();
+	}
+
+	/**
+	 * @param array $ids
+	 * @throws \Nette\Application\AbortException
+	 */
+	public function mail(array $ids){
+		$this->presenter->redirect('Mail:add', ['recipients' => $ids]);
 	}
 
 	/**
