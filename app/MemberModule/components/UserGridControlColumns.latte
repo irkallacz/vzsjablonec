@@ -1,9 +1,5 @@
 {import '../templates/@svg.latte'}
 
-{define cell-phone}
-	{if $cell}{$cell|number:0:'':' '}{/if}
-{/define}
-
 {define cell-date}
 	{if $cell}{$cell|date:'d.m.Y'}{/if}
 {/define}
@@ -25,11 +21,11 @@
 {/define}
 
 {define cell-telefon}
-	{include cell-phone}
+	{$cell|phone}
 {/define}
 
 {define cell-telefon2}
-	{include cell-phone}
+	{$cell|phone}
 {/define}
 
 {define cell-age}

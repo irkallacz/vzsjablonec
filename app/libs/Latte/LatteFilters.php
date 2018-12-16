@@ -43,6 +43,14 @@ class LatteFilters {
 	}
 
 	/**
+	 * @param int $number
+	 * @return string
+	 */
+	public static function phone(int $number) {
+		return number_format($number,0,'',' ');
+	}
+
+	/**
      * @param $time
      * @return string
      */
