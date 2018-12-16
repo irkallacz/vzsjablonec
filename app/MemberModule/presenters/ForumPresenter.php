@@ -24,8 +24,7 @@ use Joseki\Webloader\JsMinFilter;
 
 class ForumPresenter extends LayerPresenter {
 
-	const POST_PER_PAGE = 30;
-	const TOPIC_PER_PAGE = 30;
+	const ITEMS_PER_PAGE = 30;
 
 	/** @var ForumService @inject */
 	public $forumService;
@@ -45,7 +44,7 @@ class ForumPresenter extends LayerPresenter {
 	 */
 	public function showPost(IRow $post) {
 		$param = ['id' => $post->forum_topic_id];
-		$page = ceil($post->row_number / self::POST_PER_PAGE);
+		$page = ceil($post->row_number / self::ITEMS_PER_PAGE);
 		if ($page > 1) $param['vp-page'] = $page;
 		$this->redirect("Forum:topic#post/$post->id", $param);
 	}
@@ -71,18 +70,20 @@ class ForumPresenter extends LayerPresenter {
 		$forum = $this->forumService->getForumById($id);
 		$this->template->forum = $forum;
 
-		$vp = new \VisualPaginator($this, 'vp');
-
 		$count = $this->forumService->getTopicsByForumId($id, $q)->count();
 
 		/** @var Paginator $paginator */
-		$paginator = $vp->getPaginator();
-		$paginator->setItemsPerPage(self::TOPIC_PER_PAGE);
+		$paginator = $this['vp']->getPaginator();
 		$paginator->setItemCount($count);
 
 		$this['searchForm']['q']->setDefaultValue($q);
 	}
 
+	protected function createComponentVp(){
+		$vp = new \VisualPaginator();
+		$vp->getPaginator()->setItemsPerPage(self::ITEMS_PER_PAGE);
+		return $vp;
+	}
 
 	/**
 	 * @return TopicsListControl
@@ -93,7 +94,7 @@ class ForumPresenter extends LayerPresenter {
 
 		$topics = $this->forumService->getTopicsByForumId($id, $search);
 
-		/* @var Paginator $paginator*/
+		/** @var Paginator $paginator*/
 		$paginator = $this['vp']->getPaginator();
 		$topics->limit($paginator->getLength(), $paginator->getOffset());
 
@@ -121,8 +122,10 @@ class ForumPresenter extends LayerPresenter {
 	public function createComponentPostsList() {
 		$search = $this->getParameter('q');
 
-		$offset = $this['vp']->getPaginator()->getOffset();
-		$limit = $this['vp']->getPaginator()->getLength();
+		/** @var Paginator $paginator*/
+		$paginator = $this['vp']->getPaginator();
+		$offset = $paginator->getOffset();
+		$limit = $paginator->getLength();
 
 		$posts = $this->forumService->getPostsByTopicId($this->topic->id, $search);
 		$posts->limit($limit, $offset);
@@ -153,11 +156,9 @@ class ForumPresenter extends LayerPresenter {
 
 		$count = $this->forumService->getPostsByTopicId($id, $q)->count();
 
-		$vp = new \VisualPaginator($this, 'vp');
-		$paginator = $vp->getPaginator();
-		$paginator->setItemsPerPage(self::POST_PER_PAGE);
+		/** @var Paginator $paginator */
+		$paginator = $this['vp']->getPaginator();
 		$paginator->setItemCount($count);
-		$this->template->paginator = $paginator;
 
 		$this['addPostForm']['forum_topic_id']->setDefaultValue($id);
 		$this['addPostForm']['forum_id']->setDefaultValue($this->topic->forum_id);
@@ -171,9 +172,6 @@ class ForumPresenter extends LayerPresenter {
 	 * @param string $subject
 	 */
 	public function renderSearch(string $q = NULL, int $forum_id = NULL, string $subject = 'posts') {
-		$vp = new \VisualPaginator($this, 'vp');
-		$vp->getPaginator()->setItemsPerPage(self::POST_PER_PAGE);
-
 		$this->template->subject = $subject;
 		$this->template->forum_id = $forum_id;
 		$this->template->q = $q;
