@@ -72,7 +72,7 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 {/if}přihlášení</span>
 
 {if $old}
-	{if ($akce->report)or($akce->message)}
+	{if $akce->message}
 		<span class="no-wrap" title="Akce má vyplněný záznam">{include svg check-circle, green}
 	{else}
 		<span class="no-wrap" title="Akce nemá vyplněný záznam">{include svg times-circle, red}

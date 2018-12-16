@@ -111,20 +111,12 @@
     </p>
 
     {if $akceIsOld}
-        {if $akce->report}
-            <h3>Záznam o akci</h3>
-            <p>
-                <a class="buttonLike" n:href="Report:view $akce->id"> {include svg book} náhled</a>
-            </p>
-        {/if}
-
         {if $akce->message}
             <h3>Zpráva z akce</h3>
             <div class="texy">
                 {include copy $akce->message}
                 {$akce->message|texy|noescape}
             </div>
-            {*<p><a class="buttonLike" n:href="Akce:editReport $akce->id">{include svg pencil} editovat</a></p>*}
         {/if}
 
         {control rating}
