@@ -19,6 +19,7 @@ class RouterFactory{
 		$member[] = new Route('//member.%domain%/forum/view-post/<id>','Forum:post', Route::ONE_WAY);
 		$member[] = new Route('//member.%domain%/forum/view/<id>','Forum:topic', Route::ONE_WAY);
 
+		$member[] = new Route('//member.%domain%/akce/[year/<yp-year>]','Akce:default');
 		$member[] = new Route('//member.%domain%/forum/<action>/<id>[/page/<vp-page>]','Forum:view');
 		$member[] = new Route('//member.%domain%/<presenter>/<action>[/<id>]', 'News:default');
 

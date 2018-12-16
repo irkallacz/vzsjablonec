@@ -82,6 +82,7 @@ class YearPaginator extends Control {
 
 		switch ($this->year) {
 			case NULL:
+			case 'NAN':
 				$this->year = NAN;
 				break;
 			case 'INF':
