@@ -53,11 +53,12 @@ class MailPresenter extends LayerPresenter {
 		}
 
 		if (!empty($recipients)) {
-			$to = '';
-			foreach ($recipients as $recipient) $to .= $users[$recipient]->mail . ',';
+			$to = [];
+			foreach ($recipients as $recipient) $to[] = $users[$recipient]->mail;
+			sort($to);
 
 			$form['users']->setDefaultValue($recipients);
-			$form['to']->setDefaultValue($to);
+			$form['to']->setDefaultValue(implode(',', $to));
 		}
 	}
 
