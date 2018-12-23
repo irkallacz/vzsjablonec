@@ -62,7 +62,7 @@
 			</li>
 			{/if}
 			<li n:if="(($user->isInRole('admin')or($member->id == $user->getId()))and(!is_null($member->role)))">
-				<a class="buttonLike" n:href="edit,$member->id">
+				<a class="buttonLike" n:href="edit $member->id">
 					{include svg pencil} editovat
 				</a>
 			</li>
