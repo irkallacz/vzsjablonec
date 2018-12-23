@@ -271,52 +271,56 @@ class UserGridControl extends Control {
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function export(array $ids){
-		$header = [' ' => 'integer'];
-		$widths = [5];
-		foreach ($this->columns as $name){
-			$column = ArrayHash::from(self::COLUMNS[$name]);
-			$header[$column->label] = $column->format;
-			$widths[] = $column->size;
-		}
-
-		$writer = new \XLSXWriter();
-		$writer->writeSheetHeader('List1', $header, ['font-style' => 'bold', 'widths' => $widths]);
-
-		foreach ($ids as $id){
-			$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
-			$data = [$user->id];
-
-			foreach ($this->columns as $column){
-				switch ($column){
-					case 'age':
-						$value = ($user->date_born) ? $user->date_born->diff(date_create())->y : NULL;
-						break;
-					case 'hash':
-					case 'photo':
-					case 'send_to_second':
-						$value = self::YES_NO_ARRAY[boolval($user->{$column})];
-						break;
-					case 'date_born':
-					case 'date_add':
-					case 'date_update':
-						$value = ($user->{$column}) ? $user->{$column}->format('Y-m-d H:i:s') : NULL;
-						break;
-					default:
-						$value = $user->{$column};
-				}
-				$data[] = $value;
+		if (!empty($ids)){
+			$header = [' ' => 'integer'];
+			$widths = [5];
+			foreach ($this->columns as $name){
+				$column = ArrayHash::from(self::COLUMNS[$name]);
+				$header[$column->label] = $column->format;
+				$widths[] = $column->size;
 			}
-			$writer->writeSheetRow('List1', $data);
+
+			$writer = new \XLSXWriter();
+			$writer->writeSheetHeader('List1', $header, ['font-style' => 'bold', 'widths' => $widths]);
+
+			foreach ($ids as $id){
+				$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
+				$data = [$user->id];
+
+				foreach ($this->columns as $column){
+					switch ($column){
+						case 'age':
+							$value = ($user->date_born) ? $user->date_born->diff(date_create())->y : NULL;
+							break;
+						case 'hash':
+						case 'photo':
+						case 'send_to_second':
+							$value = self::YES_NO_ARRAY[boolval($user->{$column})];
+							break;
+						case 'date_born':
+						case 'date_add':
+						case 'date_update':
+							$value = ($user->{$column}) ? $user->{$column}->format('Y-m-d H:i:s') : NULL;
+							break;
+						default:
+							$value = $user->{$column};
+					}
+					$data[] = $value;
+				}
+				$writer->writeSheetRow('List1', $data);
+			}
+
+			header('Content-disposition: attachment; filename="export.xlsx"');
+			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+			header('Content-Transfer-Encoding: binary');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			$writer->writeToStdOut();
+
+			$this->presenter->terminate();
+		}else{
+			$this->flashMessage('Musíte vybrat uživatele', 'error');
 		}
-
-		header('Content-disposition: attachment; filename="export.xlsx"');
-		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-		header('Content-Transfer-Encoding: binary');
-		header('Cache-Control: must-revalidate');
-		header('Pragma: public');
-		$writer->writeToStdOut();
-
-		$this->presenter->terminate();
 	}
 
 	/**
@@ -324,7 +328,12 @@ class UserGridControl extends Control {
 	 * @throws \Nette\Application\AbortException
 	 */
 	public function mail(array $ids){
-		$this->presenter->redirect('Mail:add', ['recipients' => $ids]);
+		if (!empty($ids)){
+			$this->presenter->redirect('Mail:add', ['recipients' => $ids]);
+		}else{
+			$this->flashMessage('Musíte vybrat uživatele', 'error');
+		}
+
 	}
 
 	/**
