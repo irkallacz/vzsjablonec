@@ -11,6 +11,7 @@ namespace App\MemberModule\Forms;
 use App\Model\UserService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\BaseControl;
+use Nette\Forms\Controls\TextInput;
 use Nette\SmartObject;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
@@ -56,6 +57,13 @@ class UserFormFactory {
 		$form['date_born'] = new \DateInput('Datum narození');
 		$form['date_born']->setRequired('Vyplňte datum narození')
 			->setDefaultValue(new DateTime());
+
+		$form->addText('rc', 'Rodné číslo', 11)
+			->setRequired(FALSE)
+			->setNullable()
+			->setHtmlAttribute('placeholder', '000000/0000')
+			->addCondition(Form::FILLED)
+			->addRule(Form::MAX_LENGTH, 'Rodné číslo by nemělo být delší než %d znaků', 11);
 
 		$form->addText('zamestnani', 'Zaměstnání/Škola', 30)
 			->setAttribute('spellcheck', 'true')

@@ -60,6 +60,7 @@ class UserGridControl extends Control {
 		'name' 			=> ['label' => 'Jméno',			'size' => 20,	'format' => 'string'],
 		'date_born' 	=> ['label' => 'Datum nar.', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
 		'age' 			=> ['label' => 'Věk', 			'size' =>  5,	'format' => 'integer',	'order' => FALSE],
+		'rc' 			=> ['label' => 'Rodné čís.', 	'size' => 12,	'format' => 'string'],
 		'mail' 			=> ['label' => 'E-mail', 		'size' => 30,	'format' => 'string'],
 		'telefon' 		=> ['label' => 'Telefon', 		'size' => 12,	'format' => '000 000 000'],
 		'mail2' 		=> ['label' => 'E-mail2', 		'size' => 30,	'format' => 'string'],

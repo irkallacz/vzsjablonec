@@ -99,7 +99,10 @@
 
 <div id="member">
 	{if $user->isInRole('board')}
-		<p n:if="$member->date_born">{include svg calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$age->format('%y')} let)</p>
+		<p n:if="$member->date_born">
+			{include svg calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$age->format('%y')} let)
+			{if $member->rc}<b>Rodné číslo:</b> {$member->rc}{/if}
+		</p>
 		<ul class="bullet-less">
 			<li n:if="$member->date_add">
 				{include svg calendar-plus-o} <b>Datum registrace:</b>

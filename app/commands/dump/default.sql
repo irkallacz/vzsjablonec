@@ -392,6 +392,7 @@ CREATE TABLE `user` (
   `surname` varchar(40) COLLATE utf8_czech_ci NOT NULL,
   `hash` varchar(255) COLLATE utf8_czech_ci DEFAULT NULL,
   `date_born` date DEFAULT NULL,
+  `rc` char(11) COLLATE utf8_czech_ci DEFAULT NULL,
   `zamestnani` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
   `mesto` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
   `ulice` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
