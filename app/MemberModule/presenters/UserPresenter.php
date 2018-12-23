@@ -279,6 +279,33 @@ class UserPresenter extends LayerPresenter {
 	}
 
 	/**
+	 * @param IRow|ActiveRow $user
+	 * @param string $output (I, D, F, S)
+	 * @param string|NULL $filename
+	 * @return string
+	 */
+	private function registrationForm(IRow $user, string $output, string $filename = NULL) {
+		$fields = $this->userService->getDataForPDF($user);
+
+		$pdf = new \FPDM(WWW_DIR.'/template.pdf');
+		$pdf->Load($fields, true);
+		$pdf->Merge();
+
+		if (!$filename) $filename = $fields['surname_name'].'.pdf';
+
+		return $pdf->Output($output, $filename);
+	}
+
+	/**
+	 * @param int $id
+	 * @allow(board)
+	 */
+	public function actionRegistrationForm(int $id) {
+		$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
+		$this->registrationForm($user, 'D');
+	}
+
+	/**
 	 * @param int $id
 	 * @allow(user)
 	 */

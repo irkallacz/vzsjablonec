@@ -125,12 +125,32 @@ class UserService extends DatabaseService {
 	 * @param IRow|ActiveRow
 	 * @return array
 	 */
-	public function getDataForUser($user){
+	public function getDataForUser(IRow $user){
 		$array = $user->toArray();
 		$keys = ['id', 'hash', 'name', 'surname', 'mail', 'mail2', 'role'];
 		return array_intersect_key($array, array_flip($keys));
 	}
 
+
+	/**
+	 * @param IRow|ActiveRow $user
+	 * @return array
+	 */
+	public function getDataForPDF(IRow $user){
+		$fields = [
+			'surname_name' => self::getFullName($user),
+			'rc' => $user->rc,
+			'date_born' => $user->date_born->format('d. m. Y'),
+			'mail' => $user->mail,
+			'mail2' => $user->mail2,
+			'phone' => $user->telefon,
+			'phone2' => $user->telefon2,
+			'address' => $user->ulice.', '.$user->mesto,
+			'occupation' => $user->zamestnani,
+		];
+
+		return $fields;
+	}
 	/**
 	 * @param int $id
 	 * @param bool|NULL $org

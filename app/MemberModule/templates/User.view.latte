@@ -153,7 +153,10 @@
 		</address>
 	{/if}
 
-	<p n:if="($user->isInRole('member'))"><a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a></p>
+	<p n:if="$user->isInRole('member')">
+		<a n:if="$user->isInRole('board')" n:href="registrationForm $member->id" class="buttonLike">{include svg file-pdf-o} stáhnout formulář</a>
+		<a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a>
+	</p>
 
 	<div id="poznamka">
 		{$member->text|noescape|texy}
