@@ -197,7 +197,11 @@ class UserPresenter extends LayerPresenter {
 		$message->setAuthor($this->user->id);
 		$message->addRecipient($user->id);
 
-		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id]);
+		$filename = Strings::webalize(UserService::getFullName($user)).'.pdf';
+		$filePath = WWW_DIR .'/'. MessageService::DIR_ATTACHMENTS .'/'. $filename;
+		$this->registrationForm($user, 'F', $filePath);
+
+		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id, 'filename' => $filename]);
 
 		$this->messageService->addMessage($message);
 	}
