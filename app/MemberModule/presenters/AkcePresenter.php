@@ -490,7 +490,7 @@ class AkcePresenter extends LayerPresenter {
 
 			$akce = $this->akceService->addAkce($values);
 
-			if ($org) $this->akceService->addMemberToAction($org, $akce->id, TRUE);
+			if ($org) $this->akceService->addMemberToAction($org, $akce->id, TRUE, $this->getUser()->getId());
 
 			$this->flashMessage('Akce byla přidána');
 
