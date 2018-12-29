@@ -151,7 +151,7 @@ class MailPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(member)
 	 */
-	public function actionAkce(int $id) {
+	public function renderAkce(int $id) {
 		/** @var Form $form */
 		$form = $this['mailForm'];
 
@@ -162,6 +162,7 @@ class MailPresenter extends LayerPresenter {
 		$form['subject']->setDefaultValue($akce->name);
 
 		$this->template->isAkce = TRUE;
+		$this->template->members = $users->fetchPairs('id');
 
 		$this->template->pocet = ceil(count($users) / 3);
 		$this->setView('add');
