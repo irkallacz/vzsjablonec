@@ -58,7 +58,7 @@ class MailPresenter extends LayerPresenter {
 			sort($to);
 
 			$form['users']->setDefaultValue($recipients);
-			$form['to']->setDefaultValue(implode(',', $to));
+			$form['to']->setDefaultValue(join(',', $to));
 		}
 	}
 
