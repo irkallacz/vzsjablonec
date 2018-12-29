@@ -6,6 +6,7 @@
 	"require": {
 		"php": ">= 7.0",
 	  	"ext-imagick": "*",
+	  	"ext-openssl": "*",
 		"nette/application": "^2.4",
 		"nette/bootstrap": "^2.4.2",
 		"nette/caching": "^2.5",
