@@ -100,7 +100,7 @@
 <div id="member">
 	{if $user->isInRole('board')}
 		<p n:if="$member->date_born">
-			{include svg calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'} ({$age->format('%y')} let)
+			{include svg calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'}
 			{if $member->rc}<b>Rodné číslo:</b> {$member->rc}{/if}
 		</p>
 		<ul class="bullet-less">
@@ -123,8 +123,6 @@
 				</span>
 			</li>
 		</ul>
-	{else}
-		<p n:if="$age"><b>Věk:</b> {$age->format('%y')}</p>
 	{/if}
 
 	<h3>{include svg address-book-o} Kontakty</h3>
@@ -144,6 +142,8 @@
 	</ul>
 
 	<p>{include svg building} <b>Zaměstnání/Škola:</b> {$member->zamestnani}</p>
+
+	<p n:if="$age"><b>Věk:</b> {$age->format('%y')}</p>
 
 	{if $user->isInRole('member')}
 		<h3>{include svg map-marker} Adresa {include mapy $member->ulice.' '.$member->mesto}</h3>
