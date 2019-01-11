@@ -496,10 +496,10 @@ class UserPresenter extends LayerPresenter {
 		if ($id) {
 			$user = $this->userService->getUserById($id);
 
-			if ((isset($form->image)) and ($form->image->isFilled()) and ($values->image->isOK())) {
+			if ((isset($values->image))and($values->image->isOK())) {
 				/** @var Image $image  */
 				$image = $values->image->toImage();
-				$image->resize(1000, NULL, Image::SHRINK_ONLY);
+				$image->resize(800, NULL, Image::SHRINK_ONLY);
 				$filename = WWW_DIR . self::getUserImageName($user);
 				$image->save($filename, 90, Image::JPEG);
 				$values->photo = basename($filename);
