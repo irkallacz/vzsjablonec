@@ -102,7 +102,7 @@ class UserService extends DatabaseService {
 	}
 
 	public function isCredentialsUnique(ArrayHash $values) {
-		$user = $this->userService->getUsers(self::DELETED_LEVEL)
+		$user = $this->getUsers(self::DELETED_LEVEL)
 			->where('name', $values->name)
 			->where('surname', $values->surname)
 			->where('date_born', $values->date_born)
