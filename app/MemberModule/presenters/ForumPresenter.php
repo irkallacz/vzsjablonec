@@ -5,6 +5,7 @@ namespace App\MemberModule\Presenters;
 use App\MemberModule\Components\PostsListControl;
 use App\MemberModule\Components\TopicsListControl;
 use App\Model\ForumService;
+use App\Model\UserService;
 use App\Template\LatteFilters;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
@@ -373,7 +374,7 @@ class ForumPresenter extends LayerPresenter {
 
 		$this->setView('edit');
 
-		$text = '> ' . $post->user->surname . ' ' . $post->user->name . " napsal(a):\n>\n";
+		$text = '> ' . UserService::getFullName($post->user) . " napsal(a):\n>\n";
 		$text .= preg_replace('~^~m', '> $0', trim($post->text)) . "\n\n";
 
 		$this['addPostForm']['text']->setDefaultValue($text);
