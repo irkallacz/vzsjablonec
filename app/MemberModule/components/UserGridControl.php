@@ -135,7 +135,10 @@ class UserGridControl extends Control {
 				};
 			}
 
-			$form->addSelect('role', NULL, self::USER_LEVELS)
+			$userLevels = self::USER_LEVELS;
+			if (!$this->presenter->user->isInRole('admin')) unset($userLevels[UserService::DELETED_LEVEL]);
+
+			$form->addSelect('role', NULL, $userLevels)
 				->setDefaultValue(UserService::MEMBER_LEVEL);
 
 			return $form;
