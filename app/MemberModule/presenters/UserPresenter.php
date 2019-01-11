@@ -8,6 +8,7 @@ use App\Model\MessageService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
 use Nette\Application\BadRequestException;
+use Nette\Application\AbortException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
@@ -60,6 +61,9 @@ class UserPresenter extends LayerPresenter {
 		$this->template->searchList = $searchList;
 	}
 
+	/**
+	 * @return Form
+	 */
 	protected function createComponentMemberSearchForm() {
 		$form = new Form;
 		$form->getElementPrototype()->class('ajax');
@@ -122,6 +126,8 @@ class UserPresenter extends LayerPresenter {
 
 	/**
 	 * @allow(member)
+	 * @throws BadRequestException
+	 * @throws AbortException
 	 */
 	public function actionVcfArchive() {
 		$zip = new \ZipArchive;
@@ -374,7 +380,10 @@ class UserPresenter extends LayerPresenter {
 		$form->setDefaults($member);
 	}
 
-	/** @allow(board) */
+
+	/**
+	 * @allow(board)
+	 */
 	public function renderAdd() {
 		/**@var Form $form */
 		$form = $this['addMemberForm'];
@@ -383,7 +392,11 @@ class UserPresenter extends LayerPresenter {
 		$this->setView('edit');
 	}
 
-	/** @allow(user) */
+
+	/**
+	 * @allow(user)
+	 * @throws AbortException
+	 */
 	public function actionProfile() {
 		$id = $this->getUser()->getId();
 		$this->redirect('edit', $id);
@@ -396,6 +409,9 @@ class UserPresenter extends LayerPresenter {
 		return !Passwords::verify($item->value, $user->hash);
 	}
 
+	/**
+	 * @return Form
+	 */
 	protected function createComponentPasswordForm() {
 		$form = new Form;
 
@@ -420,6 +436,10 @@ class UserPresenter extends LayerPresenter {
 		return $form;
 	}
 
+	/**
+	 * @param Form $form
+	 * @throws AbortException
+	 */
 	public function passwordFormSubmitted(Form $form) {
 		$id = $this->getParameter('id');
 		$values = $form->getValues();
@@ -433,7 +453,10 @@ class UserPresenter extends LayerPresenter {
 			$this->redirect('view', $id);
 		}
 	}
-	
+
+	/**
+	 * @return Form
+	 */
 	protected function createComponentEditMemberForm() {
 
 		$this->userFormFactory->setUserId($this->getParameter('id'));
@@ -460,6 +483,9 @@ class UserPresenter extends LayerPresenter {
 	}
 
 
+	/**
+	 * @return Form
+	 */
 	protected function createComponentAddMemberForm() {
 
 		$form = $this->userFormFactory->create();
@@ -486,7 +512,7 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @param Form $form
 	 * @param ArrayHash $values
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	public function memberFormSubmitted(Form $form, ArrayHash $values) {
 		$id = $this->getParameter('id');
@@ -535,6 +561,9 @@ class UserPresenter extends LayerPresenter {
 		return '/img/photos/' . Strings::webalize(UserService::getFullName($user)) . '-' . $user->id . '.jpg';
 	}
 
+	/**
+	 * @return UserGridControl
+	 */
 	protected function createComponentUserGrid(){
 		return new UserGridControl($this->userService, $this->getSession('userTable'));
 	}
