@@ -4,7 +4,9 @@ namespace App\MemberModule\Presenters;
 use App\Model;
 use App\MemberModule\Components;
 use App\Template\LatteFilters;
+use Caxy\HtmlDiff\HtmlDiff;
 use Joseki\Webloader\JsMinFilter;
+use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
@@ -12,6 +14,7 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\InvalidArgumentException;
 use Nette\Mail\IMailer;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
@@ -70,8 +73,8 @@ class AkcePresenter extends LayerPresenter {
 		if (is_int($year)) $akce[1]->where('YEAR(date_start)', $year);
 
 		$this->template->akceAllList = $akce;
-		$this->template->memberList = $this->akceService->getAkceByMemberId($this->getUser()->getId());
-		$this->template->orgList = $this->akceService->getAkceByMemberId($this->getUser()->getId(), TRUE);
+		$this->template->memberList = $this->akceService->getAkceByMemberId($this->user->id);
+		$this->template->orgList = $this->akceService->getAkceByMemberId($this->user->id, TRUE);
 	}
 
 	public function createComponentYp() {
@@ -81,6 +84,7 @@ class AkcePresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @throws BadRequestException
+	 * @throws AbortException
 	 */
 	public function actionView(int $id) {
 		if (!$id) $this->redirect('default');
@@ -107,6 +111,8 @@ class AkcePresenter extends LayerPresenter {
 		$this->template->prev = $this->akceService->getAkcePrev($id, $this->akce->date_start);
 		$this->template->next = $this->akceService->getAkceNext($id, $this->akce->date_start);
 
+		$this->template->revision = $this->akceService->getLastRevisionByAkceId($id);
+
 		$this->template->orgList = $this->orgList;
 		$this->template->memberList = $this->memberList;
 
@@ -122,6 +128,52 @@ class AkcePresenter extends LayerPresenter {
 
 	/**
 	 * @param int $id
+	 * @param int|NULL $second
+	 */
+	public function actionCompare(int $id, int $second = NULL){
+		$revision = $this->akceService->getRevisionById($id);
+		$this->akce = $revision->akce;
+
+		$html1 = LatteFilters::texy($revision->text);
+
+		if ($second) {
+			$revision = $this->akceService->getRevisionById($second);
+			$html2 = LatteFilters::texy($revision->text);
+		} else {
+			$text = $this->createRevision($this->akce);
+			$html2 = LatteFilters::texy($text);
+		}
+
+		$htmlDiff = new HtmlDiff($html1, $html2);
+		$this->template->html = $htmlDiff->build();
+	}
+
+	/**
+	 * @param IRow|ActiveRow $akce
+	 * @return string
+	 */
+	private function createRevision(IRow $akce) {
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . '/../templates/Akce.revision.latte');
+		$template->akce = $akce;
+
+		return (string) $template;
+	}
+
+	/**
+	 * @param IRow|ActiveRow $akce
+	 * @return bool|int|ActiveRow
+	 */
+	private function addRevision(IRow $akce) {
+		$text = $this->createRevision($akce);
+
+		return $this->akceService->addRevision($akce->id, $akce->date_update, $text);
+	}
+
+
+	/**
+	 * @param int $id
+	 * @throws AbortException
 	 */
 	public function actionSendAkceMail(int $id) {
 		$akce = $this->akceService->getAkceById($id);
@@ -144,6 +196,7 @@ class AkcePresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(member)
 	 * @throws BadRequestException
+	 * @throws AbortException
 	 */
 	public function actionEdit(int $id) {
 		if (!$id) $this->redirect('default');
@@ -159,6 +212,7 @@ class AkcePresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(member)
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
 	 */
 	public function renderEdit(int $id) {
 		if (!$id) $this->redirect('default');
@@ -172,7 +226,7 @@ class AkcePresenter extends LayerPresenter {
 		if (!$form->isSubmitted()) {
 			$orgList = $this->akce->related('akce_member')->where('organizator', TRUE)->fetchPairs('user_id', 'user_id');
 
-			if ((!array_key_exists($this->getUser()->getId(), $orgList)) and (!$this->getUser()->isInRole('admin'))) {
+			if ((!array_key_exists($this->user->id, $orgList)) and (!$this->user->isInRole('admin'))) {
 				throw new ForbiddenRequestException('Nemáte právo tuto akci editovat');
 			}
 
@@ -207,11 +261,12 @@ class AkcePresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(member)
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
 	 */
 	public function actionDelete(int $id) {
 		$orgList = $this->akceService->getMemberListByAkceId($id, TRUE);
 
-		if ((!array_key_exists($this->getUser()->getId(), $orgList)) and (!$this->getUser()->isInRole('admin'))) {
+		if ((!array_key_exists($this->user->id, $orgList)) and (!$this->user->isInRole('admin'))) {
 			throw new ForbiddenRequestException('Nemáte právo tuto akci smazat');
 		}
 
@@ -226,6 +281,7 @@ class AkcePresenter extends LayerPresenter {
 	 * @param $id
 	 * @param bool $allow
 	 * @allow(confirm)
+	 * @throws AbortException
 	 */
 	public function actionAllow(int $id, bool $allow) {
 		$values = ['confirm' => $allow];
@@ -238,6 +294,40 @@ class AkcePresenter extends LayerPresenter {
 		$akce = $this->akceService->getAkceById($id);
 		$akce->update($values);
 		$this->redirect('view', $id);
+	}
+
+	protected function createComponentRevisionForm() {
+		$id = $this->getParameter('id');
+		$second = $this->getParameter('second');
+
+		$revisions = $this->akceService->getRevisionsByAkceId($this->akce->id);
+		$items = [];
+		foreach ($revisions as $revision){
+			$items[$revision->id] = $revision->date_add->format('d.m.Y H:i');
+		}
+
+		$form = new Form();
+		$form->addSelect('first', 'Porovnat', $items)
+			->setDefaultValue($id);
+
+		$form->addSelect('second', 'vs.', $items)
+			->setDefaultValue($second)
+			->setPrompt('Aktuální');
+
+		$form->addSubmit('ok', 'OK');
+
+		$form->onSubmit[] = function(Form $form) {
+			$values = $form->getValues();
+			$this->redirect('compare', ['id' => $values->first, 'id2' => $values->second]);
+		};
+
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['controls']['container'] = NULL;
+		$renderer->wrappers['pair']['container'] = NULL;
+		$renderer->wrappers['label']['container'] = NULL;
+		$renderer->wrappers['control']['container'] = NULL;
+
+		return $form;
 	}
 
 	/**
@@ -274,7 +364,7 @@ class AkcePresenter extends LayerPresenter {
 	 * @return Components\RatingControl
 	 */
 	protected function createComponentRating() {
-		$userId = $this->getUser()->getId();
+		$userId = $this->user->id;
 		$isOrg = in_array($userId, $this->orgList);
 		$canComment = ($this->getUser()->isInRole('member') and (in_array($userId, $this->memberList) or ($isOrg)));
 		return new Components\RatingControl($this->akce->id, $this->ratingService, $userId, $isOrg, $canComment);
@@ -284,7 +374,7 @@ class AkcePresenter extends LayerPresenter {
 	 * @param IRow|ActiveRow $akce
 	 * @allow(member)
 	 */
-	public function addConfirmMail($akce) {
+	public function addConfirmMail(IRow $akce) {
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../../presenters/templates/Mail/akceConfirm.latte');
 		$template->akce = $akce;
@@ -309,6 +399,7 @@ class AkcePresenter extends LayerPresenter {
 	/**
 	 * @allow(member)
 	 * @return WebLoader\Nette\JavaScriptLoader
+	 * @throws WebLoader\InvalidArgumentException
 	 */
 	public function createComponentTexylaJs() {
 		$files = new WebLoader\FileCollection(WWW_DIR . '/texyla/js');
@@ -401,11 +492,11 @@ class AkcePresenter extends LayerPresenter {
 
 		$form->addSelect('user_id', 'Zodpovědná osoba')
 			->setItems($this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
-			->setDefaultValue($this->getUser()->getId());
+			->setDefaultValue($this->user->id);
 
 		$form->addSelect('organizator', 'Organizátor')
 			->setItems($this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
-			->setDefaultValue($this->getUser()->getId())
+			->setDefaultValue($this->user->id)
 			->setPrompt('není')
 			->addConditionOn($form['login_org'], Form::EQUAL, FALSE)
 				->addRule(FORM::FILLED, 'Musíte vybrat organizátora');
@@ -459,11 +550,11 @@ class AkcePresenter extends LayerPresenter {
 	/**
 	 * @param Form $form
 	 * @allow(member)
+	 * @throws AbortException
 	 */
-	public function akceFormSubmitted(Form $form) {
+	public function akceFormSubmitted(Form $form, ArrayHash $values) {
 		$id = (int) $this->getParameter('id');
 
-		$values = $form->getValues();
 		$datum = new Datetime();
 
 		$values->date_update = $datum;
@@ -475,13 +566,23 @@ class AkcePresenter extends LayerPresenter {
 		if (!$values->addMessage) unset($values->message);
 		unset($values->addMessage);
 
-		if (($form['file']->isFilled()) and ($values->file->isOK())) {
+		if ((isset($values->file)) and ($values->file->isOK())) {
 			$values->file->move(WWW_DIR . '/doc/akce/' . $values->file->getSanitizedName());
 			$values->file = $values->file->getSanitizedName();
 		} else unset($values->file);
 
 		if ($id) {
-			$this->akceService->getAkceById($id)->update($values);
+			$akce = $this->akceService->getAkceById($id);
+
+			if ($akce->date_start > $datum) {
+				$revision = $this->akceService->getLastRevisionByAkceId($id);
+
+				if ((!$revision)or($datum > $revision->date_add->modifyClone('+ 20 minutes'))){
+					$this->addRevision($akce);
+				}
+			}
+
+			$akce->update($values);
 			$this->flashMessage('Akce byla změněna');
 		} else {
 			$values->date_add = $datum;
@@ -490,7 +591,7 @@ class AkcePresenter extends LayerPresenter {
 
 			$akce = $this->akceService->addAkce($values);
 
-			if ($org) $this->akceService->addMemberToAction($org, $akce->id, TRUE, $this->getUser()->getId());
+			if ($org) $this->akceService->addMemberToAction($org, $akce->id, TRUE, $this->user->id);
 
 			$this->flashMessage('Akce byla přidána');
 
@@ -522,6 +623,7 @@ class AkcePresenter extends LayerPresenter {
 	/**
 	 * @param Form $form
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function uploadBillFormSubmitted(Form $form) {
 		$id = (int) $this->getParameter('id');

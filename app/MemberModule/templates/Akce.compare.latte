@@ -1,0 +1,14 @@
+{block #head}
+	<style type="text/css">
+		.right { margin-top: 1em; }
+		label { font-weight: bold; }
+	</style>
+{/block}
+
+<h1 n:block="title">Revize akce</h1>
+
+{block #content}
+	<div class="right">{control revisionForm}</div>
+
+    {$html|noescape}
+{/block}

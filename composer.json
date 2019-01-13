@@ -5,7 +5,6 @@
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"require": {
 		"php": ">= 7.0",
-	  	"ext-imagick": "*",
 	  	"ext-openssl": "*",
 		"nette/application": "^2.4",
 		"nette/bootstrap": "^2.4.2",
@@ -34,7 +33,8 @@
 		"contributte/recaptcha": "^3.1",
 		"nextras/datagrid": "^3.0",
 		"mk-j/php_xlsxwriter": "^0.37.0",
-		"tmw/fpdm": "^2.9"
+		"tmw/fpdm": "^2.9",
+		"caxy/php-htmldiff": "^0.1.7"
 	},
 	"require-dev": {
 	  "nette/tester": "^2.0",

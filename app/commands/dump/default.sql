@@ -90,6 +90,16 @@ CREATE TABLE `akce_rating_member` (
   CONSTRAINT `akce_rating_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
+-- Table structure for table `akce_revision`
+DROP TABLE IF EXISTS  `akce_revision`;
+CREATE TABLE `akce_revision` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `akce_id` smallint(6) NOT NULL,
+  `date_add` datetime NOT NULL,
+  `text` text COLLATE utf8_czech_ci NOT NULL,
+  CONSTRAINT `akce_revision_ibfk_1` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB COLLATE utf8_czech_ci;
+
 -- Table structure for table `album`
 
 DROP TABLE IF EXISTS `album`;

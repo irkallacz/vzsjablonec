@@ -15,7 +15,7 @@ use Nette\Utils\DateTime;
 class AkceService extends DatabaseService {
 	const TABLE_AKCE_NAME = 'akce';
 	const TABLE_AKCE_MEMBER_NAME = 'akce_member';
-	const TABLE_AKCE_REPORT = 'report';
+	const TABLE_AKCE_REVISION = 'akce_revision';
 
 	/**
 	 * @return Selection
@@ -197,50 +197,42 @@ class AkceService extends DatabaseService {
 			->where('date_end BETWEEN ? AND NOW()', $date);
 	}
 
-
 	/**
 	 * @return Selection
 	 */
-	public function getReport(){
-		return $this->database->table(self::TABLE_AKCE_REPORT);
+	public function getRevisions() {
+		return $this->database->table(self::TABLE_AKCE_REVISION);
 	}
 
 	/**
 	 * @param int $id
-	 * @return IRow
+	 * @return false|ActiveRow
 	 */
-	public function getReportById(int $id) {
-		$this->getReport()->get($id);
+	public function getRevisionById(int $id) {
+		return $this->getRevisions()->get($id);
 	}
 
 	/**
-	 * @param ArrayHash $values
-	 * @return bool|int|IRow
-	 */
-	public function addReport(ArrayHash $values) {
-		return $this->getReport()->insert($values);
-	}
-
-	/**
-	 * @param int $id
+	 * @param $akceId
 	 * @return Selection
 	 */
-	public function getMembersByReportId(int $id) {
-		return $this->database->table(self::TABLE_AKCE_NAME)->where(':report_member.report_id', $id);
+	public function getRevisionsByAkceId($akceId) {
+		return $this->getRevisions()->where('akce_id', $akceId)->order('date_add DESC');
 	}
 
 	/**
-	 * @param array ArrayHash $values
+	 * @param $akceId
+	 * @return false|ActiveRow
 	 */
-	public function addMemberToReport(ArrayHash $values) {
-		$this->database->query('INSERT INTO `report_member`', $values);
+	public function getLastRevisionByAkceId($akceId) {
+		return $this->getRevisionsByAkceId($akceId)->fetch();
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getReportTypes() {
-		return $this->database->table('report_type')->order('id')->fetchPairs('id', 'title');
+	public function addRevision(int $akceId, DateTime $date, string $text){
+		return $this->getRevisions()->insert([
+			'akce_id' => $akceId,
+			'date_add' => $date,
+			'text' => $text,
+		]);
 	}
-
 }

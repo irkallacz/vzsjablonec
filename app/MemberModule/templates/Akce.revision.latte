@@ -1,0 +1,33 @@
+###### {$akce->name|firstUpper}
+
+{if !$akce->confirm}Tato akce není schválena!{/if}
+
+##### {if $akce->date_start->format('Ymd') != $akce->date_end->format('Ymd')}{$akce->date_end|datetimeN} {else}{$akce->date_end|date:'H:i'}{/if} ({$akce->date_start|durationInWords:$akce->date_end})
+
+{if ($akce->login_mem)or($akce->login_org)}**Přihlášení do:** {$akce->date_deatline|datetimeN} ({$akce->date_deatline|timeAgoInWords}){/if}
+
+**Místo:** {$akce->place}
+
+**Zodpovědná osoba:** {$akce->user->surname} {$akce->user->name}
+
+{if $akce->price}**Cena:** {$akce->price} Kč{/if}
+
+{$akce->akce_for->text}, {if $akce->visible}viditelná veřejnosti{else}viditelná pouze členům{/if}
+
+{$akce->file}
+
+{if $akce->perex}
+#### Stručný popis akce
+<div class="texy">
+
+{$akce->perex|noescape}
+
+</div>
+{/if}
+
+#### Podrobný popis akce
+<div class="texy">
+
+{$akce->description|noescape}
+
+</div>
