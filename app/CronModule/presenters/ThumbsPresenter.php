@@ -6,7 +6,7 @@
  * Time: 16:28
  */
 
-namespace App\PhotoModule\Presenters;
+namespace App\CronModule\Presenters;
 
 use App\Model\GalleryService;
 use App\PhotoModule\Image;
