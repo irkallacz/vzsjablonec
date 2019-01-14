@@ -76,7 +76,7 @@ class DrivePresenter extends BasePresenter {
 				$this->dokumentyService->addFile([
 					'id' => $file->id,
 					'name' => $file->name,
-					'directory' => $file->parents[0],
+					'directory' => $parent,
 					'description' => $file->description,
 					'modifiedTime' => new DateTime($file->modifiedTime),
 					'mimeType' => $file->mimeType,
