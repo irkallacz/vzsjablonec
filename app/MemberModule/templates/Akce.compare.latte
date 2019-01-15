@@ -2,6 +2,8 @@
 	<style type="text/css">
 		.right { margin-top: 1em; }
 		label { font-weight: bold; }
+		ins { background-color: lightgreen;}
+		del { background-color: lightcoral;}
 	</style>
 {/block}
 
@@ -11,4 +13,6 @@
 	<div class="right">{control revisionForm}</div>
 
     {$html|noescape}
+
+	<p><a n:href="view $id">🠘 Zpět na akci</a></p>
 {/block}
