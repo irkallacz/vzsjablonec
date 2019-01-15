@@ -127,25 +127,27 @@ class AkcePresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param int $id
-	 * @param int|NULL $second
+	 * @param int $what
+	 * @param int|NULL $with
 	 */
-	public function actionCompare(int $id, int $second = NULL){
-		$revision = $this->akceService->getRevisionById($id);
+	public function actionCompare(int $what, int $with = NULL){
+		$revision = $this->akceService->getRevisionById($what);
 		$this->akce = $revision->akce;
 
-		$html1 = LatteFilters::texy($revision->text);
+		$first = LatteFilters::texy($revision->text);
 
-		if ($second) {
-			$revision = $this->akceService->getRevisionById($second);
-			$html2 = LatteFilters::texy($revision->text);
+		if ($with) {
+			$revision = $this->akceService->getRevisionById($with);
+			$second = LatteFilters::texy($revision->text);
 		} else {
 			$text = $this->createRevision($this->akce);
-			$html2 = LatteFilters::texy($text);
+			$second = LatteFilters::texy($text);
 		}
 
-		$htmlDiff = new HtmlDiff($html1, $html2);
+		$htmlDiff = new HtmlDiff($first, $second);
 		$this->template->html = $htmlDiff->build();
+
+		$this->template->id = $this->akce->id;
 	}
 
 	/**
@@ -297,29 +299,28 @@ class AkcePresenter extends LayerPresenter {
 	}
 
 	protected function createComponentRevisionForm() {
-		$id = $this->getParameter('id');
-		$second = $this->getParameter('second');
+		$first = $this->getParameter('what');
+		$second = $this->getParameter('with');
 
 		$revisions = $this->akceService->getRevisionsByAkceId($this->akce->id);
 		$items = [];
 		foreach ($revisions as $revision){
-			$items[$revision->id] = $revision->date_add->format('d.m.Y H:i');
 			$items[$revision->id] = $revision->date_saved->format('d.m.Y H:i');
 		}
 
 		$form = new Form();
 		$form->addSelect('first', 'Porovnat', $items)
-			->setDefaultValue($id);
+			->setDefaultValue($first);
 
 		$form->addSelect('second', 'vs.', $items)
-			->setDefaultValue($second)
-			->setPrompt('Aktuální');
+			->setPrompt('Aktuální')
+			->setDefaultValue($second);
 
 		$form->addSubmit('ok', 'OK');
 
 		$form->onSubmit[] = function(Form $form) {
 			$values = $form->getValues();
-			$this->redirect('compare', ['id' => $values->first, 'id2' => $values->second]);
+			$this->redirect('compare', ['what' => $values->first, 'with' => $values->second]);
 		};
 
 		$renderer = $form->getRenderer();
