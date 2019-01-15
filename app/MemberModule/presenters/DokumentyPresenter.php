@@ -4,6 +4,7 @@ namespace App\MemberModule\Presenters;
 use App\Model\DokumentyService;
 use Google_Service_Drive;
 use Nette\Application\BadRequestException;
+use Nette\Application\AbortException;
 use Nette\Application\Responses\TextResponse;
 use Nette\Http\Response;
 use Tracy\Debugger;
@@ -32,6 +33,7 @@ class DokumentyPresenter extends LayerPresenter {
 	/**
 	 * @param string $id
 	 * @throws BadRequestException
+	 * @throws AbortException
 	 */
 	public function actionGetPdf(string $id) {
 		$file = $this->dokumentyService->getDokumentById($id);

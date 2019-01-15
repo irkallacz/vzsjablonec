@@ -165,6 +165,7 @@ class UserPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(admin)
 	 * @throws BadRequestException
+	 * @throws AbortException
 	 */
 	public function actionActivate(int $id) {
 		$member = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
@@ -216,6 +217,7 @@ class UserPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(board)
 	 * @throws BadRequestException
+	 * @throws AbortException
 	 */
 	public function actionResetPassword(int $id) {
 		$user = $this->userService->getUserById($id);
@@ -255,6 +257,7 @@ class UserPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(board)
 	 * @throws BadRequestException
+	 * @throws AbortException
 	 */
 	public function actionDelete(int $id) {
 		$member = $this->userService->getUserById($id);
