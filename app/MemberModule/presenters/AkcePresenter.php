@@ -304,6 +304,7 @@ class AkcePresenter extends LayerPresenter {
 		$items = [];
 		foreach ($revisions as $revision){
 			$items[$revision->id] = $revision->date_add->format('d.m.Y H:i');
+			$items[$revision->id] = $revision->date_saved->format('d.m.Y H:i');
 		}
 
 		$form = new Form();

@@ -95,6 +95,7 @@ DROP TABLE IF EXISTS  `akce_revision`;
 CREATE TABLE `akce_revision` (
   `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `akce_id` smallint(6) NOT NULL,
+  `date_saved` datetime NOT NULL,
   `date_add` datetime NOT NULL,
   `text` text COLLATE utf8_czech_ci NOT NULL,
   CONSTRAINT `akce_revision_ibfk_1` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE

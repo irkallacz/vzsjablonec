@@ -231,7 +231,8 @@ class AkceService extends DatabaseService {
 	public function addRevision(int $akceId, DateTime $date, string $text){
 		return $this->getRevisions()->insert([
 			'akce_id' => $akceId,
-			'date_add' => $date,
+			'date_saved' => $date,
+			'date_add' => new DateTime(),
 			'text' => $text,
 		]);
 	}
