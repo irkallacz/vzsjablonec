@@ -16,6 +16,7 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Security\Passwords;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Html;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
@@ -459,6 +460,7 @@ class UserPresenter extends LayerPresenter {
 
 	/**
 	 * @return Form
+	 * @throws \Nette\Application\UI\InvalidLinkException
 	 */
 	protected function createComponentEditMemberForm() {
 
@@ -470,9 +472,10 @@ class UserPresenter extends LayerPresenter {
 		$form->setCurrentGroup(NULL);
 
 		$form->addUpload('image', 'Nová fotografie')
+			->setOption('description', Html::el()->setHtml('Fotografie by měla splňovat <a target="_blank" href="'.$this->link('photo').'">náležitosti pasové fotky</a>'))
 			->addCondition(Form::FILLED)
 			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 5 MB.', 5 * 1024 * 1024 /* v bytech */)
-			->addRule(Form::IMAGE, 'Fotografie musí být ve formátu JPEG')
+			->addRule(Form::IMAGE, 'Fotografie musí být ve formátu JPEG nebo PNG')
 			->endCondition();
 
 		$form->addTextArea('text', 'Poznámka', 30)
