@@ -38,10 +38,10 @@ class NewsPresenter extends LayerPresenter{
                 }
 
                 /**@var DateTime $datum */
-                $datum = $this->getUser()->getIdentity()->date_last;
+                $datum = $this->user->identity->date_last;
 
 				/**@var int $id */
-				$user_id = $this->getUser()->getId();
+				$user_id = $this->user->id;
 
                 $this->template->lastDate = $datum;
                 $this->template->nowDate = new DateTime();
