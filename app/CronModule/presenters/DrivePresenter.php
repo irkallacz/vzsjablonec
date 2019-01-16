@@ -2,8 +2,9 @@
 namespace App\CronModule\Presenters;
 
 use App\Model\DokumentyService;
-use Google_Service_Drive;
 use Nette\Utils\DateTime;
+use Google_Service_Drive;
+use Google_Service_Drive_DriveFile as DriveFile;
 
 /**
  * Class CronPresenter
@@ -29,8 +30,8 @@ class DrivePresenter extends BasePresenter {
 			'level' => 0,
 		]);
 
-		$files = $this->driveService->files->listFiles(self::getFileSearchQuery($this->dokumentyService->driveDir));
-		$this->parseFiles($files->getFiles(), $this->dokumentyService->driveDir, 1);
+		$files = $this->getFilesByParent($this->dokumentyService->driveDir);
+		$this->parseFiles($files, $this->dokumentyService->driveDir, 1);
 
 		$this->dokumentyService->commitTransaction();
 
@@ -38,28 +39,25 @@ class DrivePresenter extends BasePresenter {
 	}
 
 	/**
-	 * @param $dir
-	 * @return array
+	 * @param string $parent
+	 * @return DriveFile|DriveFile[]
 	 */
-	private static function getFileSearchQuery($dir) {
-		if (!is_array($dir)) $dir = [$dir];
-
-		$string = join("' or parents in '", $dir);
-		$string = "parents in '" . $string . "'";
-
-		return [
-			'q' => $string,
-			'fields' => 'files(id, name, description, mimeType, modifiedTime, parents, webContentLink, webViewLink, iconLink)',
+	private function getFilesByParent(string $parent) {
+		$result = $this->driveService->files->listFiles([
+			'q' => "'$parent' in parents",
+			'fields' => 'files(id, name, description, mimeType, modifiedTime, webContentLink, webViewLink, iconLink)',
 			'orderBy' => 'folder,name'
-		];
+		]);
+
+		return $result->getFiles();
 	}
 
 	/**
-	 * @param array $files
-	 * @param null $parent
+	 * @param DriveFile[] $files
+	 * @param string $parent
 	 * @param int $level
 	 */
-	private function parseFiles(array $files, $parent = NULL, $level = 0) {
+	private function parseFiles(array $files, string $parent, int $level = 0) {
 		foreach ($files as $file) {
 			if ($file->mimeType == DokumentyService::DIR_MIME_TYPE) {
 				$this->dokumentyService->addDirectory([
@@ -70,8 +68,8 @@ class DrivePresenter extends BasePresenter {
 					'level' => $level,
 				]);
 
-				$result = $this->driveService->files->listFiles(self::getFileSearchQuery($file->id));
-				$this->parseFiles($result->getFiles(), $file->id, $level + 1);
+				$result = $this->getFilesByParent($file->id);
+				$this->parseFiles($result, $file->id, $level + 1);
 			} else {
 				$this->dokumentyService->addFile([
 					'id' => $file->id,
