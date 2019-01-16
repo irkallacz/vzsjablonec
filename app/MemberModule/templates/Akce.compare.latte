@@ -10,7 +10,10 @@
 <h1 n:block="title">Revize akce</h1>
 
 {block #content}
-	<div class="right">{control revisionForm}</div>
+	<div class="float-right">
+		{control revisionForm}
+		<div><b>Poslední příhlášení:</b> {$user->identity->date_last|datetime}</div>
+	</div>
 
     {$html|noescape}
 
