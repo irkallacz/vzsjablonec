@@ -30,34 +30,6 @@
 
 <h2>{$anketa->title|firstUpper}</h2>
 
-{control anketa}
-
-{if}
-<h3>Hlasovali</h3>
-
-{if $anketa->locked}
-<ul n:inner-foreach="$odpovedi as $odpoved" id="members">
-{if}
-<li>{$odpoved->text|firstUpper}
-	<ol id="members" n:inner-foreach="$odpoved->related('anketa_member','anketa_odpoved_id')->order('date_add') as $item">
-		<li>
-			<a n:tag-if="$item->user->role" n:class="$item->user_id == $user->getId() ? logged" n:href="User:view,$item->user_id">
-				{$item->user->surname} {$item->user->name}
-			</a>
-		</li>
-	</ol>
-</li>
-{/if isset($item)}
-</ul>
-{else}
-<ol id="members" n:inner-foreach="$members as $item">
-	<li>
-		<a n:tag-if="$item->user->role" n:class="$item->user_id == $user->getId() ? logged" n:href="User:view,$item->user_id">
-			{$item->user->surname} {$item->user->name}
-		</a>
-	</li>
-</ol>
-{/if}
-{/if isset($item)}
+{control anketa:whole}
 
 {/block}

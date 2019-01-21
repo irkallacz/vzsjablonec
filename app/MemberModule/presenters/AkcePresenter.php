@@ -357,9 +357,10 @@ class AkcePresenter extends LayerPresenter {
 
 	/**
 	 * @return Components\AnketaControl
+	 * @throws BadRequestException
 	 */
 	public function createComponentAnketa() {
-		return new Components\AnketaControl($this->akce->anketa_id, $this->anketyService);
+		return new Components\AnketaControl($this->akce->anketa_id, $this->anketyService, $this->user->id);
 	}
 
 	/**

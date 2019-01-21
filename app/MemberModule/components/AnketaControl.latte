@@ -6,30 +6,62 @@
 {/snippet}
 
 <div id="otazka" class="texy">
-    {include copy $anketa->text}
-    {$anketa->text|texy|noescape}
+    {include copy $survey->text}
+    {$survey->text|texy|noescape}
 
-    <p n:if="$anketa->date_add != $anketa->date_update" class="update" title="{$anketa->date_update|timeAgoInWords}">Upraveno <time datetime="{$anketa->date_update|datetimeC}">{$anketa->date_update|datetime}</time></p>
+    <p n:if="$survey->date_add != $survey->date_update" class="update" title="{$survey->date_update|timeAgoInWords}">Upraveno <time datetime="{$survey->date_update|datetimeC}">{$survey->date_update|datetime}</time></p>
 </div>
-{snippet odpovedi}
-<h3 n:if="$anketa->locked" class="center">{include svg lock} Tato anketa je uzavřena.</h3>
+{snippet choices}
+<h3 n:if="$survey->locked" class="center">{include svg lock} Tato anketa je uzavřena.</h3>
     <table id="odpovedi">
-        <tr n:foreach="$odpovedi as $odpoved" n:class="$mojeOdpoved == $odpoved->id ? logged">
-            {var $pocet = Nette\Utils\Arrays::get($odpovediCount, $odpoved->id, 0)}
+        <tr n:foreach="$choices as $choice" n:class="$selectedChoice == $choice->id ? logged">
+            {var $count = Nette\Utils\Arrays::get($votesCount, $choice->id, 0)}
             <th class="min">
-                <a class="ajax" href="{link vote $odpoved->id}" n:tag-if="!($anketa->locked or $mojeOdpoved)and($user->isInRole('member'))">
-                    {$odpoved->text|firstUpper}
+                <a class="ajax" href="{link vote! $choice->id}" n:tag-if="!($survey->locked or $selectedChoice)and($user->isInRole('member'))">
+                    {$choice->text|firstUpper}
                 </a>
             </th>
-            <td class="bar"><div n:if="$celkem" class="headerLike" style="width: {floor($pocet/$max*100)}%"></div></td>
-            <td class="no-wrap min">{$pocet} / {$celkem}</td>
+            <td class="bar"><div n:if="$total" class="headerLike" style="width: {floor($count/$max*100)}%"></div></td>
+            <td class="no-wrap min">{$count} / {$total}</td>
         </tr>
     </table>
 
-<h3 n:if="$mojeOdpoved" class="center">V této anketě jste již hlasoval</h3>
-<p class="center" n:if="($mojeOdpoved)and(!$anketa->locked)">
-    <a href="{link deleteVote! $anketa->id}" class="buttonLike ajax">
+<h3 n:if="$selectedChoice" class="center">V této anketě jste již hlasoval</h3>
+<p class="center" n:if="($selectedChoice)and(!$survey->locked)">
+    <a href="{link deleteVote!}" class="buttonLike ajax">
 		{include svg close} zrušit hlas
 	</a>
 </p>
 {/snippet}
+
+{ifset $showList}
+{snippet list}
+{if}
+    <h3>Hlasovali</h3>
+
+	{if $survey->locked}
+        <ul n:inner-foreach="$choices as $choice" id="members">
+			{if}
+                <li>{$choice->text|firstUpper}
+                    <ol id="members" n:inner-foreach="$choice->related('anketa_member','anketa_odpoved_id')->order('date_add') as $vote">
+                        <li>
+                            <a n:tag-if="$vote->user->role" n:class="$vote->user_id == $user->id ? logged" href="{plink User:view $vote->user_id}">
+								{$vote->user->surname} {$vote->user->name}
+                            </a>
+                        </li>
+                    </ol>
+                </li>
+			{/if isset($vote)}
+        </ul>
+	{else}
+        <ol id="members" n:inner-foreach="$votes as $vote">
+            <li>
+                <a n:tag-if="$vote->user->role" n:class="$vote->user_id == $user->id ? logged" href="{plink User:view $vote->user_id}">
+					{$vote->user->surname} {$vote->user->name}
+                </a>
+            </li>
+        </ol>
+	{/if}
+{/if isset($vote)}
+{/snippet}
+{/ifset}

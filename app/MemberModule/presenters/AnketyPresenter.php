@@ -4,10 +4,10 @@ namespace App\MemberModule\Presenters;
 use App\MemberModule\Components\AnketaControl;
 use App\Model\AnketyService;
 use Joseki\Webloader\JsMinFilter;
+use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
-use Nette\Database\Table\ActiveRow;
 use Nette\Utils\DateTime;
 use WebLoader;
 use Tracy\Debugger;
@@ -84,59 +84,9 @@ class AnketyPresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param int $odpoved
-	 * @throws BadRequestException
-	 */
-	public function handleVote(int $odpoved) {
-		$id = (int) $this->getParameter('id');
-
-		$anketa = $this->anketyService->getAnketaById($id);
-
-		if ((!$anketa) or ($anketa->locked)) {
-			throw new BadRequestException('V této anketě nemůžete hlasovat');
-		}
-
-		$odpovedi = $anketa->related('anketa_odpoved')->fetchPairs('id', 'id');
-
-		if (!in_array($odpoved, $odpovedi)) {
-			throw new BadRequestException('V této anketě nemůžete hlasovat');
-		}
-
-		$values = [
-			'user_id' => $this->getUser()->getId(),
-			'anketa_id' => $id,
-			'anketa_odpoved_id' => $odpoved,
-			'date_add' => new Datetime
-		];
-
-		$this->anketyService->addVote($values);
-		$this->redirect('view', $id);
-	}
-
-	/**
-	 * @param int $id
-	 * @throws BadRequestException
-	 */
-	public function actionDeleteVote(int $id) {
-		$anketa = $this->anketyService->getAnketaById($id);
-
-		if ((!$anketa) or ($anketa->locked)) {
-			throw new BadRequestException('V této anketě nemůžete zrušit hlas');
-		}
-
-		$vote = $this->anketyService->getMemberVote($id, $this->getUser()->getId());
-
-		if (!$vote) {
-			throw new BadRequestException('V této anketě nemůžete zrušit hlas');
-		}
-		$this->anketyService->deleteMemberVote($id, $this->getUser()->getId());
-
-		$this->redirect('Ankety:view', $id);
-	}
-
-	/**
 	 * @param int $id
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
 	 */
 	public function actionDelete(int $id) {
 		$anketa = $this->anketyService->getAnketaById($id);
@@ -153,6 +103,7 @@ class AnketyPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @param bool $lock
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
 	 */
 	public function actionLock(int $id, bool $lock) {
 		$anketa = $this->anketyService->getAnketaById($id);
@@ -233,7 +184,7 @@ class AnketyPresenter extends LayerPresenter {
 	}
 
 	/**
-	 *
+	 * @throws AbortException
 	 */
 	public function addAnketaFormSubmitted() {
 		$id = (int) $this->getParameter('id');
@@ -287,10 +238,11 @@ class AnketyPresenter extends LayerPresenter {
 
 	/**
 	 * @return AnketaControl
+	 * @throws BadRequestException
 	 */
 	public function createComponentAnketa() {
 		$id = $this->getParameter('id');
-		return new AnketaControl($id, $this->anketyService);
+		return new AnketaControl($id, $this->anketyService, $this->user->id);
 	}
 
 }
