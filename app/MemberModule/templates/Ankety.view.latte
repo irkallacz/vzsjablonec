@@ -28,7 +28,7 @@
 	</li>
 </ul>
 
-<h2>{$anketa->title|firstUpper}</h2>
+<h2><span class="no-wrap"><span title="Tato anketa je uzavřena" n:if="$anketa->locked">{include svg lock}</span>{$anketa->title|firstUpper}</span></h2>
 
 {control anketa:whole}
 

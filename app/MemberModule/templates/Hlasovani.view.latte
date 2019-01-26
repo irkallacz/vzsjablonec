@@ -35,7 +35,7 @@
 	</li>
 </ul>
 
-<h2>{$anketa->title|firstUpper}</h2>
+<h2><span class="no-wrap"><span title="Toto hlasování je uzavřeno" n:if="$anketa->locked">{include svg lock}</span>{$anketa->title|firstUpper}</span></h2>
 
 <div id="otazka" class="texy">
 {include copy $anketa->text}

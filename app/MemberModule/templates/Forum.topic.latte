@@ -45,7 +45,7 @@
 	{control searchForm}
 </div>
 
-<h2><span class="no-wrap" title="Toto téma bylo uzavřeno" n:if="$topic->locked">{include svg lock}</span> {$topic->title|firstUpper}</h2>
+<h2><span class="no-wrap"><span title="Toto téma bylo uzavřeno" n:if="$topic->locked">{include svg lock}</span> {$topic->title|firstUpper}</span></h2>
 
 {control postsList}
 

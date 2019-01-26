@@ -52,7 +52,7 @@
     {/if}
 </ul>
 
-    <h2>{$akce->name|firstUpper}</h2>
+    <h2><span class="no-wrap">{$akce->name|firstUpper}</span></h2>
 
     <p n:if="!$akce->confirm" class="red">{include svg ban} Tato akce není schválena!</p>
 
