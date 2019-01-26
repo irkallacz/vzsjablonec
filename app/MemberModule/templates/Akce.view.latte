@@ -78,7 +78,7 @@
 
     <p title="Místo">{include svg map-marker} {$akce->place} {include mapy $akce->place}</p>
 
-    <p n:if="$akce->created_by" title="Autor">{include svg user-o} <a n:tag-if="$akce->created_by->role" n:href="User:view $akce->created_by">{$akce->created_by->surname} {$akce->created_by->name}</a></p>
+    <p n:if="$akce->created_by" title="Autor">{include svg user-o} <a n:tag-if="$akce->ref('created_by')->role" n:href="User:view $akce->created_by">{$akce->ref('created_by')->surname} {$akce->ref('created_by')->name}</a></p>
 
     <p>{include svg tag} {$akce->akce_for->text}{if $akce->visible}, viditelná veřejnosti{else}, viditelná pouze členům{/if}</p>
 

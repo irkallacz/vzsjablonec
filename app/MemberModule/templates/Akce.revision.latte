@@ -8,7 +8,7 @@
 
 **Místo:** {$akce->place}
 
-**Autor:** {$akce->created_by->surname} {$akce->created_by->name}
+**Autor:** {$akce->ref('created_by')->surname} {$akce->ref('created_by')->name}
 
 {if $akce->price}**Cena:** {$akce->price} Kč{/if}
 
