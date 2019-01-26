@@ -22,7 +22,8 @@ CREATE TABLE `akce` (
   `visible` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `login_mem` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `login_org` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `user_id` smallint(5) unsigned NOT NULL,
+  `created_by` smallint(5) unsigned NOT NULL,
+  `modified_by` smallint(5) unsigned NULL,
   `anketa_id` smallint(5) unsigned DEFAULT NULL,
   `forum_topic_id` smallint(5) unsigned DEFAULT NULL,
   `album_id` smallint(5) unsigned DEFAULT NULL,
@@ -34,7 +35,7 @@ CREATE TABLE `akce` (
   KEY `date_start` (`date_start`),
   KEY `enable` (`enable`),
   KEY `confirm` (`confirm`),
-  KEY `user_id` (`user_id`),
+  KEY `created_by` (`created_by`),
   KEY `akce_for_id` (`akce_for_id`),
   KEY `anketa_id` (`anketa_id`),
   KEY `album_id` (`album_id`),
@@ -43,7 +44,8 @@ CREATE TABLE `akce` (
   CONSTRAINT `akce_ibfk_4` FOREIGN KEY (`anketa_id`) REFERENCES `anketa` (`id`) ON DELETE CASCADE,
   CONSTRAINT `akce_ibfk_5` FOREIGN KEY (`album_id`) REFERENCES `album` (`id`) ON DELETE CASCADE,
   CONSTRAINT `akce_ibfk_6` FOREIGN KEY (`forum_topic_id`) REFERENCES `forum_post` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `akce_ibfk_7` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `akce_ibfk_7` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `akce_ibfk_8` FOREIGN KEY (`modified_by`) REFERENCES `user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=619 DEFAULT CHARSET=utf8;
 
 -- Table structure for table `akce_for`
@@ -95,10 +97,12 @@ DROP TABLE IF EXISTS  `akce_revision`;
 CREATE TABLE `akce_revision` (
   `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `akce_id` smallint(6) NOT NULL,
+  `created_by` smallint(5) unsigned NOT NULL,
   `date_saved` datetime NOT NULL,
   `date_add` datetime NOT NULL,
   `text` text COLLATE utf8_czech_ci NOT NULL,
-  CONSTRAINT `akce_revision_ibfk_1` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE
+  CONSTRAINT `akce_revision_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `akce_revision_ibfk_2` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB COLLATE utf8_czech_ci;
 
 -- Table structure for table `album`

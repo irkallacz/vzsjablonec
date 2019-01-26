@@ -169,7 +169,7 @@ class AkcePresenter extends LayerPresenter {
 	private function addRevision(IRow $akce) {
 		$text = $this->createRevision($akce);
 
-		return $this->akceService->addRevision($akce->id, $akce->date_update, $text);
+		return $this->akceService->addRevision($akce->id, $akce->modified_by, $akce->date_update, $text);
 	}
 
 
@@ -493,7 +493,7 @@ class AkcePresenter extends LayerPresenter {
 		$form->addCheckbox('visible', 'Viditelná veřejnosti')
 			->setDefaultValue(TRUE);
 
-		$form->addSelect('user_id', 'Zodpovědná osoba')
+		$form->addSelect('created_by', 'Autor')
 			->setItems($this->userService->getUsersArray(Model\UserService::MEMBER_LEVEL))
 			->setDefaultValue($this->user->id);
 
@@ -561,6 +561,7 @@ class AkcePresenter extends LayerPresenter {
 		$datum = new Datetime();
 
 		$values->date_update = $datum;
+		$values->modified_by = $this->user->id;
 
 		/** @var bool $org*/
 		$org = $values->organizator;
@@ -580,7 +581,7 @@ class AkcePresenter extends LayerPresenter {
 			if ($akce->date_start > $datum) {
 				$revision = $this->akceService->getLastRevisionByAkceId($id);
 
-				if ((!$revision)or($datum > $revision->date_add->modifyClone('+ 20 minutes'))){
+				if ((!$revision)or($datum > $revision->date_add->modifyClone('+ 20 minutes'))or($revision->created_by !== $this->user->id)){
 					$this->addRevision($akce);
 				}
 			}
