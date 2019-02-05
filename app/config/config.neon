@@ -126,10 +126,10 @@ services:
 			- setAuthConfig(%appDir%/config/google_api_service.json)
 			- setSubject(%google.account%)
 			- setScopes([
-				Google_Service_Drive::DRIVE_READONLY
-				Google_Service_Calendar::CALENDAR
-				Google_Service_PeopleService::CONTACTS
-				Google_Service_Gmail::GMAIL_SEND
+				https://www.googleapis.com/auth/drive.readonly
+				https://www.googleapis.com/auth/calendar
+				https://www.googleapis.com/auth/contacts
+				https://www.googleapis.com/auth/gmail.send
 			])
 			- setCache(Stash\Pool(Stash\Driver\FileSystem([path: %tempDir%/stash])))
 
@@ -142,8 +142,9 @@ services:
 		class: Vencax\GoogleLogin(%google.login%, vzsjablonec-social-login)
 		setup:
 			- setScope([
-				Google_Service_Plus::PLUS_ME
-				Google_Service_Plus::USERINFO_EMAIL
+				https://www.googleapis.com/auth/plus.me
+				#https://www.googleapis.com/auth/openid
+				https://www.googleapis.com/auth/userinfo.email
 			])
 
 	facebookLogin:
