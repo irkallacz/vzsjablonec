@@ -33,7 +33,7 @@ table .first svg.icon { font-size: 120% }
 
 {if $akce->confirm or in_array($akce->id,$orgList) or $user->isInRole('confirm')}
 
-<a n:href="Akce:view, $akce->id" n:class="borderLike,hoverLike, in_array($akce->id,$orgList)||in_array($akce->id,$memberList) ? logged, 
+<a n:href="Akce:view, $akce->id" draggable="true" n:class="borderLike,hoverLike, in_array($akce->id,$orgList)||in_array($akce->id,$memberList) ? logged,
 $akce->date_add > $user->getIdentity()->date_last ? 'new',
 !$old&&$akce->date_update > $user->getIdentity()->date_last ? 'new'">
 <table>

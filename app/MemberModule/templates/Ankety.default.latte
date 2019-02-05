@@ -28,7 +28,7 @@ table#items .first { font-size: 1.1em;}
 	<tr n:class="borderLike,hoverLike,$item->date_add > $user->getIdentity()->date_last ? 'new', 
 	$item->user_id == $user->getId() ? logged">
 	{*(($post)and($post->user_id == $user->getId())) ? logged*}
-	<td class="col"><a class="noLink" title="{$item->title}{if $item->locked} (uzamčeno){/if}" n:href="Ankety:view,$item->id"><div>
+	<td class="col"><a draggable="true" class="noLink" title="{$item->title}{if $item->locked} (uzamčeno){/if}" n:href="Ankety:view,$item->id"><div>
 	<strong class="headerLike">
 		{if $item->locked}{include svg lock}{/if}
 		{$item->title|firstUpper}
