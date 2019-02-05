@@ -298,6 +298,9 @@ class AkcePresenter extends LayerPresenter {
 		$this->redirect('view', $id);
 	}
 
+	/**
+	 * @return Form
+	 */
 	protected function createComponentRevisionForm() {
 		$first = $this->getParameter('what');
 		$second = $this->getParameter('with');
