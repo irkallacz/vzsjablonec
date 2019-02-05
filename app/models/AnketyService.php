@@ -14,12 +14,22 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 
 class AnketyService extends DatabaseService {
+	const TABLE_ANKETA_NAME = 'anketa';
+	const TABLE_ANKETA_MEMBER_NAME = 'anketa_member';
+	const TABLE_ANKETA_ODPOVED_NAME = 'anketa_odpoved';
 
 	/**
 	 * @return Selection
 	 */
 	public function getAnkety() {
-		return $this->database->table('anketa')->order('date_add DESC');
+		return $this->database->table(self::TABLE_ANKETA_NAME)->order('date_add DESC');
+	}
+
+	/**
+	 * @return Selection
+	 */
+	public function getOdpovedi() {
+		return $this->database->table(self::TABLE_ANKETA_ODPOVED_NAME);
 	}
 
 	/**
@@ -35,7 +45,7 @@ class AnketyService extends DatabaseService {
 	 * @return Selection
 	 */
 	public function getOdpovediByAnketaId(int $id) {
-		return $this->database->table('anketa_odpoved')->where('anketa_id', $id)->order('text');
+		return $this->getOdpovedi()->where('anketa_id', $id)->order('text');
 	}
 
 	/**
@@ -43,9 +53,8 @@ class AnketyService extends DatabaseService {
 	 * @return array
 	 */
 	public function getOdpovediCountByAnketaId(int $id) {
-		return $this->database->table('anketa_member')
+		return $this->getMembersByAnketaId($id)
 			->select('anketa_odpoved_id, COUNT(user_id)AS pocet')
-			->where('anketa_id', $id)
 			->group('anketa_odpoved_id')
 			->fetchPairs('anketa_odpoved_id', 'pocet');
 	}
@@ -56,10 +65,8 @@ class AnketyService extends DatabaseService {
 	 * @return int
 	 */
 	public function getOdpovedIdByAnketaId(int $anketa_id, int $user_id) {
-		$odpoved = $this->database->table('anketa_member')
-			->where('user_id', $user_id)
-			->where('anketa_id', $anketa_id)
-			->fetch();
+		$odpoved = $this->getMembersByAnketaId($anketa_id, $user_id)->fetch();
+
 		if ($odpoved) return $odpoved->anketa_odpoved_id; else return 0;
 	}
 
@@ -67,10 +74,13 @@ class AnketyService extends DatabaseService {
 	 * @param int $id
 	 * @return Selection
 	 */
-	public function getMembersByAnketaId(int $id) {
-		return $this->database->table('member')
-			->select('id, CONCAT(surname," ",name)AS jmeno, :anketa_member.anketa_odpoved_id')
-			->where(':anketa_member.anketa_id', $id);
+	public function getMembersByAnketaId(int $id, int $user_id = NULL) {
+		$selection = $this->database->table(self::TABLE_ANKETA_MEMBER_NAME)
+			->where('anketa_id', $id);
+
+		if ($user_id) $selection->where('user_id', $id);
+
+		return $selection;
 	}
 
 	/**
@@ -85,9 +95,9 @@ class AnketyService extends DatabaseService {
 	 * @param int $id
 	 */
 	public function deleteAnketaById(int $id) {
-		$this->database->table('anketa_member')->where('anketa_id', $id)->delete();
-		$this->database->table('anketa_odpoved')->where('anketa_id', $id)->delete();
-		$this->database->table('anketa')->where('id', $id)->delete();
+		$this->deleteVotesByAnketaId($id);
+		$this->deleteOdpovediByAnketaId($id);
+		$this->getAnkety()->where('id', $id)->delete();
 	}
 
 	/**
@@ -103,14 +113,14 @@ class AnketyService extends DatabaseService {
 	 * @return IRow|ActiveRow
 	 */
 	public function getOdpovedById(int $id) {
-		return $this->database->table('anketa_odpoved')->get($id);
+		return $this->getOdpovedi()->get($id);
 	}
 
 	/**
 	 * @param int $id
 	 */
 	public function deleteOdpovediByAnketaId(int $id) {
-		$this->database->table('anketa_odpoved')->where('anketa_id', $id)->delete();
+		$this->getOdpovediByAnketaId($id)->delete();
 	}
 
 	/**
@@ -118,7 +128,7 @@ class AnketyService extends DatabaseService {
 	 * @return bool|int|IRow
 	 */
 	public function addOdpoved(array $values) {
-		return $this->database->table('anketa_odpoved')->insert($values);
+		return $this->getOdpovedi()->insert($values);
 	}
 
 	/**
@@ -126,14 +136,14 @@ class AnketyService extends DatabaseService {
 	 * @return ResultSet
 	 */
 	public function addVote(array $values) {
-		return $this->database->query('INSERT INTO anketa_member', $values);
+		return $this->database->query('INSERT INTO '.self::TABLE_ANKETA_MEMBER_NAME, $values);
 	}
 
 	/**
 	 * @param int $id
 	 */
 	public function deleteVotesByAnketaId(int $id) {
-		$this->database->table('anketa_member')->where('anketa_id', $id)->delete();
+		$this->getMembersByAnketaId($id)->delete();
 	}
 
 
@@ -143,7 +153,7 @@ class AnketyService extends DatabaseService {
 	 * @return int
 	 */
 	public function deleteMemberVote(int $anketa_id, int $user_id) {
-		return $this->database->table('anketa_member')->where('anketa_id', $anketa_id)->where('user_id', $user_id)->delete();
+		return $this->getMembersByAnketaId($anketa_id, $user_id)->delete();
 	}
 
 	/**
@@ -152,6 +162,6 @@ class AnketyService extends DatabaseService {
 	 * @return bool|mixed|IRow
 	 */
 	public function getMemberVote(int $anketa_id, int $user_id) {
-		return $this->database->table('anketa_member')->where('anketa_id', $anketa_id)->where('user_id', $user_id)->fetch();
+		return $this->getMembersByAnketaId($anketa_id, $user_id)->fetch();
 	}
 }

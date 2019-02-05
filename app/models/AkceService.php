@@ -103,11 +103,19 @@ class AkceService extends DatabaseService {
 
 	/**
 	 * @param int $id
+	 * @return Selection
+	 */
+	public function getMembersByAkceId(int $id) {
+		return $this->database->table(self::TABLE_AKCE_MEMBER_NAME)->where('akce_id', $id);
+	}
+
+	/**
+	 * @param int $id
 	 * @param bool $org
 	 * @return array
 	 */
 	public function getMemberListByAkceId(int $id, bool $org = FALSE) {
-		return $this->database->table(self::TABLE_AKCE_MEMBER_NAME)->where('akce_id', $id)->where('organizator', $org)->fetchPairs('user_id', 'user_id');
+		return $this->getMembersByAkceId($id)->where('organizator', $org)->fetchPairs('user_id', 'user_id');
 	}
 
 	/**
