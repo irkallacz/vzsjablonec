@@ -12,6 +12,7 @@ use App\AccountModule\StateCryptor;
 use App\Model\MessageService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
+use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Database\IRow;
 use Nette\Database\Table\ActiveRow;
@@ -20,6 +21,7 @@ use Nette\Security\AuthenticationException;
 use Nette\Security\IUserStorage;
 use Nette\Security\Passwords;
 use Nette\Utils\DateTime;
+use Nette\Utils\JsonException;
 use Nette\Utils\Random;
 use Nette\Utils\Strings;
 use Nette\Utils\Arrays;
@@ -68,6 +70,9 @@ class SignPresenter extends BasePresenter {
 	public $backlink = '';
 
 
+	/**
+	 * @throws AbortException
+	 */
 	public function actionIn() {
 		if ($this->getUser()->isLoggedIn()) {
 			if ($this->backlink) $this->restoreRequest($this->backlink);
@@ -100,7 +105,7 @@ class SignPresenter extends BasePresenter {
 	/**
 	 * @param string $code
 	 * @param string|NULL $state
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	public function actionGoogleLogin(string $code, string $state = NULL) {
 		if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'google');
@@ -124,7 +129,7 @@ class SignPresenter extends BasePresenter {
 
 	/**
 	 * @param string|NULL $state
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	public function actionFacebookLogin(string $state = NULL) {
 		if ($state) $this->backlink = $this->stateCryptor->decryptState($state, 'facebook');
@@ -189,7 +194,7 @@ class SignPresenter extends BasePresenter {
 
 	/**
 	 * @param int $loginMethod
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	private function afterLogin(int $loginMethod = UserService::LOGIN_METHOD_PASSWORD) {
 		$userId = $this->getUser()->getId();
@@ -364,8 +369,8 @@ class SignPresenter extends BasePresenter {
 	 * @param string $redirect
 	 * @param string $link
 	 * @throws BadRequestException
-	 * @throws \Nette\Application\AbortException
-	 * @throws \Nette\Utils\JsonException
+	 * @throws AbortException
+	 * @throws JsonException
 	 */
 	public function actionSso(string $code, string $redirect, string $link = '') {
 		if (!in_array($redirect, self::REDIRECTS))
