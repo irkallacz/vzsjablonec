@@ -16,7 +16,11 @@
 
 {block content}
 
-	{control userGrid}
+	<div id="dropzone">
+
+		{control userGrid}
+
+	</div>
 
 	<script type="text/javascript" defer n:nonce>
 		//$.nette.init();
@@ -27,6 +31,63 @@
 				}
 			)
 		});
+
+		document.querySelector('#dropzone').addEventListener('drop', function (event) {
+			event.preventDefault();
+
+			var allowed = ['user', 'akce', 'ankety'];
+
+			var url = event.dataTransfer.getData('text');
+			url = url.split('/').slice(-3);
+
+			if ((url.length === 3)&&(allowed.includes(url[0]))){
+				var action = url[0];
+				var id = url[2];
+
+				switch (action) {
+					case allowed[0]:
+						tryCheck(id);
+						break;
+					case allowed[1]:
+						ajax_get({link eventAttendees}, id, function(data) {
+							data.forEach(tryCheck);
+						});
+						break;
+					case allowed[2]:
+						ajax_get({link surveyVotes}, id, function(data) {
+							data.forEach(tryCheck);
+						});
+				}
+			}
+		});
+
+		function tryCheck(id) {
+			var el = document.querySelector('input[type=checkbox][value="'+id+'"]');
+			if (el) el.checked = true;
+		}
+
+		function ajax_get(url, param, callback) {
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function() {
+				if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+					try {
+						var data = JSON.parse(xmlhttp.responseText);
+					} catch(err) {
+						console.log(err.message + " in " + xmlhttp.responseText);
+						return;
+					}
+					callback(data);
+				}
+			};
+
+			xmlhttp.open('GET', url+'/'+param, true);
+			xmlhttp.send();
+		}
+
+		document.querySelector('#dropzone').addEventListener('dragover', function (event) {
+			event.preventDefault();
+		});
+
 	</script>
 
 {/block}

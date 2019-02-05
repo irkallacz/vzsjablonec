@@ -4,6 +4,8 @@ namespace App\MemberModule\Presenters;
 
 use App\MemberModule\Components\UserGridControl;
 use App\MemberModule\Forms\UserFormFactory;
+use App\Model\AkceService;
+use App\Model\AnketyService;
 use App\Model\MessageService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
@@ -29,6 +31,12 @@ class UserPresenter extends LayerPresenter {
 
 	/** @var MessageService @inject */
 	public $messageService;
+
+	/** @var AkceService @inject */
+	public $akceService;
+
+	/** @var AnketyService @inject */
+	public $anketyService;
 
 	/** @var UserFormFactory @inject */
 	public $userFormFactory;
@@ -573,4 +581,31 @@ class UserPresenter extends LayerPresenter {
 	protected function createComponentUserGrid(){
 		return new UserGridControl($this->userService, $this->getSession('userTable'));
 	}
+
+	/**
+	 * @param int $id
+	 * @throws AbortException
+	 */
+	public function actionEventAttendees(int $id = NULL) {
+		if ($id) {
+			$attendees = $this->akceService->getMembersByAkceId($id)->fetchPairs('user_id', 'user_id');
+			$attendees = array_values($attendees);
+
+			$this->sendJson($attendees);
+		}
+	}
+
+	/**
+	 * @param int $id
+	 * @throws AbortException
+	 */
+	public function actionSurveyVotes(int $id = NULL) {
+		if ($id) {
+			$attendees = $this->anketyService->getMembersByAnketaId($id)->fetchPairs('user_id', 'user_id');
+			$attendees = array_values($attendees);
+
+			$this->sendJson($attendees);
+		}
+	}
+
 }
