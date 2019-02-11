@@ -28,9 +28,10 @@ class ThumbsPresenter extends BasePresenter {
 
 		foreach ($photos as $photo) {
 			try{
-				$filename = WWW_DIR . '../photo/' . Image::PHOTO_DIR . '/' . Image::THUMB_DIR . '/' . $photo->album_id . '/' . $photo->filename;
+				$wwwDir =  WWW_DIR . '/../photo/';
+				$filename = $wwwDir . Image::PHOTO_DIR . '/' . $photo->album_id . '/' . $photo->filename;
 				$image = new Image($filename);
-				$thumbname = $image->generateThumbnail($photo->album_id);
+				$thumbname = $image->generateThumbnail($photo->album_id, $wwwDir);
 				$image->clear();
 
 				$this->galleryService->updatePhoto($photo->id, ['thumb' => $thumbname]);

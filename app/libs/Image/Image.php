@@ -136,13 +136,13 @@ class Image extends \Imagick {
 	 * @return string
 	 * @throws \ImagickException
 	 */
-	public function generateThumbnail(int $albumId){
+	public function generateThumbnail(int $albumId, string $wwwDir = WWW_DIR){
 		$this->cropThumbnailImage(self::THUMB_WIDTH, self::THUMB_HEIGHT);
 
 		$thumbname = pathinfo($this->getImageFilename(), PATHINFO_FILENAME);
 		$thumbname = Strings::webalize($thumbname).'.jpg';
 
-		$path = WWW_DIR . '/' . self::PHOTO_DIR . 	'/' . self::THUMB_DIR . '/' . $albumId ;
+		$path = $wwwDir . '/' . self::PHOTO_DIR . 	'/' . self::THUMB_DIR . '/' . $albumId;
 		$this->writeImage($path .'/'. $thumbname);
 
 		return $thumbname;
