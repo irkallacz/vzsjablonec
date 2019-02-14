@@ -464,7 +464,7 @@ class AlbumPresenter extends BasePresenter {
 		$this->gallery->getPhotos()->where('id', $selected)->update(['visible' => new SqlLiteral('NOT(`visible`)')]);
 
 		$slug = $this->getParameter('slug');
-		$this->flashMessage('Bylo změněna viditelnost ' . count($selected) . ' fotografií');
+		$this->flashMessage('Byla změněna viditelnost ' . count($selected) . ' fotografií');
 		$this->redirect('view', $slug);
 	}
 }
