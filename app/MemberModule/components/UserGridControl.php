@@ -297,7 +297,6 @@ class UserGridControl extends Control {
 							$value = ($user->date_born) ? $user->date_born->diff(date_create())->y : NULL;
 							break;
 						case 'hash':
-						case 'photo':
 						case 'send_to_second':
 							$value = self::YES_NO_ARRAY[boolval($user->{$column})];
 							break;
