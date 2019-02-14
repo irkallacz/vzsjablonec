@@ -41,6 +41,7 @@ class MessagePresenter extends BasePresenter {
 
 	/**
 	 *
+	 * @throws \Nette\Utils\JsonException
 	 */
 	public function actionSend() {
 		$this->messageService->beginTransaction();
@@ -56,7 +57,7 @@ class MessagePresenter extends BasePresenter {
 
 			$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
 
-			$author = $this->userService->getUserById($message->user_id);
+			$author = $this->userService->getUserById($message->user_id, UserService::DELETED_LEVEL);
 
 			$mail->addReplyTo($author->mail, UserService::getFullName($author));
 			if ($message->message_type_id == MessageService\Message::CUSTOM_MESSAGE_TYPE) $mail->addBcc($author->mail, UserService::getFullName($author));
