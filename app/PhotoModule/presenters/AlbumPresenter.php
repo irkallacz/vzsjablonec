@@ -320,6 +320,9 @@ class AlbumPresenter extends BasePresenter {
 		$form->addSubmit('visible', 'změnit viditelnost')
 			->onClick[] = [$this, 'photoFormVisible'];
 
+		$form->addSubmit('thumbnail', 'nové miniatury')
+			->onClick[] = [$this, 'generateThumbnail'];
+
 		$form->addSubmit('turnLeft', 'otočit o 90° doleva')
 			->onClick[] = [$this, 'photoFormTurnLeft'];
 
@@ -403,6 +406,28 @@ class AlbumPresenter extends BasePresenter {
 
 	/**
 	 * @allow(member)
+	 * @throws \ImagickException
+	 * @throws AbortException
+	 */
+	public function generateThumbnail() {
+		$selected = $this->getPhotoFromSelectedPhotos();
+		$photos = $this->gallery->getPhotos()->where('id', $selected);
+
+		foreach ($photos as $photo) {
+			$filename = WWW_DIR . '/' . Image::PHOTO_DIR . '/' . $photo->album_id . '/' . $photo->filename;
+			$image = new Image($filename);
+			$image->generateThumbnail($photo->album_id);
+		}
+
+		$slug = $this->getParameter('slug');
+
+		$this->flashMessage('Bylo vytvořeno ' . count($selected) . ' náhledů');
+		$this->redirect('view', $slug);
+	}
+
+	/**
+	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function photoFormDelete() {
 		$selected = $this->getPhotoFromSelectedPhotos();
