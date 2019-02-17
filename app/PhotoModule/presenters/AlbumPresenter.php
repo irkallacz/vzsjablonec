@@ -5,6 +5,7 @@ namespace App\PhotoModule\Presenters;
 use App\Model\GalleryService;
 use App\Model\UserService;
 use App\PhotoModule\Image;
+use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
@@ -88,6 +89,8 @@ class AlbumPresenter extends BasePresenter {
 	/**
 	 * @param string $slug
 	 * @param string|NULL $pubkey
+	 * @throws BadRequestException
+	 * @throws AbortException
 	 */
 	public function renderView(string $slug, string $pubkey = NULL) {
 		$album = $this->getAlbumBySlug($slug);
@@ -113,6 +116,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @param string $order
 	 * @allow(member)
 	 * @throws ForbiddenRequestException
+	 * @throws BadRequestException
 	 */
 	public function renderEdit(string $slug, string $order = 'order') {
 		$album = $this->getAlbumBySlug($slug);
@@ -150,6 +154,7 @@ class AlbumPresenter extends BasePresenter {
 	/**
 	 * @param string $slug
 	 * @allow(user)
+	 * @throws BadRequestException
 	 */
 	public function renderAdd(string $slug) {
 		$album = $this->getAlbumBySlug($slug);
@@ -161,6 +166,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @param string $slug
 	 * @param bool|NULL $visible
 	 * @allow(admin)
+	 * @throws AbortException
 	 */
 	public function actionSetAlbumVisibility(string $slug, bool $visible = FALSE) {
 		$album = $this->gallery->getAlbumBySlug($slug);
@@ -177,6 +183,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @param int $id
 	 * @allow(member)
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
 	 */
 	public function actionDeleteAlbum(int $id) {
 		$album = $this->gallery->getAlbumById($id);
@@ -327,6 +334,7 @@ class AlbumPresenter extends BasePresenter {
 
 	/**
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function photoFormSave() {
 		/** @var Form $form*/
@@ -370,6 +378,7 @@ class AlbumPresenter extends BasePresenter {
 	/**
 	 * @return array
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	private function getPhotoFromSelectedPhotos() {
 		$photos = $values = $this['photoForm']->getValues()->photos;
@@ -409,6 +418,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @param int $degree
 	 * @return array
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	private function photoFormImagesTurn(int $degree) {
 		$selected = $this->getPhotoFromSelectedPhotos();
@@ -437,6 +447,7 @@ class AlbumPresenter extends BasePresenter {
 
 	/**
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function photoFormTurnLeft() {
 		$selected = $this->photoFormImagesTurn(-90);
@@ -447,6 +458,7 @@ class AlbumPresenter extends BasePresenter {
 
 	/**
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function photoFormTurnRight() {
 		$selected = $this->photoFormImagesTurn( 90);
@@ -457,6 +469,7 @@ class AlbumPresenter extends BasePresenter {
 
 	/**
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function photoFormVisible() {
 		$selected = $this->getPhotoFromSelectedPhotos();
