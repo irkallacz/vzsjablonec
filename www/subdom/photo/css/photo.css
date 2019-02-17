@@ -70,6 +70,8 @@ border-bottom: 1px solid #89520c; border-bottom: 1px solid black;  background-co
 .green {color: green;}
 .white {color: white;}
 
+.pointer {cursor: pointer;}
+
 #content h2 {margin-top: 0;}
 label acronym {cursor: help;}
 

@@ -23,36 +23,6 @@
 <script type="text/javascript" src="{$baseUrl}/js/jquery-ui-1.12.1.min.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.ui.datepicker-cs.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
-
-<script type="text/javascript" n:nonce>
-	$(function() {
-		$('#swap-title').click(function() {
-			var el = document.getElementById('swap-title');
-			var attribute = el.checked ? 'date' : 'title';
-
-			$('input.title').each(function(){
-				$(this).val($(this).data(attribute));
-			})
-			;
-		});
-
-		$('.album-text').textareaAutoSize();
-
-		$(document).bind('keydown', 'ctrl+a', function(){
-			$('input.selected').attr('checked','true');
-			return false;
-		});
-
-		var elem = document.createElement('input');
-    	elem.setAttribute('type', 'date');
-
-    	if (elem.type === 'text') {
-      		$('#frm-superForm-date').datepicker();
-    	}
-
-		$('#list').sortable();
-	});
-</script>
 {/block}
 
 {block #title}
@@ -119,5 +89,54 @@
 <p>Jestliže mají některé Vaše fotografie ikonku <img src="{$baseUrl}/img/eye-close.svg" style="height: 1em"> nebo v menu alba vidíte položku <b>změnit viditelnost</b>
 	znamená to, že Vaše album bylo označeno jako <b>viditelné pro veřejnost</b>. <b>Ikonka <img src="{$baseUrl}/img/eye-close.svg" style="height: 1em"></b> je znamení, že tato fotografie
 je <b>neviditelná pro veřejnost</b>.</p>
+
+
+<script type="text/javascript" defer n:nonce>
+	$(function() {
+		$('#swap-title').click(function() {
+			var el = document.getElementById('swap-title');
+			var attribute = el.checked ? 'date' : 'title';
+
+			$('input.title').each(function(){
+				$(this).val($(this).data(attribute));
+			});
+		});
+
+		$('.album-text').textareaAutoSize();
+
+		$(document).bind('keydown', 'ctrl+a', function(){
+			$('input.selected').attr('checked','true');
+			return false;
+		});
+
+		var elem = document.createElement('input');
+		elem.setAttribute('type', 'date');
+
+		if (elem.type === 'text') {
+			$('#frm-superForm-date').datepicker();
+		}
+
+		$('#list').sortable();
+
+		$('.image').click(function (event) {
+			if (event.ctrlKey){
+				var link = event.target.src;
+				link = link.replace('/thumbs/', '/');
+				link = link.substring(0, link.lastIndexOf('/') + 1);
+				window.open(link + event.target.alt);
+			}
+		});
+
+		$(document).keydown(function(event){
+			if(event.which === 17){
+				$('.image').addClass('pointer');
+			}
+		});
+
+		$(document).keyup(function(){
+			$('.image').removeClass('pointer');
+		});
+	});
+</script>
 
 {/block}
