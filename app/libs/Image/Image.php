@@ -42,8 +42,7 @@ class Image extends \Imagick {
 	 * @return float
 	 */
 	public function getSize(){
-//		return $this->getImageLength() / (1024 * 1024);
-		return filesize($this->getFilename()) / (1024 * 1024);
+		return filesize($this->getImageFilename()) / (1024 * 1024);
 	}
 
 	/**
