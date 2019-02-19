@@ -37,14 +37,14 @@
 
 <div id="slides">
 	<ul class="photoList">
-		<li n:foreach="$photos as $image">{include #image image => $image}</li>
+		<li n:foreach="$photos as $photo">{include #image image => $photo}</li>
 	</ul>
 
-	<ul id="js-slides" class="slides-container" n:inner-foreach="$photos as $image">
+	<ul id="js-slides" class="slides-container" n:inner-foreach="$photos as $photo">
 	<li><div class="slide">
-		{var $album = $image->ref('album')}
-		<a n:href="Album:view#$image->filename $album->slug" title="{$album->name}">
-		<img src="{$baseUrl}/{$photoDir.'/'.$image->album_id.'/'.$image->filename}" alt="{$image->filename}" class="spinner">
+		{var $album = $photo->ref('album')}
+		<a n:href="Album:view#$photo->filename $album->slug" title="{$album->name}">
+		<img src="{$baseUrl}/{$photo|image}" alt="{$photo->filename}" class="spinner">
 		</a>
 	</div></li>
 	</ul>

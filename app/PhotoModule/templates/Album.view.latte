@@ -25,10 +25,10 @@
 
 <div n:if="($album->private)and($user->isLoggedIn())">{$album->private|texy|noescape}</div>
 
-<ul class="photoList" n:inner-foreach="$photos as $image">
+<ul class="photoList" n:inner-foreach="$photos as $photo">
 	<li>
-		<a id="{$image->filename}" data-fancybox="images" data-type="image" {if ($image->text)or($image->date_taken)}data-caption="{$image->text} {if $image->date_taken}{$image->date_taken|datetime}{/if}"{/if} n:class="(($album->visible)and($user->isLoggedIn())) ? 'visible'.$image->visible" href="{$baseUrl}/{$photoDir}/{$image->album_id}/{$image->filename}" {if $image->text}title="{$image->text}"{/if}>
-			{include #image, image => $image}
+		<a id="{$photo->filename}" data-fancybox="images" data-type="image" {if ($photo->text)or($photo->date_taken)}data-caption="{$photo->text} {if $photo->date_taken}{$photo->date_taken|datetime}{/if}"{/if} n:class="(($album->visible)and($user->isLoggedIn())) ? 'visible'.$photo->visible" href="{$baseUrl}/{$photo|image}" {if $photo->text}title="{$photo->text}"{/if}>
+			{include #image, image => $photo}
 		</a>
 	</li>
 </ul>

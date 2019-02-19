@@ -4,7 +4,6 @@ namespace App\PhotoModule\Presenters;
 
 use App\Model\GalleryService;
 use App\Model\UserService;
-use App\PhotoModule\Image;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
@@ -49,7 +48,6 @@ class AlbumPresenter extends BasePresenter {
 
 		return $album;
 	}
-
 	/**
 	 *
 	 */
@@ -133,6 +131,7 @@ class AlbumPresenter extends BasePresenter {
 		$photos = $this->gallery->getPhotosByAlbumId($album->id)->order($order);
 
 		$this->template->photos = $photos;
+		$this->template->albumDir = $this->imageService->getPath($album->id);
 		$this->template->slug = $slug;
 
 		/** @var Form $form*/
@@ -215,29 +214,17 @@ class AlbumPresenter extends BasePresenter {
 
 		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($albumId) {
 			$upload = $uploadQueue->getLastUpload();
+			$image = $this->imageService->createImageFromUpload($albumId, $upload);
 
-			$filename = $upload->getName();
-			$filepath = WWW_DIR . '/' . Image::PHOTO_DIR . '/' . $albumId . '/' . $filename;
-			$upload->move($filepath);
-
-			$ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-
-			if (($ext == 'jpg')or($ext == 'jpeg')) {
-				$exif = exif_read_data($filepath);
-				if (array_key_exists('FileDateTime', $exif)) $datetime = Datetime::from($exif['FileDateTime']);
-				if (array_key_exists('DateTime', $exif)) $datetime = Datetime::from($exif['DateTime']);
-				if (array_key_exists('DateTimeOriginal', $exif)) $datetime = Datetime::from($exif['DateTimeOriginal']);
-				if ($datetime === FALSE) $datetime = NULL;
-			}else $datetime = NULL;
-
-			$image = new Image($filepath);
+			$datetime = $image->getExifDateTime();
 
 			$resize = $image->adaptiveResize();
 			$rotation = $image->fixOrientation();
 
-			if (($resize)or($rotation)) $image->save($filepath);
+			if (($resize)or($rotation)) $image->save();
 
-			$thumbname = $image->generateThumbnail($albumId);
+			$thumbname = $image->generateThumbnail();
+			$filename = $image->getFilename();
 			$image->clear();
 
 			$order = $this->gallery->getPhotosCount($albumId);
@@ -414,9 +401,9 @@ class AlbumPresenter extends BasePresenter {
 		$photos = $this->gallery->getPhotos()->where('id', $selected);
 
 		foreach ($photos as $photo) {
-			$filename = WWW_DIR . '/' . Image::PHOTO_DIR . '/' . $photo->album_id . '/' . $photo->filename;
-			$image = new Image($filename);
-			$image->generateThumbnail($photo->album_id);
+			$image = $this->imageService->createImageFromPhoto($photo);
+			$image->generateThumbnail();
+			$image->clear();
 		}
 
 		$slug = $this->getParameter('slug');
@@ -451,14 +438,12 @@ class AlbumPresenter extends BasePresenter {
 		$photos = $this->gallery->getPhotos()->where('id', $selected);
 
 		foreach ($photos as $photo) {
-			$filename = WWW_DIR . '/' . Image::PHOTO_DIR . '/' . $photo->album_id . '/' . $photo->filename;
-
-			$image = new Image($filename);
+			$image = $this->imageService->createImageFromPhoto($photo);
 			$image->rotate($degree);
-			$image->save($filename);
+			$image->save();
 
 			try {
-				$thumb = $image->generateThumbnail($photo->album_id);
+				$thumb = $image->generateThumbnail();
 				$this->gallery->updatePhoto($photo->id, ['thumb' => $thumb]);
 			} catch (\Exception $e){
 				$this->gallery->updatePhoto($photo->id, ['thumb' => NULL]);

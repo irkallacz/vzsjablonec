@@ -9,22 +9,31 @@
 
 namespace App\MemberModule\Components;
 
+use App\PhotoModule\ImageService;
 use Nette\Application\UI\Control;
 use App\Model\GalleryService;
+use Nette\Database\Table\IRow;
 
 class AlbumPreviewControl extends Control {
 
 	/**@var GalleryService; */
 	private $galleryService;
 
+	/**@var ImageService; */
+	private $imageService;
+
 	/**
 	 * AlbumPreviewControl constructor.
 	 * @param GalleryService $galleryService
+	 * @param ImageService $imageService
 	 */
-	public function __construct(GalleryService $galleryService) {
+	public function __construct(GalleryService $galleryService, ImageService $imageService)
+	{
 		parent::__construct();
 		$this->galleryService = $galleryService;
+		$this->imageService = $imageService;
 	}
+
 
 	/**
 	 * @param int $id
@@ -41,8 +50,12 @@ class AlbumPreviewControl extends Control {
 			$this->template->photos = $photos->limit(5);
 		}
 
-		$this->template->photoDir = 'albums';
 		$this->template->photoUri = $this->presenter->link('//:Photo:News:');
+
+		$this->template->addFilter('thumb', function (IRow $photo){
+			return $this->imageService->getThumbPath($photo->album_id) .'/'. $photo->thumb;
+		});
+
 
 		$this->template->render();
 	}

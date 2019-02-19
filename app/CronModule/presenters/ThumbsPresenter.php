@@ -10,12 +10,16 @@ namespace App\CronModule\Presenters;
 
 use App\Model\GalleryService;
 use App\PhotoModule\Image;
+use App\PhotoModule\ImageService;
 use Tracy\Debugger;
 
 class ThumbsPresenter extends BasePresenter {
 
 	/** @var GalleryService @inject */
 	public $galleryService;
+
+	/** @var ImageService @inject */
+	public $imageService;
 
 	public function renderDefault() {
 
@@ -28,10 +32,8 @@ class ThumbsPresenter extends BasePresenter {
 
 		foreach ($photos as $photo) {
 			try{
-				$wwwDir =  WWW_DIR . '/../photo/';
-				$filename = $wwwDir . Image::PHOTO_DIR . '/' . $photo->album_id . '/' . $photo->filename;
-				$image = new Image($filename);
-				$thumbname = $image->generateThumbnail($photo->album_id, $wwwDir);
+				$image = $this->imageService->createImageFromPhoto($photo);
+				$thumbname = $image->generateThumbnail();
 				$image->clear();
 
 				$this->galleryService->updatePhoto($photo->id, ['thumb' => $thumbname]);

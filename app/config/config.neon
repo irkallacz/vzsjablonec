@@ -35,6 +35,9 @@ parameters:
 		clientSecret: '98765432-lkji-hgfe-dcba-001234567890'
 		redirectUri: ''
 		credentialsFile: '%tempDir%/idoklad/credentials.json'
+	gallery:
+		albumDir: albums
+		thumbDir: %gallery.albumDir%/thumbs
 	cron:
 		- Calendar:default
 		- Drive:default
@@ -116,6 +119,8 @@ services:
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
+
+	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %appDir%/../www/subdom/photo)
 
 	- App\CronModule\Presenters\TaskerPresenter(%cron%)
 	- App\CronModule\Presenters\MessagePresenter(%mail%)
