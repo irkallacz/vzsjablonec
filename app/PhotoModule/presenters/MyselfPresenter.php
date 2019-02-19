@@ -3,8 +3,9 @@
 namespace App\PhotoModule\Presenters;
 
 use App\Model\GalleryService;
-use App\PhotoModule\Image;
+use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 use Nette\Utils\Html;
@@ -18,7 +19,7 @@ use Nette\Utils\Html;
 class MyselfPresenter extends BasePresenter {
 
 	/** @var GalleryService @inject */
-	public $gallery;
+	public $galleryService;
 
 	/**
 	 *
@@ -29,16 +30,16 @@ class MyselfPresenter extends BasePresenter {
 		/** @var DateTime $date_last*/
 		$date_last = $this->getUser()->getIdentity()->date_last;
 
-		$albums = $this->gallery->getAlbums()
+		$albums = $this->galleryService->getAlbums()
 			->where('user_id', $user_id)
 			->order('date_add DESC');
 
-		$pocet = $this->gallery->getAlbumsPhotosCount()
+		$pocet = $this->galleryService->getAlbumsPhotosCount()
 			->where('album.user_id', $user_id)
 			->fetchPairs('id', 'pocet');
 
-		$newAlbums = $this->gallery->getAlbumNews($date_last);
-		$newPhotos = $this->gallery->getPhotoNews($date_last);
+		$newAlbums = $this->galleryService->getAlbumNews($date_last);
+		$newPhotos = $this->galleryService->getPhotoNews($date_last);
 
 		$this->template->albums = $albums;
 		$this->template->pocet = $pocet;
@@ -93,9 +94,9 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnot
 	/**
 	 * @param Form $form
 	 * @allow(member)
+	 * @throws AbortException
 	 */
-	public function albumFormSubmitted(Form $form) {
-		$values = $form->getValues();
+	public function albumFormSubmitted(Form $form, ArrayHash $values) {
 		$datum = new Datetime();
 		$values->date_update = $datum;
 		$values->date_add = $datum;
@@ -103,12 +104,12 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnot
 
 		$values->user_id = $this->getUser()->getId();
 
-		$album = $this->gallery->addAlbum($values);
+		$album = $this->galleryService->addAlbum($values);
 
 		$album->update(['slug' => $album->id . '-' . $album->slug]);
 
-		mkdir(WWW_DIR . '/' . Image::PHOTO_DIR . '/' . $album->id, 0755);
-		mkdir(WWW_DIR . '/' . Image::PHOTO_DIR . '/' . Image::THUMB_DIR . '/' . $album->id, 0755);
+		mkdir($this->imageService->getPath($album->id, TRUE), 0755);
+		mkdir($this->imageService->getThumbPath($album->id, TRUE), 0755);
 		
 		$this->flashMessage('Album bylo přidáno');
 
