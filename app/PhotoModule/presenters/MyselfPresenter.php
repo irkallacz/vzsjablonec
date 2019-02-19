@@ -28,7 +28,7 @@ class MyselfPresenter extends BasePresenter {
 		$user_id = $this->getUser()->getId();
 
 		/** @var DateTime $date_last*/
-		$date_last = $this->getUser()->getIdentity()->date_last;
+		$date_last = $this->user->identity->date_last;
 
 		$albums = $this->galleryService->getAlbums()
 			->where('user_id', $user_id)
@@ -93,6 +93,7 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnot
 
 	/**
 	 * @param Form $form
+	 * @param ArrayHash $values
 	 * @allow(member)
 	 * @throws AbortException
 	 */
@@ -102,7 +103,7 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnot
 		$values->date_add = $datum;
 		$values->slug = Strings::webalize($values->name);
 
-		$values->user_id = $this->getUser()->getId();
+		$values->user_id = $this->user->id;
 
 		$album = $this->galleryService->addAlbum($values);
 
