@@ -1,7 +1,7 @@
 <div id="album" n:if=$album>
 <a href="{plink :Photo:Album:view $album->slug}" target="_blank" title="{$album->text|truncate:70}">{$album->name}
-    <ul n:if="isset($photos)" n:inner-foreach="$photos as $image" class="photoList">
-        <li><img src="{$photoUri}{$photoDir}/thumbs/{$image->album_id}/{$image->thumb}" width="150" height="100" alt="{$image->filename}"></li>
+    <ul n:if="isset($photos)" n:inner-foreach="$photos as $photo" class="photoList">
+        <li><img src="{$photoUri}{$thumbDir}/{$photo|thumb}" width="150" height="100" alt="{$photo->filename}"></li>
     </ul>
 </a>
 

@@ -2,19 +2,20 @@
 
 namespace App\PhotoModule\Presenters;
 
-use App\PhotoModule\Image;
+use App\PhotoModule\ImageService;
 use App\Template\TemplateProperty;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Presenter;
 use Nette\Database\IRow;
-use Nette\Database\Table\ActiveRow;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\Strings;
 
 /**
  * @property-read TemplateProperty|\Nette\Bridges\ApplicationLatte\Template $template
  */
 abstract class BasePresenter extends Presenter {
+
+	/** @var ImageService @inject */
+	public $imageService;
 
 	/**
 	 *
@@ -34,25 +35,27 @@ abstract class BasePresenter extends Presenter {
 	protected function beforeRender() {
 		parent::beforeRender();
 
-		$this->template->photoDir = Image::PHOTO_DIR;
-
-		$this->template->addFilter('thumb', function ($photo){
+		$this->template->addFilter('thumb', function (IRow $photo){
 			if ($photo->thumb) {
 				$thumb = $photo->thumb;
 			}else {
-				$filename = Image::PHOTO_DIR . '/' . $photo->album_id . '/' . $photo->filename;
 				try {
-					$image = new Image($filename);
-					$thumb = $image->generateThumbnail($photo->album_id);
+					$image = $this->imageService->createImageFromPhoto($photo);
+					$thumb = $image->generateThumbnail();
 					$image->clear();
 
 					$this->galleryService->updatePhoto($photo->id, ['thumb' => $thumb]);
 				} catch (\Exception $e) {
-					return $filename;
+					return $this->imageService->getPath($photo->album_id) . '/' . $photo->filename;
 				}
 			}
-			return Image::PHOTO_DIR . '/' . Image::THUMB_DIR . '/' . $photo->album_id . '/' . $thumb;
+			return $this->imageService->getThumbPath($photo->album_id) . '/' . $thumb;
 		});
+
+		$this->template->addFilter('image', function (iRow $photo){
+			return $this->imageService->getPathFromPhoto($photo);
+		});
+
 
 		$mainMenu = [
 			['title' => 'novinky',		'link' => 'News:',					'current' => 'News:*',				'role' => NULL		],

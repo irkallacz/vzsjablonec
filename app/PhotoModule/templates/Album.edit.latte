@@ -65,13 +65,13 @@
   <li n:foreach="$form->errors as $error">{$error}</li>
 </ul>
 
-<ul id="list" class="photoList" n:inner-foreach="$photos as $image">
+<ul id="list" class="photoList" n:inner-foreach="$photos as $photo">
 	<li>
-		<label n:name="photos-$image->id-selected" n:class="(($album->visible) and (!$image->visible)) ? 'hidden'" {if $image->user}title="Autor: {$image->user->surname} {$image->user->name}"{/if}>
-			{include image image => $image, class => image}
+		<label n:name="photos-$photo->id-selected" n:class="(($album->visible) and (!$photo->visible)) ? 'hidden'" {if $photo->user}title="Autor: {$photo->user->surname} {$photo->user->name}"{/if}>
+			{include image image => $photo, class => image}
 		</label>
-		<input n:name="photos-$image->id-selected" class="selected">
-		<div><input n:name="photos-$image->id-text" class="title" data-date="{$image->date_taken ? $image->date_taken->format('d.m.Y H:i:s')}" data-title="{$image->text}"></div>
+		<input n:name="photos-$photo->id-selected" class="selected">
+		<div><input n:name="photos-$photo->id-text" class="title" data-date="{$photo->date_taken ? $photo->date_taken->format('d.m.Y H:i:s')}" data-title="{$photo->text}"></div>
 	</li>
 </ul>
 {/form}
@@ -122,10 +122,8 @@ je <b>neviditelná pro veřejnost</b>.</p>
 
 		$('.image').click(function (event) {
 			if (event.ctrlKey){
-				var link = event.target.src;
-				link = link.replace('/thumbs/', '/');
-				link = link.substring(0, link.lastIndexOf('/') + 1);
-				window.open(link + event.target.alt);
+				var link = {$baseUrl}+'/'+{$albumDir};
+				window.open(link +'/'+ event.target.alt);
 			}
 		});
 

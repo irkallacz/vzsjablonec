@@ -9,18 +9,17 @@
 namespace App\PhotoModule;
 
 use Nette\SmartObject;
+use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 
+/**
+ * Class Image
+ * @package App\PhotoModule
+ */
 class Image extends \Imagick {
 
 	use SmartObject;
-
-	/** @var string */
-	const PHOTO_DIR = 'albums';
-
-	/** @var string */
-	const THUMB_DIR = 'thumbs';
 
 	/** @var int */
 	const THUMB_WIDTH = 150;
@@ -31,11 +30,31 @@ class Image extends \Imagick {
 	/** @var int */
 	const SIZE_THRESHOLD = 2;
 
+	/** @var string */
+	private $imageDir;
+
+	/** @var string */
+	private $thumbDir;
+
+	/** @var string */
+	private $filename;
+
+	/** @var int */
+	private $albumId;
+
 	/**
 	 * Image constructor.
+	 * @param int $albumId
+	 * @param string $filename
+	 * @param string $imageDir
+	 * @param string $thumbDir
 	 */
-	public function __construct(string $filename) {
-		parent::__construct(realpath($filename));
+	public function __construct(int $albumId, string $filename, string $imageDir, string $thumbDir) {
+		parent::__construct(realpath($imageDir."/$albumId/".$filename));
+		$this->albumId = $albumId;
+		$this->filename = $filename;
+		$this->imageDir = $imageDir;
+		$this->thumbDir = $thumbDir;
 	}
 
 	/**
@@ -43,6 +62,10 @@ class Image extends \Imagick {
 	 */
 	public function getSize(){
 		return filesize($this->getImageFilename()) / (1024 * 1024);
+	}
+
+	public function getFilename(){
+		return $this->filename;
 	}
 
 	/**
@@ -119,16 +142,22 @@ class Image extends \Imagick {
 	}
 
 	/**
-	 * @param string $filename
 	 * @return bool
 	 */
-	public function save(string $filename){
+	public function save(){
 		if (!$this->haveCopy()) $this->makeCopy();
 
 		$this->setImageFormat('jpg');
 		$this->setImageCompression(\Imagick::COMPRESSION_JPEG);
 		$this->setImageCompressionQuality(95);
-		return $this->writeImage($filename);
+		return $this->writeImage($this->getImageFilename());
+	}
+
+	public function getThumbName(){
+		$thumbName = pathinfo($this->filename, PATHINFO_FILENAME);
+		$thumbName = Strings::webalize($thumbName).'.jpg';
+
+		return $thumbName;
 	}
 
 	/**
@@ -136,16 +165,13 @@ class Image extends \Imagick {
 	 * @return string
 	 * @throws \ImagickException
 	 */
-	public function generateThumbnail(int $albumId, string $wwwDir = WWW_DIR){
+	public function generateThumbnail(){
 		$this->cropThumbnailImage(self::THUMB_WIDTH, self::THUMB_HEIGHT);
 
-		$thumbname = pathinfo($this->getImageFilename(), PATHINFO_FILENAME);
-		$thumbname = Strings::webalize($thumbname).'.jpg';
+		$thumbName = $this->getThumbName();
+		$this->writeImage($this->thumbDir. '/'. $this->albumId . '/' . $thumbName);
 
-		$path = $wwwDir . '/' . self::PHOTO_DIR . 	'/' . self::THUMB_DIR . '/' . $albumId;
-		$this->writeImage($path .'/'. $thumbname);
-
-		return $thumbname;
+		return $thumbName;
 	}
 
 	/**
@@ -161,5 +187,22 @@ class Image extends \Imagick {
 	 */
 	public function haveCopy(){
 		return file_exists($this->getImageFilename().'_');
+	}
+
+	/**
+	 * @return DateTime|NULL
+	 */
+	public function getExifDateTime(){
+		$ext = strtolower(pathinfo($this->getImageFilename(), PATHINFO_EXTENSION));
+
+		if (($ext == 'jpg')or($ext == 'jpeg')) {
+			$exif = exif_read_data($this->getImageFilename());
+			if (array_key_exists('FileDateTime', $exif)) $datetime = DateTime::from($exif['FileDateTime']);
+			if (array_key_exists('DateTime', $exif)) $datetime = Datetime::from($exif['DateTime']);
+			if (array_key_exists('DateTimeOriginal', $exif)) $datetime = Datetime::from($exif['DateTimeOriginal']);
+			if ($datetime === FALSE) $datetime = NULL;
+		}else $datetime = NULL;
+
+		return $datetime;
 	}
 }

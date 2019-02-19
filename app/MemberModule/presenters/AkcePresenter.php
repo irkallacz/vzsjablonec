@@ -3,6 +3,7 @@ namespace App\MemberModule\Presenters;
 
 use App\Model;
 use App\MemberModule\Components;
+use App\PhotoModule\ImageService;
 use App\Template\LatteFilters;
 use Caxy\HtmlDiff\HtmlDiff;
 use Joseki\Webloader\JsMinFilter;
@@ -41,6 +42,9 @@ class AkcePresenter extends LayerPresenter {
 
 	/** @var Model\GalleryService @inject */
 	public $galleryService;
+
+	/** @var ImageService @inject */
+	public $imageService;
 
 	/** @var Model\UserService @inject */
 	public $userService;
@@ -355,7 +359,7 @@ class AkcePresenter extends LayerPresenter {
 	 * @return Components\AlbumPreviewControl
 	 */
 	protected function createComponentAlbum() {
-		return new Components\AlbumPreviewControl($this->galleryService);
+		return new Components\AlbumPreviewControl($this->galleryService, $this->imageService);
 	}
 
 	/**
