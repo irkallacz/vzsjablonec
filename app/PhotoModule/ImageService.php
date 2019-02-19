@@ -8,11 +8,14 @@
 
 namespace App\PhotoModule;
 
-
 use Echo511\Plupload\Entity\Upload;
 use Nette\Database\IRow;
 use Nette\Database\Table\ActiveRow;
 
+/**
+ * Class ImageService
+ * @package App\PhotoModule
+ */
 final class ImageService {
 
 	/** @var string */
@@ -37,11 +40,18 @@ final class ImageService {
 		$this->wwwDir = realpath($wwwDir);
 	}
 
-
+	/**
+	 * @param int $albumId
+	 * @return string
+	 */
 	public function getPath(int $albumId){
 		return $this->imageDir . '/' . $albumId;
 	}
 
+	/**
+	 * @param int $albumId
+	 * @return string
+	 */
 	public function getThumbPath(int $albumId){
 		return $this->thumbDir . '/' . $albumId;
 	}
