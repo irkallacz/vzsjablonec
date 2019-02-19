@@ -8,17 +8,20 @@ use App\Model\UserService;
 class NewsPresenter extends BasePresenter {
 
 	/** @var GalleryService @inject */
-	public $gallery;
+	public $galleryService;
 
 	/** @var UserService @inject */
 	public $userService;
 
+	/**
+	 *
+	 */
 	public function renderDefault() {
-		$albums = $this->gallery->getAlbums()
+		$albums = $this->galleryService->getAlbums()
 			->order('date_add DESC')
 			->limit(5);
 
-		$photos = $this->gallery->getPhotos()
+		$photos = $this->galleryService->getPhotos()
 			->order('rand()')
 			->limit(10);
 

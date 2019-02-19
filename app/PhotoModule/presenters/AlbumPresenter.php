@@ -22,7 +22,7 @@ use Tracy\Debugger;
 class AlbumPresenter extends BasePresenter {
 
 	/** @var GalleryService @inject */
-	public $gallery;
+	public $galleryService;
 
 	/** @var UserService @inject */
 	public $userService;
@@ -40,7 +40,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @throws BadRequestException
 	 */
 	public function getAlbumBySlug(string $slug) {
-		$album = $this->gallery->getAlbumBySlug($slug);
+		$album = $this->galleryService->getAlbumBySlug($slug);
 
 		if ((!$album)) {
 			throw new BadRequestException('Zadané album neexistuje');
@@ -52,7 +52,7 @@ class AlbumPresenter extends BasePresenter {
 	 *
 	 */
 	public function renderDefault() {
-		$albums = $this->gallery->getAlbums()->order('date DESC');
+		$albums = $this->galleryService->getAlbums()->order('date DESC');
 
 		if (!$this->getUser()->isLoggedIn()) {
 			$albums->where('visible', TRUE);
@@ -101,7 +101,7 @@ class AlbumPresenter extends BasePresenter {
 			$this->redirect('Sign:in', ['backlink' => $backlink]);
 		}
 
-		$photos = $this->gallery->getPhotosByAlbumId($album->id)->order('order, date_add');
+		$photos = $this->galleryService->getPhotosByAlbumId($album->id)->order('order, date_add');
 
 		if (!(($this->getUser()->isLoggedIn()) or ($pubkeyCheck))) $photos->where('visible', TRUE);
 
@@ -128,7 +128,7 @@ class AlbumPresenter extends BasePresenter {
 
 		if ($order == 'order') $order = $order . ', date_add';
 
-		$photos = $this->gallery->getPhotosByAlbumId($album->id)->order($order);
+		$photos = $this->galleryService->getPhotosByAlbumId($album->id)->order($order);
 
 		$this->template->photos = $photos;
 		$this->template->albumDir = $this->imageService->getPath($album->id);
@@ -168,7 +168,7 @@ class AlbumPresenter extends BasePresenter {
 	 * @throws AbortException
 	 */
 	public function actionSetAlbumVisibility(string $slug, bool $visible = FALSE) {
-		$album = $this->gallery->getAlbumBySlug($slug);
+		$album = $this->galleryService->getAlbumBySlug($slug);
 
 		$album->update(['visible' => $visible]);
 
@@ -185,13 +185,13 @@ class AlbumPresenter extends BasePresenter {
 	 * @throws AbortException
 	 */
 	public function actionDeleteAlbum(int $id) {
-		$album = $this->gallery->getAlbumById($id);
+		$album = $this->galleryService->getAlbumById($id);
 
 		if (!(($album->user_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
 			throw new ForbiddenRequestException('Nemáte právo toto album smazat');
 		}
 
-		$this->gallery->getPhotosByAlbumId($album->id)->delete();
+		$this->galleryService->getPhotosByAlbumId($album->id)->delete();
 		$album->delete();
 
 		$this->flashMessage('Album bylo smazáno');
@@ -209,7 +209,7 @@ class AlbumPresenter extends BasePresenter {
 		$plupload->allowedExtensions = 'jpg,jpeg,gif,png';
 
 		$slug = (string) $this->getParameter('slug');
-		$album = $this->gallery->getAlbumBySlug($slug);
+		$album = $this->galleryService->getAlbumBySlug($slug);
 		$albumId = $album->id;
 
 		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($albumId) {
@@ -227,7 +227,7 @@ class AlbumPresenter extends BasePresenter {
 			$filename = $image->getFilename();
 			$image->clear();
 
-			$order = $this->gallery->getPhotosCount($albumId);
+			$order = $this->galleryService->getPhotosCount($albumId);
 
 			$values = [
 				'filename' => $filename,
@@ -239,7 +239,7 @@ class AlbumPresenter extends BasePresenter {
 				'date_taken' => $datetime
 			];
 
-			$photo = $this->gallery->addPhoto($values);
+			$photo = $this->galleryService->addPhoto($values);
 		};
 
 		$plupload->onUploadComplete[] = function (UploadQueue $uploadQueue) {
@@ -256,7 +256,7 @@ class AlbumPresenter extends BasePresenter {
 	 */
 	protected function createComponentPhotoForm() {
 		$slug = $this->getParameter('slug');
-		$album = $this->gallery->getAlbumBySlug($slug);
+		$album = $this->galleryService->getAlbumBySlug($slug);
 
 		$form = new Form;
 
@@ -266,7 +266,7 @@ class AlbumPresenter extends BasePresenter {
 		$form->addText('slug', 'Slug', 50, 50)
 			->setRequired('Vyplňte %label')
 			->addRule(function (BaseControl $item) use ($album){
-				$new = $this->gallery->getAlbumBySlug($item->getValue());
+				$new = $this->galleryService->getAlbumBySlug($item->getValue());
 				return !(($new)and($new->id != $album->id));
 			}, 'Url Alba musí být unikátní');
 
@@ -316,7 +316,7 @@ class AlbumPresenter extends BasePresenter {
 		$form->addSubmit('turnRight', 'otočit o 90° doprava')
 			->onClick[] = [$this, 'photoFormTurnRight'];
 
-		$photos = $this->gallery->getPhotosByAlbumId($album->id)->fetchPairs('id');
+		$photos = $this->galleryService->getPhotosByAlbumId($album->id)->fetchPairs('id');
 		$form->setDefaults(['photos' => $photos]);
 
 		return $form;
@@ -339,10 +339,10 @@ class AlbumPresenter extends BasePresenter {
 		unset($values->photos);
 
 		$slug = $this->getParameter('slug');
-		$album = $this->gallery->getAlbumBySlug($slug);
+		$album = $this->galleryService->getAlbumBySlug($slug);
 		$album->update($values);
 
-		$photos = $this->gallery->getPhotosByAlbumId($album->id)->fetchPairs('id');
+		$photos = $this->galleryService->getPhotosByAlbumId($album->id)->fetchPairs('id');
 
 		foreach ($images as $order => $photo) {
 			$update = [];
@@ -358,7 +358,7 @@ class AlbumPresenter extends BasePresenter {
 				if ($photos[$photo->id]['text'] != $photo->text) $update['text'] = $photo->text;
 			}
 
-			if (!empty($update)) $this->gallery->updatePhoto($photo->id, $update);
+			if (!empty($update)) $this->galleryService->updatePhoto($photo->id, $update);
 		}
 
 		$this->flashMessage('Album bylo upraveno');
@@ -398,7 +398,7 @@ class AlbumPresenter extends BasePresenter {
 	 */
 	public function generateThumbnail() {
 		$selected = $this->getPhotoFromSelectedPhotos();
-		$photos = $this->gallery->getPhotos()->where('id', $selected);
+		$photos = $this->galleryService->getPhotos()->where('id', $selected);
 
 		foreach ($photos as $photo) {
 			$image = $this->imageService->createImageFromPhoto($photo);
@@ -419,7 +419,7 @@ class AlbumPresenter extends BasePresenter {
 	public function photoFormDelete() {
 		$selected = $this->getPhotoFromSelectedPhotos();
 
-		$this->gallery->deletePhotos($selected);
+		$this->galleryService->deletePhotos($selected);
 
 		$slug = $this->getParameter('slug');
 		$this->flashMessage('Bylo smazáno ' . count($selected) . ' fotografií');
@@ -435,7 +435,7 @@ class AlbumPresenter extends BasePresenter {
 	private function photoFormImagesTurn(int $degree) {
 		$selected = $this->getPhotoFromSelectedPhotos();
 
-		$photos = $this->gallery->getPhotos()->where('id', $selected);
+		$photos = $this->galleryService->getPhotos()->where('id', $selected);
 
 		foreach ($photos as $photo) {
 			$image = $this->imageService->createImageFromPhoto($photo);
@@ -444,9 +444,9 @@ class AlbumPresenter extends BasePresenter {
 
 			try {
 				$thumb = $image->generateThumbnail();
-				$this->gallery->updatePhoto($photo->id, ['thumb' => $thumb]);
+				$this->galleryService->updatePhoto($photo->id, ['thumb' => $thumb]);
 			} catch (\Exception $e){
-				$this->gallery->updatePhoto($photo->id, ['thumb' => NULL]);
+				$this->galleryService->updatePhoto($photo->id, ['thumb' => NULL]);
 			}
 
 			$image->clear();
@@ -484,7 +484,7 @@ class AlbumPresenter extends BasePresenter {
 	public function photoFormVisible() {
 		$selected = $this->getPhotoFromSelectedPhotos();
 
-		$this->gallery->getPhotos()->where('id', $selected)->update(['visible' => new SqlLiteral('NOT(`visible`)')]);
+		$this->galleryService->getPhotos()->where('id', $selected)->update(['visible' => new SqlLiteral('NOT(`visible`)')]);
 
 		$slug = $this->getParameter('slug');
 		$this->flashMessage('Byla změněna viditelnost ' . count($selected) . ' fotografií');
