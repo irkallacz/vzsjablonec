@@ -8,6 +8,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use Nette\Application\AbortException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Security\IUserStorage;
 use Nette\Utils\ArrayHash;
@@ -15,12 +16,19 @@ use Tracy\Debugger;
 
 abstract class LayerPresenter extends BasePresenter {
 
+	/**
+	 *
+	 * @throws AbortException
+	 */
 	protected function startup() {
 		parent::startup();
 
 		$this->checkLogin();
 	}
 
+	/**
+	 * @throws AbortException
+	 */
 	protected function checkLogin(){
 		if (!$this->user->isLoggedIn()) {
 			if ($this->user->getLogoutReason() === IUserStorage::INACTIVITY) {
@@ -31,6 +39,11 @@ abstract class LayerPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 * @param $element
+	 * @throws ForbiddenRequestException
+	 * @throws AbortException
+	 */
 	public function checkRequirements($element) {
 		parent::checkRequirements($element);
 
@@ -44,6 +57,9 @@ abstract class LayerPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	protected function beforeRender() {
 		$mainMenu = [
 			['title' => 'novinky',  	'link' => 'News:',      	'current' => 'News:*',      	'role'=> 'user', 	'icon' => 'home'            ],

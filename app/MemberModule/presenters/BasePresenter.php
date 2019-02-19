@@ -4,6 +4,8 @@ namespace App\MemberModule\Presenters;
 
 use App\Template\LatteFilters;
 use App\Template\TemplateProperty;
+use Nette\Application\AbortException;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Presenter;
 use Nette\Utils\Html;
@@ -24,6 +26,10 @@ abstract class BasePresenter extends Presenter {
 		}
 	}
 
+	/**
+	 * @param $element
+	 * @throws ForbiddenRequestException
+	 */
 	public function checkRequirements($element) {
 		$this->getUser()->getStorage()->setNamespace('member');
 		parent::checkRequirements($element);
@@ -31,6 +37,7 @@ abstract class BasePresenter extends Presenter {
 
 	/**
 	 * @param bool $class
+	 * @throws AbortException
 	 */
 	public function actionTexyPreview(bool $class = FALSE) {
 		if ($this->isAjax()) {

@@ -4,6 +4,7 @@ namespace App\PhotoModule\Presenters;
 
 use App\PhotoModule\Image;
 use App\Template\TemplateProperty;
+use Nette\Application\AbortException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Presenter;
 use Nette\Database\IRow;
@@ -70,7 +71,7 @@ abstract class BasePresenter extends Presenter {
 	/**
 	 * @param $element
 	 * @throws ForbiddenRequestException
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	public function checkRequirements($element) {
 		$this->getUser()->getStorage()->setNamespace('photo');
