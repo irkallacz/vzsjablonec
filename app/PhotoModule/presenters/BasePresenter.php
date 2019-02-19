@@ -6,7 +6,7 @@ use App\PhotoModule\ImageService;
 use App\Template\TemplateProperty;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Presenter;
-use Nette\Database\IRow;
+use Nette\Database\Table\IRow;
 use Nette\Utils\ArrayHash;
 
 /**
@@ -46,13 +46,13 @@ abstract class BasePresenter extends Presenter {
 
 					$this->galleryService->updatePhoto($photo->id, ['thumb' => $thumb]);
 				} catch (\Exception $e) {
-					return $this->imageService->getPath($photo->album_id) . '/' . $photo->filename;
+					return $this->imageService->getPathFromPhoto($photo);
 				}
 			}
 			return $this->imageService->getThumbPath($photo->album_id) . '/' . $thumb;
 		});
 
-		$this->template->addFilter('image', function (iRow $photo){
+		$this->template->addFilter('image', function (IRow $photo){
 			return $this->imageService->getPathFromPhoto($photo);
 		});
 
