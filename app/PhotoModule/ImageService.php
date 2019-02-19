@@ -42,18 +42,21 @@ final class ImageService {
 
 	/**
 	 * @param int $albumId
+	 * @param bool $absolute
 	 * @return string
 	 */
-	public function getPath(int $albumId){
-		return $this->imageDir . '/' . $albumId;
+	public function getPath(int $albumId, bool $absolute = FALSE){
+		$path = $absolute ? $this->wwwDir . '/' : '';
+		return $path . $this->imageDir . '/' . $albumId;
 	}
 
 	/**
 	 * @param int $albumId
 	 * @return string
 	 */
-	public function getThumbPath(int $albumId){
-		return $this->thumbDir . '/' . $albumId;
+	public function getThumbPath(int $albumId, bool $absolute = FALSE){
+		$path = $absolute ? $this->wwwDir . '/' : '';
+		return $path . $this->thumbDir . '/' . $albumId;
 	}
 
 	/**
