@@ -4,6 +4,7 @@ namespace App\PhotoModule\Presenters;
 
 use App\Authenticator\SsoAuthenticator;
 use App\Model\UserService;
+use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\IRouter;
 use Nette\Database\UniqueConstraintViolationException;
@@ -33,7 +34,7 @@ class SignPresenter extends BasePresenter {
 
 
 	/**
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	private function checkLogin(){
 		if ($this->getUser()->isLoggedIn()) {
@@ -52,7 +53,7 @@ class SignPresenter extends BasePresenter {
 
 	/**
 	 * @param bool $logout
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	public function actionDefault($logout = FALSE){
 		if ($logout) $this->checkLogin();
@@ -60,7 +61,7 @@ class SignPresenter extends BasePresenter {
 	}
 
 	/**
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	public function actionIn() {
 		$this->checkLogin();
@@ -73,7 +74,7 @@ class SignPresenter extends BasePresenter {
 	 * @param int $userId
 	 * @param int $timestamp
 	 * @param string $signature
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	public function actionSsoLogIn(string $code, int $userId, int $timestamp, string $signature) {
 		$this->checkLogin();
@@ -110,7 +111,7 @@ class SignPresenter extends BasePresenter {
 	}
 
 	/**
-	 * @throws \Nette\Application\AbortException
+	 * @throws AbortException
 	 */
 	public function actionOut() {
 		$this->getUser()->logout();
