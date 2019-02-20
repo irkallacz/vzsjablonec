@@ -109,8 +109,8 @@ Když neznáte datum akce, nebo datum není důležité, nechte výchozí hodnot
 
 		$album->update(['slug' => $album->id . '-' . $album->slug]);
 
-		mkdir($this->imageService->getPath($album->id, TRUE), 0755);
-		mkdir($this->imageService->getThumbPath($album->id, TRUE), 0755);
+		mkdir($this->imageService->getAbsolutePath($album->id), 0755);
+		mkdir($this->imageService->getAbsoluteThumbPath($album->id), 0755);
 		
 		$this->flashMessage('Album bylo přidáno');
 

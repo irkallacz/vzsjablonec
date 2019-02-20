@@ -42,21 +42,34 @@ final class ImageService {
 
 	/**
 	 * @param int $albumId
-	 * @param bool $absolute
 	 * @return string
 	 */
-	public function getPath(int $albumId, bool $absolute = FALSE){
-		$path = $absolute ? $this->wwwDir . '/' : '';
-		return $path . $this->imageDir . '/' . $albumId;
+	public function getPath(int $albumId){
+		return $this->imageDir . '/' . $albumId;
 	}
 
 	/**
 	 * @param int $albumId
 	 * @return string
 	 */
-	public function getThumbPath(int $albumId, bool $absolute = FALSE){
-		$path = $absolute ? $this->wwwDir . '/' : '';
-		return $path . $this->thumbDir . '/' . $albumId;
+	public function getAbsolutePath(int $albumId){
+		return $this->wwwDir . '/' . $this->getPath($albumId);
+	}
+
+	/**
+	 * @param int $albumId
+	 * @return string
+	 */
+	public function getThumbPath(int $albumId){
+		return $this->thumbDir . '/' . $albumId;
+	}
+
+	/**
+	 * @param int $albumId
+	 * @return string
+	 */
+	public function getAbsoluteThumbPath(int $albumId){
+		return $this->wwwDir . '/' . $this->getThumbPath($albumId);
 	}
 
 	/**
@@ -81,7 +94,7 @@ final class ImageService {
 	 * @return Image
 	 */
 	public function createImage(int $albumId, string $filename){
-		return new Image($albumId, $filename, $this->wwwDir . '/' . $this->imageDir, $this->wwwDir . '/' .$this->thumbDir);
+		return new Image($albumId, $filename, $this->wwwDir . '/' . $this->imageDir, $this->wwwDir . '/' . $this->thumbDir);
 	}
 
 	/**
@@ -99,7 +112,7 @@ final class ImageService {
 	 */
 	public function createImageFromUpload(int $albumId, Upload $upload){
 		$filename = $upload->getName();
-		$filePath = $this->wwwDir . '/' .$this->getPath($albumId) . '/' . $filename;
+		$filePath = $this->getAbsolutePath($albumId) . '/' . $filename;
 		$upload->move($filePath);
 
 		return $this->createImage($albumId, $filename);
