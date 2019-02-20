@@ -50,12 +50,10 @@ abstract class BasePresenter extends Presenter {
 					return $this->imageService->getPathFromPhoto($photo);
 				}
 			}
-			return $this->imageService->getThumbPath($photo->album_id) . '/' . $thumb;
+			return $this->imageService->getThumbPathFromPhoto($photo);
 		});
 
-		$this->template->addFilter('image', function (IRow $photo){
-			return $this->imageService->getPathFromPhoto($photo);
-		});
+		$this->template->addFilter('image', [$this->imageService, 'getPathFromPhoto']);
 
 
 		$mainMenu = [

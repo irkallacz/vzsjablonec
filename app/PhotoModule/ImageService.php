@@ -67,6 +67,13 @@ final class ImageService {
 		return $this->getPath($photo->album_id) . '/' . $photo->filename;
 	}
 
+	/**
+	 * @param IRow|ActiveRow $photo
+	 * @return string
+	 */
+	public function getThumbPathFromPhoto(IRow $photo){
+		return $this->getThumbPath($photo->album_id) . '/' . $photo->thumb;
+	}
 
 	/**
 	 * @param int $albumId

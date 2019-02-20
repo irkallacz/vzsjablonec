@@ -52,10 +52,7 @@ class AlbumPreviewControl extends Control {
 
 		$this->template->photoUri = $this->presenter->link('//:Photo:News:');
 
-		$this->template->addFilter('thumb', function (IRow $photo){
-			return $this->imageService->getThumbPath($photo->album_id) .'/'. $photo->thumb;
-		});
-
+		$this->template->addFilter('thumb', [$this->imageService, 'getThumbPathFromPhoto']);
 
 		$this->template->render();
 	}
