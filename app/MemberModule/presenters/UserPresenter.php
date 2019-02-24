@@ -14,6 +14,7 @@ use Nette\Application\AbortException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\FileResponse;
 use Nette\Application\UI\Form;
+use Nette\Application\UI\InvalidLinkException;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Security\Passwords;
@@ -468,7 +469,7 @@ class UserPresenter extends LayerPresenter {
 
 	/**
 	 * @return Form
-	 * @throws \Nette\Application\UI\InvalidLinkException
+	 * @throws InvalidLinkException
 	 */
 	protected function createComponentEditMemberForm() {
 
