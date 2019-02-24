@@ -271,6 +271,14 @@ class UserService extends DatabaseService {
 	}
 
 	/**
+	 * @param string $pubkey
+	 * @return bool|mixed|IRow|ActiveRow
+	 */
+	public function getPasswordSessionId(int $id) {
+		return $this->database->table('password_session')->get($id);
+	}
+
+	/**
 	 * @param string $user_id
 	 * @return false|ActiveRow
 	 */
