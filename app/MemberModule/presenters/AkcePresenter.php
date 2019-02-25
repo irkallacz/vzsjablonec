@@ -240,10 +240,10 @@ class AkcePresenter extends LayerPresenter {
 			$form['organizator']->getControlPrototype()->class('hide');
 
 			$akce = $this->akce->toArray();
-			$member = Arrays::pick($akce,'user_id');
+			$member = Arrays::pick($akce,'created_by');
 
 			try{
-				$form['user_id']->setDefaultValue($member);
+				$form['created_by']->setDefaultValue($member);
 			}catch (InvalidArgumentException $e){
 				$this->flashMessage('Některé již neplatné hodnoty byly vynechány', 'error');
 			}
