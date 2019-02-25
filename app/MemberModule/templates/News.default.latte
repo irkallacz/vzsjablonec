@@ -27,7 +27,7 @@
 
 	{if}<h3>Akce</h3>
 	<ol class="news" n:inner-foreach="$akceList as $akce">
-		<li><a n:class="$akce->user_id == $user->getId() ? logged" n:href="Akce:view $akce->id"
+		<li><a n:class="$akce->created_by == $user->id ? logged" n:href="Akce:view $akce->id"
 		title="{$akce->date_update|timeAgoInWords}">{$akce->name}</a></li>
 	</ol>
 	{/if isset($akce)}
