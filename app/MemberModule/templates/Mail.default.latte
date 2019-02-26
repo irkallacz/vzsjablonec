@@ -45,7 +45,7 @@
 				</th>
 				<th class="right">
 					{if ($message->date_send)}
-						<a href="#message/{$message->id}"><time datetime="{$message->date_send|datetimeC}">{$message->date_send|datetimeN}</time></a>
+						<a n:href="view, $message->id"><time datetime="{$message->date_send|datetimeC}">{$message->date_send|datetimeN}</time></a>
 					{else}
 						bude odesláno {$nextSendTime|timeAgoInWords}
 					{/if}

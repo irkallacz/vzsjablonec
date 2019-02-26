@@ -8,6 +8,7 @@ use App\Model\UserService;
 use App\Model\MessageService;
 use App\Template\LatteFilters;
 use Joseki\Webloader\JsMinFilter;
+use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
@@ -98,6 +99,20 @@ class MailPresenter extends LayerPresenter {
 		$this->template->nextSendTime = $this->messageService->getNextSendTime();
 
 		$this->setView('default');
+	}
+
+	/**
+	 * @param $id
+	 * @throws AbortException
+	 * @throws BadRequestException
+	 */
+	public function actionView($id) {
+		$message = $this->messageService->getMessageById($id);
+		if ($message) {
+			$this->redirect('default#message/', ['id' => $id, 'yp-year' => $message->date_add->format('Y')]);
+		}else {
+			throw new BadRequestException('Zpráva nenalezena');
+		}
 	}
 
 	/**

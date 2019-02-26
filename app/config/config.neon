@@ -48,6 +48,9 @@ parameters:
 		account: %google.account%
 		title: 'VZS Jablonec'
 		board: 'predstavenstvo@vzs-jablonec.cz'
+	messenger:
+		botID: 317919538845792
+		url: 'http://localhost/vzsjablonec/messenger'
 
 application:
 	errorPresenter: Error
@@ -123,7 +126,7 @@ services:
 	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %appDir%/../www/subdom/photo)
 
 	- App\CronModule\Presenters\TaskerPresenter(%cron%)
-	- App\CronModule\Presenters\MessagePresenter(%mail%)
+	- App\CronModule\Presenters\MessagePresenter(%mail%, %messenger%)
 
 	googleClient:
 		class: Google_Client
