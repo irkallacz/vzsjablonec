@@ -3,10 +3,12 @@
 namespace App\MemberModule\Presenters;
 
 use App\MemberModule\Components\PostsListControl;
+use App\MemberModule\Components\TexylaJsFactory;
 use App\MemberModule\Components\TopicsListControl;
 use App\Model\ForumService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
+use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\Responses\TextResponse;
@@ -18,10 +20,8 @@ use Nette\Database\SqlLiteral;
 use Nette\Utils\DateTime;
 use Nette\Utils\Paginator;
 use Tracy\Debugger;
-use WebLoader\Compiler;
-use WebLoader\FileCollection;
+use WebLoader\InvalidArgumentException;
 use WebLoader\Nette\JavaScriptLoader;
-use Joseki\Webloader\JsMinFilter;
 
 class ForumPresenter extends LayerPresenter {
 
@@ -29,6 +29,9 @@ class ForumPresenter extends LayerPresenter {
 
 	/** @var ForumService @inject */
 	public $forumService;
+
+	/** @var TexylaJsFactory @inject */
+	public $texylaJsFactory;
 
 	/** @var ActiveRow */
 	private $topic;
@@ -42,6 +45,7 @@ class ForumPresenter extends LayerPresenter {
 
 	/**
 	 * @param IRow|ActiveRow $post
+	 * @throws AbortException
 	 */
 	public function showPost(IRow $post) {
 		$param = ['id' => $post->forum_topic_id];
@@ -140,6 +144,7 @@ class ForumPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @param string|null $q
+	 * @throws BadRequestException
 	 */
 	public function actionTopic(int $id, string $q = null) {
 		$topic = $this->forumService->getTopicById($id);
@@ -254,6 +259,7 @@ class ForumPresenter extends LayerPresenter {
 
 	/**
 	 * @param Form $form
+	 * @throws AbortException
 	 */
 	public function processSearchForm(Form $form) {
 		$action = $this->getAction();
@@ -283,6 +289,7 @@ class ForumPresenter extends LayerPresenter {
 
 	/**
 	 * @param Form $form
+	 * @throws AbortException
 	 */
 	public function processSearchForumForm(Form $form) {
 		$values = $form->getValues();
@@ -292,6 +299,7 @@ class ForumPresenter extends LayerPresenter {
 	/**
 	 * @param bool $class
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function actionTexyPreview(bool $class = FALSE) {
 		if ($this->isAjax()) {
@@ -386,6 +394,7 @@ class ForumPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @allow(member)
+	 * @throws BadRequestException
 	 */
 	public function renderAdd(int $id) {
 		/* @var ActiveRow $topic*/
@@ -404,6 +413,7 @@ class ForumPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @allow(member)
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
 	 */
 	public function actionDelete(int $id) {
 		/* @var ActiveRow $post*/
@@ -428,10 +438,11 @@ class ForumPresenter extends LayerPresenter {
 	}
 
 	/**
+	 * @allow(member)
 	 * @param int $id
 	 * @param bool $lock
-	 * @allow(member)
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
 	 */
 	public function actionLockTopic(int $id, bool $lock) {
 		/* @var ActiveRow $post*/
@@ -445,27 +456,19 @@ class ForumPresenter extends LayerPresenter {
 		$this->redirect('topic', $post->forum_topic_id);
 	}
 
+
 	/**
-	 * @return JavaScriptLoader
 	 * @allow(member)
+	 * @return JavaScriptLoader
+	 * @throws InvalidArgumentException
 	 */
-	protected function createComponentTexylaJs() {
-		$files = new FileCollection(WWW_DIR . '/texyla/js');
-		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
-		$files->addFiles(['../plugins/img/img.js']);
-		$files->addFiles(['../plugins/emoji/emoji.js']);
-		$files->addFiles([WWW_DIR . '/js/texyla_forum.js']);
-		$files->addFiles([WWW_DIR . '/js/jquery-ui.custom.min.js']);
-
-		$compiler = Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-		$compiler->addFileFilter(new JsMinFilter());
-
-		return new JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+	public function createComponentTexylaJs() {
+		return $this->texylaJsFactory->create('texyla_forum', $this->template->basePath, ['img', 'emoji']);
 	}
 
 	/**
-	 * @return Form
 	 * @allow(member)
+	 * @return Form
 	 */
 	protected function createComponentAddTopicForm() {
 		$form = new Form;
@@ -489,6 +492,7 @@ class ForumPresenter extends LayerPresenter {
 	/**
 	 * @param Form $form
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function processAddTopicForm(Form $form) {
 		$values = $form->getValues();

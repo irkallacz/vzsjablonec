@@ -2,10 +2,11 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\TexylaJsFactory;
 use App\Model\HlasovaniService;
 use App\Model\MessageService;
 use App\Model\UserService;
-use Joseki\Webloader\JsMinFilter;
+use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
@@ -13,6 +14,8 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
+use WebLoader\InvalidArgumentException;
+use WebLoader\Nette\JavaScriptLoader;
 
 /** @allow(member) */
 class HlasovaniPresenter extends LayerPresenter {
@@ -25,6 +28,9 @@ class HlasovaniPresenter extends LayerPresenter {
 
 	/** @var UserService @inject */
 	public $userService;
+
+	/** @var TexylaJsFactory @inject */
+	public $texylaJsFactory;
 
 	/**
 	 *
@@ -175,6 +181,7 @@ class HlasovaniPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @param bool $lock
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
 	 */
 	public function actionLock(int $id, bool $lock) {
 		$anketa = $this->hlasovani->getAnketaById($id);
@@ -191,23 +198,14 @@ class HlasovaniPresenter extends LayerPresenter {
 		$this->redirect('view', $id);
 	}
 
+
 	/**
-	 * @return \WebLoader\Nette\JavaScriptLoader
+	 * @allow(member)
+	 * @return JavaScriptLoader
+	 * @throws InvalidArgumentException
 	 */
 	public function createComponentTexylaJs() {
-		$files = new \WebLoader\FileCollection(WWW_DIR . '/texyla/js');
-		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
-		$files->addFiles(['../plugins/table/table.js']);
-		$files->addFiles(['../plugins/color/color.js']);
-		$files->addFiles(['../plugins/symbol/symbol.js']);
-		$files->addFiles(['../plugins/textTransform/textTransform.js']);
-		$files->addFiles([WWW_DIR . '/js/texyla_anketa.js']);
-
-
-		$compiler = \WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-		$compiler->addFileFilter(new JsMinFilter());
-
-		return new \WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+		return $this->texylaJsFactory->create('texyla_anketa', $this->template->basePath, ['table', 'color', 'symbol', 'textTransform']);
 	}
 
 	/**
@@ -255,6 +253,7 @@ class HlasovaniPresenter extends LayerPresenter {
 
 	/**
 	 *
+	 * @throws AbortException
 	 */
 	public function addAnketaFormSubmitted() {
 		$id = (int)$this->getParameter('id');

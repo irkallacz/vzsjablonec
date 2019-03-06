@@ -2,21 +2,21 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\TexylaJsFactory;
 use App\MemberModule\Components\YearPaginator;
 use App\Model\AkceService;
 use App\Model\UserService;
 use App\Model\MessageService;
 use App\Template\LatteFilters;
-use Joseki\Webloader\JsMinFilter;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Mail\IMailer;
 use Nette\Utils\Json;
+use Nette\Utils\JsonException;
 use Tracy\Debugger;
-use WebLoader\Compiler;
-use WebLoader\FileCollection;
+use WebLoader\InvalidArgumentException;
 use WebLoader\Nette\JavaScriptLoader;
 
 /**
@@ -35,9 +35,11 @@ class MailPresenter extends LayerPresenter {
 	/** @var MessageService @inject */
 	public $messageService;
 
+	/** @var TexylaJsFactory @inject */
+	public $texylaJsFactory;
+
 	/** @var IMailer @inject */
 	public $mailer;
-
 
 	/**
 	 * @param array $recipients
@@ -147,6 +149,7 @@ class MailPresenter extends LayerPresenter {
 	 * @param int $id
 	 * @throws BadRequestException
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
 	 */
 	public function actionDelete(int $id) {
 		$message = $this->messageService->getMessageById($id);
@@ -227,6 +230,7 @@ class MailPresenter extends LayerPresenter {
 	/**
 	 * @param Form $form
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function mailFormSubmitted(Form $form) {
 		$values = $form->getValues();
@@ -266,7 +270,7 @@ class MailPresenter extends LayerPresenter {
 		$this->messageService->addMessage($message);
 
 		$next = $this->messageService->getNextSendTime();
-		$this->flashMessage('Váš mail bude odeslán '.LatteFilters::timeAgoInWords($next));
+		$this->flashMessage('Váš mail bude odeslán ' . LatteFilters::timeAgoInWords($next));
 
 		if (isset($akceId)) $this->redirect('Akce:view', $akceId); else $this->redirect('Mail:default');
 	}
@@ -275,6 +279,8 @@ class MailPresenter extends LayerPresenter {
 	 * @param Form $form
 	 * @throws BadRequestException
 	 * @throws ForbiddenRequestException
+	 * @throws AbortException
+	 * @throws JsonException
 	 */
 	public function mailFormUpdate(Form $form) {
 		$values = $form->getValues();
@@ -321,19 +327,14 @@ class MailPresenter extends LayerPresenter {
 		$this->redirect("send#message/$id");
 	}
 
+
 	/**
-	 * @return JavaScriptLoader
 	 * @allow(member)
+	 * @return JavaScriptLoader
+	 * @throws InvalidArgumentException
 	 */
-	protected function createComponentTexylaJs() {
-		$files = new FileCollection(WWW_DIR . '/texyla/js');
-		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
-		$files->addFiles([WWW_DIR . '/js/texyla_mail.js']);
-
-		$compiler = Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-		$compiler->addFileFilter(new JsMinFilter());
-
-		return new JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+	public function createComponentTexylaJs() {
+		return $this->texylaJsFactory->create('texyla_mail', $this->template->basePath);
 	}
 
 }

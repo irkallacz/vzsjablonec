@@ -9,7 +9,6 @@
 namespace App\CronModule\Presenters;
 
 use App\Model\GalleryService;
-use App\PhotoModule\Image;
 use App\PhotoModule\ImageService;
 use Tracy\Debugger;
 
@@ -50,7 +49,7 @@ class ThumbsPresenter extends BasePresenter {
 		$this->template->items = [];
 
 		foreach ($albums as $album) {
-			$dirname = WWW_DIR . '/' . Image::PHOTO_DIR . '/' . Image::THUMB_DIR . '/' . $album->id . '/';
+			$dirname = $this->imageService->getAbsolutePath($album->id);
 			if (!file_exists($dirname)) {
 				mkdir($dirname, 0755);
 				$this->template->items[] = $dirname;

@@ -80,12 +80,18 @@ class SignPresenter extends BasePresenter {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function actionDefault() {
 		if (($this->getUser()->isLoggedIn())and($this->backlink)) {
 			$this->restoreRequest($this->backlink);
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function renderIn() {
 		if ($this->backlink) {
 			$googleState = $this->stateCryptor->encryptState($this->backlink, 'google');
@@ -358,6 +364,9 @@ class SignPresenter extends BasePresenter {
 		$this->redirect('in');
 	}
 
+	/**
+	 * @throws AbortException
+	 */
 	public function actionOut() {
 		$this->getUser()->logout();
 		$this->flashMessage('Byl jste odhlášen');

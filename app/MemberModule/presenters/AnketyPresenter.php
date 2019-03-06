@@ -2,8 +2,8 @@
 namespace App\MemberModule\Presenters;
 
 use App\MemberModule\Components\AnketaControl;
+use App\MemberModule\Components\TexylaJsFactory;
 use App\Model\AnketyService;
-use Joseki\Webloader\JsMinFilter;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
@@ -17,6 +17,9 @@ class AnketyPresenter extends LayerPresenter {
 
 	/** @var AnketyService @inject */
 	public $anketyService;
+
+	/** @var TexylaJsFactory @inject */
+	public $texylaJsFactory;
 
 	/**
 	 *
@@ -117,22 +120,12 @@ class AnketyPresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @return \WebLoader\Nette\JavaScriptLoader
+	 * @allow(member)
+	 * @return WebLoader\Nette\JavaScriptLoader
+	 * @throws WebLoader\InvalidArgumentException
 	 */
 	public function createComponentTexylaJs() {
-		$files = new WebLoader\FileCollection(WWW_DIR . '/texyla/js');
-		$files->addFiles(['texyla.js', 'selection.js', 'texy.js', 'buttons.js', 'cs.js', 'dom.js', 'view.js', 'window.js']);
-		$files->addFiles(['../plugins/table/table.js']);
-		$files->addFiles(['../plugins/color/color.js']);
-		$files->addFiles(['../plugins/symbol/symbol.js']);
-		$files->addFiles(['../plugins/textTransform/textTransform.js']);
-		$files->addFiles([WWW_DIR . '/js/texyla_anketa.js']);
-
-
-		$compiler = WebLoader\Compiler::createJsCompiler($files, WWW_DIR . '/texyla/temp');
-		$compiler->addFileFilter(new JsMinFilter());
-
-		return new WebLoader\Nette\JavaScriptLoader($compiler, $this->template->basePath . '/texyla/temp');
+		return $this->texylaJsFactory->create('texyla_anketa', $this->template->basePath, ['table', 'color', 'symbol', 'textTransform']);
 	}
 
 	/**

@@ -29,7 +29,7 @@ abstract class LayerPresenter extends BasePresenter {
 	/**
 	 * @throws AbortException
 	 */
-	protected function checkLogin(){
+	protected function checkLogin() {
 		if (!$this->user->isLoggedIn()) {
 			if ($this->user->getLogoutReason() === IUserStorage::INACTIVITY) {
 				$this->flashMessage('Byl jste odhlášen z důvodu neaktivity. Přihlaste se prosím znovu.');

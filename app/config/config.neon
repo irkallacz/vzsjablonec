@@ -125,6 +125,8 @@ services:
 
 	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %appDir%/../www/subdom/photo)
 
+	- App\MemberModule\Components\TexylaJsFactory(%appDir%/../www/subdom/member)
+
 	- App\CronModule\Presenters\TaskerPresenter(%cron%)
 	- App\CronModule\Presenters\MessagePresenter(%mail%, %messenger%)
 
