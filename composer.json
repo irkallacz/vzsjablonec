@@ -5,8 +5,8 @@
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"require": {
 		"php": ">= 7.0",
-	  	"ext-imagick": "*",
 	  	"ext-openssl": "*",
+	  	"ext-imagick": "*",
 		"nette/application": "^2.4",
 		"nette/bootstrap": "^2.4.2",
 		"nette/caching": "^2.5",
@@ -40,8 +40,8 @@
 	"require-dev": {
 	  "nette/tester": "^2.0",
 	  "nextras/mail-panel": "^2.3",
-	  "rah/danpu": "^2.6",
-	  "contributte/console": "^0.2.0"
+	  "contributte/console": "^0.2.0",
+	  "mrtnzlml/testbench": "^2.5"
 	},
 	"minimum-stability": "stable"
 }
