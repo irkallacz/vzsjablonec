@@ -51,6 +51,7 @@ config.local.neon
 google_api_service.json
 composer.lock
 .idea
+tests/_temp/
 www/subdom/t9/
 www/subdom/photo/albums/
 www/subdom/member/archive.zip

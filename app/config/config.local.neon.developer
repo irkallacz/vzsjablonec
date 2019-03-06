@@ -34,11 +34,6 @@ services:
 		class: Nette\Mail\IMailer
 		factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
 
-	- App\Model\ConnectionConfig(%database%)
-
-	- App\Console\ImportDatabaseCommand
-	- App\Console\ExportDatabaseCommand
-
 console:
 	name: Member Project
 	url: http://www.kdyby.org

@@ -1,0 +1,5 @@
+testbench:
+	sqls: #what should be loaded after empty database creation
+		- %appDir%/../sql/default.sql
+		- %appDir%/../sql/wordpress.sql
+		- %appDir%/../sql/tests.sql
