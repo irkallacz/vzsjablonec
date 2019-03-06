@@ -28,7 +28,9 @@ abstract class BasePresenter extends Presenter {
 	}
 
 	public function checkRequirements($element) {
-		$this->getUser()->getStorage()->setNamespace('account');
+		if (!$this->context->parameters['productionMode']) {
+			$this->getUser()->getStorage()->setNamespace('account');
+		}
 		parent::checkRequirements($element);
 	}
 

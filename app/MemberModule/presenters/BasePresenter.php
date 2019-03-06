@@ -31,7 +31,9 @@ abstract class BasePresenter extends Presenter {
 	 * @throws ForbiddenRequestException
 	 */
 	public function checkRequirements($element) {
-		$this->getUser()->getStorage()->setNamespace('member');
+		if (!$this->context->parameters['productionMode']) {
+			$this->getUser()->getStorage()->setNamespace('member');
+		}
 		parent::checkRequirements($element);
 	}
 
