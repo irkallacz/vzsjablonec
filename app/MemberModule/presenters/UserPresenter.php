@@ -119,7 +119,7 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		if ((!$user->role) and ($this->getUser()->getId() != $id) and (!$this->getUser()->isInRole('board'))){
-			throw new ForbiddenRequestException('Nemáte práva prohlížete tohoto uživatele');
+			throw new ForbiddenRequestException('Nemáte právo prohlížet tohoto uživatele');
 		}
 
 		$this->template->age = ($user->date_born) ? $user->date_born->diff(new DateTime()) : NULL;
