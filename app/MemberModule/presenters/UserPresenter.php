@@ -346,9 +346,21 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		if ($this->getUser()->isInRole('admin')) {
+			$form->addText('vzsId', 'VZS ID', 8)
+				->setNullable()
+				->addCondition(Form::FILLED)
+				->addRule(Form::INTEGER, 'Osobní číslo musí obsahovat jen číslice')
+				->addRule(Form::LENGTH, 'Osobní číslo musí mít %d číslic',6);
+
+			$form->addText('cardId', 'ID Karty', 8)
+				->setNullable()
+				->addCondition(Form::FILLED)
+				->addRule(Form::LENGTH, 'Číslo karty musí mít %d znaků',8);
+
 			$form->addSelect('role', 'Role',
 				$this->userService->getRoleList()
 			);
+
 		}
 
 		if ($this->getUser()->getId() != $id) {

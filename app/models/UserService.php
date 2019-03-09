@@ -127,7 +127,7 @@ class UserService extends DatabaseService {
 	 */
 	public function getDataForUser(IRow $user){
 		$array = $user->toArray();
-		$keys = ['id', 'hash', 'name', 'surname', 'mail', 'mail2', 'role'];
+		$keys = ['id', 'hash', 'name', 'surname', 'mail', 'mail2', 'role', 'vzsId'];
 		return array_intersect_key($array, array_flip($keys));
 	}
 

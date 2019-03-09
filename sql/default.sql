@@ -443,6 +443,8 @@ CREATE TABLE `user` (
   `text` text COLLATE utf8_czech_ci,
   `role` tinyint(4) DEFAULT '0',
   `photo` varchar(60) COLLATE utf8_czech_ci DEFAULT NULL,
+  `cardId` char(8) COLLATE 'utf8_czech_ci' NULL,
+  `vzsId` char(6) COLLATE 'utf8_czech_ci' NULL,
   `date_add` date DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),

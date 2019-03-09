@@ -71,6 +71,8 @@ class UserGridControl extends Control {
 		'zamestnani'	=> ['label' => 'Zaměstnání',	'size' => 20,	'format' => 'string'],
 		'photo' 		=> ['label' => 'Fotka',			'size' =>  5,	'format' => 'string',	'order' => FALSE],
 		'hash' 			=> ['label' => 'Heslo', 		'size' =>  5,	'format' => 'string',	'order' => FALSE],
+		'vzsId' 		=> ['label' => 'Vzs ID', 		'size' =>  8,	'format' => 'integer'],
+		'cardId' 		=> ['label' => 'ID Karty', 		'size' =>  8,	'format' => 'string'],
 		'iDokladId' 	=> ['label' => 'iDokladID', 	'size' =>  8,	'format' => 'integer'],
 		'date_add' 		=> ['label' => 'Datum reg.', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
 		'date_update'	=> ['label' => 'Datum akt.', 	'size' => 12,	'format' => 'DD.MM.YYYY HH:MM'],
