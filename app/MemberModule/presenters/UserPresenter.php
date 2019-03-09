@@ -139,7 +139,7 @@ class UserPresenter extends LayerPresenter {
 		$zip->open(WWW_DIR . '/archive.zip', \ZIPARCHIVE::CREATE | \ZIPARCHIVE::OVERWRITE);
 
 		$template = $this->createTemplate();
-		$template->setFile(APP_DIR . '/MemberModule/templates/User.vcf.latte');
+		$template->setFile(__DIR__ . '../templates/User.vcf.latte');
 		$template->archive = TRUE;
 
 		foreach ($this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name') as $member) {
