@@ -34,3 +34,20 @@ INSERT INTO `akce_member` SET `akce_id` = 2, `user_id` = 2, `organizator` = 1, `
 INSERT INTO `akce_member` SET `akce_id` = 2, `user_id` = 1, `organizator` = 0, `created_by` = 2, `date_add` = NOW();
 
 INSERT INTO `akce_member` SET `akce_id` = 4, `user_id` = 3, `organizator` = 1, `created_by` = 3, `date_add` = NOW();
+
+
+INSERT INTO `album` SET `id` = 1, `name` = 'Viditelné album akce', `slug` = '1-viditelne-album-akce', `text` = 'Viditelný text', `private` = 'Soukromý text', `visible` = 1, `user_id` = 2, `date` = NOW(), `date_add` = NOW(), `date_update` = NOW(), `pubkey` = MD5(NOW());
+INSERT INTO `album` SET `id` = 2, `name` = 'Neditelné album akce', `slug` = '2-neviditelne-album-akce', `text` = 'Viditelný text', `private` = 'Soukromý text', `visible` = 0, `user_id` = 2, `date` = NOW(), `date_add` = NOW(), `date_update` = NOW(), `pubkey` = MD5(NOW());
+INSERT INTO `album` SET `id` = 3, `name` = 'Neditelné album akce', `slug` = '3-neviditelne-album-akce', `text` = 'Viditelný text', `private` = 'Soukromý text', `visible` = 0, `user_id` = 1, `date` = NOW(), `date_add` = NOW(), `date_update` = NOW(), `pubkey` = MD5(NOW());
+
+INSERT INTO `album_photo` SET `id` = 11, `album_id` = 1, `filename` = 'Filename_1.jpg', `thumb` = 'filename-1.jpg', `order` = 1, `visible` = 1, `date_add` = NOW();
+INSERT INTO `album_photo` SET `id` = 12, `album_id` = 1, `filename` = 'Filename_2.jpg', `thumb` = 'filename-2.jpg', `order` = 2, `visible` = 0, `date_add` = NOW();
+INSERT INTO `album_photo` SET `id` = 13, `album_id` = 1, `filename` = 'Filename_3.jpg', `thumb` = 'filename-3.jpg', `order` = 3, `visible` = 1, `date_add` = NOW();
+
+INSERT INTO `album_photo` SET `id` = 21, `album_id` = 2, `filename` = 'Filename_1.jpg', `thumb` = 'filename-1.jpg', `order` = 1, `visible` = 0, `date_add` = NOW();
+INSERT INTO `album_photo` SET `id` = 22, `album_id` = 2, `filename` = 'Filename_2.jpg', `thumb` = 'filename-2.jpg', `order` = 2, `visible` = 0, `date_add` = NOW();
+INSERT INTO `album_photo` SET `id` = 23, `album_id` = 2, `filename` = 'Filename_3.jpg', `thumb` = 'filename-3.jpg', `order` = 3, `visible` = 0, `date_add` = NOW();
+
+INSERT INTO `album_photo` SET `id` = 31, `album_id` = 3, `filename` = 'Filename_1.jpg', `thumb` = 'filename-1.jpg', `order` = 1, `visible` = 0, `date_add` = NOW();
+INSERT INTO `album_photo` SET `id` = 32, `album_id` = 3, `filename` = 'Filename_2.jpg', `thumb` = 'filename-2.jpg', `order` = 2, `visible` = 0, `date_add` = NOW();
+INSERT INTO `album_photo` SET `id` = 33, `album_id` = 3, `filename` = 'Filename_3.jpg', `thumb` = 'filename-3.jpg', `order` = 3, `visible` = 0, `date_add` = NOW();

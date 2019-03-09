@@ -5,7 +5,7 @@ require __DIR__ . '/bootstrap.php';
 /**
  * @testCase
  */
-class MemberPresenterMemberTest extends \Tester\TestCase
+final class MemberPresenterMemberTest extends \Tester\TestCase
 {
 
 	use \Testbench\TPresenter;
@@ -33,6 +33,54 @@ class MemberPresenterMemberTest extends \Tester\TestCase
 			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
 		}
 	}
+
+	public function testActionUserViewUser()
+	{
+		try {
+			$this->checkAction('Member:User:view', ['id' => 1]);
+		} catch (Exception $exception) {
+			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+		}
+	}
+
+	public function testActionUserViewMember()
+	{
+		$this->checkAction('Member:User:view', ['id' => 2]);
+	}
+
+	public function testActionUserViewBoard()
+	{
+		$this->checkAction('Member:User:view', ['id' => 3]);
+	}
+
+	public function testActionUserViewAdmin()
+	{
+		$this->checkAction('Member:User:view', ['id' => 4]);
+	}
+
+	public function testActionUserViewDeleted()
+	{
+		try {
+			$this->checkAction('Member:User:view', ['id' => 0]);
+		} catch (Exception $exception) {
+			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+		}
+	}
+
+	public function testActionUserTable()
+	{
+		try {
+			$this->checkAction('Member:User:table');
+		} catch (Exception $exception) {
+			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+		}
+	}
+
+	public function testActionUserEditSelf()
+	{
+		$this->checkAction('Member:User:edit', ['id' => 2]);
+	}
+
 
 }
 

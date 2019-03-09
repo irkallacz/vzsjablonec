@@ -28,3 +28,9 @@ More at https://member.vzs-jablonec.cz
 More at [composer.json](composer.json)
 
 Uses Bitbucket [pipelines](bitbucket-pipelines.yml) for deployment.
+ 
+ ## Testing
+ 
+App is covered by tests (find in [tests directory](tests)). Testbench and Tester packages are used for testing purposed.
+ 
+To run a tests just execute [bin\tester](bin/tester).

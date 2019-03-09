@@ -5,7 +5,7 @@ require __DIR__ . '/bootstrap.php';
 /**
  * @testCase
  */
-class MemberPresenterUserTest extends \Tester\TestCase
+final class MemberPresenterUserTest extends \Tester\TestCase
 {
 
 	use \Testbench\TPresenter;
@@ -57,6 +57,55 @@ class MemberPresenterUserTest extends \Tester\TestCase
 	{
 		$this->checkAction('Member:Forum:default');
 	}
+
+	public function testActionUserDefault()
+	{
+		$this->checkAction('Member:User:default');
+	}
+
+	public function testActionUserViewUser()
+	{
+		$this->checkAction('Member:User:view', ['id' => 1]);
+	}
+
+	public function testActionUserViewMember()
+	{
+		$this->checkAction('Member:User:view', ['id' => 2]);
+	}
+
+	public function testActionUserViewBoard()
+	{
+		$this->checkAction('Member:User:view', ['id' => 3]);
+	}
+
+	public function testActionUserViewAdmin()
+	{
+		$this->checkAction('Member:User:view', ['id' => 4]);
+	}
+
+	public function testActionUserViewDeleted()
+	{
+		try {
+			$this->checkAction('Member:User:view', ['id' => 0]);
+		} catch (Exception $exception) {
+			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+		}
+	}
+
+	public function testActionUserTable()
+	{
+		try {
+			$this->checkAction('Member:User:table');
+		} catch (Exception $exception) {
+			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+		}
+	}
+
+	public function testActionUserEditSelf()
+	{
+		$this->checkAction('Member:User:edit', ['id' => 1]);
+	}
+
 }
 
 (new MemberPresenterUserTest())->run();
