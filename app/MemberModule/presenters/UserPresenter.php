@@ -54,16 +54,12 @@ class UserPresenter extends LayerPresenter {
 			if ($this->getUser()->isInRole('board')) {
 				$searchList['users'] = $this->userService->searchUsers($q)
 					->where('role', 0);
-				$searchList['deleted'] = $this->userService->searchUsers($q)
-					->where('role IS NULL');
 			}
 		}else{
 			$searchList['members'] = $this->userService->getUsers(UserService::MEMBER_LEVEL);
 			if ($this->getUser()->isInRole('board')) {
 				$searchList['users'] = $this->userService->getUsers()
 					->where('role', 0);
-				$searchList['deleted'] = $this->userService->getUsers(UserService::DELETED_LEVEL)
-					->where('role IS NULL');
 			}
 			foreach ($searchList as $list) $list->order('surname, name');
 		}
@@ -103,7 +99,6 @@ class UserPresenter extends LayerPresenter {
 
 		if ($this->getUser()->isInRole('board')) {
 			$searchList['users'] = $this->userService->searchUsers($search)->where('role', 0);
-			$searchList['deleted'] = $this->userService->searchUsers($search)->where('role IS NULL');
 		}
 
 		$this->template->searchList = $searchList;
