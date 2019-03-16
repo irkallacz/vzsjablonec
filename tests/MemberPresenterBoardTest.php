@@ -10,6 +10,9 @@ final class MemberPresenterBoardTest extends \Tester\TestCase
 
 	use \Testbench\TPresenter;
 
+	/**
+	 *
+	 */
 	public function setUp()
 	{
 		$this->logIn(3, ['user', 'member', 'board'], ['date_last' => new \Nette\Utils\DateTime('- 1 day')]);
@@ -53,6 +56,29 @@ final class MemberPresenterBoardTest extends \Tester\TestCase
 	public function testActionUserEditSelf()
 	{
 		$this->checkAction('Member:User:edit', ['id' => 3]);
+	}
+
+	public function testActionUserEditUser()
+	{
+		try {
+			$this->checkAction('Member:User:edit', ['id' => 1]);
+		} catch (Exception $exception) {
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
+		}
+	}
+
+	public function testActionUserEditMember()
+	{
+		try {
+			$this->checkAction('Member:User:edit', ['id' => 2]);
+		} catch (Exception $exception) {
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
+		}
+	}
+
+	public function testActionMailAdd()
+	{
+		$this->checkAction('Member:Mail:add');
 	}
 
 

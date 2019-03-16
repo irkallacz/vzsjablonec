@@ -10,6 +10,9 @@ final class MemberPresenterUserTest extends \Tester\TestCase
 
 	use \Testbench\TPresenter;
 
+	/**
+	 *
+	 */
 	public function setUp()
 	{
 		$this->logIn(1, ['user'], ['date_last' => new \Nette\Utils\DateTime('- 1 day')]);
@@ -58,6 +61,63 @@ final class MemberPresenterUserTest extends \Tester\TestCase
 		$this->checkAction('Member:Forum:default');
 	}
 
+	public function testActionForumSearch()
+	{
+		$this->checkAction('Member:Forum:search');
+	}
+
+	public function testActionForumTopic()
+	{
+		$this->checkAction('Member:Forum:topic', ['id' => 1]);
+	}
+
+	public function testActionForumTopicLocked()
+	{
+		$this->checkAction('Member:Forum:topic', ['id' => 2]);
+	}
+
+	public function testActionForumTopicDeletedPost()
+	{
+		$this->checkAction('Member:Forum:topic', ['id' => 3]);
+	}
+
+	public function testActionForumTopicDeleted()
+	{
+		try {
+			$this->checkAction('Member:Forum:topic', ['id' => 4]);
+		} catch (\Exception $exception) {
+			\Tester\Assert::type(\Nette\Application\BadRequestException::class, $exception);
+		}
+	}
+
+	public function testActionForumTopicEdit()
+	{
+		try {
+			$this->checkAction('Member:Forum:edit', ['id' => 1]);
+		} catch (\Exception $exception) {
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
+		}
+	}
+
+	public function testActionForumPostCite()
+	{
+		try {
+			$this->checkAction('Member:Forum:cite', ['id' => 1]);
+		} catch (\Exception $exception) {
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
+		}
+	}
+
+	public function testActionForumPostAdd()
+	{
+		try {
+			$this->checkAction('Member:Forum:add', ['id' => 1]);
+		} catch (\Exception $exception) {
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
+		}
+	}
+
+
 	public function testActionUserDefault()
 	{
 		$this->checkAction('Member:User:default');
@@ -104,6 +164,24 @@ final class MemberPresenterUserTest extends \Tester\TestCase
 	public function testActionUserEditSelf()
 	{
 		$this->checkAction('Member:User:edit', ['id' => 1]);
+	}
+
+	public function testActionUserEditMember()
+	{
+		try {
+			$this->checkAction('Member:User:edit', ['id' => 2]);
+		} catch (Exception $exception) {
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
+		}
+	}
+
+	public function testActionMailDefault()
+	{
+		try {
+			$this->checkAction('Member:Mail:default');
+		} catch (Exception $exception) {
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
+		}
 	}
 
 }

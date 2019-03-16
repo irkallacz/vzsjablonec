@@ -10,6 +10,9 @@ final class PhotoPresenterUserTest extends \Tester\TestCase
 
 	use \Testbench\TPresenter;
 
+	/**
+	 *
+	 */
 	public function setUp()
 	{
 		$this->logIn(1, ['user'], ['date_last' => new \Nette\Utils\DateTime('- 1 day')]);

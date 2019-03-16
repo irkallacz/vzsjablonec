@@ -55,6 +55,21 @@ final class PhotoPresenterTest extends \Tester\TestCase
 		$this->checkRedirect('Photo:Album:edit', '/sign/in', ['slug' => '2-neviditelne-album-akce']);
 	}
 
+	public function testActionAlbumAddPublic()
+	{
+		$this->checkRedirect('Photo:Album:add','/sign/in', ['slug' => '1-viditelne-album-akce']);
+	}
+
+	public function testActionAlbumAddPrivate()
+	{
+		$this->checkRedirect('Photo:Album:add', '/sign/in', ['slug' => '2-neviditelne-album-akce']);
+	}
+
+	public function testActionMyselfDefault()
+	{
+		$this->checkRedirect('Photo:Myself:default', '/sign/in');
+	}
+
 }
 
 (new PhotoPresenterTest())->run();

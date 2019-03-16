@@ -10,11 +10,13 @@ final class PhotoPresenterMemberTest extends \Tester\TestCase
 
 	use \Testbench\TPresenter;
 
+	/**
+	 *
+	 */
 	public function setUp()
 	{
 		$this->logIn(2, ['user', 'member'], ['date_last' => new \Nette\Utils\DateTime('- 1 day')]);
 	}
-
 
 	public function testActionAlbumEditPublicMine()
 	{
