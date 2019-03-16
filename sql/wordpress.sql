@@ -1,4 +1,4 @@
--- 2017-12-03T21:21:36+01:00 - mysql:host=localhost;dbname=wordpress
+-- mysql:host=localhost;dbname=wordpress
 
 -- Table structure for table `nnx2_posts`
 

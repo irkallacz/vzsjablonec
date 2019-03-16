@@ -1,53 +1,59 @@
-INSERT INTO `user` SET `id` = 0, `name` = 'Franta',	`surname` = 'Deleted',	`mail` = 'deleted@vzs-jablonec.cz', `role` = NULL;
-INSERT INTO `user` SET `id` = 1, `name` = 'Tonda',	`surname` = 'User', 		`mail` = 'user@vzs-jablonec.cz', 		`role` = 0;
-INSERT INTO `user` SET `id` = 2, `name` = 'Jirka',	`surname` = 'Member', 	`mail` = 'member@vzs-jablonec.cz', 	`role` = 1;
-INSERT INTO `user` SET `id` = 3, `name` = 'Pepa',		`surname` = 'Board', 		`mail` = 'board@vzs-jablonec.cz', 	`role` = 2;
-INSERT INTO `user` SET `id` = 4, `name` = 'Míra',		`surname` = 'Admin', 		`mail` = 'admib@vzs-jablonec.cz', 	`role` = 3;
+INSERT INTO `user` (`id`, `name`, `surname`, `mail`, `role`) VALUES
+	(0,	'Franta',	'Deleted',	'deleted@vzs-jablonec.cz',	NULL),
+	(1,	'Tonda',	'User',			'user@vzs-jablonec.cz',			0),
+	(2,	'Jirka',	'Member',		'member@vzs-jablonec.cz',		1),
+	(3,	'Pepa',		'Board',		'board@vzs-jablonec.cz',		2),
+	(4,	'Míra',		'Admin',		'admib@vzs-jablonec.cz',		3);
 
-INSERT INTO `akce` SET `id` = 1, `name` = 'Minulá akce', `perex` = 'Akce', `description` = 'Akce odehrávající se v minulosti',
-	`date_start` = NOW() - INTERVAL 48 HOUR, `date_end` = NOW() - INTERVAL 47 HOUR, `date_deatline` = NOW() - INTERVAL 24 HOUR, `date_add` = NOW() - INTERVAL 12 HOUR, `date_update` = NOW() - INTERVAL 12 HOUR,
-	`akce_for_id` = 1, `place` = 'VD Mšeno', `created_by` = 2, `modified_by` = 2, `confirm` = 1;
+INSERT INTO `akce` (`id`, `name`, `perex`, `description`, `date_start`, `date_end`, `date_deatline`, `date_add`, `date_update`, `akce_for_id`, `place`, `created_by`, `modified_by`, `confirm`) VALUES
+	(1, 'Minulá akce', 'Akce', 'Akce odehrávající se v minulosti', NOW() - INTERVAL 48 HOUR, NOW() - INTERVAL 47 HOUR, NOW() - INTERVAL 24 HOUR, NOW() - INTERVAL 12 HOUR, NOW() - INTERVAL 12 HOUR, 1, 'VD Mšeno', 2, 2, 1),
+	(2, 'Budoucí akce', 'Akce', 'Akce odehrávající se v budoucnosti', NOW() + INTERVAL 48 HOUR, NOW() + INTERVAL 49 HOUR, NOW() + INTERVAL 24 HOUR, NOW(), NOW(), 1, 'VD Mšeno', 2, 2, 1),
+	(3, 'Minulá neschválená akce', 'Akce', 'Akce odehrávající se v minulosti, která není schválená', NOW() - INTERVAL 48 HOUR, NOW() - INTERVAL 47 HOUR, NOW() - INTERVAL 24 HOUR, NOW() - INTERVAL 12 HOUR, NOW() - INTERVAL 12 HOUR, 1, 'VD Mšeno', 2, 2, 0),
+	(4, 'Budoucí nechválená akce', 'Akce', 'Akce odehrávající se v budoucnosti, která není schválená', NOW() + INTERVAL 48 HOUR, NOW() + INTERVAL 49 HOUR, NOW() + INTERVAL 24 HOUR, NOW(), NOW(), 1, 'VD Mšeno', 2, 2, 0),
+	(5, 'Minulá smazaná akce', 'Akce', 'Akce odehrávající se v minulosti, která je smazaná', NOW() - INTERVAL 48 HOUR, NOW() - INTERVAL 47 HOUR, NOW() - INTERVAL 24 HOUR, NOW() - INTERVAL 12 HOUR, NOW() - INTERVAL 12 HOUR, 1, 'VD Mšeno', 2, 2, 0),
+	(6, 'Budoucí smazaná akce', 'Akce', 'Akce odehrávající se v budoucnosti, která je smazaná', NOW() + INTERVAL 48 HOUR, NOW() + INTERVAL 49 HOUR, NOW() + INTERVAL 24 HOUR, NOW(), NOW(), 1, 'VD Mšeno', 2, 2, 0);
 
-INSERT INTO `akce` SET `id` = 2, `name` = 'Budoucí akce', `perex` = 'Akce', `description` = 'Akce odehrávající se v budoucnosti',
-	`date_start` = NOW() + INTERVAL 48 HOUR, `date_end` = NOW() + INTERVAL 49 HOUR, `date_deatline` = NOW() + INTERVAL 24 HOUR, `date_add` = NOW(), `date_update` = NOW(),
-	`akce_for_id` = 1, `place` = 'VD Mšeno', `created_by` = 2, `modified_by` = 2, `confirm` = 1;
+INSERT INTO `akce_member` (`akce_id`, `user_id`, `organizator`, `created_by`, `date_add`) VALUES
+	(1, 2, 1, 2, NOW()),
+	(1, 1, 0, 2, NOW()),
+	(2, 2, 1, 2, NOW()),
+	(2, 1, 0, 2, NOW()),
+	(4, 3, 1, 3, NOW());
 
-INSERT INTO `akce` SET `id` = 3, `name` = 'Minulá neschválená akce', `perex` = 'Akce', `description` = 'Akce odehrávající se v minulosti, která není schválená',
-	`date_start` = NOW() - INTERVAL 48 HOUR, `date_end` = NOW() - INTERVAL 47 HOUR, `date_deatline` = NOW() - INTERVAL 24 HOUR, `date_add` = NOW() - INTERVAL 12 HOUR, `date_update` = NOW() - INTERVAL 12 HOUR,
-	`akce_for_id` = 1, `place` = 'VD Mšeno', `created_by` = 2, `modified_by` = 2;
+INSERT INTO `forum_post` (`id`, `forum_topic_id`, `forum_id`, `user_id`, `row_number`, `date_add`, `date_update`, `title`, `text`, `locked`, `hidden`) VALUES
+	(1, 1, 1, 1, 1, NOW(), NOW(), 'Obecné téma', 'Obecně', 0, 0),
+	(2, 2, 1, 2, 1, NOW(), NOW(), 'Obecné zamčené téma', 'Zamčeno', 1, 0),
+	(3, 3, 1, 3, 1, NOW(), NOW(), 'Obecné Board téma', 'Hmm', 0, 0),
+	(4, 4, 1, 4, 0, NOW(), NOW(), 'Obecné Admin smazané téma', 'Smazáno', 0, 1),
 
-INSERT INTO `akce` SET `id` = 4, `name` = 'Budoucí nechválená akce', `perex` = 'Akce', `description` = 'Akce odehrávající se v budoucnosti, která není schválená',
-	`date_start` = NOW() + INTERVAL 48 HOUR, `date_end` = NOW() + INTERVAL 49 HOUR, `date_deatline` = NOW() + INTERVAL 24 HOUR, `date_add` = NOW(), `date_update` = NOW(),
-	`akce_for_id` = 1, `place` = 'VD Mšeno', `created_by` = 2, `modified_by` = 2;
+	(5, 1, 1, 2, 2, NOW(), NOW(), NULL, 'Příspěvěk', 0, 0),
+	(6, 2, 1, 2, 2, NOW(), NOW(), NULL, 'Příspěvěk', 0, 0),
+	(7, 3, 1, 3, 0, NOW(), NOW(), NULL, 'Smazáno', 0, 1),
+	(8, 4, 1, 2, 2, NOW(), NOW(), NULL, 'Příspěvěk', 0, 0);
 
-INSERT INTO `akce` SET `id` = 5, `name` = 'Minulá smazaná akce', `perex` = 'Akce', `description` = 'Akce odehrávající se v minulosti, která je smazaná',
-	`date_start` = NOW() - INTERVAL 48 HOUR, `date_end` = NOW() - INTERVAL 47 HOUR, `date_deatline` = NOW() - INTERVAL 24 HOUR, `date_add` = NOW() - INTERVAL 12 HOUR, `date_update` = NOW() - INTERVAL 12 HOUR,
-	`akce_for_id` = 1, `place` = 'VD Mšeno', `created_by` = 2, `modified_by` = 2, `enable` = 0;
+INSERT INTO `message` SET `id` = 1, `message_type_id` = 1, `user_id` = 4, `date_add` = NOW(), `date_send` = NOW(), `subject` = 'Test', `text` = 'Testovací zpráva';
 
-INSERT INTO `akce` SET `id` = 6, `name` = 'Budoucí smazaná akce', `perex` = 'Akce', `description` = 'Akce odehrávající se v budoucnosti, která je smazaná',
-	`date_start` = NOW() + INTERVAL 48 HOUR, `date_end` = NOW() + INTERVAL 49 HOUR, `date_deatline` = NOW() + INTERVAL 24 HOUR, `date_add` = NOW(), `date_update` = NOW(),
-	`akce_for_id` = 1, `place` = 'VD Mšeno', `created_by` = 2, `modified_by` = 2, `enable` = 0;
+INSERT INTO `message_user` (`message_id`, `user_id`) VALUES
+	(1, 0),
+	(1, 1),
+	(1, 2),
+	(1, 3),
+	(1, 4);
 
-INSERT INTO `akce_member` SET `akce_id` = 1, `user_id` = 2, `organizator` = 1, `created_by` = 2, `date_add` = NOW();
-INSERT INTO `akce_member` SET `akce_id` = 1, `user_id` = 1, `organizator` = 0, `created_by` = 2, `date_add` = NOW();
-INSERT INTO `akce_member` SET `akce_id` = 2, `user_id` = 2, `organizator` = 1, `created_by` = 2, `date_add` = NOW();
-INSERT INTO `akce_member` SET `akce_id` = 2, `user_id` = 1, `organizator` = 0, `created_by` = 2, `date_add` = NOW();
+INSERT `album` (`id`, `name`, `slug`, `text`, `private`, `visible`, `user_id`, `date`, `date_add`, `date_update`, `pubkey`) VALUES
+	(1, 'Viditelné album akce', '1-viditelne-album-akce',		'Viditelný text', 'Soukromý text', 1,  2,  NOW(),  NOW(),  NOW(), MD5(NOW())),
+	(2, 'Neditelné album akce', '2-neviditelne-album-akce', 'Viditelný text', 'Soukromý text', 0,  2,  NOW(),  NOW(),  NOW(), MD5(NOW())),
+	(3, 'Neditelné album akce', '3-neviditelne-album-akce', 'Viditelný text', 'Soukromý text', 0,  1,  NOW(),  NOW(),  NOW(), MD5(NOW()));
 
-INSERT INTO `akce_member` SET `akce_id` = 4, `user_id` = 3, `organizator` = 1, `created_by` = 3, `date_add` = NOW();
+INSERT INTO `album_photo` (`id`, `album_id`, `filename`, `thumb`, `order`, `visible`, `date_add`) VALUES
+	(11, 1, 'Filename_1.jpg', 'filename-1.jpg', 1, 1, NOW()),
+	(12, 1, 'Filename_2.jpg', 'filename-2.jpg', 2, 0, NOW()),
+	(13, 1, 'Filename_3.jpg', 'filename-3.jpg', 3, 1, NOW()),
 
+	(21, 2, 'Filename_1.jpg', 'filename-1.jpg', 1, 0, NOW()),
+	(22, 2, 'Filename_2.jpg', 'filename-2.jpg', 2, 0, NOW()),
+	(23, 2, 'Filename_3.jpg', 'filename-3.jpg', 3, 0, NOW()),
 
-INSERT INTO `album` SET `id` = 1, `name` = 'Viditelné album akce', `slug` = '1-viditelne-album-akce', `text` = 'Viditelný text', `private` = 'Soukromý text', `visible` = 1, `user_id` = 2, `date` = NOW(), `date_add` = NOW(), `date_update` = NOW(), `pubkey` = MD5(NOW());
-INSERT INTO `album` SET `id` = 2, `name` = 'Neditelné album akce', `slug` = '2-neviditelne-album-akce', `text` = 'Viditelný text', `private` = 'Soukromý text', `visible` = 0, `user_id` = 2, `date` = NOW(), `date_add` = NOW(), `date_update` = NOW(), `pubkey` = MD5(NOW());
-INSERT INTO `album` SET `id` = 3, `name` = 'Neditelné album akce', `slug` = '3-neviditelne-album-akce', `text` = 'Viditelný text', `private` = 'Soukromý text', `visible` = 0, `user_id` = 1, `date` = NOW(), `date_add` = NOW(), `date_update` = NOW(), `pubkey` = MD5(NOW());
-
-INSERT INTO `album_photo` SET `id` = 11, `album_id` = 1, `filename` = 'Filename_1.jpg', `thumb` = 'filename-1.jpg', `order` = 1, `visible` = 1, `date_add` = NOW();
-INSERT INTO `album_photo` SET `id` = 12, `album_id` = 1, `filename` = 'Filename_2.jpg', `thumb` = 'filename-2.jpg', `order` = 2, `visible` = 0, `date_add` = NOW();
-INSERT INTO `album_photo` SET `id` = 13, `album_id` = 1, `filename` = 'Filename_3.jpg', `thumb` = 'filename-3.jpg', `order` = 3, `visible` = 1, `date_add` = NOW();
-
-INSERT INTO `album_photo` SET `id` = 21, `album_id` = 2, `filename` = 'Filename_1.jpg', `thumb` = 'filename-1.jpg', `order` = 1, `visible` = 0, `date_add` = NOW();
-INSERT INTO `album_photo` SET `id` = 22, `album_id` = 2, `filename` = 'Filename_2.jpg', `thumb` = 'filename-2.jpg', `order` = 2, `visible` = 0, `date_add` = NOW();
-INSERT INTO `album_photo` SET `id` = 23, `album_id` = 2, `filename` = 'Filename_3.jpg', `thumb` = 'filename-3.jpg', `order` = 3, `visible` = 0, `date_add` = NOW();
-
-INSERT INTO `album_photo` SET `id` = 31, `album_id` = 3, `filename` = 'Filename_1.jpg', `thumb` = 'filename-1.jpg', `order` = 1, `visible` = 0, `date_add` = NOW();
-INSERT INTO `album_photo` SET `id` = 32, `album_id` = 3, `filename` = 'Filename_2.jpg', `thumb` = 'filename-2.jpg', `order` = 2, `visible` = 0, `date_add` = NOW();
-INSERT INTO `album_photo` SET `id` = 33, `album_id` = 3, `filename` = 'Filename_3.jpg', `thumb` = 'filename-3.jpg', `order` = 3, `visible` = 0, `date_add` = NOW();
+	(31, 3, 'Filename_1.jpg', 'filename-1.jpg', 1, 0, NOW()),
+	(32, 3, 'Filename_2.jpg', 'filename-2.jpg', 2, 0, NOW()),
+	(33, 3, 'Filename_3.jpg', 'filename-3.jpg', 3, 0, NOW());
