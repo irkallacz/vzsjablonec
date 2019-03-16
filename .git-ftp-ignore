@@ -1,5 +1,6 @@
 sql
 tests
+commands
 .gitignore
 .git-ftp-ignore
 .htaccess
