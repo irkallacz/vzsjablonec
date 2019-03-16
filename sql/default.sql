@@ -1,10 +1,11 @@
--- 2018-05-25T15:38:07+02:00 - mysql:host=localhost;dbname=vzsjablonec
+-- mysql:host=localhost;dbname=vzsjablonec
 
--- Table structure for table `akce`
 SET NAMES utf8;
 SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+-- Table structure for table `akce`
 
 DROP TABLE IF EXISTS `akce`;
 CREATE TABLE `akce` (
@@ -353,6 +354,15 @@ CREATE TABLE `message_type` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
+INSERT INTO `message_type` (`id`, `type`) VALUES
+  (1,	'custom_message'),
+  (2,	'event_message'),
+  (3,	'registration_new'),
+  (4,	'event_confirm'),
+  (5,	'user_new'),
+  (6,	'password_reset'),
+  (7,	'vote_new');
+
 -- Table structure for table `message_user`
 
 DROP TABLE IF EXISTS `message_user`;
@@ -486,5 +496,3 @@ CREATE TRIGGER `password_session_bi` BEFORE INSERT ON `password_session` FOR EAC
 SET NEW.pubkey = MD5(UUID())
 //
 DELIMITER ;
-
--- Completed on: 2018-05-25T15:38:07+02:00
