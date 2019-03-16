@@ -51,7 +51,7 @@ final class AccountPresenterTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Account:Sign:restorePassword', ['pubkey' => \Nette\Utils\Random::generate(8)]);
 		} catch (\Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\BadRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\BadRequestException::class, $exception);
 		}
 	}
 

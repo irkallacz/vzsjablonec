@@ -31,7 +31,7 @@ final class PhotoPresenterMemberTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Photo:Album:edit', ['slug' => '3-neviditelne-album-akce']);
 		} catch (Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
 		}
 	}
 

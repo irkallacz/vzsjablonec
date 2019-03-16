@@ -50,7 +50,7 @@ final class PhotoPresenterUserTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Photo:Album:edit', ['slug' => '1-viditelne-album-akce']);
 		} catch (Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
 		}
 	}
 
@@ -59,7 +59,7 @@ final class PhotoPresenterUserTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Photo:Album:edit', ['slug' => '2-neviditelne-album-akce']);
 		} catch (Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
 		}
 	}
 
@@ -68,7 +68,7 @@ final class PhotoPresenterUserTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Photo:Album:edit', ['slug' => '3-neviditelne-album-akce']);
 		} catch (Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
 		}
 	}
 
@@ -92,7 +92,7 @@ final class PhotoPresenterUserTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Photo:Myself:default');
 	} catch (Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
 		}
 	}
 

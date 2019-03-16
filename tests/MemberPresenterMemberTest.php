@@ -30,7 +30,7 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Member:Akce:edit', ['id' => 4]);
 		} catch (Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
 		}
 	}
 
@@ -39,7 +39,7 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Member:User:view', ['id' => 1]);
 		} catch (Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
 		}
 	}
 
@@ -63,7 +63,7 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Member:User:view', ['id' => 0]);
 		} catch (Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
 		}
 	}
 
@@ -72,7 +72,7 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 		try {
 			$this->checkAction('Member:User:table');
 		} catch (Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\ForbiddenRequestException', $exception);
+			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
 		}
 	}
 
