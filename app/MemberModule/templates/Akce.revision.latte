@@ -2,7 +2,7 @@
 
 {if !$akce->confirm}Tato akce není schválena!{/if}
 
-**Datum:** {if $akce->date_start->format('Ymd') != $akce->date_end->format('Ymd')}{$akce->date_end|datetimeN} {else}{$akce->date_end|date:'H:i'}{/if} ({$akce->date_start|durationInWords:$akce->date_end})
+**Datum:** {$akce->date_start|datetimeN} - {if $akce->date_start->format('Ymd') != $akce->date_end->format('Ymd')}{$akce->date_end|datetimeN} {else}{$akce->date_end|date:'H:i'}{/if} ({$akce->date_start|durationInWords:$akce->date_end})
 
 {if ($akce->login_mem)or($akce->login_org)}**Přihlášení do:** {$akce->date_deatline|datetimeN}{/if}
 
