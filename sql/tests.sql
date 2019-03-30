@@ -3,7 +3,7 @@ INSERT INTO `user` (`id`, `name`, `surname`, `mail`, `role`) VALUES
 	(1,	'Tonda',	'User',			'user@vzs-jablonec.cz',			0),
 	(2,	'Jirka',	'Member',		'member@vzs-jablonec.cz',		1),
 	(3,	'Pepa',		'Board',		'board@vzs-jablonec.cz',		2),
-	(4,	'Míra',		'Admin',		'admib@vzs-jablonec.cz',		3);
+	(4,	'Míra',		'Admin',		'admin@vzs-jablonec.cz',		3);
 
 INSERT INTO `akce` (`id`, `name`, `perex`, `description`, `date_start`, `date_end`, `date_deatline`, `date_add`, `date_update`, `akce_for_id`, `place`, `created_by`, `modified_by`, `confirm`) VALUES
 	(1, 'Minulá akce', 'Akce', 'Akce odehrávající se v minulosti', NOW() - INTERVAL 48 HOUR, NOW() - INTERVAL 47 HOUR, NOW() - INTERVAL 24 HOUR, NOW() - INTERVAL 12 HOUR, NOW() - INTERVAL 12 HOUR, 1, 'VD Mšeno', 2, 2, 1),
@@ -30,6 +30,31 @@ INSERT INTO `forum_post` (`id`, `forum_topic_id`, `forum_id`, `user_id`, `row_nu
 	(6, 2, 1, 2, 2, NOW(), NOW(), NULL, 'Příspěvěk', 0, 0),
 	(7, 3, 1, 3, 0, NOW(), NOW(), NULL, 'Smazáno', 0, 1),
 	(8, 4, 1, 2, 2, NOW(), NOW(), NULL, 'Příspěvěk', 0, 0);
+
+INSERT INTO `anketa` (`id`, `title`, `text`, `locked`, `date_add`, `date_update`, `user_id`) VALUES
+	(1, 'Testovací anketa', 'Testovací popis',	0, NOW(), NOW(), 2),
+	(2, 'Zamčená anketa', 	'Zamčeno',					1, NOW(), NOW(), 2),
+	(3, 'Prázdná anketa', 	'Nic', 							0, NOW(), NOW(), 3),
+	(4, 'Nová anketa', 			'Teď', 							0, NOW(), NOW(), 4);
+
+INSERT INTO `anketa_odpoved` (`id`, `anketa_id`, `text`) VALUES
+	(1, 1, 'Odpoved 1'),
+	(2, 1, 'Odpoved 2'),
+	(3, 1, 'Odpoved 3'),
+	(4, 2, 'Odpoved 1'),
+	(5, 2, 'Odpoved 2'),
+	(6, 2, 'Odpoved 3'),
+	(7, 4, 'Odpoved 1'),
+	(8, 4, 'Odpoved 2'),
+	(9, 4, 'Odpoved 3');
+
+INSERT INTO `anketa_member` (`user_id`, `anketa_id`, `anketa_odpoved_id`, `date_add`) VALUES
+	(2 , 1, 1, NOW()),
+	(3 , 1, 1, NOW()),
+	(4 , 1, 2, NOW()),
+	(2 , 2, 2, NOW()),
+	(3 , 2, 1, NOW()),
+	(4 , 2, 3, NOW());
 
 INSERT INTO `message` SET `id` = 1, `message_type_id` = 1, `user_id` = 4, `date_add` = NOW(), `date_send` = NOW(), `subject` = 'Test', `text` = 'Testovací zpráva';
 

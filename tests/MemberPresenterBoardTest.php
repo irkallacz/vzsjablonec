@@ -18,6 +18,16 @@ final class MemberPresenterBoardTest extends \Tester\TestCase
 		$this->logIn(3, ['user', 'member', 'board'], ['date_last' => new \Nette\Utils\DateTime('- 1 day')]);
 	}
 
+	public function testActionAkceLogSelf()
+	{
+		$this->checkAction('Member:Akce:view', ['id' => 2, 'do' => 'signEvent-logSelf', 'signEvent-isOrg' => FALSE]);
+	}
+
+	public function testActionAkceUnLogSelf()
+	{
+		$this->checkAction('Member:Akce:view', ['id' => 4, 'do' => 'signEvent-unlogSelf', 'signEvent-isOrg' => TRUE]);
+	}
+
 	public function testActionUserTable()
 	{
 		$this->checkAction('Member:User:table');

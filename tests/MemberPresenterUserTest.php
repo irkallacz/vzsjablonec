@@ -69,6 +69,11 @@ final class MemberPresenterUserTest extends \Tester\TestCase
 		$this->checkAction('Member:Forum:topic', ['id' => 1]);
 	}
 
+	public function testActionForumPost()
+	{
+		$this->checkRedirect('Member:Forum:post', '/forum/topic/1#post/1', ['id' => 1]);
+	}
+
 	public function testActionForumTopicLocked()
 	{
 		$this->checkAction('Member:Forum:topic', ['id' => 2]);
