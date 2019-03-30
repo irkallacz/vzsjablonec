@@ -39,7 +39,7 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 	 */
 	public function testActionAkceEditException()
 	{
-		$this->checkAction('Member:Akce:edit', ['id' => 4]);
+		$this->checkAction('Member:Akce:edit', ['id' => 3]);
 	}
 
 	/**

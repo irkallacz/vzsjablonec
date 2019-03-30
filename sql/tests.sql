@@ -18,7 +18,8 @@ INSERT INTO `akce_member` (`akce_id`, `user_id`, `organizator`, `created_by`, `d
 	(1, 1, 0, 2, NOW()),
 	(2, 2, 1, 2, NOW()),
 	(2, 1, 0, 2, NOW()),
-	(4, 3, 1, 3, NOW());
+	(4, 2, 1, 3, NOW()),
+	(4, 3, 0, 3, NOW());
 
 INSERT INTO `forum_post` (`id`, `forum_topic_id`, `forum_id`, `user_id`, `row_number`, `date_add`, `date_update`, `title`, `text`, `locked`, `hidden`) VALUES
 	(1, 1, 1, 1, 1, NOW(), NOW(), 'Obecné téma', 'Obecně', 0, 0),

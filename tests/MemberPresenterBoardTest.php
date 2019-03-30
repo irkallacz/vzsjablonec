@@ -25,7 +25,7 @@ final class MemberPresenterBoardTest extends \Tester\TestCase
 
 	public function testActionAkceUnLogSelf()
 	{
-		$this->checkAction('Member:Akce:view', ['id' => 4, 'do' => 'signEvent-unlogSelf', 'signEvent-isOrg' => TRUE]);
+		$this->checkAction('Member:Akce:view', ['id' => 4, 'do' => 'signEvent-unlogSelf', 'signEvent-isOrg' => FALSE]);
 	}
 
 	public function testActionUserTable()
@@ -88,6 +88,12 @@ final class MemberPresenterBoardTest extends \Tester\TestCase
 	{
 		$this->checkAction('Member:Mail:add');
 	}
+
+	public function testActionMailAkce()
+	{
+		$this->checkRedirect('Member:Mail:akce', '/mail/add', ['id' => 2]);
+	}
+
 
 }
 
