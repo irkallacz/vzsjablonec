@@ -45,7 +45,7 @@ class MailPresenter extends LayerPresenter {
 	 * @param array $recipients
 	 * @allow(board)
 	 */
-	public function renderAdd(array $recipients = []) {
+	public function renderAdd(array $recipients = [], int $eventId = NULL) {
 		$users = $this->userService->getUsers()->order('surname,name')->fetchPairs('id');
 		$this->template->members = $users;
 
@@ -62,6 +62,11 @@ class MailPresenter extends LayerPresenter {
 
 			$form['users']->setDefaultValue($recipients);
 			$form['to']->setDefaultValue(join(',', $to));
+		}
+
+		if ($eventId) {
+			$event = $this->akceService->getAkceById($eventId);
+			$form['subject']->setDefaultValue($event->name);
 		}
 	}
 
@@ -168,6 +173,7 @@ class MailPresenter extends LayerPresenter {
 	/**
 	 * @param int $id
 	 * @allow(member)
+	 * @throws AbortException
 	 */
 	public function renderAkce(int $id) {
 		/** @var Form $form */
@@ -175,6 +181,11 @@ class MailPresenter extends LayerPresenter {
 
 		$akce = $this->akceService->getAkceById($id);
 		$users = $this->userService->getUsersByAkceId($id)->where('NOT role', NULL);
+
+		if ($this->user->isInRole('board')) {
+			$users = array_values($users->fetchPairs('id', 'id'));
+			$this->redirect('add', ['recipients' => $users, 'eventId' => $id]);
+		}
 
 		$form['to']->setDefaultValue(join(',', $users->fetchPairs('id', 'mail')));
 		$form['subject']->setDefaultValue($akce->name);
@@ -245,8 +256,15 @@ class MailPresenter extends LayerPresenter {
 			$message->setType(MessageService\Message::EVENT_MESSAGE_TYPE);
 		} else {
 			$members = $this->userService->getUsers()->where('id', $values->users);
-			$message->setType(MessageService\Message::CUSTOM_MESSAGE_TYPE);
+			if ($eventId = $this->getParameter('eventId')){
+				$message->setType(MessageService\Message::EVENT_MESSAGE_TYPE);
+				$parameters['akce_id'] = $eventId;
+			}else {
+				$message->setType(MessageService\Message::CUSTOM_MESSAGE_TYPE);
+			}
 		}
+
+
 
 		$members->where('NOT id', $this->user->id);
 		$message->setRecipients($members);
