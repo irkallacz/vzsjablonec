@@ -134,10 +134,10 @@ class AnketaControl extends LayerControl {
 			throw new BadRequestException('V této anketě nemůžete hlasovat');
 		} else {
 			if (in_array($choiceId, $this->choices->fetchPairs('id', 'id'))) {
-				$this->anketyService->addVote([
-					'user_id' => $this->userId, 'anketa_id' => $this->surveyId, 'anketa_odpoved_id' => $choiceId, 'date_add' => new DateTime()
-				]);
-				$this->flashMessage('Váš hlas byl zaznamenán');
+				if (!$this->anketyService->getMemberVote($this->surveyId, $this->userId)){
+					$this->anketyService->addVote(['user_id' => $this->userId, 'anketa_id' => $this->surveyId, 'anketa_odpoved_id' => $choiceId, 'date_add' => new DateTime()]);
+					$this->flashMessage('Váš hlas byl zaznamenán');
+				} else throw new BadRequestException('V anketě jste již hlasoval');
 			} else throw new BadRequestException('Pro tuto odpověď nemůžete hlasovat');
 		}
 		$this->redrawControl('flash');
