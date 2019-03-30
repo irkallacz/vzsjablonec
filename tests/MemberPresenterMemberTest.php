@@ -29,22 +29,20 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 		$this->checkAction('Member:Akce:edit', ['id' => 1]);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionAkceEditException()
 	{
-		try {
-			$this->checkAction('Member:Akce:edit', ['id' => 4]);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Member:Akce:edit', ['id' => 4]);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionUserViewUser()
 	{
-		try {
-			$this->checkAction('Member:User:view', ['id' => 1]);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Member:User:view', ['id' => 1]);
 	}
 
 	public function testActionUserViewMember()
@@ -62,36 +60,33 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 		$this->checkAction('Member:User:view', ['id' => 4]);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionUserViewDeleted()
 	{
-		try {
-			$this->checkAction('Member:User:view', ['id' => 0]);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Member:User:view', ['id' => 0]);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionUserTable()
 	{
-		try {
-			$this->checkAction('Member:User:table');
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Member:User:table');
 	}
 
 	public function testActionUserEditSelf()
 	{
 		$this->checkAction('Member:User:edit', ['id' => 2]);
 	}
-
+	
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionUserEditUser()
 	{
-		try {
-			$this->checkAction('Member:User:edit', ['id' => 1]);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Member:User:edit', ['id' => 1]);
 	}
 
 	public function testActionForumPostEdit()
@@ -108,23 +103,21 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 	{
 		$this->checkAction('Member:Forum:add', ['id' => 1]);
 	}
-
+	
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionForumTopicEdit()
 	{
-		try {
-			$this->checkAction('Member:Forum:edit', ['id' => 1]);
-		} catch (\Exception $exception) {
-			\Tester\Assert::type('\Nette\Application\BadRequestException', $exception);
-		}
+		$this->checkAction('Member:Forum:edit', ['id' => 1]);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionForumTopicDelete()
 	{
-		try {
-			$this->checkAction('Member:Forum:delete', ['id' => 1]);
-		} catch (\Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Member:Forum:delete', ['id' => 1]);
 	}
 
 	public function testActionForumPostDelete()
@@ -147,13 +140,13 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 		$this->checkRedirect('Member:Mail:view', NULL, ['id' => 1]);
 	}
 
+	
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionMailAdd()
 	{
-		try {
-			$this->checkAction('Member:Mail:add');
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Member:Mail:add');
 	}
 
 	public function testActionMailAkce()

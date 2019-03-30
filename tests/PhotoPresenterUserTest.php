@@ -48,31 +48,28 @@ final class PhotoPresenterUserTest extends \Tester\TestCase
 		$this->checkAction('Photo:Album:view', ['slug' => '2-neviditelne-album-akce']);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionAlbumEditPublic()
 	{
-		try {
-			$this->checkAction('Photo:Album:edit', ['slug' => '1-viditelne-album-akce']);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Photo:Album:edit', ['slug' => '1-viditelne-album-akce']);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionAlbumEditPrivate()
 	{
-		try {
-			$this->checkAction('Photo:Album:edit', ['slug' => '2-neviditelne-album-akce']);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Photo:Album:edit', ['slug' => '2-neviditelne-album-akce']);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionAlbumEditMine()
 	{
-		try {
-			$this->checkAction('Photo:Album:edit', ['slug' => '3-neviditelne-album-akce']);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Photo:Album:edit', ['slug' => '3-neviditelne-album-akce']);
 	}
 
 	public function testActionAlbumViewUsers()
@@ -90,13 +87,12 @@ final class PhotoPresenterUserTest extends \Tester\TestCase
 		$this->checkAction('Photo:Album:add', ['slug' => '2-neviditelne-album-akce']);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionMyselfDefault()
 	{
-		try {
-			$this->checkAction('Photo:Myself:default');
-	} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Photo:Myself:default');
 	}
 
 }

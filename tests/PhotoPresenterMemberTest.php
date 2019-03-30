@@ -1,4 +1,4 @@
-<?php //MemberPresenterTest.php
+<?php //PhotoPresenterMemberTest.php
 
 require __DIR__ . '/bootstrap.php';
 
@@ -28,13 +28,12 @@ final class PhotoPresenterMemberTest extends \Tester\TestCase
 		$this->checkAction('Photo:Album:edit', ['slug' => '2-neviditelne-album-akce']);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionAlbumEditPrivateYours()
 	{
-		try {
-			$this->checkAction('Photo:Album:edit', ['slug' => '3-neviditelne-album-akce']);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Photo:Album:edit', ['slug' => '3-neviditelne-album-akce']);
 	}
 
 	public function testActionMyselfDefault()

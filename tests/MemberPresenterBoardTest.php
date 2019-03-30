@@ -1,4 +1,4 @@
-<?php //MemberPresenterTest.php
+<?php //MemberPresenterBoardTest.php
 
 require __DIR__ . '/bootstrap.php';
 
@@ -58,29 +58,26 @@ final class MemberPresenterBoardTest extends \Tester\TestCase
 		$this->checkAction('Member:User:edit', ['id' => 3]);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionUserEditUser()
 	{
-		try {
-			$this->checkAction('Member:User:edit', ['id' => 1]);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Member:User:edit', ['id' => 1]);
 	}
 
+	/**
+	 * @throws \Nette\Application\ForbiddenRequestException
+	 */
 	public function testActionUserEditMember()
 	{
-		try {
-			$this->checkAction('Member:User:edit', ['id' => 2]);
-		} catch (Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\ForbiddenRequestException::class, $exception);
-		}
+		$this->checkAction('Member:User:edit', ['id' => 2]);
 	}
 
 	public function testActionMailAdd()
 	{
 		$this->checkAction('Member:Mail:add');
 	}
-
 
 }
 

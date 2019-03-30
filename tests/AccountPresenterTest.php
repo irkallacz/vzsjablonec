@@ -46,13 +46,12 @@ final class AccountPresenterTest extends \Tester\TestCase
 		$this->checkRedirect('Account:Sign:sso', '/sign/in', ['code' => \Nette\Utils\Random::generate(8), 'redirect' => ':Photo:Sign:ssoLogIn']);
 	}
 
+	/**
+	 * @throws \Nette\Application\BadRequestException
+	 */
 	public function testActionRestorePasswordWrong()
 	{
-		try {
-			$this->checkAction('Account:Sign:restorePassword', ['pubkey' => \Nette\Utils\Random::generate(8)]);
-		} catch (\Exception $exception) {
-			\Tester\Assert::type(\Nette\Application\BadRequestException::class, $exception);
-		}
+		$this->checkAction('Account:Sign:restorePassword', ['pubkey' => \Nette\Utils\Random::generate(8)]);
 	}
 
 	public function testActionRestorePasswordRight()
