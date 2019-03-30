@@ -12,6 +12,7 @@ use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 class AnketyService extends DatabaseService {
 	const TABLE_ANKETA_NAME = 'anketa';
@@ -65,7 +66,7 @@ class AnketyService extends DatabaseService {
 	 * @return int
 	 */
 	public function getOdpovedIdByAnketaId(int $anketa_id, int $user_id) {
-		$odpoved = $this->getMembersByAnketaId($anketa_id, $user_id)->fetch();
+		$odpoved = $this->getMemberVote($anketa_id, $user_id);
 
 		if ($odpoved) return $odpoved->anketa_odpoved_id; else return 0;
 	}
@@ -74,11 +75,9 @@ class AnketyService extends DatabaseService {
 	 * @param int $id
 	 * @return Selection
 	 */
-	public function getMembersByAnketaId(int $id, int $user_id = NULL) {
+	public function getMembersByAnketaId(int $id) {
 		$selection = $this->database->table(self::TABLE_ANKETA_MEMBER_NAME)
 			->where('anketa_id', $id);
-
-		if ($user_id) $selection->where('user_id', $id);
 
 		return $selection;
 	}
@@ -153,7 +152,7 @@ class AnketyService extends DatabaseService {
 	 * @return int
 	 */
 	public function deleteMemberVote(int $anketa_id, int $user_id) {
-		return $this->getMembersByAnketaId($anketa_id, $user_id)->delete();
+		return $this->getMemberVote($anketa_id, $user_id)->delete();
 	}
 
 	/**
@@ -162,6 +161,6 @@ class AnketyService extends DatabaseService {
 	 * @return bool|mixed|IRow
 	 */
 	public function getMemberVote(int $anketa_id, int $user_id) {
-		return $this->getMembersByAnketaId($anketa_id, $user_id)->fetch();
+		return $this->getMembersByAnketaId($anketa_id)->where('user_id', $user_id)->fetch();
 	}
 }
