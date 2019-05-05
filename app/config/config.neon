@@ -84,11 +84,13 @@ http:
 		script-src:
 			- self
 			- nonce
-		frame-ancestors: none
-#		form-action: self
 		style-src:
 			- self
 			- unsafe-inline
+		frame-ancestors: none
+		base-uri: none
+		object-uri: none
+
 
 routing:
     cache: true

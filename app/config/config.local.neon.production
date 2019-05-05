@@ -43,3 +43,4 @@ session:
 http:
 	csp:
 		default-src: 'https:'
+		form-action: 'https://*.vzs-jablonec.cz'
