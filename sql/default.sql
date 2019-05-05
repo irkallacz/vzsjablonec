@@ -455,6 +455,7 @@ CREATE TABLE `user` (
   `photo` varchar(60) COLLATE utf8_czech_ci DEFAULT NULL,
   `cardId` char(8) COLLATE 'utf8_czech_ci' NULL,
   `vzsId` char(6) COLLATE 'utf8_czech_ci' NULL,
+  `messengerId` char(16) COLLATE 'utf8_czech_ci' NULL,
   `date_add` date DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
