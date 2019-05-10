@@ -1,9 +1,9 @@
 #menu {float: none; line-height: 2.5em; margin-top: 1em}
-#menu li a {display: inline-block; line-height: 1.2em; width: auto; text-align: center}
-#menu li {display: inline-block; line-height: 1.2em; width: auto; margin-top: 1ex;
-  padding: 0.3ex 1ex}
+#menu li {display: inline-block; line-height: 1.2em; width: auto; margin-top: 1ex; padding: 0.3ex; }
+#menu li a {text-align: center; padding-left: 0.2em; }
 #menu li a .icon {font-size: 120%}
-#menu li a span {display: none}
+#menu li a span {display: inline-block; max-width: 0; vertical-align: top; overflow: hidden; transition: max-width 1s;}
+#menu a:hover span, #menu a:focus span, #menu li.current a span {max-width: 10em; padding-right: 0.5ex;}
 
 #text {margin-left: 0;}
 #text h1 {top: 0; left: 1ex;}
