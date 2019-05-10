@@ -52,7 +52,7 @@
 
 	<ul n:ifset="$mainMenu" id="menu" n:inner-foreach="$mainMenu as $item">
 		<li n:if="$user->isInRole($item->role)" n:class="$presenter->isLinkCurrent($item->current) ? current">
-			<a n:href="$item->link" {if $iterator->last}target="_blank"{/if}>
+			<a n:href="$item->link" title="{$item->title}" {if $iterator->last}target="_blank"{/if}>
 				{include svg $item->icon} <span>{$item->title}</span>
 			</a>
 		</li>
