@@ -338,7 +338,6 @@ class UserGridControl extends Control {
 		}else{
 			$this->flashMessage('Musíte vybrat uživatele', 'error');
 		}
-
 	}
 
 	/**
@@ -347,7 +346,6 @@ class UserGridControl extends Control {
 	public function render(){
 		$this->template->setFile(__DIR__ . '/UserGridControl.latte');
 		$this->template->render();
-
 	}
 
 }

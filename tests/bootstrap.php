@@ -9,6 +9,7 @@ Testbench\Bootstrap::setup(__DIR__ . '/_temp', function (\Nette\Configurator $co
 
 	$configurator->addParameters([
 		'appDir' => __DIR__ . '/../app',
+		'wwwDir' => __DIR__ . '/../www/vzsjablonec',
 	]);
 
 	$configurator->addConfig(__DIR__ . '/../app/config/config.neon');

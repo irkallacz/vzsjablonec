@@ -52,9 +52,10 @@ google_api_service.json
 composer.lock
 .idea
 tests/_temp/
-www/subdom/t9/
-www/subdom/photo/albums/
-www/subdom/member/archive.zip
-www/subdom/member/doc/
-www/subdom/member/img/photos/
-www/subdom/member/texyla/temp/
+www/subdom/
+www/front/
+www/vzsjablonec/albums/
+www/vzsjablonec/archive.zip
+www/vzsjablonec/doc/
+www/vzsjablonec/img/photos/
+www/vzsjablonec/texyla/temp/

@@ -2,6 +2,16 @@
 Options -Indexes
 
 # enable cool URL
-RewriteEngine On
+RewriteEngine on
 
-RewriteRule (.*) subdom/$1 [L]
+#RewriteCond %{HTTPS} !=on
+#RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+RewriteCond %{HTTP_HOST} ^(www\.)?(vzs-jablonec)\.([a-z]+)
+RewriteRule ^(.*)$ front/$1 [L,NC,QSA]
+
+RewriteCond %{HTTP_HOST} ^(member|photo|account|cron)\.(vzs-jablonec)\.([a-z]+)
+RewriteRule ^(.*)$ vzsjablonec/$1 [L,NC,QSA]
+
+RewriteCond %{HTTP_HOST} ^([a-z0-9]+)\.(vzs-jablonec)\.([a-z]+)
+RewriteRule ^(.*)$ subdom/%1/$1 [L,NC,QSA,DPI]

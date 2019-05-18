@@ -20,12 +20,12 @@ parameters:
 		login:
 			clientId: '698488418952-95tac0912e96pdk6mlhme3i143i5kgvg.apps.googleusercontent.com'
 			clientSecret: 123456789
-			callbackURL: 'http://localhost/vzsjablonec/sign/sign/googlelogin'
+			callbackURL: 'http://localhost/vzsjablonec/www/vzsjablonec/account/sign/googlelogin'
 	facebook:
 		login:
 			appId: 129653264393659
 			appSecret: 987654321
-			callbackURL: 'http://localhost/vzsjablonec/sign/sign/facebooklogin'
+			callbackURL: 'http://localhost/vzsjablonec/www/vzsjablonec/account/sign/facebooklogin'
 			defaultFbGraphVersion: 'v2.11'
 	recaptcha:
 		siteKey: GrcZy3jKLti1aKGi0hLJuaRxBX3rxOxcb44p5rZV
@@ -87,6 +87,7 @@ http:
 		style-src:
 			- self
 			- unsafe-inline
+		form-action: self
 		frame-ancestors: none
 		base-uri: none
 		object-uri: none
@@ -125,9 +126,9 @@ services:
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
 
-	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %appDir%/../www/subdom/photo)
+	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %wwwDir%)
 
-	- App\MemberModule\Components\TexylaJsFactory(%appDir%/../www/subdom/member)
+	- App\MemberModule\Components\TexylaJsFactory(%wwwDir%)
 
 	- App\CronModule\Presenters\TaskerPresenter(%cron%)
 	- App\CronModule\Presenters\MessagePresenter(%mail%, %messenger%)

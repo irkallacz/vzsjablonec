@@ -16,17 +16,6 @@ use Nette\Utils\Html;
 abstract class BasePresenter extends Presenter {
 
 	/**
-	 *
-	 */
-	protected function afterRender() {
-		parent::afterRender();
-		if (!$this->context->parameters['productionMode']) {
-			$this->template->basePath .= '/member';
-			$this->template->baseUrl .= '/member';
-		}
-	}
-
-	/**
 	 * @param $element
 	 * @throws ForbiddenRequestException
 	 */

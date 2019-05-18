@@ -16,17 +16,9 @@ use Nette\Utils\Html;
 abstract class BasePresenter extends Presenter {
 
 	/**
-	 *
+	 * @param $element
+	 * @throws ForbiddenRequestException
 	 */
-	protected function afterRender() {
-		parent::afterRender();
-		if (!$this->context->parameters['productionMode']) {
-			parent::afterRender();
-			$this->template->basePath	.= '/account';
-			$this->template->baseUrl 	.= '/account';
-		}
-	}
-
 	public function checkRequirements($element) {
 		if (!$this->context->parameters['productionMode']) {
 			$this->getUser()->getStorage()->setNamespace('account');
