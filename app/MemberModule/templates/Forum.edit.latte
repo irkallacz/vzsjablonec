@@ -1,9 +1,9 @@
 {block #head}
-<link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/css/forum.css" type="text/css">
 
-<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/css/jquery-ui.custom.css" type="text/css">
 
 <style type="text/css" n:syntax="off">
 .inline-nav { list-style-type: none; padding: 0px; margin-bottom: 1ex;}
@@ -14,13 +14,15 @@
 #frm-addTopicForm table #frm-addTopicForm-title { width: 100% }
 </style>
 
+<script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
+
 {control texylaJs}
 
-<script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
 
 <script type="text/javascript" n:nonce>
 	$.texyla.setDefaults({
-		baseDir: {$basePath}+'/texyla',
+		baseDir: {$baseUrl}+'/texyla',
 		previewPath: {link texyPreview}
 	});
 
@@ -38,8 +40,8 @@
 
 <ul class="inline-nav">
 <li><a n:href="Forum:">Fórum</a></li>
-<li>» <a n:href="Forum:topic,$topic->forum->id">{$topic->forum->title}</a></li>
-<li>» <a n:href="Forum:post,$topic->id">{$topic->title}</a></li>
+<li>» <a n:href="Forum:topic $topic->forum->id">{$topic->forum->title}</a></li>
+<li>» <a n:href="Forum:post $topic->id">{$topic->title}</a></li>
 </ul>
 
 <h2>{if isset($isEdit)}Upravit{else}Přidat{/if} {if isset($isTopic)}téma{else}příspěvek{/if}</h2>

@@ -1,12 +1,12 @@
 {block #head}
 <link rel="alternate" title="VZS Jablonec Forum : {$topic->title}" n:href="//Feed:forum, tid => $topic->id" type="application/rss+xml">
 
-<link rel="stylesheet" href="{$basePath}/css/forum.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/css/forum.posts.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/css/forum.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/css/forum.posts.css" type="text/css">
 
-<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/css/jquery-ui.custom.css" type="text/css">
 
 {control texylaJs}
 
@@ -17,7 +17,7 @@
 
 <script type="text/javascript" n:nonce>
 	$.texyla.setDefaults({
-		baseDir: {$basePath}+'/texyla',
+		baseDir: {$baseUrl}+'/texyla',
 		previewPath: {link texyPreview}
 	});
 

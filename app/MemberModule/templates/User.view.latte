@@ -34,14 +34,14 @@
 			.card #last { display: block; height: 2em; border-radius: 0 0 1.5em 1.5em; }
 		}
 	</style>
-	<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
+	<script type="text/javascript" src="{$baseUrl}/js/confirm.js"></script>
 {/block}
 
 <h1 n:block="#title">Osobní profil</h1>
 
 {block #content}
 <div n:class="$member->role ? card">
-	<img n:if="$member->role" src="{$basePath}/img/vzs.svg" alt="logo" height="150" id="logo">
+	<img n:if="$member->role" src="{$baseUrl}/img/vzs.svg" alt="logo" height="150" id="logo">
 	<div class="line red" id="first">
 		<ul class="buttonMenu">
 			<li n:if="($user->isInRole('admin'))and(is_null($member->role))">

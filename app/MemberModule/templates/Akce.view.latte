@@ -1,8 +1,8 @@
 {block #head}
-<link rel="stylesheet" href="{$basePath}/css/rating.css" type="text/css" n:if="$akceIsOld">
-<link rel="stylesheet" href="{$basePath}/css/album.preview.css" type="text/css" n:if="$akce->album_id">
-<link rel="stylesheet" href="{$basePath}/css/anketa.css" type="text/css" n:if="$akce->anketa_id">
-<link rel="stylesheet" href="{$basePath}/css/forum.posts.css" type="text/css" n:if="$akce->forum_topic_id">
+<link rel="stylesheet" href="{$baseUrl}/css/rating.css" type="text/css" n:if="$akceIsOld">
+<link rel="stylesheet" href="{$baseUrl}/css/album.preview.css" type="text/css" n:if="$akce->album_id">
+<link rel="stylesheet" href="{$baseUrl}/css/anketa.css" type="text/css" n:if="$akce->anketa_id">
+<link rel="stylesheet" href="{$baseUrl}/css/forum.posts.css" type="text/css" n:if="$akce->forum_topic_id">
 <style type="text/css" n:syntax="off">
     .member_list a.char { text-decoration: none; vertical-align: top; }
     .member_list { list-style-type: decimal; font-size: 1em;}
@@ -26,9 +26,9 @@
     .update a { color: inherit }
 </style>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.nette.js"></script>
-<script type="text/javascript" src="{$basePath}/js/nette.ajax.js"></script>
-<script type="text/javascript" src="{$basePath}/js/confirm.js"></script>
-<script type="text/javascript" src="{$basePath}/js/copy.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/nette.ajax.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/confirm.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/copy.js"></script>
 
 {/block}
 
@@ -82,7 +82,7 @@
 
     <p>{include svg tag} {$akce->akce_for->text}{if $akce->visible}, viditelná veřejnosti{else}, viditelná pouze členům{/if}</p>
 
-    <p n:if="$akce->file">{include svg file-text-o} <a target="_blank" href="{$basePath}/doc/akce/{$akce->file}">{$akce->file}</a></p>
+    <p n:if="$akce->file">{include svg file-text-o} <a target="_blank" href="{$baseUrl}/doc/akce/{$akce->file}">{$akce->file}</a></p>
 
     <p n:if="$akce->price">{include svg dollar}{$akce->price} Kč</p>
 
@@ -142,7 +142,7 @@
         {/form}
 
 			<p n:if="($akce->bill)and($user->isInRole('member'))">
-                <a class="buttonLike" href="{$basePath}/doc/vyuctovani/{$akce->bill}">{include svg download} stáhnout</a>
+                <a class="buttonLike" href="{$baseUrl}/doc/vyuctovani/{$akce->bill}">{include svg download} stáhnout</a>
             </p>
 
 		{/if}

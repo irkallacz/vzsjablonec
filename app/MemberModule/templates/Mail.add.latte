@@ -1,7 +1,7 @@
 {block #head}
-<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/css/jquery-ui.custom.css" type="text/css">
 
 <style type="text/css" n:syntax="off">
 #text { padding-top: 1ex;}
@@ -35,7 +35,7 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 	});
 
 	$.texyla.setDefaults({
-		baseDir: {$basePath}+'/texyla',
+		baseDir: {$baseUrl}+'/texyla',
 		previewPath: {link texyPreview}
 	});
 

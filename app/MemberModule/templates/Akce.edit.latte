@@ -1,7 +1,7 @@
 {block #head}
-<link rel="stylesheet" href="{$basePath}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$basePath}/css/jquery-ui.custom.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/texyla/css/style.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/texyla/css/theme.css" type="text/css">
+<link rel="stylesheet" href="{$baseUrl}/css/jquery-ui.custom.css" type="text/css">
 
 <style type="text/css" n:syntax="off">
 	#frm-akceForm textarea { width: 100%;}
@@ -13,18 +13,18 @@
 	.perex { width: 98%}
 </style>
 
-<script type="text/javascript" src="{$basePath}/js/jquery-ui.custom.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
 
 {control texylaJs}
 
-<script type="text/javascript" src="{$basePath}/js/jquery.ui.datepicker-cs.js"></script>
-<script type="text/javascript" src="{$basePath}/js/jquery.textarea_autosize.min.js"></script>
-<script type="text/javascript" src="{$basePath}/js/jquery.are-you-sure.js"></script>
-<script type="text/javascript" src="{$basePath}/js/akce.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.ui.datepicker-cs.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/akce.js"></script>
 
 <script type="text/javascript" n:nonce>
 	$.texyla.setDefaults({
-		baseDir: {$basePath}+'/texyla',
+		baseDir: {$baseUrl}+'/texyla',
 		previewPath: {link texyPreview, TRUE}
 	});
 
@@ -93,7 +93,5 @@ uvidí ji na webu pouze její organizatoři. Dokončením tohoto formuláře se 
 <p>{input save}</p>
 
 {/form akceForm}
-
-{*control akceForm*}
 
 {/block}
