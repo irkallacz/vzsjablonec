@@ -4,7 +4,7 @@
 define('WWW_DIR', __DIR__);
 
 // absolute filesystem path to the application root
-define('APP_DIR', __DIR__ . '/../../../app');
+define('APP_DIR', __DIR__ . '/../../app');
 
 // uncomment this line if you must temporarily take down your site for maintenance
 //require __DIR__ . '/.maintenance.php';
