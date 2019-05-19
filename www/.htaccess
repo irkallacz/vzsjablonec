@@ -4,8 +4,8 @@ Options -Indexes
 # enable cool URL
 RewriteEngine on
 
-#RewriteCond %{HTTPS} !=on
-#RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 RewriteCond %{HTTP_HOST} ^(www\.)?(vzs-jablonec)\.([a-z]+)
 RewriteRule ^(.*)$ front/$1 [L,NC,QSA]
