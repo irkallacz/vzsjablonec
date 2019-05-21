@@ -4,10 +4,8 @@ Options -Indexes
 # enable cool URL
 <IfModule mod_rewrite.c>
 	RewriteEngine On
-	# RewriteBase /
 
 	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
 	
 	# front controller
 	RewriteCond %{REQUEST_FILENAME} !-f

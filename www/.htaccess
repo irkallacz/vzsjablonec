@@ -1,6 +1,8 @@
 # disable directory listing
 Options -Indexes
 
+#Header set Strict-Transport-Security "max-age=7884000; includeSubDomains; preload"
+
 # enable cool URL
 RewriteEngine on
 
@@ -8,10 +10,13 @@ RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 RewriteCond %{HTTP_HOST} ^(www\.)?(vzs-jablonec)\.([a-z]+)
-RewriteRule ^(.*)$ front/$1 [L,NC,QSA]
+RewriteRule ^(.*)$ front/$1 [L,QSA]
 
 RewriteCond %{HTTP_HOST} ^(member|photo|account|cron)\.(vzs-jablonec)\.([a-z]+)
-RewriteRule ^(.*)$ vzsjablonec/$1 [L,NC,QSA]
+RewriteRule ^(.*)$ vzsjablonec/$1 [L,QSA]
 
-RewriteCond %{HTTP_HOST} ^([a-z0-9]+)\.(vzs-jablonec)\.([a-z]+)
-RewriteRule ^(.*)$ subdom/%1/$1 [L,NC,QSA,DPI]
+RewriteCond %{REQUEST_URI} !^subdom/
+RewriteCond %{REQUEST_URI} !^/subdom/
+RewriteCond %{HTTP_HOST} ^([a-z0-9]+)\.(vzs-jablonec)\.([a-z]+)$
+RewriteCond %{DOCUMENT_ROOT}/subdom/%1 -d
+RewriteRule (.*) subdom/%1/$1 [DPI] 
