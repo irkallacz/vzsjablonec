@@ -22,6 +22,7 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\Html;
 use Nette\Utils\Image;
 use Nette\Utils\DateTime;
+use Nette\Utils\Json;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 
@@ -164,6 +165,57 @@ class UserPresenter extends LayerPresenter {
 	 */
 	public function actionTable() {
 
+	}
+
+	public function actionMap() {
+		$response = $this->getHttpResponse();
+		$response->setHeader('content-security-policy',NULL);
+	}
+
+	public function renderMap() {
+		$members = $this->userService->getUsers(UserService::MEMBER_LEVEL);
+		$addresses = [];
+		foreach ($members as $member) {
+			$url = 'https://api.mapy.cz/geocode?query=';
+			$xml = simplexml_load_file($url . urlencode($member->mesto . ' ' . $member->ulice));
+			if (($xml !== FALSE)and(isset($xml->point->item))) {
+				$item = $xml->point->item;
+				$addresses[] = [
+					'id' => $member->id,
+					'user' => UserService::getFullName($member),
+					'x' => floatval(strval($item['x'])),
+					'y' => floatval(strval($item['y'])),
+					'title' => strval($item['title']),
+				];
+			}
+		}
+
+		$this->template->addresses = Json::encode($addresses);
+	}
+
+
+	/**
+	 * @throws AbortException
+	 */
+	public function actionAddresses() {
+		$members = $this->userService->getUsers(UserService::MEMBER_LEVEL);
+		$addresses = [];
+		foreach ($members as $member) {
+			$url = 'https://api.mapy.cz/geocode?query=';
+			$xml = simplexml_load_file($url . urlencode($member->mesto . ' ' . $member->ulice));
+			if (($xml !== FALSE)and(isset($xml->point->item))) {
+				$item = $xml->point->item;
+				$addresses[] = [
+					'id' => $member->id,
+					'user' => UserService::getFullName($member),
+					'x' => floatval(strval($item['x'])),
+					'y' => floatval(strval($item['y'])),
+					'title' => strval($item['title']),
+				];
+			}
+		}
+
+		$this->sendJson($addresses);
 	}
 
 	/**
