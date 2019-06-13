@@ -72,6 +72,14 @@ final class ImageService {
 		return $this->wwwDir . '/' . $this->getThumbPath($albumId);
 	}
 
+	public function getAbsoluteImageDir(){
+		return $this->wwwDir .'/'. $this->imageDir;
+	}
+
+	public function getThumbDir(){
+		return $this->thumbDir;
+	}
+
 	/**
 	 * @param IRow|ActiveRow $photo
 	 * @return string

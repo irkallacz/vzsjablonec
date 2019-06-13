@@ -64,6 +64,9 @@ class Image extends \Imagick {
 		return filesize($this->getImageFilename()) / (1024 * 1024);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getFilename(){
 		return $this->filename;
 	}
@@ -153,6 +156,9 @@ class Image extends \Imagick {
 		return $this->writeImage($this->getImageFilename());
 	}
 
+	/**
+	 * @return mixed|string
+	 */
 	public function getThumbName(){
 		$thumbName = pathinfo($this->filename, PATHINFO_FILENAME);
 		$thumbName = Strings::webalize($thumbName).'.jpg';
@@ -172,6 +178,13 @@ class Image extends \Imagick {
 		$this->writeImage($this->thumbDir. '/'. $this->albumId . '/' . $thumbName);
 
 		return $thumbName;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function thumbnailExists(){
+		return file_exists($this->thumbDir. '/'. $this->albumId . '/' . $this->getThumbName());
 	}
 
 	/**
