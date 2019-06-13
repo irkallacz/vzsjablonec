@@ -1,5 +1,8 @@
 {block head}
 	<script type="text/javascript" src="https://api.mapy.cz/loader.js" n:nonce></script>
+	<style type="text/css" n:syntax="off">
+		#map { color: black; height: 500px; width: 100%; margin-top: 1em; }
+	</style>
 {/block}
 
 <h1 n:block="title">Mapa uživatelů</h1>
@@ -9,11 +12,11 @@
 		Loader.load();
 		var addresses = JSON.parse({$addresses});
 	</script>
-	<div id="mapa" style="color: black; height: 500px; width: 100%;"> </div>
-	<script type="text/javascript" n:nonce>
-		// <![CDATA[
+	<div id="map">
+	</div>
+	<script type="text/javascript" defer n:nonce>
 		var center = SMap.Coords.fromWGS84(15.2080536, 50.7281203);
-		var m = new SMap(JAK.gel('mapa'), center, 12);
+		var m = new SMap(JAK.gel('map'), center, 12);
 		m.addDefaultLayer(SMap.DEF_BASE).enable();
 		m.addDefaultControls();
 
@@ -22,16 +25,27 @@
 		layer.enable();
 
 		for (const address of addresses) {
-			var card = new SMap.Card();
-			card.getHeader().innerHTML = '<strong>'+address.user+'</strong>';
-			card.getBody().innerHTML = address.title;
-			card.getBody().innerHTML+= '<p><a href="https://member.vzs-jablonec.cz/user/view/'+address.id+'">Osobní profil</a></p>';
+			$.ajax({
+				type: 'GET',
+				url: 'https://api.mapy.cz/geocode?query='+address.title,
+				dataType: 'xml',
+				success: function (xml) {
+					var item = $(xml).find('item')[0];
 
-			var point = SMap.Coords.fromWGS84(address.x, address.y);
-			var marker = new SMap.Marker(point, address.id);
-			marker.decorate(SMap.Marker.Feature.Card, card);
-			layer.addMarker(marker);
+					if (item) {
+						var card = new SMap.Card();
+						card.getHeader().innerHTML = '<strong>'+address.user+'</strong>';
+						card.getBody().innerHTML = '<p><i>'+address.title+'</i></p>';
+						card.getBody().innerHTML+= item.getAttribute('title');
+						card.getBody().innerHTML+= '<p><a target="_blank" href="https://member.vzs-jablonec.cz/user/view/'+address.id+'">Osobní profil</a></p>';
+
+						var point = SMap.Coords.fromWGS84(item.getAttribute('x'), item.getAttribute('y'));
+						var marker = new SMap.Marker(point, address.id);
+						marker.decorate(SMap.Marker.Feature.Card, card);
+						layer.addMarker(marker);
+					}
+				}
+			});
 		}
-		// ]]>
 	</script>
 {/block}
