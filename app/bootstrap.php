@@ -15,6 +15,8 @@ $configurator->enableTracy(__DIR__ . '/../log');
 $configurator->setTimeZone('Europe/Prague');
 $configurator->setTempDirectory(__DIR__ . '/../tmp');
 
+$configurator->addParameters(['wwwDir' => dirname(__DIR__) . '/www/vzsjablonec']);
+
 $configurator->createRobotLoader()
 	->addDirectory(__DIR__)
 	->register();
