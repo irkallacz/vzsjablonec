@@ -5,7 +5,7 @@
 	</style>
 {/block}
 
-<h1 n:block="title">Mapa uživatelů</h1>
+<h1 n:block="title">Mapa členů</h1>
 
 {block content}
 	<script type="text/javascript" n:nonce>
@@ -16,12 +16,12 @@
 	</div>
 	<script type="text/javascript" defer n:nonce>
 		var center = SMap.Coords.fromWGS84(15.2080536, 50.7281203);
-		var m = new SMap(JAK.gel('map'), center, 12);
-		m.addDefaultLayer(SMap.DEF_BASE).enable();
-		m.addDefaultControls();
+		var map = new SMap(JAK.gel('map'), center, 12);
+		map.addDefaultLayer(SMap.DEF_BASE).enable();
+		map.addDefaultControls();
 
 		layer = new SMap.Layer.Marker();
-		m.addLayer(layer);
+		map.addLayer(layer);
 		layer.enable();
 
 		for (const address of addresses) {
