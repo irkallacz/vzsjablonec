@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tracy\Debugger;
 
-class ImportReportCommand extends Command {
+final class ImportReportCommand extends Command {
 
 	/** @var AkceService */
 	private $akceService;
