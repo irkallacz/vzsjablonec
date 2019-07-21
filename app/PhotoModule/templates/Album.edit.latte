@@ -124,7 +124,9 @@ je <b>neviditelná pro veřejnost</b>.</p>
 		$('.image').click(function (event) {
 			if (event.ctrlKey){
 				var link = {$baseUrl}+'/'+{$albumDir};
-				window.open(link +'/'+ event.target.alt);
+				var image = window.open(link +'/'+ event.target.alt, '_blank');
+				image.blur();
+				window.focus();
 			}
 		});
 
