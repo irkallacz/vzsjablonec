@@ -22,9 +22,9 @@
 
 <h2 n:block="title">{$album->name}</h2>
 
-<div n:if="$album->text">{$album->text|texy|noescape}</div>
+<div n:if="$album->text">{$album->text|texy}</div>
 
-<div n:if="($album->private)and($user->isLoggedIn())">{$album->private|texy|noescape}</div>
+<div n:if="($album->private)and($user->isLoggedIn())">{$album->private|texy}</div>
 
 <ul class="photoList" n:inner-foreach="$photos as $photo">
 	<li>

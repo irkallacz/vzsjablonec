@@ -47,7 +47,7 @@ table#items .forum_post { max-width: 45em; padding-left: 1ex }
         {$item->user->surname} {$item->user->name}</a> {else}<b>Anonymní</b>{/if}
     </td>   
     <td class="forum_post">
-    {$item->message|texy|noescape}
+    {$item->message|texy}
     </td></tr>
 {/foreach}
 </table>

@@ -61,7 +61,7 @@
 					</div>
 					<div class="texy">
 						{include copy $message->text}
-						{$message->text|texy|noescape}
+						{$message->text|texy}
 					</div>
 					<div class="file" n:ifset="$param->filename">{include svg paperclip} <a href="{$baseUrl}/doc/message/{$param->filename}">{$param->filename}</a></div>
 					<ul class="buttonMenu" n:if="$presenter->action == 'send'">

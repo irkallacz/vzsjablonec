@@ -167,18 +167,18 @@ class LatteFilters {
 
     /**
      * @param $s
-     * @return string
+     * @return Latte\Runtime\Html
      */
     public static function texy($s){
         $texy = self::createTexy();
         $texy->headingModule->balancing = \Texy\Modules\HeadingModule::FIXED;
 
-		return $texy->process($s);
+		return new Latte\Runtime\Html($texy->process($s));
     }
 
 	/**
      * @param $s
-     * @return string
+     * @return Latte\Runtime\Html
      */
     public static function forumTexy($s){
         $texy = self::createTexy();
@@ -237,7 +237,7 @@ class LatteFilters {
 			'#' . implode('|', $pattern) . '#'
 		);
 
-		return $texy->process($s);
+        return new Latte\Runtime\Html($texy->process($s));
     }
 
 }

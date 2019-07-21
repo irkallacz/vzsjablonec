@@ -7,7 +7,7 @@
 
 <div id="otazka" class="texy">
     {include copy $survey->text}
-    {$survey->text|texy|noescape}
+    {$survey->text|texy}
 
     <p n:if="$survey->date_add != $survey->date_update" class="update" title="{$survey->date_update|timeAgoInWords}">Upraveno <time datetime="{$survey->date_update|datetimeC}">{$survey->date_update|datetime}</time></p>
 </div>

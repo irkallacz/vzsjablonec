@@ -93,14 +93,14 @@
     <h3>Stručný popis akce</h3>
     <div class="texy">
         {include copy $akce->perex}
-        {$akce->perex|texy|noescape}
+        {$akce->perex|texy}
     </div>
 {/if}
 
 <h3>Podrobný popis akce</h3>
 <div class="texy">
     {include copy $akce->description}
-    {$akce->description|texy|noescape}
+    {$akce->description|texy}
 </div>
 
 <p n:if="($akce->date_deatline < date_create()) and (!$akceIsOld)">
@@ -117,7 +117,7 @@
             <h3>Zpráva z akce</h3>
             <div class="texy">
                 {include copy $akce->message}
-                {$akce->message|texy|noescape}
+                {$akce->message|texy}
             </div>
         {/if}
 

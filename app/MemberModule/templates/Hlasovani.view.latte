@@ -39,7 +39,7 @@
 
 <div id="otazka" class="texy">
 {include copy $anketa->text}
-{$anketa->text|texy|noescape}
+{$anketa->text|texy}
 
 <p n:if="$anketa->date_add != $anketa->date_update" class="update"
 title="{$anketa->date_update|timeAgoInWords}">Upraveno <time datetime="{$anketa->date_update|datetimeC}">{$anketa->date_update|datetime}</time></p>
