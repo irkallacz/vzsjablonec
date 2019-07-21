@@ -10,18 +10,6 @@
 		li.file .file-icon { vertical-align: bottom; }
 		li.dir .icon { font-size: 16px}
 	</style>
-	<script type="text/javascript" n:nonce>
-		$(function() {
-			open = document.querySelector('.icon-folder-open').outerHTML;
-			close = document.querySelector('.icon-folder').outerHTML;
-
-			$('.toogleDir').click(function () {
-				$('#folder-'+this.id).toggle();
-				var isOpen = this.querySelector('svg').classList.contains('icon-folder-open');
-				this.querySelector('span').innerHTML = isOpen ? close : open;
-			})
-		});
-	</script>
 {/block}
 
 <h1 n:block="title">Dokumenty</h1>
@@ -59,4 +47,16 @@
 	<ol class="docs root">
 		{include #fileList, dir => $dir, root => TRUE}
 	</ol>
+
+	<script type="text/javascript" defer n:nonce>
+		var open = document.querySelector('.icon-folder-open').outerHTML;
+		var close = document.querySelector('.icon-folder').outerHTML;
+
+		$('.toogleDir').click(function () {
+			$('#folder-'+this.id).toggle();
+			var isOpen = this.querySelector('svg').classList.contains('icon-folder-open');
+			this.querySelector('span').innerHTML = isOpen ? close : open;
+		})
+	</script>
+
 {/block}
