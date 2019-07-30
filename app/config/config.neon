@@ -143,6 +143,9 @@ services:
 				https://www.googleapis.com/auth/calendar
 				https://www.googleapis.com/auth/contacts
 				https://www.googleapis.com/auth/gmail.send
+				https://www.google.com/m8/feeds/contacts/
+				#https://www.google.com/m8/feeds/gal/
+				https://www.google.com/m8/feeds/
 			])
 			- setCache(Stash\Pool(Stash\Driver\FileSystem([path: %tempDir%/stash])))
 
