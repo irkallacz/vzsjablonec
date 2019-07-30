@@ -119,6 +119,37 @@ CREATE TABLE `akce_revision` (
   CONSTRAINT `akce_revision_ibfk_2` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB COLLATE utf8_czech_ci;
 
+-- Table structure for table `akce_billing`
+DROP TABLE IF EXISTS `akce_billing`;
+CREATE TABLE `akce_billing` (
+  `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
+  `akce_id` smallint(6) unsigned NOT NULL,
+  `income` smallint(6) unsigned NOT NULL,
+  `expense` smallint(6) unsigned NOT NULL,
+  `final` smallint(6) NOT NULL,
+  `created_by` smallint(5) unsigned NOT NULL,
+  `date_add` datetime NOT NULL,
+  `date_update` datetime DEFAULT NULL,
+  `note` text COLLATE utf8_czech_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
+-- Table structure for table `akce_billing_items`
+DROP TABLE IF EXISTS `akce_billing_items`;
+CREATE TABLE `akce_billing_items` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `billing_id` smallint(6) unsigned NOT NULL,
+  `minus` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `name` varchar(60) COLLATE utf8_czech_ci NOT NULL,
+  `count` smallint(6) unsigned NOT NULL,
+  `price` smallint(6) unsigned NOT NULL,
+  `booked` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `invoice` varchar(30) COLLATE utf8_czech_ci DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `billing_id` (`billing_id`),
+  CONSTRAINT `akce_billing_items_ibfk_1` FOREIGN KEY (`billing_id`) REFERENCES `akce_billing` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
 -- Table structure for table `album`
 
 DROP TABLE IF EXISTS `album`;

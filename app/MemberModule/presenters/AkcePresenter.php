@@ -39,6 +39,9 @@ class AkcePresenter extends LayerPresenter {
 	/** @var Model\RatingService @inject */
 	public $ratingService;
 
+	/** @var Model\BillingService @inject */
+	public $billingService;
+
 	/** @var Model\GalleryService @inject */
 	public $galleryService;
 
@@ -380,6 +383,14 @@ class AkcePresenter extends LayerPresenter {
 		$isOrg = in_array($userId, $this->orgList);
 		$canComment = ($this->getUser()->isInRole('member') and (in_array($userId, $this->memberList) or ($isOrg)));
 		return new Components\RatingControl($this->akce->id, $this->ratingService, $userId, $isOrg, $canComment);
+	}
+
+
+	/**
+	 * @return Components\BillingControl
+	 */
+	protected function createComponentBilling() {
+		return new Components\BillingControl($this->billingService, $this->akce->id, $this->user->id);
 	}
 
 	/**

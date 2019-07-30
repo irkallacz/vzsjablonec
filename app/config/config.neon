@@ -121,6 +121,7 @@ services:
 	- App\Model\IdokladService(%idoklad.credentialsFile%)
 	- App\Model\AnketyService
 	- App\Model\RatingService
+	- App\Model\BillingService
 	- App\Model\MessageService
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService
