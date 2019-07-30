@@ -162,6 +162,8 @@ final class BillingControl extends LayerControl {
 
 		$form->addSubmit('save', 'Uložit');
 
+		$form->onValidate[] = [$this, 'validateValues'];
+
 		$form->onSubmit[] = [$this, 'processForm'];
 
 		if ($this->billing) $this->loadValues($form, $this->billing);
@@ -214,6 +216,30 @@ final class BillingControl extends LayerControl {
 		$item->billing_id = $billingId;
 		$item->negative = $negative;
 		$this->billingService->addBillingItem($item);
+	}
+
+	/**
+	 * @param Form $form
+	 */
+	protected function validateValues(Form $form) {
+		$values = $form->getValues();
+
+		$expense = 0;
+		foreach ($values->expences as $item)
+			$expense += $item->price * $item->count;
+
+		$income = 0;
+		foreach ($values->incomes as $item)
+			$income += $item->price * $item->count;
+
+		if ($income != $values->income)
+			$form->addError('Výsledný příjem není součtem jednotlivých položek');
+
+		if ($expense != $values->expense)
+			$form->addError('Výsledné výdaje nejsou součtem jednotlivých položek');
+
+		if ((($income - $expense) != ($values->income - $values->expense))or(($income - $expense) != $values->final))
+			$form->addError('Výsledek vyúčtování nesedí');
 	}
 
 	/**
