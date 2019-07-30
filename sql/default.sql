@@ -139,7 +139,7 @@ DROP TABLE IF EXISTS `akce_billing_items`;
 CREATE TABLE `akce_billing_items` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `billing_id` smallint(6) unsigned NOT NULL,
-  `minus` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `negative` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `name` varchar(60) COLLATE utf8_czech_ci NOT NULL,
   `count` smallint(6) unsigned NOT NULL,
   `price` smallint(6) unsigned NOT NULL,

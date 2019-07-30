@@ -11,6 +11,8 @@ namespace App\MemberModule\Components;
 
 use App\Model\BillingService;
 use Nette\Application\UI\Form;
+use Nette\Database\Table\ActiveRow;
+use Nette\Database\Table\IRow;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
@@ -33,6 +35,16 @@ final class BillingControl extends LayerControl {
 	private $userId;
 
 	/**
+	 * @var ActiveRow|IRow
+	 */
+	private $billing;
+
+	/**
+	 * @var bool @persistent
+	 */
+	public $edit = FALSE;
+
+	/**
 	 * BillingControl constructor.
 	 * @param BillingService $billingService
 	 * @param int $akceId
@@ -44,6 +56,8 @@ final class BillingControl extends LayerControl {
 		$this->billingService = $billingService;
 		$this->akceId = $akceId;
 		$this->userId = $userId;
+
+		$this->billing = $this->billingService->getBillingByAkceId($this->akceId);
 	}
 
 
@@ -134,7 +148,7 @@ final class BillingControl extends LayerControl {
 			->addRule(Form::MIN, 'Hodnota nesmí být menší než %d', 0);
 
 		$form->addText('final', 'Výsledek')
-			->setRequired('Vyplňte celkovou bilanci')
+			->setRequired('Vyplňte výslednou bilanci')
 			->setHtmlType('number')
 			->setHtmlAttribute('class', 'currency')
 			->setHtmlId('billing-final')
@@ -143,55 +157,80 @@ final class BillingControl extends LayerControl {
 			->setDefaultValue(0)
 			->addRule(Form::FLOAT);
 
+		$form->addTextArea('note', 'Poznámka')
+			->setNullable();
+
 		$form->addSubmit('save', 'Uložit');
 
-		$form->onSubmit[] = function (Form $form){
-			Debugger::barDump($form->getValues());
-		};
+		$form->onSubmit[] = [$this, 'processForm'];
 
-		$form->onSubmit[] = function (Form $form){
-			$values = $form->getValues();
-			$now = new DateTime();
-
-			$billing = $this->billingService->getBillingByAkceId($this->akceId);
-
-			$billingValues = [
-				'final' => $values->final,
-				'expense' => $values->expense,
-				'income' => $values->income,
-				'date_update' => $now
-			];
-
-			if (!$billing) {
-				$billingValues['date_add'] = $now;
-				$billingValues['akce_id'] = $this->akceId;
-				$billingValues['created_by'] = $this->userId;
-
-				$billing = $this->billingService->addBilling($billingValues);
-			} else {
-				$billing->update($billingValues);
-			}
-
-			$this->billingService->deleteBillingItems($billing->id);
-
-			foreach ($values->incomes as $income) {
-				$this->processItem($income, $billing->id);
-			}
-
-			foreach ($values->expenses as $expense) {
-				$this->processItem($expense, $billing->id, TRUE);
-			}
-		};
+		if ($this->billing) $this->loadValues($form, $this->billing);
 
 		return $form;
 	}
 
-	private function processItem(ArrayHash $item, int $billingId, bool $minus = FALSE) {
+	/**
+	 * @param Form $form
+	 */
+	protected function processForm(Form $form) {
+		$values = $form->getValues();
+		$now = new DateTime();
+
+		$billingValues = [
+			'final' => $values->final,
+			'expense' => $values->expense,
+			'income' => $values->income,
+			'date_update' => $now
+		];
+
+		if (!$this->billing) {
+			$billingValues['date_add'] = $now;
+			$billingValues['akce_id'] = $this->akceId;
+			$billingValues['created_by'] = $this->userId;
+
+			$this->billing = $this->billingService->addBilling($billingValues);
+		} else {
+			$this->billing->update($billingValues);
+		}
+
+		$this->billingService->deleteBillingItems($this->billing->id);
+
+		foreach ($values->incomes as $income)
+			$this->processItem($income, $this->billing->id);
+
+		foreach ($values->expenses as $expense)
+			$this->processItem($expense, $this->billing->id, TRUE);
+
+	}
+
+	/**
+	 * @param ArrayHash $item
+	 * @param int $billingId
+	 * @param bool $negative
+	 */
+	private function processItem(ArrayHash $item, int $billingId, bool $negative = FALSE) {
 		if (!$item->id) unset($item->id);
 
 		$item->billing_id = $billingId;
-		$item->minus = $minus;
+		$item->negative = $negative;
 		$this->billingService->addBillingItem($item);
+	}
+
+	/**
+	 * @param Form $form
+	 * @param IRow|ActiveRow $billing
+	 */
+	private function loadValues(Form &$form, IRow $billing) {
+		$billingItems = $this->billingService->getBillingItemsByBillingId($billing->id)->fetchPairs('id');
+
+		$values = [];
+		foreach ($billingItems as $item) {
+			$category = $item->negative ? 'expenses' : 'incomes';
+			$values[$category][] = $item;
+		}
+
+		$form->setDefaults($values);
+		$form->setDefaults($billing);
 	}
 
 	/**
@@ -199,6 +238,8 @@ final class BillingControl extends LayerControl {
 	 */
 	public function render() {
 		$this->template->setFile(__DIR__ . '/BillingControl.latte');
+		$this->template->edit = $this->edit;
+		$this->template->billing = $this->billing;
 		$this->template->render();
 	}
 }
