@@ -10,6 +10,7 @@ namespace App\MemberModule\Components;
 
 
 use App\Model\BillingService;
+use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
@@ -40,6 +41,11 @@ final class BillingControl extends LayerControl {
 	private $billing;
 
 	/**
+	 * @var bool
+	 */
+	private $canEdit;
+
+	/**
 	 * @var bool @persistent
 	 */
 	public $edit = FALSE;
@@ -49,13 +55,15 @@ final class BillingControl extends LayerControl {
 	 * @param BillingService $billingService
 	 * @param int $akceId
 	 * @param int $userId
+	 * @param bool $canEdit
 	 */
-	public function __construct(BillingService $billingService, int $akceId, int $userId)
+	public function __construct(BillingService $billingService, int $akceId, int $userId, bool $canEdit)
 	{
 		parent::__construct();
 		$this->billingService = $billingService;
 		$this->akceId = $akceId;
 		$this->userId = $userId;
+		$this->canEdit = $canEdit;
 
 		$this->billing = $this->billingService->getBillingByAkceId($this->akceId);
 	}
@@ -68,9 +76,10 @@ final class BillingControl extends LayerControl {
 		$form = new Form();
 
 		$container = function (\Nette\Forms\Container $item) {
-			$item->addText('name', 'Název', 30)
+			$item->addText('name', 'Název', 20)
 				->setRequired('Vyplňte prosím nazev položky')
 				->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+				->setHtmlAttribute('class', 'name')
 				->setHtmlAttribute('spellcheck', 'true');
 
 			$item->addText('price', 'Cena', 5)
@@ -183,6 +192,7 @@ final class BillingControl extends LayerControl {
 			'final' => $values->final,
 			'expense' => $values->expense,
 			'income' => $values->income,
+			'note' => $values->note,
 			'date_update' => $now
 		];
 
@@ -264,11 +274,16 @@ final class BillingControl extends LayerControl {
 	}
 
 	/**
-	 *
+	 * @throws ForbiddenRequestException
 	 */
 	public function render() {
+		if (($this->edit)and($this->billing)and(!$this->canEdit)) {
+			throw new ForbiddenRequestException('Nemáte právo editovat vyúčtování akce');
+		}
+
 		$this->template->setFile(__DIR__ . '/BillingControl.latte');
 		$this->template->edit = $this->edit;
+		$this->template->canEdit = $this->canEdit;
 		$this->template->billing = $this->billing;
 		$this->template->render();
 	}

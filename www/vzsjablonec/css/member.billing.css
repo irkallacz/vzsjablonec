@@ -1,0 +1,10 @@
+#billing .number { width: 3em }
+#billing .currency { width: 5em }
+#billing .name { width: 100% }
+#billing .number, #billing .currency { text-align: right }
+#billing h4 { margin-bottom: 0 }
+#billing table { width: 100%; border-collapse: collapse; }
+#billing table.view { background-color: #fffff6; }
+#billing table.view, #billing table.view td, #billing table.view th { border: 1px solid #ccc; padding: 1ex;}
+#billing table.view .last { border-top: 2px solid black; font-weight: bold }
+#billing table.edit td { text-align: center}

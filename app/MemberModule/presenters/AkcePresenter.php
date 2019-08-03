@@ -390,7 +390,9 @@ class AkcePresenter extends LayerPresenter {
 	 * @return Components\BillingControl
 	 */
 	protected function createComponentBilling() {
-		return new Components\BillingControl($this->billingService, $this->akce->id, $this->user->id);
+		$userId = $this->user->id;
+		$canEdit = (($this->user->isInRole('admin')) or (in_array($userId, $this->orgList)));
+		return new Components\BillingControl($this->billingService, $this->akce->id, $userId, $canEdit);
 	}
 
 	/**
@@ -619,38 +621,5 @@ class AkcePresenter extends LayerPresenter {
 		}
 
 		$this->redirect('Akce:view', $id);
-	}
-
-	/**
-	 * @allow(member)
-	 */
-	protected function createComponentUploadBillForm() {
-		$form = new Form;
-		$form->addUpload('file');
-		$form->addSubmit('ok');
-		$form->onSuccess[] = [$this, 'uploadBillFormSubmitted'];
-
-		return $form;
-	}
-
-	/**
-	 * @param Form $form
-	 * @allow(member)
-	 * @throws AbortException
-	 */
-	public function uploadBillFormSubmitted(Form $form) {
-		$id = (int) $this->getParameter('id');
-		$data = $form->getValues();
-
-		$akce = $this->akceService->getAkceById($id);
-
-		if (($form['file']->isFilled()) and ($data->file->isOK())) {
-			$filename = $id . '-' . Strings::webalize($akce->name) . '.xls';
-			$data->file->move(WWW_DIR . '/doc/vyuctovani/' . $filename);
-
-			$akce->update(['bill' => $filename]);
-			$this->flashMessage('Vyúčtování nahráno');
-			$this->redirect('Akce:view', $id);
-		}
 	}
 }

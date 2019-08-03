@@ -1,20 +1,13 @@
 {import '../templates/@svg.latte'}
 
-<style type="text/css" n:syntax="off">
-	#billing .number { width: 3em }
-	#billing .currency { width: 6em }
-	#billing .number, #billing .currency { text-align: right }
-	#billing h4 { margin-bottom: 0 }
-	#billing table { width: 100%; border-collapse: collapse; }
-	#billing table.view, #billing table.view td, #billing table.view th { border: 1px solid gray; padding: 1ex;}
-	#billing table.view .last { border-top: 2px solid black; font-weight: bold }
-</style>
+<link rel="stylesheet" type="text/css" href="{$baseUrl}/css/member.billing.css">
 
-<h3>Vyúčtování</h3>
+<h3>Vyúčtování {include svg dollar}</h3>
 
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
-<div id="billing" n:if="!$edit">
+<div id="billing">
+{if !$edit}
 	{if $billing}
 		<table class="view">
 			<tr><th colspan="3">Příjmy</th><th class="right">{$billing->income} Kč</th></tr>
@@ -32,25 +25,23 @@
 				<td class="right">{$item->price * $item->count} Kč</td>
 			</tr>
 			<tr><td colspan="3"></td><td class="right last">{$billing->final} Kč</td></tr>
+			<tr n:if="$billing->note"><td colspan="4">{$billing->note|texy}</td></tr>
 		</table>
 
-		<div n:if="$billing->note">{$billing->note|texy}</div>
+		<p n:if="$billing->date_update" class="update"><time datetime="{$billing->date_update|datetimeC}">{$billing->date_update|datetime}</time></p>
 
-		<p class="right"><a class="buttonLike" n:href="this, edit => 1">{include svg pencil} editovat</a></p>
+		<p class="right" n:if="$canEdit"><a class="buttonLike" n:href="this, edit => 1">{include svg pencil} editovat</a></p>
 	{else}
 		<p><a class="buttonLike" n:href="this, edit => 1">{include svg pencil} vytvořit</a></p>
 	{/if}
-</div>
-
-<div id="billing" n:if="$edit">
+{else}
 {form billingForm}
-
 	<ul class="error" n:if="$form->hasErrors()">
 		<li n:foreach="$form->errors as $error">{$error}</li>
 	</ul>
 
 	<h4>Příjmy</h4>
-	<table id="income">
+	<table id="income" class="edit">
 		{foreach $form['incomes']->getContainers() as $id => $line}
 			<tr n:if="$iterator->isFirst()">
 				<th>{label incomes-$id-name /}</th>
@@ -74,7 +65,7 @@
 	<div>{input $form['incomes']['multiplier_creator'] class => buttonLike, title => 'Přidat další řádek'}</div>
 
 	<h4>Výdaje</h4>
-	<table id="expense">
+	<table id="expense" class="edit">
 		{foreach $form['expenses']->getContainers() as $id => $line}
 			<tr n:if="$iterator->isFirst()">
 				<th>{label expenses-$id-name /}</th>
@@ -99,18 +90,11 @@
 
 	<p>{label income /} {input income} {label expense /} {input expense} {label final /} {input final}</p>
 
-	<div>
-        {input note}
-	</div>
+	<div>{input note}</div>
 
-	<p class="right">
-		<button n:name="save" class="buttonLike">
-            {include svg check} uložit
-		</button>
-	</p>
-
+	<p class="right"><button n:name="save" class="buttonLike">{include svg check} uložit</button></p>
 {/form}
-
+</div>
 
 <script type="application/javascript" defer n:nonce>
 	document.querySelectorAll('input.remove').forEach(function (el) {
@@ -147,5 +131,4 @@
 		document.getElementById('billing-final').value = incomes - expenses;
 	}
 </script>
-
-</div>
+{/if}
