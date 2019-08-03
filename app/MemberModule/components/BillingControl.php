@@ -173,9 +173,10 @@ final class BillingControl extends LayerControl {
 
 	/**
 	 * @param Form $form
+	 * @param ArrayHash $values
+	 * @throws \Nette\Application\AbortException
 	 */
-	protected function processForm(Form $form) {
-		$values = $form->getValues();
+	public function processForm(Form $form, ArrayHash $values) {
 		$now = new DateTime();
 
 		$billingValues = [
@@ -203,6 +204,10 @@ final class BillingControl extends LayerControl {
 		foreach ($values->expenses as $expense)
 			$this->processItem($expense, $this->billing->id, TRUE);
 
+		$this->edit = FALSE;
+		$this->flashMessage('Vyúčtování  uloženo');
+
+		$this->presenter->redirect('this');
 	}
 
 	/**

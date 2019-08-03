@@ -5,13 +5,50 @@
 	#billing .currency { width: 6em }
 	#billing .number, #billing .currency { text-align: right }
 	#billing h4 { margin-bottom: 0 }
-	#billing textarea { width: 100%; min-height: auto; background: none;}
+	#billing table { width: 100%; border-collapse: collapse; }
+	#billing table.view, #billing table.view td, #billing table.view th { border: 1px solid gray; padding: 1ex;}
+	#billing table.view .last { border-top: 2px solid black; font-weight: bold }
 </style>
 
 <h3>Vyúčtování</h3>
 
+<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+
+<div id="billing" n:if="!$edit">
+	{if $billing}
+		<table class="view">
+			<tr><th colspan="3">Příjmy</th><th class="right">{$billing->income} Kč</th></tr>
+			<tr n:foreach="$billing->related('akce_billing_item')->where('negative', FALSE) as $item">
+				<td>{$item->name} {if $item->booked}(faktura {$item->invoice}){/if}</td>
+				<td class="right">{$item->price} Kč</td>
+				<td class="right">{$item->count}×</td>
+				<td class="right">{$item->price * $item->count} Kč</td>
+			</tr>
+			<tr><th colspan="3">Výdaje</th><th class="right">{$billing->expense} Kč</th></tr>
+			<tr n:foreach="$billing->related('akce_billing_item')->where('negative', TRUE) as $item">
+				<td>{$item->name} {if $item->booked}(faktura {$item->invoice}){/if}</td>
+				<td class="right">{$item->price} Kč</td>
+				<td class="right">{$item->count}×</td>
+				<td class="right">{$item->price * $item->count} Kč</td>
+			</tr>
+			<tr><td colspan="3"></td><td class="right last">{$billing->final} Kč</td></tr>
+		</table>
+
+		<div n:if="$billing->note">{$billing->note|texy}</div>
+
+		<p class="right"><a class="buttonLike" n:href="this, edit => 1">{include svg pencil} editovat</a></p>
+	{else}
+		<p><a class="buttonLike" n:href="this, edit => 1">{include svg pencil} vytvořit</a></p>
+	{/if}
+</div>
+
 <div id="billing" n:if="$edit">
 {form billingForm}
+
+	<ul class="error" n:if="$form->hasErrors()">
+		<li n:foreach="$form->errors as $error">{$error}</li>
+	</ul>
+
 	<h4>Příjmy</h4>
 	<table id="income">
 		{foreach $form['incomes']->getContainers() as $id => $line}
@@ -110,14 +147,5 @@
 		document.getElementById('billing-final').value = incomes - expenses;
 	}
 </script>
-
-</div>
-
-<div id="billing" n:if="!$edit">
-	{if $billing}
-		<p class="right"><a class="buttonLike" n:href="this, edit => 1">{include svg pencil} editovat</a></p>
-	{else}
-		<p><a class="buttonLike" n:href="this, edit => 1">{include svg pencil} vytvořit</a></p>
-	{/if}
 
 </div>
