@@ -164,7 +164,7 @@ final class BillingControl extends LayerControl {
 
 		$form->onValidate[] = [$this, 'validateValues'];
 
-		$form->onSubmit[] = [$this, 'processForm'];
+		$form->onSuccess[] = [$this, 'processForm'];
 
 		if ($this->billing) $this->loadValues($form, $this->billing);
 
@@ -220,12 +220,11 @@ final class BillingControl extends LayerControl {
 
 	/**
 	 * @param Form $form
+	 * @param ArrayHash $values
 	 */
-	protected function validateValues(Form $form) {
-		$values = $form->getValues();
-
+	public function validateValues(Form $form, ArrayHash $values) {
 		$expense = 0;
-		foreach ($values->expences as $item)
+		foreach ($values->expenses as $item)
 			$expense += $item->price * $item->count;
 
 		$income = 0;
