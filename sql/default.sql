@@ -9,7 +9,7 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 DROP TABLE IF EXISTS `akce`;
 CREATE TABLE `akce` (
-  `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(60) CHARACTER SET utf8 COLLATE utf8_czech_ci NOT NULL,
   `perex` text CHARACTER SET utf8 COLLATE utf8_czech_ci NOT NULL,
   `description` text CHARACTER SET utf8 COLLATE utf8_czech_ci NOT NULL,
@@ -75,7 +75,7 @@ INSERT INTO `akce_for` (`id`, `text`) VALUES
 
 DROP TABLE IF EXISTS `akce_member`;
 CREATE TABLE `akce_member` (
-  `akce_id` smallint(6) NOT NULL,
+  `akce_id` smallint(6) unsigned NOT NULL,
   `user_id` smallint(5) unsigned NOT NULL,
   `organizator` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `created_by` smallint(5) unsigned NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE `akce_member` (
 
 DROP TABLE IF EXISTS `akce_rating_member`;
 CREATE TABLE `akce_rating_member` (
-  `akce_id` smallint(6) NOT NULL,
+  `akce_id` smallint(6) unsigned NOT NULL,
   `user_id` smallint(5) unsigned NOT NULL,
   `rating` tinyint(3) unsigned DEFAULT NULL,
   `message` text COLLATE utf8_czech_ci,
@@ -110,7 +110,7 @@ CREATE TABLE `akce_rating_member` (
 DROP TABLE IF EXISTS  `akce_revision`;
 CREATE TABLE `akce_revision` (
   `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `akce_id` smallint(6) NOT NULL,
+  `akce_id` smallint(6) unsigned NOT NULL,
   `created_by` smallint(5) unsigned NOT NULL,
   `date_saved` datetime NOT NULL,
   `date_add` datetime NOT NULL,
