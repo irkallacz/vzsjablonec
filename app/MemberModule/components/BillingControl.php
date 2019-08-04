@@ -113,9 +113,11 @@ final class BillingControl extends LayerControl {
 				->addRule(Form::MIN, 'Hodnota nesmí být menší než %d', 0);
 
 			$item->addCheckbox('booked')
+				->setHtmlAttribute('class', 'hint')
+				->setHtmlAttribute('title', 'Účtováno přes náš spolek nebo placeno z peněz spolku')
 				->setDefaultValue(FALSE);
 
-			$item->addText('invoice', 'č. faktury', 10)
+			$item->addText('invoice', 'Faktura', 10)
 				->setNullable();
 
 			$item->addHidden('id');
@@ -123,7 +125,7 @@ final class BillingControl extends LayerControl {
 			$item->addButton('remove', '✖')
 				->setOmitted()
 				->setHtmlAttribute('class', 'buttonLike remove')
-				->setHtmlAttribute('title', 'Smazat pložku');
+				->setHtmlAttribute('title', 'Smazat položku');
 		};
 
 		$incomes = $form->addMultiplier('incomes', $container, 1);
@@ -136,7 +138,7 @@ final class BillingControl extends LayerControl {
 			->setRequired('Vyplňte příjmy')
 			->setHtmlType('number')
 			->setHtmlAttribute('class', 'currency')
-			->setHtmlId('billing-income')
+			->setHtmlId('billing-incomes')
 			->setOption('description', 'Kč')
 			->setHtmlAttribute('readonly')
 			->setHtmlAttribute('min', 0)
@@ -148,7 +150,7 @@ final class BillingControl extends LayerControl {
 			->setRequired('Vyplňte výdaje')
 			->setHtmlType('number')
 			->setHtmlAttribute('class', 'currency')
-			->setHtmlId('billing-expense')
+			->setHtmlId('billing-expenses')
 			->setOption('description', 'Kč')
 			->setHtmlAttribute('readonly')
 			->setHtmlAttribute('min', 0)
@@ -216,7 +218,7 @@ final class BillingControl extends LayerControl {
 			$this->processItem($expense, $this->billing->id, TRUE);
 
 		$this->edit = FALSE;
-		$this->flashMessage('Vyúčtování  uloženo');
+		$this->flashMessage('Vyúčtování uloženo');
 
 		$this->presenter->redirect('this');
 	}

@@ -3,8 +3,8 @@ function recount(name, oldPrice, newPrice) {
 	const value = parseFloat(el.value);
 	el.value = value + newPrice - oldPrice;
 
-	const incomes = parseFloat(document.getElementById('billing-income').value);
-	const expenses = parseFloat(document.getElementById('billing-expense').value);
+	const incomes = parseFloat(document.getElementById('billing-incomes').value);
+	const expenses = parseFloat(document.getElementById('billing-expenses').value);
 	document.getElementById('billing-final').value = incomes - expenses;
 }
 

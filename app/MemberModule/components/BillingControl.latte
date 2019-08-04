@@ -40,53 +40,35 @@
 		<li n:foreach="$form->errors as $error">{$error}</li>
 	</ul>
 
-	<h4>Příjmy</h4>
-	<table id="income" class="edit">
-		{foreach $form['incomes']->getContainers() as $id => $line}
-			<tr n:if="$iterator->isFirst()">
-				<th>{label incomes-$id-name /}</th>
-				<th>{label incomes-$id-price /}</th>
-				<th>{label incomes-$id-count /}</th>
-				<th>{label incomes-$id-final /}</th>
-				<th><label n:name="incomes-$id-booked">Účtováno</label></th>
-				<th>{label incomes-$id-invoice /}</th>
-			</tr>
-			<tr>
-				<td>{input incomes-$id-name}</td>
-				<td>{input incomes-$id-price}</td>
-				<td>{input incomes-$id-count}</td>
-				<td>{input incomes-$id-final}</td>
-				<td>{input incomes-$id-booked}</td>
-				<td>{input incomes-$id-invoice}</td>
-				<td>{input incomes-$id-remove}</td>
-			</tr>
-		{/foreach}
-	</table>
-	<div>{input $form['incomes']['multiplier_creator'] class => buttonLike, title => 'Přidat další řádek'}</div>
+	{define item-row}
+		<tr n:if="$iterator->isFirst()">
+			<th>{label {$category}-$id-name /}</th>
+			<th>{label {$category}-$id-price /}</th>
+			<th>{label {$category}-$id-count /}</th>
+			<th>{label {$category}-$id-final /}</th>
+			<th><label n:name="{$category}-$id-booked" class="hint" title="Účtováno přes náš spolek nebo placeno z peněz spolku">Přes PS</label></th>
+			<th>{label {$category}-$id-invoice /}</th>
+		</tr>
+		<tr>
+			<td>{input {$category}-$id-name}</td>
+			<td>{input {$category}-$id-price}</td>
+			<td>{input {$category}-$id-count}</td>
+			<td>{input {$category}-$id-final}</td>
+			<td>{input {$category}-$id-booked}</td>
+			<td>{input {$category}-$id-invoice}</td>
+			<td>{input {$category}-$id-remove}</td>
+		</tr>
+	{/define}
 
-	<h4>Výdaje</h4>
-	<table id="expense" class="edit">
-		{foreach $form['expenses']->getContainers() as $id => $line}
-			<tr n:if="$iterator->isFirst()">
-				<th>{label expenses-$id-name /}</th>
-				<th>{label expenses-$id-price /}</th>
-				<th>{label expenses-$id-count /}</th>
-				<th>{label expenses-$id-final /}</th>
-				<th><label n:name="expenses-$id-booked">Účtováno</label></th>
-				<th>{label expenses-$id-invoice /}</th>
-			</tr>
-			<tr>
-				<td>{input expenses-$id-name}</td>
-				<td>{input expenses-$id-price}</td>
-				<td>{input expenses-$id-count}</td>
-				<td>{input expenses-$id-final}</td>
-				<td>{input expenses-$id-booked}</td>
-				<td>{input expenses-$id-invoice}</td>
-				<td>{input expenses-$id-remove}</td>
-			</tr>
-		{/foreach}
-	</table>
-	<div> {input $form['expenses']['multiplier_creator'] class => buttonLike, title => 'Přidat další řádek'}</div>
+	{foreach ['incomes' => 'Příjmy', 'expenses' => 'Výdaje'] as $category => $title}
+		<h4>{$title}</h4>
+		<table id="{$category}" class="edit">
+			{foreach $form[$category]->getContainers() as $id => $line}
+				{include item-row id => $id, category => $category}
+			{/foreach}
+		</table>
+		<div>{input $form[$category]['multiplier_creator'] class => buttonLike, title => 'Přidat další řádek'}</div>
+	{/foreach}
 
 	<p>{label income /} {input income} {label expense /} {input expense} {label final /} {input final}</p>
 
