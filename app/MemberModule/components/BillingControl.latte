@@ -30,9 +30,9 @@
 
 		<p n:if="$billing->date_update" class="update"><time datetime="{$billing->date_update|datetimeC}">{$billing->date_update|datetime}</time></p>
 
-		<p class="right" n:if="$canEdit"><a class="buttonLike" n:href="this, edit => 1">{include svg pencil} editovat</a></p>
+		<p class="right" n:if="$canEdit"><a class="buttonLike" n:href="this#billing, edit => 1">{include svg pencil} editovat</a></p>
 	{else}
-		<p><a class="buttonLike" n:href="this, edit => 1">{include svg pencil} vytvořit</a></p>
+		<p><a class="buttonLike" n:href="this#billing, edit => 1">{include svg pencil} vytvořit</a></p>
 	{/if}
 {else}
 {form billingForm}
