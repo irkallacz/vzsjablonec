@@ -156,7 +156,9 @@ final class BillingControl extends LayerControl {
 			->setHtmlAttribute('min', 0)
 			->setDefaultValue(0)
 			->addRule(Form::FLOAT)
-			->addRule(Form::MIN, 'Hodnota nesmí být menší než %d', 0);
+			->addRule(Form::MIN, 'Hodnota nesmí být menší než %d', 0)
+			->addConditionOn($form['income'], Form::EQUAL, 0)
+			->addRule(Form::NOT_EQUAL, 'Vyúčtování nesmí být prázdné', 0);
 
 		$form->addText('final', 'Výsledek')
 			->setRequired('Vyplňte výslednou bilanci')
