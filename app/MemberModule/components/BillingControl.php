@@ -267,6 +267,8 @@ final class BillingControl extends LayerControl {
 		$values = [];
 		foreach ($billingItems as $item) {
 			$category = $item->negative ? 'expenses' : 'incomes';
+			$item = $item->toArray();
+			$item['final'] = $item['price'] * $item['count'];
 			$values[$category][] = $item;
 		}
 
