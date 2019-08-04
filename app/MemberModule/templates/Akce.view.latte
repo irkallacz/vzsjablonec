@@ -124,7 +124,7 @@
 		{if $user->isInRole('member')}
 			{control billing}
 
-			<p n:if="is_string($akce->bill)">
+			<p n:if="strlen($akce->bill) > 1">
 				<a class="buttonLike" href="{$baseUrl}/doc/vyuctovani/{$akce->bill}">{include svg download} stáhnout</a>
 			</p>
 		{/if}
