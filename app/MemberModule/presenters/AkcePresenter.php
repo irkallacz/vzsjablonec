@@ -17,7 +17,6 @@ use Nette\Mail\IMailer;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
-use Nette\Utils\Strings;
 use WebLoader;
 use Tracy\Debugger;
 
@@ -391,8 +390,8 @@ class AkcePresenter extends LayerPresenter {
 	 */
 	protected function createComponentBilling() {
 		$userId = $this->user->id;
-		$canEdit = (($this->user->isInRole('admin')) or (in_array($userId, $this->orgList)));
-		return new Components\BillingControl($this->billingService, $this->akce->id, $userId, $canEdit);
+		$canEdit = (($this->user->isInRole('admin')) or ((in_array($userId, $this->orgList)) and ($this->user->isInRole('member'))));
+		return new Components\BillingControl($this->billingService, $this->akce, $userId, $canEdit);
 	}
 
 	/**
@@ -615,7 +614,6 @@ class AkcePresenter extends LayerPresenter {
 				$next = $this->messageService->getNextSendTime();
 				$this->flashMessage('Email pro schválení akce bude odeslán '.LatteFilters::timeAgoInWords($next));
 			}
-
 
 			$id = $akce->id;
 		}

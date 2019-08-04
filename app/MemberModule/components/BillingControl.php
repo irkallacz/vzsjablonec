@@ -26,19 +26,19 @@ final class BillingControl extends LayerControl {
 	private $billingService;
 
 	/**
-	 * @var int
+	 * @var ActiveRow|IRow
 	 */
-	private $akceId;
-
-	/**
-	 * @var int
-	 */
-	private $userId;
+	private $akce;
 
 	/**
 	 * @var ActiveRow|IRow
 	 */
 	private $billing;
+
+	/**
+	 * @var int
+	 */
+	private $userId;
 
 	/**
 	 * @var bool
@@ -57,15 +57,15 @@ final class BillingControl extends LayerControl {
 	 * @param int $userId
 	 * @param bool $canEdit
 	 */
-	public function __construct(BillingService $billingService, int $akceId, int $userId, bool $canEdit)
+	public function __construct(BillingService $billingService, IRow $akce, int $userId, bool $canEdit)
 	{
 		parent::__construct();
 		$this->billingService = $billingService;
-		$this->akceId = $akceId;
+		$this->akce = $akce;
 		$this->userId = $userId;
 		$this->canEdit = $canEdit;
 
-		$this->billing = $this->billingService->getBillingByAkceId($this->akceId);
+		$this->billing = $this->billingService->getBillingByAkceId($this->akce->id);
 	}
 
 
@@ -198,10 +198,11 @@ final class BillingControl extends LayerControl {
 
 		if (!$this->billing) {
 			$billingValues['date_add'] = $now;
-			$billingValues['akce_id'] = $this->akceId;
+			$billingValues['akce_id'] = $this->akce->id;
 			$billingValues['created_by'] = $this->userId;
 
 			$this->billing = $this->billingService->addBilling($billingValues);
+			$this->akce->update(['bill' => TRUE]);
 		} else {
 			$this->billing->update($billingValues);
 		}
