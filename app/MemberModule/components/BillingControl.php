@@ -160,7 +160,7 @@ final class BillingControl extends LayerControl {
 			->addConditionOn($form['income'], Form::EQUAL, 0)
 			->addRule(Form::NOT_EQUAL, 'Vyúčtování nesmí být prázdné', 0);
 
-		$form->addText('final', 'Výsledek')
+		$form->addText('final', 'Bilance')
 			->setRequired('Vyplňte výslednou bilanci')
 			->setHtmlType('number')
 			->setHtmlAttribute('class', 'currency')

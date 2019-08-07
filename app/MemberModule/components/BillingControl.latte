@@ -12,19 +12,19 @@
 		<table class="view">
 			<tr><th colspan="3">Příjmy</th><th class="right">{$billing->income} Kč</th></tr>
 			<tr n:foreach="$billing->related('akce_billing_item')->where('negative', FALSE) as $item">
-				<td>{$item->name} {if $item->booked}(faktura {$item->invoice}){/if}</td>
+				<td n:class="$item->booked ? booked">{$item->name} {if $item->invoice}(faktura {$item->invoice}){/if}</td>
 				<td class="right">{$item->price} Kč</td>
 				<td class="right">{$item->count}×</td>
 				<td class="right">{$item->price * $item->count} Kč</td>
 			</tr>
 			<tr><th colspan="3">Výdaje</th><th class="right">{$billing->expense} Kč</th></tr>
 			<tr n:foreach="$billing->related('akce_billing_item')->where('negative', TRUE) as $item">
-				<td>{$item->name} {if $item->booked}(faktura {$item->invoice}){/if}</td>
+				<td n:class="$item->booked ? booked">{$item->name} {if $item->invoice}(faktura {$item->invoice}){/if}</td>
 				<td class="right">{$item->price} Kč</td>
 				<td class="right">{$item->count}×</td>
 				<td class="right">{$item->price * $item->count} Kč</td>
 			</tr>
-			<tr><td colspan="3"></td><td class="right last">{$billing->final} Kč</td></tr>
+			<tr><th colspan="3">Bilance</th><td class="right last">{$billing->final} Kč</td></tr>
 			<tr n:if="$billing->note"><td colspan="4">{$billing->note|texy}</td></tr>
 		</table>
 
@@ -48,8 +48,9 @@
 			<th>{label {$category}-$id-final /}</th>
 			<th><label n:name="{$category}-$id-booked" class="hint" title="Účtováno přes náš spolek nebo placeno z peněz spolku">Přes PS</label></th>
 			<th>{label {$category}-$id-invoice /}</th>
+			<th></th>
 		</tr>
-		<tr>
+		<tr class="row">
 			<td>{input {$category}-$id-name}</td>
 			<td>{input {$category}-$id-price}</td>
 			<td>{input {$category}-$id-count}</td>
@@ -72,6 +73,7 @@
 
 	<p>{label income /} {input income} {label expense /} {input expense} {label final /} {input final}</p>
 
+	<div>{label note /}</div>
 	<div>{input note}</div>
 
 	<p class="right"><button n:name="save" class="buttonLike">{include svg check} uložit</button></p>
