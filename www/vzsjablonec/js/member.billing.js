@@ -1,33 +1,22 @@
-function recount(name, oldPrice, newPrice) {
-	var el = document.getElementById('billing-'+name);
-	const value = parseFloat(el.value);
-	el.value = value + newPrice - oldPrice;
+function recount() {
+	var income = 0;
+	var expense = 0;
 
-	const incomes = parseFloat(document.getElementById('billing-incomes').value);
-	const expenses = parseFloat(document.getElementById('billing-expenses').value);
-	document.getElementById('billing-final').value = incomes - expenses;
-}
-
-document.querySelectorAll('input.remove').forEach(function (el) {
-	el.addEventListener('click', function () {
-		const row       = el.parentElement.parentElement;
-		const category  = row.parentElement.parentElement.id;
-		const old       = parseFloat(row.querySelector('input.final').value);
-
-		recount(category, old, 0);
-		row.remove();
-	});
-});
-
-document.querySelectorAll('input.price, input.count').forEach(function (el) {
-	el.addEventListener('change', function () {
-		const row       = el.parentElement.parentElement;
+	document.querySelectorAll('#billing table.edit tr.row').forEach(function (row) {
 		const category  = row.parentElement.parentElement.id;
 		const final     = parseFloat(row.querySelector('input.price').value) * parseInt(row.querySelector('input.count').value);
-		var   field     = row.querySelector('input.final');
-		const old       = parseFloat(field.value);
-		field.value = final;
+		row.querySelector('input.final').value = final;
+		if (category === 'incomes') 	income += final;
+		if (category === 'expenses') 	expense += final;
+	});
 
-		recount(category, old, final);
-	})
+	document.getElementById('billing-incomes').value 	= income;
+	document.getElementById('billing-expenses').value 	= expense;
+	document.getElementById('billing-final').value 		= income - expense;
+}
+
+document.querySelectorAll('input.price, input.count').forEach(function (el) {
+	el.addEventListener('change', recount);
 });
+
+recount();

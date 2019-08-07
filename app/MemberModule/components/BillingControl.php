@@ -14,9 +14,11 @@ use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
+use Nette\Forms\Controls\SubmitButton;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 use Tracy\Debugger;
+use WebChemistry\Forms\Controls\Multiplier;
 
 final class BillingControl extends LayerControl {
 
@@ -122,17 +124,21 @@ final class BillingControl extends LayerControl {
 
 			$item->addHidden('id');
 
-			$item->addButton('remove', '✖')
+			$item->addSubmit('remove', '✖')
 				->setOmitted()
-				->setHtmlAttribute('class', 'buttonLike remove')
-				->setHtmlAttribute('title', 'Smazat položku');
+				->setHtmlAttribute('class', 'buttonLike')
+				->setHtmlAttribute('title', 'Smazat položku')
+				->setValidationScope(FALSE)
+				->onClick[] = [$this, 'removeFormRow'];
 		};
 
-		$incomes = $form->addMultiplier('incomes', $container, 1);
+		$incomes = $form->addMultiplier('incomes', $container, 0);
 		$incomes->addCreateButton('+');
+		$incomes->addRemoveButton('✖');
 
-		$expenses = $form->addMultiplier('expenses', $container, 1);
+		$expenses = $form->addMultiplier('expenses', $container, 0);
 		$expenses->addCreateButton('+');
+		$expenses->addRemoveButton('✖');
 
 		$form->addText('income', 'Příjmy')
 			->setRequired('Vyplňte příjmy')
@@ -173,23 +179,29 @@ final class BillingControl extends LayerControl {
 		$form->addTextArea('note', 'Poznámka')
 			->setNullable();
 
-		$form->addSubmit('save', 'Uložit');
+		$button = $form->addSubmit('save', 'Uložit');
 
-		$form->onValidate[] = [$this, 'validateValues'];
+		$button->onClick[] = [$this, 'validateValues'];
 
-		$form->onSuccess[] = [$this, 'processForm'];
+		$button->onClick[] = [$this, 'processForm'];
 
 		if ($this->billing) $this->loadValues($form, $this->billing);
 
 		return $form;
 	}
 
+	public function removeFormRow(SubmitButton $submitButton) {
+		/**@var  Multiplier $multiplier*/
+		$multiplier = $submitButton->getParent()->getParent();
+		$multiplier->onRemoveSubmit($submitButton);
+	}
+
 	/**
-	 * @param Form $form
+	 * @param SubmitButton $submitButton
 	 * @param ArrayHash $values
 	 * @throws \Nette\Application\AbortException
 	 */
-	public function processForm(Form $form, ArrayHash $values) {
+	public function processForm(SubmitButton $submitButton, ArrayHash $values) {
 		$now = new DateTime();
 
 		$billingValues = [
@@ -239,17 +251,21 @@ final class BillingControl extends LayerControl {
 	}
 
 	/**
-	 * @param Form $form
+	 * @param SubmitButton $submitButton
 	 * @param ArrayHash $values
 	 */
-	public function validateValues(Form $form, ArrayHash $values) {
+	public function validateValues(SubmitButton $submitButton, ArrayHash $values) {
+		$form = $submitButton->getForm();
+
 		$expense = 0;
-		foreach ($values->expenses as $item)
-			$expense += $item->price * $item->count;
+		foreach ($values->expenses as $item) {
+			if (($item->price)and($item->count)) $expense += $item->price * $item->count;
+		}
 
 		$income = 0;
-		foreach ($values->incomes as $item)
-			$income += $item->price * $item->count;
+		foreach ($values->incomes as $item) {
+			if (($item->price)and($item->count)) $income += $item->price * $item->count;
+		}
 
 		if ($income != $values->income)
 			$form->addError('Výsledný příjem není součtem jednotlivých položek');
