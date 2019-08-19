@@ -90,7 +90,6 @@ http:
 		form-action: self
 		frame-ancestors: none
 		base-uri: none
-		object-uri: none
 
 
 routing:
