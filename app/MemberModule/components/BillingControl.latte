@@ -1,9 +1,10 @@
 {import '../templates/@svg.latte'}
 
 <link rel="stylesheet" type="text/css" href="{$baseUrl}/css/member.billing.css">
+<script type="application/javascript" src="{$baseUrl}/js/member.billing.js"></script>
 
 <h3>Vyúčtování {include svg dollar}</h3>
-
+{snippet component}
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 <div id="billing">
@@ -30,12 +31,13 @@
 
 		<p n:if="$billing->date_update" class="update"><time datetime="{$billing->date_update|datetimeC}">{$billing->date_update|datetime}</time></p>
 
-		<p class="right" n:if="$canEdit"><a class="buttonLike" n:href="this#billing, edit => 1">{include svg pencil} editovat</a></p>
+		<p class="right" n:if="$canEdit"><a class="buttonLike ajax" n:href="edit">{include svg pencil} editovat</a></p>
 	{else}
-		<p><a class="buttonLike" n:href="this#billing, edit => 1">{include svg pencil} vytvořit</a></p>
+		<p><a class="buttonLike" n:href="edit">{include svg pencil} vytvořit</a></p>
 	{/if}
 {else}
-{form billingForm}
+{snippet component-edit}
+{form billingForm class => ajax}
 	<ul class="error" n:if="$form->hasErrors()">
 		<li n:foreach="$form->errors as $error">{$error}</li>
 	</ul>
@@ -78,6 +80,7 @@
 
 	<p class="right"><button n:name="save" class="buttonLike">{include svg check} uložit</button></p>
 {/form}
-<script type="application/javascript" src="{$baseUrl}/js/member.billing.js" defer></script>
+{/snippet}
 {/if}
 </div>
+{/snippet}

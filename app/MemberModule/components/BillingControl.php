@@ -59,8 +59,7 @@ final class BillingControl extends LayerControl {
 	 * @param int $userId
 	 * @param bool $canEdit
 	 */
-	public function __construct(BillingService $billingService, IRow $akce, int $userId, bool $canEdit)
-	{
+	public function __construct(BillingService $billingService, IRow $akce, int $userId, bool $canEdit) {
 		parent::__construct();
 		$this->billingService = $billingService;
 		$this->akce = $akce;
@@ -70,6 +69,10 @@ final class BillingControl extends LayerControl {
 		$this->billing = $this->billingService->getBillingByAkceId($this->akce->id);
 	}
 
+	public function handleEdit(){
+		$this->edit = TRUE;
+		$this->redrawControl('component');
+	}
 
 	/**
 	 * @return Form
@@ -130,14 +133,21 @@ final class BillingControl extends LayerControl {
 				->setHtmlAttribute('title', 'Smazat položku')
 				->setValidationScope(FALSE)
 				->onClick[] = [$this, 'removeFormRow'];
+
+			$item->addSubmit('add', '+')
+				->setOmitted()
+				->setHtmlAttribute('class', 'buttonLike')
+				->setHtmlAttribute('title', 'Přidat řádek')
+				->setValidationScope(FALSE)
+				->onClick[] = [$this, 'addFormRow'];
 		};
 
 		$incomes = $form->addMultiplier('incomes', $container, 0);
-		$incomes->addCreateButton('+');
+		$incomes->addCreateButton('+', 1, [$this, 'addFormRow']);
 		$incomes->addRemoveButton('✖');
 
 		$expenses = $form->addMultiplier('expenses', $container, 0);
-		$expenses->addCreateButton('+');
+		$expenses->addCreateButton('+', 1, [$this, 'addFormRow']);
 		$expenses->addRemoveButton('✖');
 
 		$form->addText('income', 'Příjmy')
@@ -193,7 +203,12 @@ final class BillingControl extends LayerControl {
 	public function removeFormRow(SubmitButton $submitButton) {
 		/**@var  Multiplier $multiplier*/
 		$multiplier = $submitButton->getParent()->getParent();
+		$this->redrawControl('component-edit');
 		$multiplier->onRemoveSubmit($submitButton);
+	}
+
+	public function addFormRow() {
+		$this->redrawControl('component-edit');
 	}
 
 	/**
@@ -234,7 +249,12 @@ final class BillingControl extends LayerControl {
 		$this->edit = FALSE;
 		$this->flashMessage('Vyúčtování uloženo');
 
-		$this->presenter->redirect('this');
+		if ($this->presenter->isAjax()) {
+			$this->redrawControl('component');
+		} else {
+			$this->presenter->redirect('this');
+		}
+
 	}
 
 	/**

@@ -15,8 +15,6 @@ function recount() {
 	document.getElementById('billing-final').value 		= income - expense;
 }
 
-document.querySelectorAll('input.price, input.count').forEach(function (el) {
-	el.addEventListener('change', recount);
+$(function () {
+	$(document).on('change', 'input.price, input.count', recount);
 });
-
-recount();
