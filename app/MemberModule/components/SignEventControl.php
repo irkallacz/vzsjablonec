@@ -135,6 +135,7 @@ class SignEventControl extends Control {
 
 	/**
 	 * @param bool $isOrg
+	 * @throws ForbiddenRequestException
 	 */
 	public function handleLogSelf(bool $isOrg) {
 		$userId = $this->getPresenter()->getUser()->getId();
@@ -151,6 +152,7 @@ class SignEventControl extends Control {
 
 	/**
 	 * @param bool $isOrg
+	 * @throws ForbiddenRequestException
 	 */
 	public function handleUnlogSelf(bool $isOrg) {
 		$userId = $this->getPresenter()->getUser()->getId();
@@ -189,6 +191,7 @@ class SignEventControl extends Control {
 
 	/**
 	 * @param Form $form
+	 * @throws ForbiddenRequestException
 	 */
 	public function processLogginForm(Form $form) {
 		if (($this->getPresenter()->getUser()->isInRole('admin')) or ($this->userIsInList(TRUE))) {
@@ -229,6 +232,7 @@ class SignEventControl extends Control {
 
 	/**
 	 * @param Form $form
+	 * @throws ForbiddenRequestException
 	 */
 	public function processUnLogginForm(Form $form) {
 		if (($this->getPresenter()->getUser()->isInRole('admin')) or ($this->userIsInList(TRUE))) {
