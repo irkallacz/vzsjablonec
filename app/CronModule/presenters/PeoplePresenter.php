@@ -10,6 +10,7 @@ namespace App\CronModule\Presenters;
 
 use App\Model\UserService;
 use Google_Service_PeopleService;
+use Google_Service_PeopleService_Date;
 use Google_Service_PeopleService_Person;
 use Google_Service_PeopleService_Name;
 use Google_Service_PeopleService_Address;
@@ -192,7 +193,11 @@ class PeoplePresenter extends BasePresenter {
 		$person->setAddresses([$address]);
 
 		$birthday = new Google_Service_PeopleService_Birthday;
-		$birthday->setDate($user->date_born);
+		$birthdayDate = new Google_Service_PeopleService_Date;
+		$birthdayDate->setYear($user->date_born->format('Y'));
+		$birthdayDate->setMonth($user->date_born->format('m'));
+		$birthdayDate->setDay($user->date_born->format('d'));
+		$birthday->setDate($birthdayDate);
 
 		$person->setBirthdays($birthday);
 
