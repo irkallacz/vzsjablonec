@@ -10,11 +10,13 @@ namespace App\CronModule\Presenters;
 
 use App\Model\UserService;
 use Google_Service_PeopleService;
+use Google_Service_PeopleService_Date;
 use Google_Service_PeopleService_Person;
 use Google_Service_PeopleService_Name;
 use Google_Service_PeopleService_Address;
 use Google_Service_PeopleService_PhoneNumber;
 use Google_Service_PeopleService_EmailAddress;
+use Google_Service_PeopleService_Birthday;
 use Google_Service_PeopleService_UserDefined;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
@@ -27,7 +29,7 @@ use Tracy\Debugger;
  */
 class PeoplePresenter extends BasePresenter {
 
-	const PERSON_FIELDS = 'names,emailAddresses,addresses,phoneNumbers,userDefined';
+	const PERSON_FIELDS = 'names,emailAddresses,addresses,phoneNumbers,birthdays,userDefined';
 
 	/** @var UserService @inject */
 	public $userService;
@@ -152,7 +154,7 @@ class PeoplePresenter extends BasePresenter {
 
 		$phoneNumbers = [];
 		$phoneNumber = new Google_Service_PeopleService_PhoneNumber;
-		$phoneNumber->setType('home');
+		$phoneNumber->setType('mobile');
 		$phoneNumber->setValue('+420' . $user->telefon);
 		$phoneNumbers[] = $phoneNumber;
 
@@ -189,6 +191,15 @@ class PeoplePresenter extends BasePresenter {
 		$address->setType('home');
 
 		$person->setAddresses([$address]);
+
+		$birthday = new Google_Service_PeopleService_Birthday;
+		$birthdayDate = new Google_Service_PeopleService_Date;
+		$birthdayDate->setYear($user->date_born->format('Y'));
+		$birthdayDate->setMonth($user->date_born->format('m'));
+		$birthdayDate->setDay($user->date_born->format('d'));
+		$birthday->setDate($birthdayDate);
+
+		$person->setBirthdays($birthday);
 
 		return $person;
 	}
