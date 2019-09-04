@@ -508,6 +508,16 @@ CREATE TABLE `user_log` (
   CONSTRAINT `user_log_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
+-- Table structure for table `user_registration`
+
+DROP TABLE IF EXISTS `user_registration`;
+CREATE TABLE `user_registration` (
+  `user_id` smallint(5) unsigned NOT NULL,
+  `year` smallint(5) unsigned NOT NULL,
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_registration_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
 -- Table structure for table `user_rights`
 
 DROP TABLE IF EXISTS `user_rights`;
