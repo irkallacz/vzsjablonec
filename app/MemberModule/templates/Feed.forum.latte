@@ -1,4 +1,4 @@
-{contentType application/rss+xml; charset=utf-8}
+{contentType text/xml; charset=utf-8}
 {block #content}
 <title>VZS Jablonec Forum{if isset($forum)} : {$forum->title|firstUpper}{/if}{if isset($topic)} : {$topic->title|firstUpper}{/if}</title>
 <link>{link //Forum:default}</link>
@@ -6,9 +6,8 @@
 <item n:foreach="$items as $item">
 	{var $topic = $item->ref('forum_post','forum_topic_id')}
 	<title>{$topic->title|firstUpper} ({$item->forum->title|firstUpper})</title>	
-	{var $member = $item->user}
-	<author>{$member->mail} ({$member->surname} {$member->name})</author>
-	<link>{link //Forum:post,$item->id}</link>
+	<author>{$item->user->mail} ({$item->user->surname} {$item->user->name})</author>
+	<link>{link //Forum:post $item->id}</link>
 	<guid isPermaLink="false">{$item->id}@{link Forum:default}</guid>
 	<description>{$item->text|texy}</description>
 	<pubDate>{$item->date_add|date:DATE_RSS}</pubDate>

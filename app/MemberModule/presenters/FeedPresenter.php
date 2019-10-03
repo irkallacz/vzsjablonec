@@ -52,7 +52,7 @@ class FeedPresenter extends BasePresenter {
 	 *
 	 */
 	protected function zkontroluj() {
-		$user = $this->userService->getUserByAutentication($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+		$user = $this->userService->getUserByAutentication(intval($_SERVER['PHP_AUTH_USER']), $_SERVER['PHP_AUTH_PW']);
 
 		if (!$user) {
 			$this->httpResponse->setCode(Response::S401_UNAUTHORIZED);
