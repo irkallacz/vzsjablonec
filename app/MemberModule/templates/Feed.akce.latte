@@ -5,7 +5,7 @@
 <description>Akce VZS Jablonec</description>
 <item n:foreach="$items as $item">
 	<title>{$item->name|firstUpper}</title>
-	<author>{if $item->user}{$item->user->mail} ({$item->user->surname} {$item->user->name}{else} info@vzs-jablonec.cz (VZS Jablonec){/if})</author>
+	<author>{if $item->created_by}{$item->ref('user', 'created_by')->mail} ({$item->ref('user', 'created_by')->surname} {$item->ref('user', 'created_by')->name}{else} info@vzs-jablonec.cz (VZS Jablonec){/if})</author>
 	<link>{link //Akce:view $item->id}</link>
 	<guid isPermaLink="false">{$item->id}@{link Akce:default}</guid>
 	<description>
