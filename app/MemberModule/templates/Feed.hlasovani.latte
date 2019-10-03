@@ -13,11 +13,11 @@
 	{block|escape}
 	{foreach $item->related('hlasovani_odpoved')->order('text') as $odpoved}
 	<p><i>{$odpoved->text}</i></p>
-		<ol id="members" n:inner-foreach="$odpoved->related('hlasovani_member')->select('member.surname, member.name') as $member">
+		<ol id="members" n:inner-foreach="$odpoved->related('hlasovani_member')->select('user.surname, user.name') as $member">
 			<li>{$member->surname} {$member->name}</li>
 		</ol>
 	{/foreach}
-	<p>Hlasování bylo ukončeno {$item->date_deatline|date:'%d. %B %Y'}<p>
+	<p>Hlasování bylo ukončeno {$item->date_deatline|date:'%d. %B %Y'}</p>
 	{/block}
 	</description>
 	<pubDate>{$item->date_add|date:DATE_RSS}</pubDate>
