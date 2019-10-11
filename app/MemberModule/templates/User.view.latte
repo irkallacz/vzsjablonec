@@ -145,7 +145,7 @@
 
 	<p n:if="$age"><b>Věk:</b> {$age->format('%y')}</p>
 
-	<p n:if="$user->isInRole('board')"><b>Registrace:</b> {foreach $member->related('user_registration')->order('year') as $registration}{$registration->year}{sep}, {/sep}{/foreach}</p>
+	<p n:if="($user->isInRole('board'))and($member->related('user_registration')->count())"><b>Registrace:</b> {foreach $member->related('user_registration')->order('year') as $registration}{$registration->year}{sep}, {/sep}{/foreach}</p>
 
     {if $user->isInRole('member')}
 		<h3>{include svg map-marker} Adresa {include mapy $member->ulice.' '.$member->mesto}</h3>
