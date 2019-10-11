@@ -268,6 +268,9 @@ CREATE TABLE `dokumenty_directories` (
   CONSTRAINT `dokumenty_directories_ibfk_3` FOREIGN KEY (`parent`) REFERENCES `dokumenty_directories` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
+INSERT INTO `dokumenty_directories` (`id`, `name`, `webViewLink`, `level`) VALUES
+  ('olqBGlusVSO2QWsuaOq0WpazaQqK', 'Web', '', 0);
+
 -- Table structure for table `forum`
 
 DROP TABLE IF EXISTS `forum`;
