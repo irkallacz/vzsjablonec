@@ -249,12 +249,11 @@ class SignPresenter extends BasePresenter {
 		if ($member) {
 			if (!$this->userService->haveActivePasswordSession($member->id)) {
 				$next = $this->messageService->getNextSendTime();
-				$minutes = intval($next->diff(new DateTime())->i) + 40;
-				$session = $this->userService->addPasswordSession($member->id, "$minutes MINUTE");
+				$session = $this->userService->addPasswordSession($member->id, '3 HOUR');
 				$this->backlink = '';
 				$this->addRestoreMail($member, $session);
 
-				$this->flashMessage('Na Váši e-mailovou adresu bude '.LatteFilters::timeAgoInWords($next).' odeslán odkaz pro změnu hesla');
+				$this->flashMessage(sprintf('Na Váši e-mailovou adresu bude %s odeslán odkaz pro změnu hesla', LatteFilters::timeAgoInWords($next)));
 				$this->redirect('in');
 
 			} $form->addError('Na tomto účtu je již aktivní jiná obnova hesla');

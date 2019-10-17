@@ -252,7 +252,7 @@ class UserPresenter extends LayerPresenter {
 
 		if (!$user) throw new BadRequestException('Uživatel nenalezen');
 
-		$session = $this->userService->addPasswordSession($user->id, '12 HOUR');
+		$session = $this->userService->addPasswordSession($user->id, '24 HOUR');
 
 		$this->addRestoreMail($user, $session);
 		$next = $this->messageService->getNextSendTime();
@@ -588,7 +588,7 @@ class UserPresenter extends LayerPresenter {
 
 			$this->flashMessage('Byl přidán nový člen');
 
-			$session = $this->userService->addPasswordSession($user->id, '24 HOUR');
+			$session = $this->userService->addPasswordSession($user->id, '48 HOUR');
 
 			$this->addLoggingMail($user, $session);
 			$datetime = $this->messageService->getNextSendTime();
