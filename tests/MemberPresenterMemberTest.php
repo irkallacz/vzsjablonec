@@ -229,23 +229,6 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 		$this->checkAction('Member:Mail:akce', ['id' => 2]);
 	}
 
-	public function testActionDokumentyDefault()
-	{
-		$container = $this->getContainer();
-		/** @var \App\Model\DokumentyService $service*/
-		$service = $container->getByType('App\Model\DokumentyService');
-
-		$service->addDirectory([
-			'id' => $service->driveDir,
-			'name' => 'Web',
-			'parent' => NULL,
-			'webViewLink' => '',
-			'level' => 0,
-		]);
-
-		$this->checkAction('Member:Dokumenty:default');
-	}
-
 }
 
 (new MemberPresenterMemberTest())->run();

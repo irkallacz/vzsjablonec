@@ -170,6 +170,11 @@ final class MemberPresenterUserTest extends \Tester\TestCase
 		$this->checkAction('Member:User:edit', ['id' => 2]);
 	}
 
+	public function testActionDokumentyDefault()
+	{
+		$this->checkAction('Member:Dokumenty:default');
+	}
+
 	/**
 	 * @throws \Nette\Application\ForbiddenRequestException
 	 */
