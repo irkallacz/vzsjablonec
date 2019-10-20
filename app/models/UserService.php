@@ -216,11 +216,12 @@ class UserService extends DatabaseService {
 	 * @param string $method
 	 */
 	public function addUserLogin(int $user_id, int $method = self::LOGIN_METHOD_PASSWORD) {
-		$this->database->query('INSERT INTO user_log', [
-			'user_id' => $user_id,
-			'date_add' => new SqlLiteral('NOW()'),
-			'method_id' => $method
-		]);
+		$this->database->query('INSERT INTO user_log (`user_id`, `date_add`, `method_id`) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE `date_add` = ?',
+			$user_id,
+			new SqlLiteral('NOW()'),
+			$method,
+			new SqlLiteral('NOW()')
+		);
 	}
 
 	/**
