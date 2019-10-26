@@ -104,7 +104,7 @@ class IdokladService {
 		$data = $response->getData();
 		for ($i = 2; $i <= $response->getTotalPages(); ++$i) {
 			$request->setPage($i);
-			$response = $this->iDokladService->sendRequest($request);
+			$response = $this->sendRequest($request);
 			$data = array_merge($data, $response->getData());
 		}
 		return $data;
