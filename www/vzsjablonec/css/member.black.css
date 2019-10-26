@@ -1,0 +1,6 @@
+body.black {background-color: black; color: white}
+body.black #text .texy { background-color: #1f1f1f; color: white;}
+body.black #billing table { background-color: #1f1f1f;}
+body.black #tabs .active { background-color: #1f1f1f;}
+body.black .target:target {color: gray;}
+body.black #text .hoverLike:hover {color: gray;}
