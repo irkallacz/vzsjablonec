@@ -1,6 +1,8 @@
 body.black {background-color: black; color: white}
-body.black #text .texy { background-color: #1f1f1f; color: white;}
-body.black #billing table { background-color: #1f1f1f;}
-body.black #tabs .active { background-color: #1f1f1f;}
-body.black .target:target {color: gray;}
-body.black #text .hoverLike:hover {color: gray;}
+body.black #text .texy, body.black textarea {background-color: #1f1f1f; color: white;}
+body.black textarea.texyla {background-color: white; color: black;}
+body.black #billing table, body.black #tabs .active, body.black .grid table tr:nth-child(2n) td, body.black .message blockquote {background-color: #1f1f1f;}
+body.black #text .hoverLike:hover, body.black .target:target {color: #585858;}
+body.black #top #top-right, body.black a {color: #009bff;}
+body.black a.buttonLike {color: white;}
+body.black ins {background-color: green;}
