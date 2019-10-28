@@ -490,6 +490,7 @@ CREATE TABLE `user` (
   `cardId` char(8) COLLATE 'utf8_czech_ci' NULL,
   `vzsId` char(6) COLLATE 'utf8_czech_ci' NULL,
   `messengerId` char(16) COLLATE 'utf8_czech_ci' NULL,
+  `theme` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `date_add` date DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
