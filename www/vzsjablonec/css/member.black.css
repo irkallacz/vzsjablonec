@@ -6,3 +6,4 @@ body.black #text .hoverLike:hover, body.black .target:target {color: #585858;}
 body.black #top #top-right, body.black a {color: #009bff;}
 body.black a.buttonLike {color: white;}
 body.black ins {background-color: green;}
+body.black .update a {color: gray;}
