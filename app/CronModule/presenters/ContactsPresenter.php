@@ -42,4 +42,9 @@ final class ContactsPresenter extends BasePresenter {
 		$this->sendResponse(new TextResponse(htmlentities($body)));
 	}
 
+	public function actionDirectory() {
+		$service = new \Google_Service_Directory($this->googleClient);
+		$users = $service->users->listUsers();
+	}
+
 }
