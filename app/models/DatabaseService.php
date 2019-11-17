@@ -38,6 +38,8 @@ abstract class DatabaseService {
 	}
 
 	/**
+	 * In ['add'] return values witch are in first array but not in second
+	 * In ['delete'] return values witch are in second array but not in first
 	 * @param array $new
 	 * @param array $old
 	 * @return array
