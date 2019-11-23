@@ -15,8 +15,9 @@ use Nette\Application\UI\ITemplate;
 use Nette\Database\Table\IRow;
 use Tracy\Debugger;
 
-final class ContactsPresenter extends BasePresenter
-{
+final class ContactsPresenter extends BasePresenter {
+
+	const DOMAIN = 'vzs-jablonec.cz';
 
 	/**
 	 * @var \Google_Client @inject
@@ -44,19 +45,14 @@ final class ContactsPresenter extends BasePresenter
 	 */
 	public function actionDefault()
 	{
-		$domain = 'vzs-jablonec.cz';
-
 		$this->googleClient->setSubject('admin@vzs-jablonec.cz');
 		$httpClient = $this->googleClient->authorize();
 		$this->googleClient->fetchAccessTokenWithAssertion($httpClient);
 
-		//$response = $httpClient->send(new Request('put', 'https://www.google.com/m8/feeds/contacts/vzs-jablonec.cz/full/7190f9458ccf994d/1573581443925000', ['Content-Type' => 'application/atom+xml'],);
+		$response = $httpClient->request('GET', 'https://www.google.com/m8/feeds/contacts/' . self::DOMAIN . '/full');
 
-		$response = $httpClient->request('GET', 'https://www.google.com/m8/feeds/contacts/' . $domain . '/full');
-
-		Debugger::barDump($response);
-
-		$body = (string)$response->getBody();
+		$body = (string) $response->getBody();
+		Debugger::barDump($response->getHeaders());
 		$this->sendResponse(new TextResponse(htmlentities($body)));
 	}
 
@@ -74,24 +70,22 @@ final class ContactsPresenter extends BasePresenter
 	 */
 	public function actionUpdate()
 	{
-		$domain = 'vzs-jablonec.cz';
-
 		//Všichni členové, kteřé nemají doménový účet
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL)
-			->where('mail NOT LIKE ?', '%@' . $domain)
-			->where('mail2 NOT LIKE ?', '%@' . $domain)
+			->where('mail NOT LIKE ?', '%@' . self::DOMAIN)
+			->where('mail2 NOT LIKE ?', '%@' . self::DOMAIN)
 			->fetchAll();
 
-		$this->googleClient->setSubject('admin@vzs-jablonec.cz');
+		$this->googleClient->setSubject('admin@' . self::DOMAIN);
 		$httpClient = $this->googleClient->authorize();
 		$this->googleClient->fetchAccessTokenWithAssertion($httpClient);
 
 		//Získáme seznam kontaktů
-		$response = $httpClient->request('GET', 'https://www.google.com/m8/feeds/contacts/' . $domain . '/full');
-
-		$body = (string)$response->getBody();
+		$response = $httpClient->request('GET', 'https://www.google.com/m8/feeds/contacts/' . self::DOMAIN . '/full?v=3.0');
+		$body = (string) $response->getBody();
 		$xml = simplexml_load_string($body);
 
+		//Připravíme šablonu pro hromadné úpravy
 		$feedXml = null;
 		$this->feedTemplate = $this->createTemplate();
 		$this->feedTemplate->setFile(__DIR__ . '/../templates/Contacts.batch.latte');
@@ -100,32 +94,20 @@ final class ContactsPresenter extends BasePresenter
 			$updated = (string) $contact->updated;
 			$updated = new \DateTime($updated);
 
-			$updateLink = null;
-			foreach ($contact->link as $link) {
-				if ($link['rel'] == 'edit') {
-					$updateLink = (string) $link;
-				}
-			}
-
-			//Nenašel se updateLink = něco je špatně
-			if (!$updateLink) {
-				continue;
-			}
-
 			$contactId = (string) $contact->id;
+			$etag = (string) $contact->attributes('gd', true)['etag'];
+			$contact = $contact->children('gd', true);
 
-			$contact = $contact->children('http://schemas.google.com/g/2005');
-
-			//Pokud nemá naše ID, nevšímat si
-			if (property_exists($contact, 'extendedProperty')) {
+			//Pokud kontakt nemá naše ID, nevšímat si ho
+			if ((property_exists($contact, 'extendedProperty')) and (strval($contact->extendedProperty->attributes()['name'])=='id')) {
 				$id = (int) $contact->extendedProperty;
 
 				if (!array_key_exists($id, $users)) {
 					//Není v seznamu užvatelů = delete
-					$feedXml .= $this->createFeed('delete', $id, null, $updateLink, $contactId);
+					$feedXml .= $this->createFeedEntry('delete', $id, null, $etag, $contactId);
 				} elseif ($users[$id]->date_update >= $updated) {
 					//Je v seznamu uživatelů a byl od posledně aktualizován = update
-					$feedXml .= $this->createFeed('update', $id, $users[$id], $updateLink, $contactId);
+					$feedXml .= $this->createFeedEntry('update', $id, $users[$id], $etag, $contactId);
 				}
 			}
 		}
@@ -134,14 +116,14 @@ final class ContactsPresenter extends BasePresenter
 
 		//Uřivatelé, kteří nejsou v adreáři googlu = insert
 		foreach ($differences['add'] as $id) {
-			$feedXml .= $this->createFeed('insert', $id, $users[$id]);
+			$feedXml .= $this->createFeedEntry('insert', $id, $users[$id]);
 		}
 
 		if ($feedXml) {
-			$feedXml = '<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom" xmlns:gContact="http://schemas.google.com/contact/2008" xmlns:gd="http://schemas.google.com/g/2005" xmlns:batch="http://schemas.google.com/gdata/batch"><category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2008#contact" />' . $feedXml;
+			$feedXml = '<?xml version="1.0" encoding="UTF-8"?><feed xmlns="http://www.w3.org/2005/Atom" xmlns:gd="http://schemas.google.com/g/2005" xmlns:batch="http://schemas.google.com/gdata/batch" xmlns:gContact="http://schemas.google.com/contact/2008"> <category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2008#contact" />' . $feedXml;
 			$feedXml .= '</feed>';
 
-			$response = $httpClient->send(new Request('post', 'https://www.google.com/m8/feeds/contacts/' . $domain . '/full/batch', ['Content-Type' => 'application/atom+xml'], $feedXml));
+			$response = $httpClient->send(new Request('post', 'https://www.google.com/m8/feeds/contacts/'. self::DOMAIN .'/full/batch?v=3.0', ['Content-Type' => 'application/atom+xml'], $feedXml));
 		}
 
 		$this->template->items = $this->updateContacts;
@@ -151,14 +133,14 @@ final class ContactsPresenter extends BasePresenter
 	 * @param string $type
 	 * @param int $id
 	 * @param IRow|null $member
-	 * @param string|null $updateLink
+	 * @param string|null $etag
 	 * @param string|null $contactId
 	 * @return string
 	 */
-	private function createFeed(string $type, int $id, IRow $member = null, string $updateLink = null, string $contactId = null)
+	private function createFeedEntry(string $type, int $id, IRow $member = null, string $etag = null, string $contactId = null)
 	{
 		$this->feedTemplate->type = $type;
-		$this->feedTemplate->link = $updateLink;
+		$this->feedTemplate->etag = $etag;
 		$this->feedTemplate->member = $member;
 		$this->feedTemplate->id = ($contactId) ? $contactId : $id;
 		$this->updateContacts[$id] = $type;
