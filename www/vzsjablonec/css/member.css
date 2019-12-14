@@ -127,8 +127,7 @@ a.head {background-color: #12397e; font-size: 2ex; border: 1px solid black;
 
 #text a.buttonLike {text-decoration: none;}
 
-#text .buttonLike:hover, #text .buttonLike:active, #text .buttonLike:focus
-{background-color: #e1001a; color: white; background-image: none;}
+#text .buttonLike:hover, #text .buttonLike:active, #text .buttonLike:focus, #text .buttonLike.current {background-color: #e1001a; color: white; background-image: none;}
 
 #text span.gray.buttonLike {background-color: gray; 
 	background-image: -moz-linear-gradient(silver,gray);

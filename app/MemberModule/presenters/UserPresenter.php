@@ -2,6 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\UserEventsControl;
 use App\MemberModule\Components\UserGridControl;
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\AkceService;
@@ -45,10 +46,6 @@ class UserPresenter extends LayerPresenter {
 
 	/** @var UserFormFactory @inject */
 	public $userFormFactory;
-
-	private $userEventsOffset = 0;
-
-	private $showUserEvents = FALSE;
 
 	/**
 	 * @param string|null $q
@@ -116,17 +113,18 @@ class UserPresenter extends LayerPresenter {
 
 	/**
 	 * @param int $id
+	 * @param bool $showEvents
 	 * @throws BadRequestException
 	 * @throws ForbiddenRequestException
 	 */
-	public function renderView(int $id) {
+	public function renderView(int $id, bool $showEvents = FALSE) {
 		$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
 		if (!$user) {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		if ((!$user->role) and ($this->getUser()->getId() != $id) and (!$this->getUser()->isInRole('board'))){
+		if ((!$user->role) and ($this->getUser()->getId() != $id) and (!$this->getUser()->isInRole('board'))) {
 			throw new ForbiddenRequestException('Nemáte právo prohlížet tohoto uživatele');
 		}
 
@@ -135,24 +133,15 @@ class UserPresenter extends LayerPresenter {
 		$this->template->last_login = $user->related('user_log')->order('date_add DESC')->fetch();
 
 		$this->template->title = UserService::getFullName($user);
-
-		$this->template->events = $this->akceService->getAkceByMemberId($id)->limit(self::DEFAULT_USER_EVENT_OFFSET, $this->userEventsOffset);
-		$this->template->showEvents = $this->showUserEvents;
-		$this->template->offset = $this->userEventsOffset + self::DEFAULT_USER_EVENT_OFFSET;
+		$this->template->showEvents = $showEvents;
 	}
 
 	/**
-	 * @param int $offset
+	 * @return UserEventsControl
 	 */
-	public function handleLoadMoreUserEvents(int $offset) {
-		$this->userEventsOffset = $offset;
-		$this->redrawControl('events-table');
-		$this->redrawControl('events-loadMore');
-	}
-
-	public function handleShowUserEvents() {
-		$this->showUserEvents = TRUE;
-		$this->redrawControl('events');
+	protected function createComponentUserEvents(){
+		$memberId = $this->getParameter('id');
+		return new UserEventsControl($this->akceService, $memberId);
 	}
 
 	/**

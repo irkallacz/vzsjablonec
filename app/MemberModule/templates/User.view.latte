@@ -18,10 +18,6 @@
 		#photo { background-color: silver; color: gray; padding: 65px 0;}
 		.card #logo { display: none; }
 
-		#events { caption-side: bottom; }
-		#events caption { margin-top: 1em; }
-		h3#events-header { margin-top: 2em;}
-
 		@media screen and (min-width: 600px) {
 			.card .buttonMenu { margin-top: 0; padding-bottom: 2ex;}
 
@@ -166,41 +162,13 @@
 	</div>
 
 	<p n:if="$user->isInRole('member')">
+		<a n:href="this#events-header showEvents => (!$showEvents)" n:class="buttonLike, $showEvents ? current">{include svg calendar} nedávné akce</a>
 		<a n:if="$user->isInRole('board')" n:href="registrationForm $member->id" class="buttonLike">{include svg file-pdf-o} stáhnout formulář</a>
 		<a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a>
-		<a n:if="$user->isInRole('member')" n:href="showUserEvents!" class="buttonLike ajax">{include svg calendar} nedávné akce</a>
 	</p>
 
-	<div n:snippet="events">
-		{if $showEvents}
-			<h3 id="events-header">{include svg calendar} Nedávné akce</h3>
-
-			<table id="events">
-				<caption n:snippet="events-loadMore">
-					<a class="buttonLike ajax" n:href="loadMoreUserEvents! $offset">{include svg repeat} načíst další</a>
-				</caption>
-				<thead>
-					<tr><th></th><th>Datum akce</th><th>Název</th><th>Datum přihlášení</th><th></th></tr>
-				</thead>
-				<tbody n:snippet="events-table" data-ajax-append="true">
-					<tr n:foreach="$events as $event">
-						<td>{if $event->organizator}{include svg user-o}{/if}</td>
-						<td><time datetime="{$event->date_start|datetimeC}">{$event->date_start|date:'d.m.Y'}</time></td>
-						<td><a n:href="Akce:view $event->akce_id" target="_blank">{$event->title}</a></td>
-						<td><time datetime="{$event->date_add|datetimeC}">{$event->date_add|datetime}</time></td>
-						<td>
-							<a n:if="$event->created_by != $member->id" href="{$event->created_by}" target="_blank">
-								{include svg check} {$event->ref('user', 'created_by')->surname} {$event->ref('user', 'created_by')->name}
-							</a>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		{/if}
-	</div>
-
-	<script type="text/javascript" n:syntax="off" n:nonce>
-		$.nette.init();
-	</script>
+	{if ($showEvents)and($user->isInRole('member'))}
+		{control userEvents $member->id}
+	{/if}
 </div>
 {/block}
