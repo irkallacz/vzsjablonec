@@ -29,6 +29,8 @@ use Tracy\Debugger;
 
 class UserPresenter extends LayerPresenter {
 
+	const DEFAULT_USER_EVENT_OFFSET = 10;
+
 	/** @var UserService @inject */
 	public $userService;
 
@@ -43,6 +45,10 @@ class UserPresenter extends LayerPresenter {
 
 	/** @var UserFormFactory @inject */
 	public $userFormFactory;
+
+	private $userEventsOffset = 0;
+
+	private $showUserEvents = FALSE;
 
 	/**
 	 * @param string|null $q
@@ -129,6 +135,24 @@ class UserPresenter extends LayerPresenter {
 		$this->template->last_login = $user->related('user_log')->order('date_add DESC')->fetch();
 
 		$this->template->title = UserService::getFullName($user);
+
+		$this->template->events = $this->akceService->getAkceByMemberId($id)->limit(self::DEFAULT_USER_EVENT_OFFSET, $this->userEventsOffset);
+		$this->template->showEvents = $this->showUserEvents;
+		$this->template->offset = $this->userEventsOffset + self::DEFAULT_USER_EVENT_OFFSET;
+	}
+
+	/**
+	 * @param int $offset
+	 */
+	public function handleLoadMoreUserEvents(int $offset) {
+		$this->userEventsOffset = $offset;
+		$this->redrawControl('events-table');
+		$this->redrawControl('events-loadMore');
+	}
+
+	public function handleShowUserEvents() {
+		$this->showUserEvents = TRUE;
+		$this->redrawControl('events');
 	}
 
 	/**

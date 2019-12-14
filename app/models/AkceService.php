@@ -150,10 +150,24 @@ class AkceService extends DatabaseService {
 
 	/**
 	 * @param int $id
+	 * @return Selection
+	 */
+	public function getAkceByMemberId(int $id) {
+		return $this->database
+			->table(self::TABLE_AKCE_MEMBER_NAME)
+			->select('akce_id, akce.date_start AS date_start, akce.name AS title, organizator, akce_member.created_by, akce_member.date_add')
+			->where('akce.enable', TRUE)
+			->where('akce.confirm', TRUE)
+			->where('user_id', $id)
+			->order('akce.date_start DESC');
+	}
+
+	/**
+	 * @param int $id
 	 * @param bool $org
 	 * @return array
 	 */
-	public function getAkceByMemberId(int $id, bool $org = FALSE) {
+	public function getAkceListByMemberId(int $id, bool $org = FALSE) {
 		return array_values($this->database->table(self::TABLE_AKCE_MEMBER_NAME)
 			->select('akce_id')
 			->where('user_id', $id)

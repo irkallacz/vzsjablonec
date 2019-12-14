@@ -81,8 +81,8 @@ class AkcePresenter extends LayerPresenter {
 		if (is_int($year)) $akce[1]->where('YEAR(date_start)', $year);
 
 		$this->template->akceAllList = $akce;
-		$this->template->memberList = $this->akceService->getAkceByMemberId($this->user->id);
-		$this->template->orgList = $this->akceService->getAkceByMemberId($this->user->id, TRUE);
+		$this->template->memberList = $this->akceService->getAkceListByMemberId($this->user->id);
+		$this->template->orgList = $this->akceService->getAkceListByMemberId($this->user->id, TRUE);
 	}
 
 	public function createComponentYp() {
