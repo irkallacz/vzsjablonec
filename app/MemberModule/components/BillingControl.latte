@@ -11,21 +11,21 @@
 {if !$edit}
 	{if $billing}
 		<table class="view">
-			<tr><th colspan="3">Příjmy</th><th class="right">{$billing->income} Kč</th></tr>
+			<tr><th colspan="3">Příjmy</th><th class="right">{$billing->income}&nbsp;Kč</th></tr>
 			<tr n:foreach="$billing->related('akce_billing_item')->where('negative', FALSE) as $item">
 				<td n:class="$item->booked ? booked">{$item->name} {if $item->invoice}(faktura {$item->invoice}){/if}</td>
-				<td class="right">{$item->price} Kč</td>
+				<td class="right">{$item->price}&nbsp;Kč</td>
 				<td class="right">{$item->count}×</td>
-				<td class="right">{$item->price * $item->count} Kč</td>
+				<td class="right">{$item->price * $item->count}&nbsp;Kč</td>
 			</tr>
-			<tr><th colspan="3">Výdaje</th><th class="right">{$billing->expense} Kč</th></tr>
+			<tr><th colspan="3">Výdaje</th><th class="right">{$billing->expense}&nbsp;Kč</th></tr>
 			<tr n:foreach="$billing->related('akce_billing_item')->where('negative', TRUE) as $item">
 				<td n:class="$item->booked ? booked">{$item->name} {if $item->invoice}(faktura {$item->invoice}){/if}</td>
-				<td class="right">{$item->price} Kč</td>
+				<td class="right">{$item->price}&nbsp;Kč</td>
 				<td class="right">{$item->count}×</td>
-				<td class="right">{$item->price * $item->count} Kč</td>
+				<td class="right">{$item->price * $item->count}&nbsp;Kč</td>
 			</tr>
-			<tr><th colspan="3">Bilance</th><td class="right last">{$billing->final} Kč</td></tr>
+			<tr><th colspan="3">Bilance</th><td class="right last">{$billing->final}&nbsp;Kč</td></tr>
 			<tr n:if="$billing->note"><td colspan="4">{$billing->note|texy}</td></tr>
 		</table>
 
