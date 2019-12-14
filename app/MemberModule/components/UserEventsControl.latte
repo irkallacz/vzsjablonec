@@ -11,9 +11,9 @@
 
 	<table id="events">
 		<caption n:snippet="events-loadMore">
-			<a class="buttonLike ajax" n:href="loadMoreUserEvents! $offset">{include svg repeat} načíst další</a>
+			<a class="buttonLike ajax" n:if="$offset" n:href="loadMoreUserEvents! $offset">{include svg repeat} načíst další</a>
 		</caption>
-		<thead>
+		<thead n:if="$offset">
 			<tr><th></th><th>Datum akce</th><th>Název</th><th>Datum přihlášení</th><th></th></tr>
 		</thead>
 		<tbody n:snippet="events-table" data-ajax-append="true">

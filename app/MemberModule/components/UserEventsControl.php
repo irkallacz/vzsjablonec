@@ -47,8 +47,10 @@ class UserEventsControl extends LayerControl
 	{
 		$this->template->setFile(__DIR__ . '/UserEventsControl.latte');
 		$this->template->memberId = $this->memberId;
-		$this->template->events = $this->akceService->getAkceByMemberId($this->memberId)->limit(self::DEFAULT_EVENT_OFFSET, $this->eventsOffset);
-		$this->template->offset = $this->eventsOffset + self::DEFAULT_EVENT_OFFSET;
+		$events = $this->akceService->getAkceByMemberId($this->memberId)->limit(self::DEFAULT_EVENT_OFFSET, $this->eventsOffset);
+		$count = $events->count();
+		$this->template->events = $events;
+		$this->template->offset = ($count) ? $this->eventsOffset + self::DEFAULT_EVENT_OFFSET : 0;
 
 		$this->template->render();
 	}
