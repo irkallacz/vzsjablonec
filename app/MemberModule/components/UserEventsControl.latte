@@ -1,0 +1,37 @@
+{import '../templates/@svg.latte'}
+
+<style type="text/css" n:syntax="off">
+	#events { caption-side: bottom; }
+	#events caption { margin-top: 1em; }
+	h3#events-header { margin-top: 2em;}
+</style>
+
+<div id="userEventsContol">
+	<h3 id="events-header">{include svg calendar} Nedávné akce</h3>
+
+	<table id="events">
+		<caption n:snippet="events-loadMore">
+			<a class="buttonLike ajax" n:if="$offset" n:href="loadMoreUserEvents! $offset">{include svg repeat} načíst další</a>
+		</caption>
+		<thead n:if="$offset">
+			<tr><th></th><th>Datum akce</th><th>Název</th><th>Datum přihlášení</th><th></th></tr>
+		</thead>
+		<tbody n:snippet="events-table" data-ajax-append="true">
+			<tr n:foreach="$events as $event">
+				<td>{if $event->organizator}{include svg user-o}{/if}</td>
+				<td><time datetime="{$event->date_start|datetimeC}">{$event->date_start|date:'d.m.Y'}</time></td>
+				<td><a href="{plink Akce:view $event->akce_id}" target="_blank">{$event->title}</a></td>
+				<td><time datetime="{$event->date_add|datetimeC}">{$event->date_add|datetime}</time></td>
+				<td>
+					<a n:if="$event->created_by != $memberId" href="{plink User:view $event->created_by}" target="_blank">
+						{include svg check} {$event->ref('user', 'created_by')->surname} {$event->ref('user', 'created_by')->name}
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<script type="text/javascript" n:syntax="off" n:nonce>
+	$.nette.init();
+</script>

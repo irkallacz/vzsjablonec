@@ -35,6 +35,8 @@
 		}
 	</style>
 	<script type="text/javascript" src="{$baseUrl}/js/confirm.js"></script>
+	<script type="text/javascript" src="{$baseUrl}/js/jquery.nette.js"></script>
+	<script type="text/javascript" src="{$baseUrl}/js/nette.ajax.js"></script>
 {/block}
 
 <h1 n:block="#title">Osobní profil</h1>
@@ -155,14 +157,18 @@
 		</address>
 	{/if}
 
-	<p n:if="$user->isInRole('member')">
-		<a n:if="$user->isInRole('board')" n:href="registrationForm $member->id" class="buttonLike">{include svg file-pdf-o} stáhnout formulář</a>
-		<a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a>
-	</p>
-
 	<div id="poznamka">
 		{$member->text|noescape|texy}
 	</div>
 
+	<p n:if="$user->isInRole('member')">
+		<a n:href="this#events-header showEvents => (!$showEvents)" n:class="buttonLike, $showEvents ? current">{include svg calendar} nedávné akce</a>
+		<a n:if="$user->isInRole('board')" n:href="registrationForm $member->id" class="buttonLike">{include svg file-pdf-o} stáhnout formulář</a>
+		<a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a>
+	</p>
+
+	{if ($showEvents)and($user->isInRole('member'))}
+		{control userEvents $member->id}
+	{/if}
 </div>
 {/block}

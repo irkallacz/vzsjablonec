@@ -2,6 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\UserEventsControl;
 use App\MemberModule\Components\UserGridControl;
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\AkceService;
@@ -28,6 +29,8 @@ use Nette\Utils\Strings;
 use Tracy\Debugger;
 
 class UserPresenter extends LayerPresenter {
+
+	const DEFAULT_USER_EVENT_OFFSET = 10;
 
 	/** @var UserService @inject */
 	public $userService;
@@ -110,17 +113,18 @@ class UserPresenter extends LayerPresenter {
 
 	/**
 	 * @param int $id
+	 * @param bool $showEvents
 	 * @throws BadRequestException
 	 * @throws ForbiddenRequestException
 	 */
-	public function renderView(int $id) {
+	public function renderView(int $id, bool $showEvents = FALSE) {
 		$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 
 		if (!$user) {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		if ((!$user->role) and ($this->getUser()->getId() != $id) and (!$this->getUser()->isInRole('board'))){
+		if ((!$user->role) and ($this->getUser()->getId() != $id) and (!$this->getUser()->isInRole('board'))) {
 			throw new ForbiddenRequestException('Nemáte právo prohlížet tohoto uživatele');
 		}
 
@@ -129,6 +133,15 @@ class UserPresenter extends LayerPresenter {
 		$this->template->last_login = $user->related('user_log')->order('date_add DESC')->fetch();
 
 		$this->template->title = UserService::getFullName($user);
+		$this->template->showEvents = $showEvents;
+	}
+
+	/**
+	 * @return UserEventsControl
+	 */
+	protected function createComponentUserEvents(){
+		$memberId = $this->getParameter('id');
+		return new UserEventsControl($this->akceService, $memberId);
 	}
 
 	/**
