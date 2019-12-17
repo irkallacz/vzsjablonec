@@ -18,7 +18,7 @@
 		</thead>
 		<tbody n:snippet="events-table" data-ajax-append="true">
 			<tr n:foreach="$events as $event">
-				<td>{if $event->organizator}{include svg user-o}{/if}</td>
+				<td>{if $event->organizator}{include svg user}{/if}</td>
 				<td><time datetime="{$event->date_start|datetimeC}">{$event->date_start|date:'d.m.Y'}</time></td>
 				<td><a href="{plink Akce:view $event->akce_id}" target="_blank">{$event->title}</a></td>
 				<td><time datetime="{$event->date_add|datetimeC}">{$event->date_add|datetime}</time></td>
