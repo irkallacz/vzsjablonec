@@ -1,13 +1,12 @@
 {block #head}
 <style type="text/css" n:syntax="off">
-.headerLike { margin: 0; padding: 0 1em 0.5ex 1em; display: inline-block;}
-.borderLike { border-left: none; border-right: none; border-bottom: none;}
-.buttonMenu li { float: none;}
-table#items td, table th { vertical-align: top; padding: 1ex 1ex;}
-table#items { border-collapse: collapse; width: 98%; }
-table#items td.col { padding: 0;}
-table#items .right .headerLike { font-style: italic; text-align: center;}
-table#items .first { font-size: 1.1em;}
+	.buttonMenu li { float: none;}
+	table#items { border-collapse: collapse; width: 98%; }
+	table#items tr.topic { border-top: 1px solid gray;}
+	table#items .count, table#items .author, table#items .vote { padding: 0 1ex; }
+	table#items .headerLike { border-radius: 0}
+	table#items .title { padding-left: 1em;}
+	table#items .author { padding: 0.5ex;}
 </style>
 
 {/block}
@@ -19,36 +18,54 @@ table#items .first { font-size: 1.1em;}
 <ul class="buttonMenu"><li><a class="buttonLike" n:href="add">{include svg plus} nová anketa</a></li></ul>
 
 <table id="items">
-<tr class="first"><th>Anketa</th><th>Počet hlasů</th><th>Poslední hlas</th></tr>
-{foreach $ankety as $item}
-	{var $post = $item->related('anketa_member','anketa_id')->order('date_add DESC')->fetch()}
-	
-	{if $post}{var $member = $post->ref('user')}{else}{var $member = 0}{/if}
-	
-	<tr n:class="borderLike,hoverLike,$item->date_add > $user->getIdentity()->date_last ? 'new', 
-	$item->user_id == $user->getId() ? logged">
-	{*(($post)and($post->user_id == $user->getId())) ? logged*}
-	<td class="col"><a draggable="true" class="noLink" title="{$item->title}{if $item->locked} (uzamčeno){/if}" n:href="Ankety:view,$item->id"><div>
-	<strong class="headerLike">
-		{if $item->locked}{include svg lock}{/if}
-		{$item->title|firstUpper}
-	</strong>
-	<span class="no-wrap"> {$item->user->surname} {$item->user->name}</span>
-	</div></a></td>
-	<td class="center">{$item->related('anketa_member','anketa_id')->count('user_id')}</td>
-	<td class="col">
-	 
-	<div class="right" n:if="$post">
-	<strong class="headerLike" title="{$post->date_add|timeAgoInWords}">
-		<time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
-	</strong>
-	
-	<span n:if="$member" class="no-wrap">{$member->surname} {$member->name}</span>
+	<thead>
+		<tr class="first"><th class="count"></th><th>Název</th><th>Autor</th><th class="vote">Poslední hlas</th></tr>
+	</thead>
+	<tbody n:inner-foreach="$ankety as $anketa">
+		{var $vote = $anketa->related('anketa_member','anketa_id')->order('date_add DESC')->fetch()}
 
-	</div>
-	</td>
-	</tr>
-{/foreach}
+		{if $vote}{var $member = $vote->ref('user')}{else}{var $member = 0}{/if}
+
+		<tr n:class="topic, hoverLike, (($vote)and($vote->date_add > $user->identity->date_last)) ? 'new',
+		 (($vote)and($vote->user_id == $user->id)) ? logged, $anketa->user_id == $user->id ? logged">
+
+			<td class="count center headerLike">
+				{$anketa->related('anketa_member','anketa_id')->count()}
+			</td>
+
+			<td class="col title">
+				<a title="{$anketa->title|firstUpper}{if $anketa->locked} (uzamčeno){/if}" n:href="Ankety:view $anketa->id">
+					<strong>{if $anketa->locked}{include svg lock}{/if}
+						{$anketa->title|firstUpper}
+					</strong>
+				</a>
+			</td>
+
+			<td class="col author right">
+				<div class="no-wrap">
+					<a n:tag-if="$anketa->user->role" title="profil uživatele" n:href="User:view $anketa->user_id">
+						{include svg user-o} {$anketa->user->surname} {$anketa->user->name}
+					</a>
+				</div>
+				<div class="no-wrap">
+					<time datetime="{$anketa->date_add|datetimeC}">{$anketa->date_add|datetime}</time>
+				</div>
+			</td>
+
+			<td class="col vote right">
+				{if $vote}
+					<div class="no-wrap">
+						{$vote->user->surname} {$vote->user->name}
+					</div>
+					<div class="no-wrap">
+						<a title="{$vote->date_add|timeAgoInWords}" n:href="Ankety:view $anketa->id">
+							{include svg comments-o} <time datetime="{$vote->date_add|datetimeC}">{$vote->date_add|datetime}</time>
+							<a>
+					</div>
+				{/if}
+			</td>
+		</tr>
+	</tbody>
 </table>
 
 <p class="right">
