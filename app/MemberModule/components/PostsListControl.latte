@@ -7,12 +7,12 @@
     <div id="post/{$post->id}" n:class="post, target, ($post->date_add > $user->getIdentity()->date_last) ? 'new', ($user->id == $post->user_id) ? logged">
         <div class="top headerLike">
             <a class="float-right" href="{plink Forum:post $post->id}" title="{$post->date_add|timeAgoInWords}">
-                {include svg comments} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
+                {include svg comments-o} <time datetime="{$post->date_add|datetimeC}">{$post->date_add|datetime}</time>
             </a>
             <a n:tag-if="$post->user->role" href="{plink User:view $post->user_id}" title="profil uživatele">
                 <strong>
-                    {$post->user->surname} {$post->user->name}
-                    {include svg user}
+					{include svg user-o}
+					{$post->user->surname} {$post->user->name}
                 </strong>
             </a>
         </div>
