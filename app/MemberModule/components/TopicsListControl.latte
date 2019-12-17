@@ -1,8 +1,10 @@
 {import '../templates/@svg.latte'}
 
 <table id="items">
-    <tr class="first"><th class="count"></th><th>{*Téma*}</th><th>Autor</th><th class="post">Poslední příspěvek</th></tr>
-    {foreach $topics as $topic}
+	<thead>
+    	<tr class="first"><th class="count"></th><th>{*Téma*}</th><th>Autor</th><th class="post">Poslední příspěvek</th></tr>
+	</thead>
+	<tbody n:inner-foreach="$topics as $topic">
         {var $post = $topic->related('forum_post', 'forum_topic_id')->where('NOT row_number', 0)->where('id <> forum_topic_id')->order('row_number DESC')->fetch()}
         {var $postCount = $post ? ($post->row_number - 1) : 0}
 
@@ -48,7 +50,6 @@
 					</div>
 				{/if}
 			</td>
-
 		</tr>
-    {/foreach}
+	</tbody>
 </table>
