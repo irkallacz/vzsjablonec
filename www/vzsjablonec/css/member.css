@@ -59,7 +59,7 @@ padding: 0 1em; background-color: #fffff6; position: relative;}
 .texy table th {background-color: silver; }
 .texy table table, .texy table td, .texy table th {border: 1px solid gray; padding: 1ex;}
 
-div#texyPreview.texy {border: none; padding: 0;}
+body #text div#texyPreview.texy {border: none; padding: 0; background-color: white; color: #222 }
 
 #text .texy h1 {font-size: 1.5em; text-transform: uppercase;}
 #text .texy h1, #text .texy h2, #text .texy h3, #text .texy h4 {margin-bottom: 0;}
