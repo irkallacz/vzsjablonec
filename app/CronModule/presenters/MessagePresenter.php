@@ -2,6 +2,7 @@
 
 namespace App\CronModule\Presenters;
 
+use App\Model\AkceService;
 use App\Model\UserService;
 use App\Model\MessageService;
 use GuzzleHttp\Client;
@@ -29,6 +30,9 @@ class MessagePresenter extends BasePresenter {
 	/** @var MessageService @inject */
 	public $messageService;
 
+	/** @var AkceService @inject */
+	public $akceService;
+
 	/** @var IMailer @inject */
 	public $mailer;
 
@@ -41,6 +45,7 @@ class MessagePresenter extends BasePresenter {
 	/**
 	 * MessagePresenter constructor.
 	 * @param array $mailSettings
+	 * @param array $messengerSettings
 	 */
 	public function __construct(array $mailSettings, array $messengerSettings) {
 		parent::__construct();
@@ -61,6 +66,19 @@ class MessagePresenter extends BasePresenter {
 		$this->template->items = [];
 
 		foreach ($messages as $message) {
+
+			//Pokud byla akce již schválená, neodesílat email
+			if ($message->message_type_id == MessageService\Message::EVENT_CONFIRM_TYPE) {
+				$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
+				if (array_key_exists('akce_id', $parameters)) {
+					$event = $this->akceService->getAkceById($parameters['akce_id']);
+					if ($event->confirm) {
+						$message->delete();
+						continue;
+					}
+				}
+			}
+
 			$this->messageService->beginTransaction();
 			$mail = $this->createEmailMessage($message);
 			$this->mailer->send($mail);
