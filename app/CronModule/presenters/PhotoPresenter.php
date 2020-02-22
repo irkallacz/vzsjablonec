@@ -29,7 +29,7 @@ class PhotoPresenter extends BasePresenter{
 		                $times[$album->id.'/'.$photo->filename] = $datetime;
 		            }
 			    }
-			}	
+			}
     	}
     	$this->template->images = $times;
     }
@@ -39,5 +39,20 @@ class PhotoPresenter extends BasePresenter{
 		$this->template->albums = $this->gallery;
 		$this->template->files = Finder::findFiles('*');
 	}
+
+	public function renderPhotosHash(){
+		$photos = $this->gallery->getPhotos()->where('hash ?', NULL)->order('album_id');
+
+		$files = [];
+		foreach ($photos as $photo) {
+			$file = 'albums/' . $photo->album_id . '/' . $photo->filename;
+			$file = (file_exists($file . '_')) ? $file . '_' : $file;
+			$hash = md5_file($file);
+			$photo->update(['hash' => $hash]);
+			$files[$file] = $hash;
+		}
+		$this->template->images = $files;
+	}
+
 
 }

@@ -214,6 +214,8 @@ class AlbumPresenter extends BasePresenter {
 
 		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($albumId) {
 			$upload = $uploadQueue->getLastUpload();
+			$hash = md5_file($upload->getFilename());
+			//TODO verify image is unique in album using hash
 			$image = $this->imageService->createImageFromUpload($albumId, $upload);
 
 			$datetime = $image->getExifDateTime();
@@ -236,7 +238,8 @@ class AlbumPresenter extends BasePresenter {
 				'user_id' => $this->user->id,
 				'thumb' => $thumbname,
 				'order' => $order,
-				'date_taken' => $datetime
+				'date_taken' => $datetime,
+				'hash' => $hash
 			];
 
 			$photo = $this->galleryService->addPhoto($values);
