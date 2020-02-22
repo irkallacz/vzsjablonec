@@ -65,6 +65,8 @@ body #text div#texyPreview.texy {border: none; padding: 0; background-color: whi
 #text .texy h1, #text .texy h2, #text .texy h3, #text .texy h4 {margin-bottom: 0;}
 #text .texy img { max-width: 100% }
 
+.preview-wrapper { min-height: 15em}
+
 .copy {position: absolute; bottom: 1ex; right: 1ex; width: 1.2em; height: 1.2em; overflow: hidden;}
 .copy svg, .copy .text {display: none}
 .copy:hover svg, .copy.blue svg {display: block}
