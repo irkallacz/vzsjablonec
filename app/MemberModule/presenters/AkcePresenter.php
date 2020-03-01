@@ -261,8 +261,20 @@ class AkcePresenter extends LayerPresenter {
 
 	/**
 	 * @allow(member)
+	 * @param int|null $id
 	 */
-	public function renderAdd() {
+	public function renderAdd(int $id = NULL) {
+
+		if ($id) {
+			$akce = $this->akceService->getAkceById($id);
+			$akce = $akce->toArray();
+			unset($akce['created_by']);
+
+			/**@var Form $form */
+			$form = $this['akceForm'];
+			$form->setDefaults($akce);
+		}
+
 		$this->template->nova = TRUE;
 		$this->setView('edit');
 	}
@@ -566,8 +578,6 @@ class AkcePresenter extends LayerPresenter {
 	 * @throws AbortException
 	 */
 	public function akceFormSubmitted(Form $form, ArrayHash $values) {
-		$id = (int) $this->getParameter('id');
-
 		$datum = new Datetime();
 
 		$values->date_update = $datum;
@@ -585,7 +595,9 @@ class AkcePresenter extends LayerPresenter {
 			$values->file = $values->file->getSanitizedName();
 		} else unset($values->file);
 
-		if ($id) {
+		if ($this->getAction() == 'edit') {
+			$id = (int) $this->getParameter('id');
+
 			$akce = $this->akceService->getAkceById($id);
 
 			if ($akce->date_start > $datum) {
