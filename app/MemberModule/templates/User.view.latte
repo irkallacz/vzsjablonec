@@ -147,7 +147,27 @@
 
 	<p n:if="$age"><b>Věk:</b> {$age->format('%y')}</p>
 
-	<p n:if="($user->isInRole('board'))and($member->related('user_registration')->count())"><b>Registrace:</b> {foreach $member->related('user_registration')->order('year') as $registration}{$registration->year}{sep}, {/sep}{/foreach}</p>
+	{if}
+		<p><b>Registrace:</b>
+			{* inteligetní výpis registrovaných let, např. 	2013 - 2014, 2016, 2019 - 2020 *}
+			{foreach $member->related('user_registration')->order('year') as $registration}
+				{if $iterator->first}
+					{var $start = $registration->year}
+				{else}
+					{if $last != $registration->year-1}
+						{$start} {if $start != $last} - {$last}{/if},
+						{var $start = $registration->year}
+					{/if}
+				{/if}
+
+				{var $last = $registration->year}
+
+				{if $iterator->last}
+					{$start} {if $start != $last} - {$last}{/if}
+				{/if}
+			{/foreach}
+		</p>
+	{/if ($user->isInRole('board')) and (isset($registration))}
 
     {if $user->isInRole('member')}
 		<h3>{include svg map-marker} Adresa {include mapy $member->ulice.' '.$member->mesto}</h3>
