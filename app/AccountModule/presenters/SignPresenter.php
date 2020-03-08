@@ -204,7 +204,7 @@ class SignPresenter extends BasePresenter {
 	 */
 	private function afterLogin(int $loginMethod = UserService::LOGIN_METHOD_PASSWORD) {
 		$userId = $this->getUser()->getId();
-		$this->getUser()->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
+		$this->getUser()->setExpiration('14 days', IUserStorage::CLEAR_IDENTITY);
 		$this->getUser()->getIdentity()->login_method_id = $loginMethod;
 
 		$this->userService->addUserLogin($userId, $loginMethod);

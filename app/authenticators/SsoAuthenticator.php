@@ -80,7 +80,7 @@ class SsoAuthenticator extends BaseAuthenticator {
 		$data['date_last'] = $dateLast ? $dateLast : new DateTime();
 
 		$this->user->login(new Identity($userId, $rights, $data));
-		$this->user->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY, TRUE);
+		$this->user->setExpiration('6 hours', IUserStorage::CLEAR_IDENTITY);
 
 		$this->userService->addModuleLogin($userId, $module);
 	}

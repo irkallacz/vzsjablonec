@@ -72,12 +72,14 @@ php:
 	zlib.output_compression: yes
 
 session:
-    autoStart: true
-    savePath: %tempDir%/../session
-    gc_maxlifetime: 21600
-    cookie_secure: true
+	autoStart: smart
+	savePath: %tempDir%/../session
+	expiration: 14 days
+	gc_maxlifetime: 1296000
+	cookie_secure: true
 
 http:
+	sameSiteProtection: yes
 	headers:
 		X-Content-Type-Options: nosniff
 	csp:
@@ -93,7 +95,7 @@ http:
 
 
 routing:
-    cache: true
+	cache: true
 
 services:
 	router: RouterFactory::createRouter
