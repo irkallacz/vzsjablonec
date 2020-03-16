@@ -11,6 +11,7 @@ use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
+use Tracy\Debugger;
 
 class AkceService extends DatabaseService {
 	const TABLE_AKCE_NAME = 'akce';
@@ -106,7 +107,9 @@ class AkceService extends DatabaseService {
 	 * @return Selection
 	 */
 	public function getMembersByAkceId(int $id) {
-		return $this->database->table(self::TABLE_AKCE_MEMBER_NAME)->where('akce_id', $id);
+		return $this->database->table(self::TABLE_AKCE_MEMBER_NAME)
+			->where('akce_id', $id)
+			->where('deleted_by', NULL);
 	}
 
 	/**
@@ -131,21 +134,23 @@ class AkceService extends DatabaseService {
 	 * @param bool $org
 	 * @param int $created_by
 	 */
-	public function addMemberToAction(int $user_id, int $akce_id, bool $org = FALSE, int $created_by = null) {
-		$values = ['user_id' => $user_id, 'akce_id' => $akce_id, 'organizator' => $org];
+	public function addMemberToAction(int $user_id, int $akce_id, bool $org = FALSE, int $created_by = NULL) {
+		$values = ['user_id' => $user_id, 'akce_id' => $akce_id, 'organizator' => $org, 'date_add' => new DateTime()];
 		$values['created_by'] = ($created_by) ? $created_by : $user_id;
-		$this->database->query('INSERT INTO `'.self::TABLE_AKCE_MEMBER_NAME.'`', $values);
+		$this->database->query('INSERT INTO ?name ?values', self::TABLE_AKCE_MEMBER_NAME, $values);
 	}
 
 	/**
 	 * @param int $user_id
 	 * @param int $akce_id
+	 * @param int|null $deleted_by
 	 */
-	public function deleteMemberFromAction(int $user_id, int $akce_id) {
-		$this->database->table(self::TABLE_AKCE_MEMBER_NAME)
+	public function deleteMemberFromAction(int $user_id, int $akce_id, int $deleted_by = NULL) {
+		 $this->database->table(self::TABLE_AKCE_MEMBER_NAME)
 			->where('user_id', $user_id)
 			->where('akce_id', $akce_id)
-			->delete();
+			->where('deleted_by ?', NULL)
+			->update(['date_delete' => new DateTime(), 'deleted_by' => $deleted_by]);
 	}
 
 	/**
@@ -158,6 +163,7 @@ class AkceService extends DatabaseService {
 			->select('akce_id, akce.date_start AS date_start, akce.name AS title, organizator, akce_member.created_by, akce_member.date_add')
 			->where('akce.enable', TRUE)
 			->where('akce.confirm', TRUE)
+			->where('deleted_by', NULL)
 			->where('user_id', $id)
 			->order('akce.date_start DESC');
 	}
@@ -172,6 +178,7 @@ class AkceService extends DatabaseService {
 			->select('akce_id')
 			->where('user_id', $id)
 			->where('organizator', $org)
+			->where('deleted_by', NULL)
 			->fetchPairs('akce_id', 'akce_id'));
 	}
 
@@ -199,6 +206,7 @@ class AkceService extends DatabaseService {
 		return $this->getAkceByFuture(FALSE)
 			->select('id, name, :akce_rating_member.user_id AS rating_user_id, :akce_rating_member.date_add AS rating_date_add')
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.user_id', $user_id)
+			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.deleted_by', NULL)
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.organizator', TRUE)
 			->where(':akce_rating_member.date_add > ?', $date);
 
@@ -215,6 +223,7 @@ class AkceService extends DatabaseService {
 			->where('confirm', TRUE)
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.user_id', $user_id)
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.organizator', TRUE)
+			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.deleted_by', NULL)
 			->where('message', NULL)
 			->where('date_end BETWEEN ? AND NOW()', $date);
 	}

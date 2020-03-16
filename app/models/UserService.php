@@ -157,8 +157,12 @@ class UserService extends DatabaseService {
 	 * @return Selection
 	 */
 	public function getUsersByAkceId(int $id, bool $org = NULL) {
-		$members = $this->getTable()->where(':akce_member.akce_id', $id);
+		$members = $this->getTable()
+			->where(':akce_member.akce_id', $id)
+			->where(':akce_member.deleted_by', NULL);
+
 		if (!is_null($org)) $members->where('organizator', $org);
+
 		return $members;
 	}
 

@@ -89,7 +89,7 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 
 <tr><td colspan="2"><b>Organizátoři:</b>
 {block}        
-{foreach $akce->related('akce_member', 'akce_id')->where('organizator', TRUE) as $org}
+{foreach $akce->related('akce_member', 'akce_id')->where('organizator', TRUE)->where('deleted_by', NULL) as $org}
 
 {var $organizator = $org->ref('user', 'user_id')}
 {if $organizator}{$organizator->surname} {$organizator->name}{sep}, {/sep}{/if}

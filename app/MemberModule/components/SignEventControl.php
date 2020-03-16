@@ -78,8 +78,12 @@ class SignEventControl extends Control {
 	 * @param bool $isOrg
 	 */
 	private function getMemberList(bool $isOrg = NULL) {
-		$list = $this->akce->related(AkceService::TABLE_AKCE_MEMBER_NAME);
+		$list = $this->akce
+			->related(AkceService::TABLE_AKCE_MEMBER_NAME)
+			->where('deleted_by ?', NULL);
+
 		if (!is_null($isOrg)) $list->where('organizator', $isOrg);
+
 		return $list;
 	}
 
@@ -119,7 +123,7 @@ class SignEventControl extends Control {
 	 * @param bool $isOrg
 	 */
 	private function logUser(int $userId, bool $isOrg) {
-		$this->akceService->addMemberToAction($userId, $this->akce->id, $isOrg, $this->getPresenter()->getUser()->getId());
+		$this->akceService->addMemberToAction($userId, $this->akce->id, $isOrg, $this->presenter->user->id);
 		if ($isOrg) $this->orgList[$userId] = $userId;
 		else $this->userList[$userId] = $userId;
 	}
@@ -128,7 +132,7 @@ class SignEventControl extends Control {
 	 * @param int $userId
 	 */
 	private function unLogUser(int $userId) {
-		$this->akceService->deleteMemberFromAction($userId, $this->akce->id);
+		$this->akceService->deleteMemberFromAction($userId, $this->akce->id, $this->presenter->user->id);
 		unset($this->orgList[$userId]);
 		unset($this->userList[$userId]);
 	}
@@ -138,7 +142,7 @@ class SignEventControl extends Control {
 	 * @throws ForbiddenRequestException
 	 */
 	public function handleLogSelf(bool $isOrg) {
-		$userId = $this->getPresenter()->getUser()->getId();
+		$userId = $this->presenter->user->id;
 
 		if ($this->userIsAllowToLog($isOrg)) {
 			if ($this->userIsInList()) $this->unLogUser($userId);
@@ -155,7 +159,7 @@ class SignEventControl extends Control {
 	 * @throws ForbiddenRequestException
 	 */
 	public function handleUnlogSelf(bool $isOrg) {
-		$userId = $this->getPresenter()->getUser()->getId();
+		$userId = $this->presenter->user->id;
 
 		if ($this->userIsAllowToLog($isOrg)) {
 			$this->unLogUser($userId);
@@ -173,7 +177,7 @@ class SignEventControl extends Control {
 		$form = new Form;
 
 		$userLevel = ($this->getPresenter()->getUser()->isInRole('admin')) ? UserService::USER_LEVEL : UserService::MEMBER_LEVEL;
-		$list = $this->userService->getUsers($userLevel)->select('id, CONCAT(surname," ",name)AS jmeno')->order('surname, name');
+		$list = $this->userService->getUsers($userLevel)->select('user.id, CONCAT(surname," ",name)AS jmeno')->order('surname, name');
 
 		$logList = $this->getLocalMemberList();
 		if ($logList) $list->where('NOT id', $logList);
@@ -219,7 +223,7 @@ class SignEventControl extends Control {
 		$form = new Form;
 
 		$list = $this->userService->getUsersByAkceId($this->akce->id)
-				->select('id,CONCAT(surname," ",name)AS jmeno')
+				->select('user.id,CONCAT(surname," ",name)AS jmeno')
 				->order('surname, name')
 				->fetchPairs('id', 'jmeno');
 
