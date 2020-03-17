@@ -13,13 +13,15 @@ INSERT INTO `akce` (`id`, `name`, `perex`, `description`, `date_start`, `date_en
 	(5, 'Minulá smazaná akce', 'Akce', 'Akce odehrávající se v minulosti, která je smazaná', NOW() - INTERVAL 48 HOUR, NOW() - INTERVAL 47 HOUR, NOW() - INTERVAL 24 HOUR, NOW() - INTERVAL 12 HOUR, NOW() - INTERVAL 12 HOUR, 1, 'VD Mšeno', 2, 2, 0),
 	(6, 'Budoucí smazaná akce', 'Akce', 'Akce odehrávající se v budoucnosti, která je smazaná', NOW() + INTERVAL 48 HOUR, NOW() + INTERVAL 49 HOUR, NOW() + INTERVAL 24 HOUR, NOW(), NOW(), 1, 'VD Mšeno', 2, 2, 0);
 
-INSERT INTO `akce_member` (`akce_id`, `user_id`, `organizator`, `created_by`, `date_add`) VALUES
-	(1, 2, 1, 2, NOW()),
-	(1, 1, 0, 2, NOW()),
-	(2, 2, 1, 2, NOW()),
-	(2, 1, 0, 2, NOW()),
-	(4, 2, 1, 3, NOW()),
-	(4, 3, 0, 3, NOW());
+INSERT INTO `akce_member` (`id`, `akce_id`, `user_id`, `organizator`, `created_by`, `date_add`, `deleted_by`,	`date_deleted`) VALUES
+	(1, 1, 2, 1, 2, NOW(), 2, NOW()),
+	(2, 1, 1, 0, 2, NOW(), 2, NOW()),
+	(3, 1, 2, 1, 2, NOW(), NULL, NULL),
+	(4, 1, 1, 0, 2, NOW(), NULL, NULL),
+	(5, 2, 2, 1, 2, NOW(), NULL, NULL),
+	(6, 2, 1, 0, 2, NOW(), NULL, NULL),
+	(7, 4, 2, 1, 3, NOW(), NULL, NULL),
+	(8, 4, 3, 0, 3, NOW(), NULL, NULL);
 
 INSERT INTO `forum_post` (`id`, `forum_topic_id`, `forum_id`, `user_id`, `row_number`, `date_add`, `date_update`, `title`, `text`, `locked`, `hidden`) VALUES
 	(1, 1, 1, 1, 1, NOW(), NOW(), 'Obecné téma', 'Obecně', 0, 0),
