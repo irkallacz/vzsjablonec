@@ -143,14 +143,14 @@ class AkceService extends DatabaseService {
 	/**
 	 * @param int $user_id
 	 * @param int $akce_id
-	 * @param int|null $deleted_by
+	 * @param int $deleted_by
 	 */
-	public function deleteMemberFromAction(int $user_id, int $akce_id, int $deleted_by = NULL) {
+	public function deleteMemberFromAction(int $user_id, int $akce_id, int $deleted_by) {
 		 $this->database->table(self::TABLE_AKCE_MEMBER_NAME)
 			->where('user_id', $user_id)
 			->where('akce_id', $akce_id)
 			->where('deleted_by ?', NULL)
-			->update(['date_delete' => new DateTime(), 'deleted_by' => $deleted_by]);
+			->update(['date_deleted' => new DateTime(), 'deleted_by' => $deleted_by]);
 	}
 
 	/**

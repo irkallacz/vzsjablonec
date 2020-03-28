@@ -75,23 +75,24 @@ INSERT INTO `akce_for` (`id`, `text`) VALUES
 
 DROP TABLE IF EXISTS `akce_member`;
 CREATE TABLE `akce_member` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `akce_id` smallint(6) unsigned NOT NULL,
   `user_id` smallint(5) unsigned NOT NULL,
   `organizator` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `created_by` smallint(5) unsigned NOT NULL,
-  `date_add` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_by` smallint(5) unsigned NULL,
-  `date_delete` datetime NULL,
-  PRIMARY KEY (`akce_id`,`user_id`,`organizator`),
+  `date_add` datetime NOT NULL,
+  `deleted_by` smallint(5) unsigned DEFAULT NULL,
+  `date_deleted` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `akce_id` (`akce_id`),
   KEY `user_id` (`user_id`),
   KEY `created_by` (`created_by`),
   KEY `deleted_by` (`deleted_by`),
   KEY `organizator` (`organizator`),
-  CONSTRAINT `akce_user_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `akce_user_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `akce_user_ibfk_3` FOREIGN KEY (`deleted_by`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `akce_user_ibfk_4` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE
+  CONSTRAINT `akce_member_ibfk_1` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `akce_member_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `akce_member_ibfk_3` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `akce_member_ibfk_4` FOREIGN KEY (`deleted_by`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `akce_rating_member`
