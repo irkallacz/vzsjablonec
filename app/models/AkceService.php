@@ -204,12 +204,11 @@ class AkceService extends DatabaseService {
 	 */
 	public function getRatingNews(DateTime $date, int $user_id) {
 		return $this->getAkceByFuture(FALSE)
-			->select('id, name, :akce_rating_member.user_id AS rating_user_id, :akce_rating_member.date_add AS rating_date_add')
+			->select('akce.id, name, :akce_rating_member.user_id AS rating_user_id, :akce_rating_member.date_add AS rating_date_add')
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.user_id', $user_id)
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.deleted_by', NULL)
 			->where(':'.self::TABLE_AKCE_MEMBER_NAME.'.organizator', TRUE)
 			->where(':akce_rating_member.date_add > ?', $date);
-
 	}
 
 	/**
