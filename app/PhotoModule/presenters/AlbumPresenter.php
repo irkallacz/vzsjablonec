@@ -214,8 +214,19 @@ class AlbumPresenter extends BasePresenter {
 
 		$plupload->onFileUploaded[] = function (UploadQueue $uploadQueue) use ($albumId) {
 			$upload = $uploadQueue->getLastUpload();
+
+			//verify image is unique in album using hash
 			$hash = md5_file($upload->getFilename());
-			//TODO verify image is unique in album using hash
+			$count = $this->galleryService->getPhotosByAlbumId($albumId)
+				->where('hash', $hash)
+				->count();
+
+			if ($count) {
+				$this->flashMessage(sprintf('Soubor %s byl přeskočen z důvodu duplicity', $upload->getName()), 'error');
+				$this->redrawControl('flash');
+				return 0;
+			}
+
 			$image = $this->imageService->createImageFromUpload($albumId, $upload);
 
 			$datetime = $image->getExifDateTime();
