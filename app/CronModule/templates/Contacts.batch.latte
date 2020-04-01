@@ -11,8 +11,8 @@
 		</gd:name>
 		<gd:email rel="http://schemas.google.com/g/2005#home" primary="true" address="{$member->mail}" displayName="{$member->surname} {$member->name}" />
 		<gd:email rel="http://schemas.google.com/g/2005#other" address="{$member->mail2}" n:if="$member->mail2"/>
-		<gd:phoneNumber rel="http://schemas.google.com/g/2005#home" primary="true">+420{$member->phone}</gd:phoneNumber>
-		<gd:phoneNumber rel="http://schemas.google.com/g/2005#other" n:if="$member->phone2">+420{$member->phone2}</gd:phoneNumber>
+		<gd:phoneNumber rel="http://schemas.google.com/g/2005#home" primary="true">+420{$member->telefon}</gd:phoneNumber>
+		<gd:phoneNumber rel="http://schemas.google.com/g/2005#other" n:if="$member->telefon2">+420{$member->telefon2}</gd:phoneNumber>
 		<gd:structuredPostalAddress rel="http://schemas.google.com/g/2005#home" primary="true">
 			<gd:city>{$member->mesto}"</gd:city>
 			<gd:street>{$member->ulice}"</gd:street>

@@ -114,7 +114,7 @@ final class ContactsPresenter extends BasePresenter {
 
 		$differences = UserService::getDifferences(array_keys($users), array_keys($this->updateContacts));
 
-		//Uřivatelé, kteří nejsou v adreáři googlu = insert
+		//Uživatelé, kteří nejsou v adreáři googlu = insert
 		foreach ($differences['add'] as $id) {
 			$feedXml .= $this->createFeedEntry('insert', $id, $users[$id]);
 		}
