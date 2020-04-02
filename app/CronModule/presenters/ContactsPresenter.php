@@ -37,24 +37,7 @@ final class ContactsPresenter extends BasePresenter {
 	/**
 	 * @var ITemplate
 	 */
-	private $feedTemplate;
-
-	/**
-	 * @throws \GuzzleHttp\Exception\GuzzleException
-	 * @throws \Nette\Application\AbortException
-	 */
-	public function actionDefault()
-	{
-		$this->googleClient->setSubject('admin@vzs-jablonec.cz');
-		$httpClient = $this->googleClient->authorize();
-		$this->googleClient->fetchAccessTokenWithAssertion($httpClient);
-
-		$response = $httpClient->request('GET', 'https://www.google.com/m8/feeds/contacts/' . self::DOMAIN . '/full');
-
-		$body = (string) $response->getBody();
-		Debugger::barDump($response->getHeaders());
-		$this->sendResponse(new TextResponse(htmlentities($body)));
-	}
+	private $batchTemplate;
 
 	/**
 	 *
@@ -81,14 +64,14 @@ final class ContactsPresenter extends BasePresenter {
 		$this->googleClient->fetchAccessTokenWithAssertion($httpClient);
 
 		//Získáme seznam kontaktů
-		$response = $httpClient->request('GET', 'https://www.google.com/m8/feeds/contacts/' . self::DOMAIN . '/full?v=3.0');
+		$response = $httpClient->request('GET', 'https://www.google.com/m8/feeds/contacts/' . self::DOMAIN . '/full?v=3.0&max-results=1000');
 		$body = (string) $response->getBody();
 		$xml = simplexml_load_string($body);
 
 		//Připravíme šablonu pro hromadné úpravy
 		$feedXml = null;
-		$this->feedTemplate = $this->createTemplate();
-		$this->feedTemplate->setFile(__DIR__ . '/../templates/Contacts.batch.latte');
+		$this->batchTemplate = $this->createTemplate();
+		$this->batchTemplate->setFile(__DIR__ . '/../templates/Contacts.batch.latte');
 
 		foreach ($xml->entry as $contact) {
 			$updated = (string) $contact->updated;
@@ -139,11 +122,11 @@ final class ContactsPresenter extends BasePresenter {
 	 */
 	private function createFeedEntry(string $type, int $id, IRow $member = null, string $etag = null, string $contactId = null)
 	{
-		$this->feedTemplate->type = $type;
-		$this->feedTemplate->etag = $etag;
-		$this->feedTemplate->member = $member;
-		$this->feedTemplate->id = ($contactId) ? $contactId : $id;
+		$this->batchTemplate->type = $type;
+		$this->batchTemplate->etag = $etag;
+		$this->batchTemplate->member = $member;
+		$this->batchTemplate->id = ($contactId) ? $contactId : $id;
 		$this->updateContacts[$id] = $type;
-		return (string) $this->feedTemplate;
+		return (string) $this->batchTemplate;
 	}
 }
