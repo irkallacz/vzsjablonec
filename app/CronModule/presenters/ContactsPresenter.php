@@ -57,7 +57,7 @@ final class ContactsPresenter extends BasePresenter {
 		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL)
 			->where('mail NOT LIKE ?', '%@' . self::DOMAIN)
 			->where('mail2 NOT LIKE ?', '%@' . self::DOMAIN)
-			->fetchAll();
+			->fetchPairs('id');
 
 		$this->googleClient->setSubject('admin@' . self::DOMAIN);
 		$httpClient = $this->googleClient->authorize();
