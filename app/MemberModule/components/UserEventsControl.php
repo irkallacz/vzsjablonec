@@ -9,6 +9,7 @@
 namespace App\MemberModule\Components;
 
 use App\Model\AkceService;
+use Nette\Utils\DateTime;
 
 class UserEventsControl extends LayerControl
 {
@@ -49,6 +50,7 @@ class UserEventsControl extends LayerControl
 		$this->template->memberId = $this->memberId;
 		$events = $this->akceService->getAkceByMemberId($this->memberId)->limit(self::DEFAULT_EVENT_OFFSET, $this->eventsOffset);
 		$count = $events->count();
+		$this->template->now = new DateTime();
 		$this->template->events = $events;
 		$this->template->offset = ($count) ? $this->eventsOffset + self::DEFAULT_EVENT_OFFSET : 0;
 

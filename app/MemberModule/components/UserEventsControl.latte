@@ -3,7 +3,8 @@
 <style type="text/css" n:syntax="off">
 	#events { caption-side: bottom; }
 	#events caption { margin-top: 1em; }
-	h3#events-header { margin-top: 2em;}
+	h3#events-header { margin-top: 2em; }
+	.separator td { padding-top: 1em; }
 </style>
 
 <div id="userEventsContol">
@@ -17,17 +18,23 @@
 			<tr><th></th><th>Datum akce</th><th>Název</th><th>Datum přihlášení</th><th></th></tr>
 		</thead>
 		<tbody n:snippet="events-table" data-ajax-append="true">
-			<tr n:foreach="$events as $event">
-				<td>{if $event->organizator}{include svg user}{/if}</td>
-				<td><time datetime="{$event->date_start|datetimeC}">{$event->date_start|date:'d.m.Y'}</time></td>
-				<td><a href="{plink Akce:view $event->akce_id}" target="_blank">{$event->title}</a></td>
-				<td><time datetime="{$event->date_add|datetimeC}">{$event->date_add|datetime}</time></td>
-				<td>
-					<a n:if="$event->created_by != $memberId" href="{plink User:view $event->created_by}" target="_blank">
-						{include svg check} {$event->ref('user', 'created_by')->surname} {$event->ref('user', 'created_by')->name}
-					</a>
-				</td>
-			</tr>
+			{foreach $events as $event}
+                {var $future = $event->date_start > $now}
+				{if $iterator->isFirst()}{var $last = $future}{/if}
+				{* Pokud poslení záznam byl v budoucnosti a došlo ke změně -> udělej mezeru *}
+				<tr n:class="(($last)and(!$future)) ? separator">
+					<td>{if $event->organizator}{include svg user}{/if}</td>
+					<td><time datetime="{$event->date_start|datetimeC}">{$event->date_start|date:'d.m.Y'}</time></td>
+					<td><a href="{plink Akce:view $event->akce_id}" target="_blank">{$event->title}</a></td>
+					<td><time datetime="{$event->date_add|datetimeC}">{$event->date_add|datetime}</time></td>
+					<td>
+						<a n:if="$event->created_by != $memberId" href="{plink User:view $event->created_by}" target="_blank">
+							{include svg check} {$event->ref('user', 'created_by')->surname} {$event->ref('user', 'created_by')->name}
+						</a>
+					</td>
+				</tr>
+                {var $last = $event->date_start > $now}
+			{/foreach}
 		</tbody>
 	</table>
 </div>
