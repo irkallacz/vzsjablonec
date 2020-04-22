@@ -255,7 +255,7 @@ class MailPresenter extends LayerPresenter {
 			$parameters['akce_id'] = $akceId;
 			$message->setType(MessageService\Message::EVENT_MESSAGE_TYPE);
 		} else {
-			$members = $this->userService->getUsers()->where('id', $values->users);
+			$members = $this->userService->getUsers()->where('user.id', $values->users);
 			if ($eventId = $this->getParameter('eventId')){
 				$message->setType(MessageService\Message::EVENT_MESSAGE_TYPE);
 				$parameters['akce_id'] = $eventId;
@@ -266,7 +266,7 @@ class MailPresenter extends LayerPresenter {
 
 
 
-		$members->where('NOT id', $this->user->id);
+		$members->where('NOT user.id', $this->user->id);
 		$message->setRecipients($members);
 
 		if (($form['file']->isFilled()) and (!$values->file->isOK())) {
