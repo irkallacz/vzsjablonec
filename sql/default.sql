@@ -461,7 +461,7 @@ CREATE TABLE `rights` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
-INSERT INTO `rights` (`id`, `name`) VALUES (1,	'confirm');
+INSERT INTO `rights` (`id`, `name`) VALUES (1, 'confirm'), (2, 'gallery');
 
 -- Table structure for table `roles`
 

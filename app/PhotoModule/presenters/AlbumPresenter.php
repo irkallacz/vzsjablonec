@@ -120,7 +120,7 @@ class AlbumPresenter extends BasePresenter {
 		$album = $this->getAlbumBySlug($slug);
 		$this->template->album = $album;
 
-		if (!(($album->user_id == $this->getUser()->getId()) or ($this->getUser()->isInRole('admin')))) {
+		if (!(($album->user_id == $this->getUser()->getId()) or (($this->getUser()->isInRole('admin'))or($this->getUser()->isInRole('gallery'))))) {
 			throw new ForbiddenRequestException('Nemáte právo toho album upravovat');
 		}
 
@@ -164,10 +164,15 @@ class AlbumPresenter extends BasePresenter {
 	/**
 	 * @param string $slug
 	 * @param bool|NULL $visible
-	 * @allow(admin)
+	 * @allow(member)
 	 * @throws AbortException
+	 * @throws ForbiddenRequestException
 	 */
 	public function actionSetAlbumVisibility(string $slug, bool $visible = FALSE) {
+		if ((!$this->getUser()->isInRole('admin'))and(!$this->getUser()->isInRole('gallery'))) {
+			throw new ForbiddenRequestException('Nemáte právo měnit viditelnost alba');
+		}
+
 		$album = $this->galleryService->getAlbumBySlug($slug);
 
 		$album->update(['visible' => $visible]);

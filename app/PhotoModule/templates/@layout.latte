@@ -63,8 +63,8 @@
 	<li><a class="buttonLike" n:href="Album:add $album->slug">přidat fotky</a></li>
   	{if $user->isInRole('member')}
 		<li n:if="($album->user_id==$user->getId())or($user->isInRole('admin'))"><a class="buttonLike confirm" n:href="Album:deleteAlbum $album->id" data-query="Opravdu chcete vymazat toto album?">odebrat album</a></li>
-		<li n:if="$user->isInRole('admin')"><a class="buttonLike" n:href="Album:setAlbumVisibility $album->slug, !$album->visible">{if $album->visible}zneviditelnit{else}zviditelnit{/if}</a></li>
-		<li n:if="(($album->user_id==$user->getId()))or($user->isInRole('admin'))"><a class="buttonLike" n:href="Album:edit $album->slug">upravit</a></li>
+		<li n:if="($user->isInRole('admin')or($user->isInRole('gallery')))"><a class="buttonLike" n:href="Album:setAlbumVisibility $album->slug, !$album->visible">{if $album->visible}zneviditelnit{else}zviditelnit{/if}</a></li>
+		<li n:if="(($album->user_id==$user->getId()))or(($user->isInRole('admin'))or($user->isInRole('gallery')))"><a class="buttonLike" n:href="Album:edit $album->slug">upravit</a></li>
 	{/if}
 {/define}
 
