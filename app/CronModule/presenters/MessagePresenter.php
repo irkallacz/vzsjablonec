@@ -79,6 +79,18 @@ class MessagePresenter extends BasePresenter {
 				}
 			}
 
+			//Pokud již session pro obnovu hesla není aktivní, neodesílat email
+			if (in_array($message->message_type_id, [MessageService\Message::USER_NEW_TYPE, MessageService\Message::PASSWORD_RESET_TYPE])) {
+				$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
+				if (array_key_exists('session_id', $parameters)) {
+					$session = $this->userService->getPasswordSessionId($parameters['session_id']);
+					if ((!$session) or (($session->date_end > date_create()))) {
+						$message->delete();
+						continue;
+					}
+				}
+			}
+
 			$this->messageService->beginTransaction();
 			$mail = $this->createEmailMessage($message);
 			$this->mailer->send($mail);
@@ -112,7 +124,9 @@ class MessagePresenter extends BasePresenter {
 		$author = $this->userService->getUserById($message->user_id, UserService::DELETED_LEVEL);
 
 		$mail->addReplyTo($author->mail, UserService::getFullName($author));
-		if ($message->message_type_id == MessageService\Message::CUSTOM_MESSAGE_TYPE) $mail->addBcc($author->mail, UserService::getFullName($author));
+		if ($message->message_type_id == MessageService\Message::CUSTOM_MESSAGE_TYPE) {
+			$mail->addBcc($author->mail, UserService::getFullName($author));
+		}
 
 		$template = $this->createTemplate();
 		$template->setFile(__DIR__ . '/../../presenters/templates/Mail/newMail.latte');

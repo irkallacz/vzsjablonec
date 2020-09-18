@@ -142,15 +142,46 @@ class AkcePresenter extends LayerPresenter {
 		$revision = $this->akceService->getRevisionById($what);
 		$this->akce = $revision->akce;
 
-		$first = LatteFilters::texy($revision->text);
+		$members = $this->akceService->getMembersByAkceId($this->akce->id)
+			->where('date_add < ?', $revision->date_saved)
+			->order('date_add')
+			->fetchPairs('user_id', 'organizator');
+
+		$text = $revision->text;
+		$text.= "\n\n**Účastníci**\n\n";
+
+		foreach ($members as $memberId => $organizator) {
+			if (!$organizator) {
+				$member = $this->userService->getUserById($memberId, Model\UserService::DELETED_LEVEL);
+				$text .= '-' . Model\UserService::getFullName($member) . "\n";
+			}
+		}
+
+		$first = LatteFilters::texy($text);
+
+		$members = $this->akceService->getMembersByAkceId($this->akce->id)
+			->order('date_add');
 
 		if ($with) {
 			$revision = $this->akceService->getRevisionById($with);
-			$second = LatteFilters::texy($revision->text);
+			$text = $revision->text;
+			$member->where('date_add < ?', $revision->date_saved);
 		} else {
 			$text = $this->createRevision($this->akce);
-			$second = LatteFilters::texy($text);
 		}
+
+		$members = $members->fetchPairs('user_id', 'organizator');
+
+		$text.= "\n\n**Účastníci**\n\n";
+
+		foreach ($members as $memberId => $organizator) {
+			if (!$organizator) {
+				$member = $this->userService->getUserById($memberId, Model\UserService::DELETED_LEVEL);
+				$text .= '-' . Model\UserService::getFullName($member) . "\n";
+			}
+		}
+
+		$second = LatteFilters::texy($text);
 
 		$htmlDiff = new HtmlDiff($first, $second);
 		$this->template->html = $htmlDiff->build();

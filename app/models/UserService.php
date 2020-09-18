@@ -262,7 +262,8 @@ class UserService extends DatabaseService {
 		$this->database->query('DELETE FROM `password_session` WHERE `user_id` = ?', $user_id);
 		return $this->database->table('password_session')->insert([
 			'user_id' => $user_id,
-			'date_end' => new SqlLiteral('NOW() + INTERVAL ' . $interval)
+			'date_end' => new SqlLiteral('NOW() + INTERVAL ' . $interval),
+			'pubkey' => md5(uniqid()),
 		]);
 	}
 

@@ -215,8 +215,10 @@ class UserPresenter extends LayerPresenter {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		$member->update(['role' => 0]);
-		$this->flashMessage('Uživatel byl úspěšně přidán mezi aktivní');
+		if (!is_null($member->role)) {
+			$this->flashMessage('Uživatel je již aktivní', 'error');
+			$this->redirect('view', $id);
+		}
 
 		$session = $this->userService->addPasswordSession($member->id, '24 HOUR');
 
@@ -224,6 +226,9 @@ class UserPresenter extends LayerPresenter {
 		$datetime = $this->messageService->getNextSendTime();
 		$this->flashMessage('Uživateli bude zaslán úvodní e-mail ' . LatteFilters::timeAgoInWords($datetime));
 
+
+		$this->flashMessage('Uživatel byl úspěšně přidán mezi aktivní');
+		$member->update(['role' => 0]);
 		$this->redirect('view', $id);
 	}
 
