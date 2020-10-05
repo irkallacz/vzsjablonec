@@ -495,11 +495,13 @@ class AkcePresenter extends LayerPresenter {
 		/** @var \DateTimeInput $dateTimeInput*/
 		$dateTimeInput = $form['date_start'] = new \DateTimeInput('Začátek');
 		$dateTimeInput->setRequired(TRUE)
+			->setHtmlId('event-start')
 			->setDefaultValue($datum);
 
 		/** @var \DateTimeInput $dateTimeInput*/
 		$dateTimeInput = $form['date_end'] = new \DateTimeInput('Konec');
 		$dateTimeInput->setRequired(TRUE)
+			->setHtmlId('event-end')
 			->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
 				return $item->value >= $arg;
@@ -516,6 +518,7 @@ class AkcePresenter extends LayerPresenter {
 		/** @var \DateTimeInput $dateTimeInput*/
 		$dateTimeInput = $form['date_deatline'] = new \DateTimeInput('Přihlášení do');
 		$dateTimeInput->setRequired(FALSE)
+			->setHtmlId('log-end')
 			->setDefaultValue($datum)
 			->addRule(function ($item, $arg) {
 				return $item->value <= $arg;

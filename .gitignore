@@ -54,6 +54,7 @@ composer.lock
 tests/_temp/
 www/subdom/
 www/front/
+www/backup/
 www/vzsjablonec/albums/
 www/vzsjablonec/archive.zip
 www/vzsjablonec/doc/

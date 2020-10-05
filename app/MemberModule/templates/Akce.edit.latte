@@ -20,17 +20,11 @@
 <script type="text/javascript" src="{$baseUrl}/js/jquery.ui.datepicker-cs.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
-<script type="text/javascript" src="{$baseUrl}/js/akce.js"></script>
 
 <script type="text/javascript" n:nonce>
 	$.texyla.setDefaults({
 		baseDir: {$baseUrl}+'/texyla',
 		previewPath: {link texyPreview, TRUE}
-	});
-
-	$(function () {
-		$('#frm-akceForm-description').textareaAutoSize();
-		$('#frm-akceForm').areYouSure();
 	});
 </script>
 
@@ -93,5 +87,7 @@ uvidí ji na webu pouze její organizatoři. Dokončením tohoto formuláře se 
 <p>{input save}</p>
 
 {/form akceForm}
+
+<script type="text/javascript" src="{$baseUrl}/js/akce.js" defer></script>
 
 {/block}

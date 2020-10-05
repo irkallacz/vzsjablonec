@@ -53,9 +53,10 @@ class DateTimeInput extends Nette\Forms\Controls\BaseControl {
 		$name = $this->getHtmlName();
 
 		return Html::el('span')
+			->id($this->getHtmlId())
 			->class('datetime')
 			->addHtml(Html::el('input')->name($name . '[date]')
-				->id($this->getHtmlId())
+				->id($this->getHtmlId() . '-date')
 				->pattern('[1-2]{1}\d{3}-[0-1]{1}\d{1}-[0-3]{1}\d{1}')
 				->type('date')
 				->size('10')
@@ -64,6 +65,7 @@ class DateTimeInput extends Nette\Forms\Controls\BaseControl {
 			)
 			->addText(' ')
 			->addHtml(Html::el('input')->name($name . '[time]')
+				->id($this->getHtmlId() . '-time')
 				->pattern('[0-2]{1}\d{1}:[0-5]{1}\d{1}')
 				->type('time')
 				->size('5')
