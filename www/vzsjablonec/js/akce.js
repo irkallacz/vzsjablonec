@@ -3,31 +3,31 @@ function doTheTrick() {
 }
 
 function getDateTimeInput(elementId) {
-	return new Date(document.getElementById(elementId + '_date').value + 'T' + document.getElementById(elementId + '_time').value);
+	return new Date(document.getElementById(elementId + '-date').value + 'T' + document.getElementById(elementId + '-time').value);
 }
 
 function changeDateTimeInput(elementId, diff) {
 	datetime = getDateTimeInput(elementId).getTime();
 	datetime = new Date(datetime + diff);
 
-	document.getElementById(elementId + '_date').value = datetime.toISOString().slice(0, 10);
-	document.getElementById(elementId + '_time').value = datetime.toTimeString().slice(0, 5);
+	document.getElementById(elementId + '-date').value = datetime.toISOString().slice(0, 10);
+	document.getElementById(elementId + '-time').value = datetime.toTimeString().slice(0, 5);
 }
 
 function eventStartChange() {
-	var newEventStart = getDateTimeInput('event_start');
+	var newEventStart = getDateTimeInput('event-start');
 	diff = newEventStart - eventStart;
 
-	changeDateTimeInput('event_end', diff);
-	changeDateTimeInput('log_end', diff);
+	changeDateTimeInput('event-end', diff);
+	changeDateTimeInput('log-end', diff);
 
 	eventStart = newEventStart;
 }
 
-eventStart = getDateTimeInput('event_start');
+eventStart = getDateTimeInput('event-start');
 
-document.getElementById('event_start_date').addEventListener('change', eventStartChange);
-document.getElementById('event_start_time').addEventListener('change', eventStartChange);
+document.getElementById('event-start-date').addEventListener('change', eventStartChange);
+document.getElementById('event-start-time').addEventListener('change', eventStartChange);
 
 //$('#frm-akceForm-perex').texyla(akce_public);
 $('.texyla').texyla(akce);
