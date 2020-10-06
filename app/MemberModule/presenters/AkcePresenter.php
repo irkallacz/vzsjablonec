@@ -477,7 +477,7 @@ class AkcePresenter extends LayerPresenter {
 	 * @return Form
 	 */
 	protected function createComponentAkceForm() {
-		$datum = new Datetime();
+		$datum = new Datetime('+3 days');
 		$datum->setTime($datum->format('G'), 0);
 		$form = new Form;
 
@@ -514,6 +514,8 @@ class AkcePresenter extends LayerPresenter {
 		$form->addCheckbox('login_org', 'Povoleno přihlašování organizátorů')
 			->setDefaultValue(FALSE)
 			->setAttribute('onclick', 'doTheTrick()');
+
+		$datum->modify('-1 week');
 
 		/** @var \DateTimeInput $dateTimeInput*/
 		$dateTimeInput = $form['date_deatline'] = new \DateTimeInput('Přihlášení do');
