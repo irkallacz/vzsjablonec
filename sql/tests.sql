@@ -1,3 +1,8 @@
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
 INSERT INTO `user` (`id`, `name`, `surname`, `mail`, `role`) VALUES
 	(0,	'Franta',	'Deleted',	'deleted@vzs-jablonec.cz',	NULL),
 	(1,	'Tonda',	'User',			'user@vzs-jablonec.cz',			0),

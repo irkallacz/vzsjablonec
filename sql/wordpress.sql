@@ -1,5 +1,10 @@
 -- mysql:host=localhost;dbname=wordpress
 
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
 -- Table structure for table `nnx2_posts`
 
 DROP TABLE IF EXISTS `nnx2_posts`;
