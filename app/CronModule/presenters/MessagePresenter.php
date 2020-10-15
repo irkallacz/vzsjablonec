@@ -55,8 +55,9 @@ class MessagePresenter extends BasePresenter {
 
 	/**
 	 *
-	 * @throws JsonException
 	 * @throws InvalidLinkException
+	 * @throws JsonException
+	 * @throws \GuzzleHttp\Exception\GuzzleException
 	 */
 	public function actionSend() {
 
@@ -66,10 +67,10 @@ class MessagePresenter extends BasePresenter {
 		$this->template->items = [];
 
 		foreach ($messages as $message) {
+			$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
 
 			//Pokud byla akce již schválená, neodesílat email
 			if ($message->message_type_id == MessageService\Message::EVENT_CONFIRM_TYPE) {
-				$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
 				if (array_key_exists('akce_id', $parameters)) {
 					$event = $this->akceService->getAkceById($parameters['akce_id']);
 					if ($event->confirm) {
@@ -81,7 +82,6 @@ class MessagePresenter extends BasePresenter {
 
 			//Pokud již session pro obnovu hesla není aktivní, neodesílat email
 			if (in_array($message->message_type_id, [MessageService\Message::USER_NEW_TYPE, MessageService\Message::PASSWORD_RESET_TYPE])) {
-				$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
 				if (array_key_exists('session_id', $parameters)) {
 					$session = $this->userService->getPasswordSessionId($parameters['session_id']);
 					if ((!$session) or (($session->date_end > date_create()))) {
@@ -92,10 +92,10 @@ class MessagePresenter extends BasePresenter {
 			}
 
 			$this->messageService->beginTransaction();
-			$mail = $this->createEmailMessage($message);
+			$mail = $this->createEmailMessage($message, $parameters);
 			$this->mailer->send($mail);
 
-			$notification = $this->createMessengerMessage($message);
+			$notification = $this->createMessengerMessage($message, $parameters);
 			if (count($notification['recipients'])){
 				$response = $client->request('POST', '/', ['json' => ['notification' => $notification]]);
 				//file_put_contents(__DIR__. '/notification-'.$message->id.'.json', Json::encode(['notification' => $notification]));
@@ -111,15 +111,13 @@ class MessagePresenter extends BasePresenter {
 
 	/**
 	 * @param IRow|ActiveRow $message
+	 * @param array $parameters
 	 * @return Message
-	 * @throws JsonException
 	 */
-	private function createEmailMessage(IRow $message){
+	private function createEmailMessage(IRow $message, array $parameters){
 		$mail = new Message();
 		$mail->setFrom($this->mailSettings->account, $this->mailSettings->title);
 		$mail->addBcc($this->mailSettings->account);
-
-		$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
 
 		$author = $this->userService->getUserById($message->user_id, UserService::DELETED_LEVEL);
 
@@ -154,11 +152,11 @@ class MessagePresenter extends BasePresenter {
 
 	/**
 	 * @param IRow|ActiveRow $message
+	 * @param array $parameters
 	 * @return array
-	 * @throws JsonException
 	 * @throws InvalidLinkException
 	 */
-	private function createMessengerMessage(IRow $message){
+	private function createMessengerMessage(IRow $message, array $parameters){
 		$notification = [
 			'botID' => (string) $this->messengerSettings->botID,
 			'title' => $message->subject,
@@ -170,8 +168,6 @@ class MessagePresenter extends BasePresenter {
 		foreach ($message->related('message_user')->where('user.messengerId NOT', NULL) as $recipient) {
 			if ($recipient->user->messengerId) $notification['recipients'][] = $recipient->user->messengerId;
 		}
-
-		$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
 
 		if (array_key_exists('filename', $parameters)) {
 			$filename = 'https://member.vzs-jablonec.cz/'. MessageService::DIR_ATTACHMENTS .'/'. $parameters['filename'];
