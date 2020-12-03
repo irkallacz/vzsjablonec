@@ -84,7 +84,11 @@ class MessagePresenter extends BasePresenter {
 			if (in_array($message->message_type_id, [MessageService\Message::USER_NEW_TYPE, MessageService\Message::PASSWORD_RESET_TYPE])) {
 				if (array_key_exists('session_id', $parameters)) {
 					$session = $this->userService->getPasswordSessionId($parameters['session_id']);
-					if ((!$session) or (($session->date_end > date_create()))) {
+					if (!$session) {
+						$message->delete();
+						continue;
+					} elseif ($session->date_end < date_create()) {
+						$session->delete();
 						$message->delete();
 						continue;
 					}
