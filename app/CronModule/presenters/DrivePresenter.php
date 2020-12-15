@@ -12,6 +12,8 @@ use Google_Service_Drive_DriveFile as DriveFile;
  */
 class DrivePresenter extends BasePresenter {
 
+	const SHORTCUT_MIME_TYPE = 'application/vnd.google-apps.shortcut';
+
 	/** @var DokumentyService @inject */
 	public $dokumentyService;
 
@@ -70,6 +72,26 @@ class DrivePresenter extends BasePresenter {
 
 				$result = $this->getFilesByParent($file->id);
 				$this->parseFiles($result, $file->id, $level + 1);
+			} elseif ($file->mimeType == self::SHORTCUT_MIME_TYPE) {
+				if ($file->getShortcutDetails()->getTargetMimeType() == DokumentyService::DIR_MIME_TYPE) {
+					continue;
+				}
+				
+				$targetId = $file->getShortcutDetails()->getTargetId();
+				$target = $this->driveService->files->get($targetId);
+				//$target->getParents();
+				//$this->driveService->files->delete($file->id);
+				$this->dokumentyService->addFile([
+					'id' => $targetId->id,
+					'name' => $file->name,
+					'directory' => $parent,
+					'description' => $file->description,
+					'modifiedTime' => new DateTime($file->modifiedTime),
+					'mimeType' => $target->mimeType,
+					'webContentLink' => $target->webContentLink,
+					'webViewLink' => $target->webViewLink,
+					'iconLink' => $target->iconLink,
+				]);
 			} else {
 				$this->dokumentyService->addFile([
 					'id' => $file->id,
