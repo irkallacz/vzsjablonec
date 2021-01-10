@@ -5,6 +5,7 @@ use App\Model\DokumentyService;
 use Nette\Utils\DateTime;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile as DriveFile;
+use Tracy\Debugger;
 
 /**
  * Class CronPresenter
@@ -13,6 +14,8 @@ use Google_Service_Drive_DriveFile as DriveFile;
 class DrivePresenter extends BasePresenter {
 
 	const SHORTCUT_MIME_TYPE = 'application/vnd.google-apps.shortcut';
+
+	const FILE_FIELDS = 'id, name, description, mimeType, modifiedTime, webContentLink, webViewLink, iconLink';
 
 	/** @var DokumentyService @inject */
 	public $dokumentyService;
@@ -47,7 +50,7 @@ class DrivePresenter extends BasePresenter {
 	private function getFilesByParent(string $parent) {
 		$result = $this->driveService->files->listFiles([
 			'q' => "'$parent' in parents",
-			'fields' => 'files(id, name, description, mimeType, modifiedTime, webContentLink, webViewLink, iconLink)',
+			'fields' => 'files(' . self::FILE_FIELDS . ', shortcutDetails)',
 			'orderBy' => 'folder,name'
 		]);
 
@@ -78,11 +81,11 @@ class DrivePresenter extends BasePresenter {
 				}
 				
 				$targetId = $file->getShortcutDetails()->getTargetId();
-				$target = $this->driveService->files->get($targetId);
+				$target = $this->driveService->files->get($targetId, ['fields' => self::FILE_FIELDS]);
 				//$target->getParents();
 				//$this->driveService->files->delete($file->id);
 				$this->dokumentyService->addFile([
-					'id' => $targetId->id,
+					'id' => $target->id,
 					'name' => $file->name,
 					'directory' => $parent,
 					'description' => $file->description,
