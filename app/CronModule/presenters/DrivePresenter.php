@@ -89,7 +89,7 @@ class DrivePresenter extends BasePresenter {
 					'name' => $file->name,
 					'directory' => $parent,
 					'description' => $file->description,
-					'modifiedTime' => new DateTime($file->modifiedTime),
+					'modifiedTime' => new DateTime(($file->modifiedTime > $target->modifiedTime) ? $file->modifiedTime : $target->modifiedTime),
 					'mimeType' => $target->mimeType,
 					'webContentLink' => $target->webContentLink,
 					'webViewLink' => $target->webViewLink,
