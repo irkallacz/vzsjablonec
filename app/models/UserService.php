@@ -167,6 +167,28 @@ class UserService extends DatabaseService {
 	}
 
 	/**
+	 * @param int $user_id
+	 * @param int $year
+	 * @return bool
+	 */
+	public function addRegistration(int $user_id, int $year) {
+		$row = $this->database->table('user_registration')
+			->where('user_id', $user_id)
+			->where('year', $year)
+			->fetch();
+
+		if ($row) {
+			return false;
+		} else {
+			$this->database->query('INSERT INTO user_registration', [
+				'user_id' => $user_id,
+				'year' => $year
+			]);
+			return true;
+		}
+	}
+
+	/**
 	 * @param ArrayHash $values
 	 * @param int $role
 	 * @return bool|int|IRow|ActiveRow
@@ -240,7 +262,6 @@ class UserService extends DatabaseService {
 			'date_add' => new SqlLiteral('NOW()')
 		]);
 	}
-
 
 	/**
 	 * @param int $user_id
@@ -326,7 +347,6 @@ class UserService extends DatabaseService {
 
 		return array_combine($keys, $values);
 	}
-
 
 	/**
 	 * @param IRow|ActiveRow $user

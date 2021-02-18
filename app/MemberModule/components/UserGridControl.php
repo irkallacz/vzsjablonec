@@ -156,6 +156,7 @@ class UserGridControl extends Control {
 
 		$grid->addGlobalAction('export', 'export', [$this, 'export']);
 		$grid->addGlobalAction('mail', 'mail', [$this, 'mail']);
+		$grid->addGlobalAction('registration', 'registrace', [$this, 'registration']);
 
 		return $grid;
 	}
@@ -273,11 +274,11 @@ class UserGridControl extends Control {
 	}
 
 	/**
-	 * @param array $ids
+	 * @param array $selection
 	 * @throws \Nette\Application\AbortException
 	 */
-	public function export(array $ids){
-		if (!empty($ids)){
+	public function export(array $selection){
+		if (!empty($selection)){
 			$header = [' ' => 'integer'];
 			$widths = [5];
 			foreach ($this->columns as $name){
@@ -289,7 +290,7 @@ class UserGridControl extends Control {
 			$writer = new \XLSXWriter();
 			$writer->writeSheetHeader('List1', $header, ['font-style' => 'bold', 'widths' => $widths]);
 
-			foreach ($ids as $id){
+			foreach ($selection as $id){
 				$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
 				$data = [$user->id];
 
@@ -323,18 +324,35 @@ class UserGridControl extends Control {
 			$writer->writeToStdOut();
 
 			$this->presenter->terminate();
-		}else{
+		} else{
 			$this->flashMessage('Musíte vybrat uživatele', 'error');
 		}
 	}
 
+	public function registration(array $selection) {
+		if (empty($selection)) {
+			$this->flashMessage('Musíte vybrat uživatele', 'error');
+		} else {
+			$year = (int) date('Y');
+
+			$count = 0;
+			foreach ($selection as $user_id) {
+				if ($this->userService->addRegistration($user_id, $year)) {
+					$count++;
+				}
+			}
+
+			$this->flashMessage(sprintf('Registrováno %d uživatelů', $count), $count ? 'info' : 'error');
+		}
+	}
+
 	/**
-	 * @param array $ids
+	 * @param array $selection
 	 * @throws \Nette\Application\AbortException
 	 */
-	public function mail(array $ids){
-		if (!empty($ids)){
-			$this->presenter->redirect('Mail:add', ['recipients' => $ids]);
+	public function mail(array $selection){
+		if (!empty($selection)){
+			$this->presenter->redirect('Mail:add', ['recipients' => $selection]);
 		}else{
 			$this->flashMessage('Musíte vybrat uživatele', 'error');
 		}
