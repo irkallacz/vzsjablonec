@@ -432,7 +432,7 @@ class UserPresenter extends LayerPresenter {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		if ((!$this->getUser()->isInRole('admin')) and ($member->id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('board')) and ($member->id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte právo editovat tohoto uživatele');
 		}
 
