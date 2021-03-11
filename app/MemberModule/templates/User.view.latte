@@ -46,7 +46,7 @@
 	<img n:if="$member->role" src="{$baseUrl}/img/vzs.svg" alt="logo" height="150" id="logo">
 	<div class="line red" id="first">
 		<ul class="buttonMenu">
-			<li n:if="($user->isInRole('board'))and(is_null($member->role))">
+			<li n:if="($user->isInRole('admin'))and(is_null($member->role))">
 				<a class="buttonLike confirm" n:href="activate $member->id" data-query="Opravdu chcete tohoto uživatele aktivovat?">
 					{include svg check} aktivovat
 				</a>
@@ -63,7 +63,7 @@
 				</a>
 			</li>
 			{/if}
-			<li n:if="(($user->isInRole('admin')or($member->id == $user->getId()))and(!is_null($member->role)))">
+			<li n:if="(($user->isInRole('board')or($member->id == $user->getId()))and(!is_null($member->role)))">
 				<a class="buttonLike" n:href="edit $member->id">
 					{include svg pencil} editovat
 				</a>
