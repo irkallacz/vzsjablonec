@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\MessageService;
+namespace App\Model\YoutubeService;
 
 namespace App\Model;
 
