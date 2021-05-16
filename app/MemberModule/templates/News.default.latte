@@ -60,6 +60,12 @@
 		</ol>
 	{/if isset($album)}
 
+	{if}<h3>Videa</h3>
+		<ol class="news" n:inner-foreach="$videoList as $video">
+			<li><a href="https://www.youtube.com/watch?v={$video->videoId}" target="_blank" title="{$video->publishedAt|timeAgoInWords}">{$video->title}</a></li>
+		</ol>
+	{/if isset($video)}
+
 	{if $user->isInRole('member')}
 
 		{if}<h3>Ankety</h3>
