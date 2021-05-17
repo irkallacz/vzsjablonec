@@ -22,6 +22,7 @@ parameters:
 			clientSecret: 123456789
 			callbackURL: 'http://localhost/vzsjablonec/www/vzsjablonec/account/sign/googlelogin'
 		youtube:
+		    channel: 'UCR9cGiK9bpjsOBB3OjBOkDg'
 		    key: 'fdgjklfgjsfjlgnsldgmdslkgjaslvljasd'
 	facebook:
 		login:
@@ -129,7 +130,7 @@ services:
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
-	- App\Model\YoutubeService(@googleYouTubeClient)
+	- App\Model\YoutubeService(@googleYouTubeClient,%google.youtube.channel%)
 
 	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %wwwDir%)
 

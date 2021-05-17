@@ -14,7 +14,7 @@ class YoutubePresenter extends BasePresenter {
 		$youtube = new \Google_Service_YouTube($this->youtubeService->googleClient);
 
 		$videos = [];
-		$playlists = $youtube->channels->listChannels('contentDetails', ['id' => YoutubeService::CHANNEL_ID]);
+		$playlists = $youtube->channels->listChannels('contentDetails', ['id' => $this->youtubeService->channelId]);
 
 		foreach ($playlists as $playlist) {
 			$playlistId = $playlist->contentDetails->relatedPlaylists->uploads;
