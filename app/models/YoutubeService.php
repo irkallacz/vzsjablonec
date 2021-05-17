@@ -24,7 +24,7 @@ class YoutubeService extends DatabaseService {
 	 * @param string $channelId
 	 * @param Context $database
 	 */
-	public function __construct(\Google_Client $googleClient, string $channelId,Context $database) {
+	public function __construct(\Google_Client $googleClient, string $channelId, Context $database) {
 		parent::__construct($database);
 		$this->googleClient = $googleClient;
 		$this->channelId = $channelId;
@@ -52,6 +52,6 @@ class YoutubeService extends DatabaseService {
 	 * @return ResultSet
 	 */
 	public function addFile(array $values) {
-		return $this->database->query("INSERT INTO " . self::TABLE_VIDEA, $values, "ON DUPLICATE KEY UPDATE publishedAt = ", $values['publishedAt']);
+		return $this->database->query("INSERT INTO ?name ?values ON DUPLICATE KEY UPDATE ?set", self::TABLE_VIDEA, $values, ['publishedAt' => $values['publishedAt'], 'title' => $values['title']]);
 	}
 }

@@ -32,7 +32,7 @@ class NewsPresenter extends LayerPresenter{
         public $hlasovaniService;
 
         /** @var Model\YoutubeService @inject */
-		public $youtubeService;
+        public $youtubeService;
 
         public function renderDefault(){
 
