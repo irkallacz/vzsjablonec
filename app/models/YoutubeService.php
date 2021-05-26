@@ -1,7 +1,5 @@
 <?php
 
-namespace App\Model\YoutubeService;
-
 namespace App\Model;
 
 use Nette\Database\Context;
