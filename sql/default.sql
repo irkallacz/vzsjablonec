@@ -543,6 +543,16 @@ CREATE TABLE `user_rights` (
   CONSTRAINT `user_rights_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Table structure for table `videa`
+
+DROP TABLE IF EXISTS `videa`;
+CREATE TABLE `videa` (
+  `videoId` varchar(100) CHARACTER SET utf8 NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8 NOT NULL,
+  `publishedAt` datetime NOT NULL,
+  PRIMARY KEY (`videoId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Trigger structure `password_session_bi`
 
 DROP TRIGGER IF EXISTS `password_session_bi`;

@@ -1,0 +1,5 @@
+{ifset $videos}
+    {foreach $videos as $video}
+        {$video->resourceId->videoId} - {$video->title} ({$video->publishedAt})<br/>
+    {/foreach}
+{/ifset}

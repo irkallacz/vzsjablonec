@@ -21,6 +21,9 @@ parameters:
 			clientId: '698488418952-95tac0912e96pdk6mlhme3i143i5kgvg.apps.googleusercontent.com'
 			clientSecret: 123456789
 			callbackURL: 'http://localhost/vzsjablonec/www/vzsjablonec/account/sign/googlelogin'
+		youtube:
+		    channel: 'UCR9cGiK9bpjsOBB3OjBOkDg'
+		    key: 'fdgjklfgjsfjlgnsldgmdslkgjaslvljasd'
 	facebook:
 		login:
 			appId: 129653264393659
@@ -127,6 +130,7 @@ services:
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
+	- App\Model\YoutubeService(@googleYouTubeClient,%google.youtube.channel%)
 
 	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %wwwDir%)
 
@@ -149,6 +153,11 @@ services:
 				#https://www.googleapis.com/auth/admin.directory.user
 			])
 			- setCache(Stash\Pool(Stash\Driver\FileSystem([path: %tempDir%/stash])))
+	googleYouTubeClient:
+		class: Google_Client
+		autowired: false
+		setup:
+		    - setDeveloperKey(%google.youtube.key%)
 
 	- Google_Service_Drive
 	- Google_Service_Calendar

@@ -31,6 +31,9 @@ class NewsPresenter extends LayerPresenter{
         /** @var Model\HlasovaniService @inject */
         public $hlasovaniService;
 
+        /** @var Model\YoutubeService @inject */
+        public $youtubeService;
+
         public function renderDefault(){
 
                 if ($this->context->parameters['productionMode']) {
@@ -60,6 +63,8 @@ class NewsPresenter extends LayerPresenter{
                 $this->template->messageList = $this->messageService->getMessagesNews($datum, $user_id);
 
                 $this->template->albumList = $this->galleryService->getAlbumNews($datum);
+
+                $this->template->videoList = $this->youtubeService->getVideoNews($datum);
         }
 
 }
