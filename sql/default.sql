@@ -502,6 +502,7 @@ CREATE TABLE `user` (
   `theme` tinyint(1) unsigned NOT NULL DEFAULT 0,
   `date_add` date DEFAULT NULL,
   `date_update` datetime DEFAULT NULL,
+  `bank_account` varchar(50) COLLATE utf8_czech_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `mail` (`mail`),
   UNIQUE KEY `mail2` (`mail2`),

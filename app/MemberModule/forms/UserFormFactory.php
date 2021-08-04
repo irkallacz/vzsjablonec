@@ -108,6 +108,9 @@ class UserFormFactory {
 			->addRule(Form::NOT_EQUAL, 'Telefony se nesmí shodovat', $form['telefon'])
 			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 
+		$form->addText('bank_account', 'Číslo účtu',30)
+			->setNullable();
+
 		$form->addGroup('Adresa');
 
 		$form->addText('ulice', 'Ulice', 30)
