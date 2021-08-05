@@ -109,7 +109,9 @@ class UserFormFactory {
 			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 
 		$form->addText('bank_account', 'Číslo účtu',30)
-			->setNullable();
+			->setNullable()
+			->setRequired(FALSE)
+			->addRule([$this, 'validBankAccountValidator'], 'Jste si jistí, že jste zadali správné číslo účtu?');
 
 		$form->addGroup('Adresa');
 
@@ -149,5 +151,38 @@ class UserFormFactory {
 			if (!$this->userService->isCredentialsUnique($values))
 				$form->addError('V databázi máme již podobného uživatele, jste si jistí, že nejde o tutéž osobu?');
 		}
+	}
+
+	/**
+	 * @param BaseControl $bank_account
+	 * @return bool
+	 */
+	public function validBankAccountValidator(BaseControl $bank_account) {
+		$matches = [];
+		if (!preg_match('/^(?:([0-9]{1,6})-)?([0-9]{2,10})\/([0-9]{4})$/', $bank_account->getValue(), $matches)) {
+			return false;
+		}
+		$weights = [6, 3, 7, 9, 10, 5, 8, 4, 2, 1];
+		$prefix = str_pad($matches[1], 10, '0', STR_PAD_LEFT);
+		$main   = str_pad($matches[2], 10, '0', STR_PAD_LEFT);
+
+		// Check prefix
+		$checkSum = 0;
+		for ($i=0; $i < strlen($prefix); $i++) {
+			$checkSum += $weights[$i] * (int)$prefix[$i];
+		}
+		if ($checkSum % 11 !== 0) {
+			return false;
+		}
+
+		// Check main part
+		$checkSum = 0;
+		for ($i=0; $i < strlen($main); $i++) {
+			$checkSum += $weights[$i] * (int)$main[$i];
+		}
+		if ($checkSum % 11 !== 0) {
+			return false;
+		}
+		return true;
 	}
 }
