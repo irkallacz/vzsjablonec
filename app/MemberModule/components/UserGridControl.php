@@ -76,6 +76,7 @@ class UserGridControl extends Control {
 		'iDokladId' 	=> ['label' => 'iDokladID', 	'size' =>  8,	'format' => 'integer'],
 		'date_add' 		=> ['label' => 'Datum reg.', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
 		'date_update'	=> ['label' => 'Datum akt.', 	'size' => 12,	'format' => 'DD.MM.YYYY HH:MM'],
+		'bank_account'	=> ['label' => 'Číslo účtu',	'size' => 20,	'format' => 'string',	'order' => FALSE],
 	];
 
 	/**

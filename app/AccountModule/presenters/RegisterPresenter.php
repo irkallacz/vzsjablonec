@@ -43,6 +43,8 @@ class RegisterPresenter extends BasePresenter {
 		$form['telefon2']->caption = 'Druhý telefon';
 		$form['telefon2']->setOption('description','(na rodiče atd...)');
 
+		unset($form['bank_account']);
+
 		$form->addGroup(NULL);
 
 		$form->addCheckbox('check', Html::el()->setHtml('Souhlasím se <a target="_blank" href="gdpr">zpracováním osobních údajů'))

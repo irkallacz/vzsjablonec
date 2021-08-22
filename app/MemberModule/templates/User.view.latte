@@ -141,6 +141,9 @@
 		<li n:if="$member->telefon2">
 			{include svg phone-square} <b>Sekundární telefon:</b> <a href="tel:+420{$member->telefon2}">{$member->telefon2|phone}</a>
 		</li>
+		<li n:if="(($user->isInRole('board') or($member->id == $user->getId())) and ($member->bank_account))">
+			{include svg dollar} <b>Číslo účtu:</b> {$member->bank_account}
+		</li>
 	</ul>
 
 	<p>{include svg building} <b>Zaměstnání/Škola:</b> {$member->zamestnani}</p>
