@@ -19,7 +19,6 @@ pipelines:
       - step:
           script:
             - echo "Updating testing server"
-            - apt-get update
             - ssh $SSH_USER_TEST@$SSH_SERVER_TEST
             - echo "Testing server updated"
   custom:
