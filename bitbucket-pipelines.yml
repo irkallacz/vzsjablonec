@@ -11,7 +11,6 @@ pipelines:
       - step:
           script:
             - echo "Updating production server"
-            - apt-get update
             - git ftp push --force --user $FTP_USER --passwd $FTP_PASSWD ftpes://$FTP_SERVER
             - lftp -e 'rm -r /tmp/cache; rm -r /log; mkdir -p /log; bye' -u $FTP_USER,$FTP_PASSWD $FTP_SERVER
             - echo "Production server updated"
@@ -25,6 +24,5 @@ pipelines:
       init_production:
         - step:
             script:
-              - apt-get update
               - git ftp init --user $FTP_USER --passwd $FTP_PASSWD ftpes://$FTP_SERVER
               - lftp -e 'rm -r /tmp/cache; rm -r /log; mkdir -p /log; bye' -u $FTP_USER,$FTP_PASSWD $FTP_SERVER
