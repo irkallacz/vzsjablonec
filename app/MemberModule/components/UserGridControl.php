@@ -68,6 +68,7 @@ class UserGridControl extends Control {
 		'send_to_second'=> ['label' => 'Kopie', 		'size' =>  5,	'format' => 'string',	'order' => FALSE],
 		'ulice' 		=> ['label' => 'Ulice',			'size' => 20,	'format' => 'string'],
 		'mesto' 		=> ['label' => 'Město',			'size' => 20,	'format' => 'string'],
+		'bank_account'	=> ['label' => 'Číslo účtu',	'size' => 20,	'format' => 'string'],
 		'zamestnani'	=> ['label' => 'Zaměstnání',	'size' => 20,	'format' => 'string'],
 		'photo' 		=> ['label' => 'Fotka',			'size' =>  5,	'format' => 'string',	'order' => FALSE],
 		'hash' 			=> ['label' => 'Heslo', 		'size' =>  5,	'format' => 'string',	'order' => FALSE],
@@ -76,7 +77,6 @@ class UserGridControl extends Control {
 		'iDokladId' 	=> ['label' => 'iDokladID', 	'size' =>  8,	'format' => 'integer'],
 		'date_add' 		=> ['label' => 'Datum reg.', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
 		'date_update'	=> ['label' => 'Datum akt.', 	'size' => 12,	'format' => 'DD.MM.YYYY HH:MM'],
-		'bank_account'	=> ['label' => 'Číslo účtu',	'size' => 20,	'format' => 'string',	'order' => FALSE],
 	];
 
 	/**
