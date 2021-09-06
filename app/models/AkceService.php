@@ -192,6 +192,7 @@ class AkceService extends DatabaseService {
 			->where('enable', TRUE)
 			->where('confirm', TRUE)
 			->where(':akce_member.user_id', $user_id)
+			->where(':akce_member.deleted_by IS NULL')
 			->where(':akce_member.organizator', FALSE)
 			->where('date_end BETWEEN ? AND NOW()', $date);
 	}
