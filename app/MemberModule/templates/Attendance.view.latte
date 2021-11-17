@@ -1,0 +1,39 @@
+{block #head}
+    <style type="text/css" n:syntax="off">
+        table#items { border-collapse: collapse; width: 98%; }
+        table#items .count, table#items .author { padding: 0 1ex; }
+        table#items .title { padding-left: 1em;}
+        table#items .author { padding: 0.5ex;}
+        table#items a.logged { color: #C22 }
+    </style>
+{/block}
+
+<h1 n:block="title">Docházka</h1>
+
+{block #content}
+    <p>Docházka tréninku <strong>{$session->date|date:'%A %d.%m.%Y'} {$session->from|date:'%H:%i'}-{$session->to|date:'%H:%i'}</strong></p>
+    <table id="items">
+        <thead>
+        <tr class="first"><th></th><th>Osoba</th><th>Datum a čas vstupu</th></tr>
+        </thead>
+        <tbody n:inner-foreach="$attendances as $attendance">
+        <tr n:class="topic, hoverLike">
+            <td class="count center">
+                {$iterator}
+            </td>
+            <td class="col author">
+                <div class="no-wrap">
+                    <a n:class="($attendance->user_id == $user->id) ? logged" n:tag-if="$attendance->user->role" title="profil uživatele" n:href="User:view $attendance->user_id">
+                        {include svg user-o} {$attendance->user->surname} {$attendance->user->name}
+                    </a>
+                </div>
+            </td>
+            <td class="col title">
+                <div class="no-wrap">
+                    <time datetime="{$attendance->datetime|datetimeC}">{$attendance->datetime|date:'%H:%M:%S'}</time>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+{/block}

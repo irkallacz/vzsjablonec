@@ -244,6 +244,31 @@ CREATE TABLE `anketa_odpoved` (
   CONSTRAINT `anketa_odpoved_ibfk_1` FOREIGN KEY (`anketa_id`) REFERENCES `anketa` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
+-- Table structure for table `attendance`
+
+DROP TABLE IF EXISTS `attendance`;
+CREATE TABLE `attendance` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `date` date NOT NULL,
+  `from` time NOT NULL,
+  `to` time NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Table structure for table `attendance_user`
+
+DROP TABLE IF EXISTS `attendance_user`;
+CREATE TABLE `attendance_user` (
+   `attendance_id` int(10) unsigned NOT NULL,
+   `user_id` smallint(5) unsigned NOT NULL,
+   `datetime` datetime NOT NULL,
+   `created` datetime NOT NULL,
+   KEY `attendance_id` (`attendance_id`),
+   KEY `user_id` (`user_id`),
+   CONSTRAINT `attendance_user_ibfk_1` FOREIGN KEY (`attendance_id`) REFERENCES `attendance` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+   CONSTRAINT `attendance_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Table structure for table `dokumenty`
 
 DROP TABLE IF EXISTS `dokumenty`;

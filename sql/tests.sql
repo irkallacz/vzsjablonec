@@ -73,6 +73,16 @@ INSERT INTO `message_user` (`message_id`, `user_id`) VALUES
 	(1, 3),
 	(1, 4);
 
+INSERT INTO `attendance` (`id`, `date`, `from`, `to`) VALUES
+    (1,	 '2000-01-01', '18:30:00' , '19:30:00');
+
+INSERT INTO `attendance_user` (`user_id`, `session_id`, `datetime`, `created`) VALUES
+    (0,	 1, '2000-01-01 18:15:00' , NOW()),
+    (1,	 1, '2000-01-01 18:15:01' , NOW()),
+    (2,	 1, '2000-01-01 18:15:02' , NOW()),
+    (3,	 1, '2000-01-01 18:15:01' , NOW()),
+    (4,	 1, '2000-01-01 18:15:04' , NOW());
+
 INSERT `album` (`id`, `name`, `slug`, `text`, `private`, `visible`, `user_id`, `date`, `date_add`, `date_update`, `pubkey`) VALUES
 	(1, 'Viditelné album akce', '1-viditelne-album-akce',		'Viditelný text', 'Soukromý text', 1,  2,  NOW(),  NOW(),  NOW(), MD5(NOW())),
 	(2, 'Neditelné album akce', '2-neviditelne-album-akce', 'Viditelný text', 'Soukromý text', 0,  2,  NOW(),  NOW(),  NOW(), MD5(NOW())),

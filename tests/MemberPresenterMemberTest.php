@@ -229,6 +229,17 @@ final class MemberPresenterMemberTest extends \Tester\TestCase
 		$this->checkAction('Member:Mail:akce', ['id' => 2]);
 	}
 
+	public function testActionAttendanceDefault()
+	{
+		$this->checkAction('Member:Attendance:default');
+	}
+
+	public function testActionAttendanceView()
+	{
+		$this->checkAction('Member:Attendance:view', ['id' => 1]);
+	}
+
+
 }
 
 (new MemberPresenterMemberTest())->run();

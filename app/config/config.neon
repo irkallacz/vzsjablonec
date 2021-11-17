@@ -123,6 +123,7 @@ services:
 	- App\Model\UserService
 	- App\Model\DokumentyService(%google.driveDir%)
 	- App\Model\IdokladService(%idoklad.credentialsFile%)
+	- App\Model\AttendanceService
 	- App\Model\AnketyService
 	- App\Model\RatingService
 	- App\Model\BillingService
