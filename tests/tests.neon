@@ -1,3 +1,13 @@
+parameters:
+	database:
+		default:
+			user: user
+			password: p743SRRv2V
+		wordpress:
+			dbname: front
+			user: user
+			password: p743SRRv2V
+
 testbench:
 	sqls: #what should be loaded after empty database creation
 		- %appDir%/../sql/default.sql
