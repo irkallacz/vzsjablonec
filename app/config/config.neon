@@ -47,6 +47,7 @@ parameters:
 		- People:update
 		- Idoklad:update
 		- Thumbs:default
+		- Youtube:default
 	mail:
 		account: %google.account%
 		title: 'VZS Jablonec'

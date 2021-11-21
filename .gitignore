@@ -52,7 +52,7 @@ google_api_service.json
 composer.lock
 .idea
 tests/_temp/
-www/albums/
+www/albums
 www/archive.zip
 www/doc/
 www/img/photos/
