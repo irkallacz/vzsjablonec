@@ -265,8 +265,8 @@ CREATE TABLE `attendance_user` (
    `created` datetime NOT NULL,
    KEY `attendance_id` (`attendance_id`),
    KEY `user_id` (`user_id`),
-   CONSTRAINT `attendance_user_ibfk_1` FOREIGN KEY (`attendance_id`) REFERENCES `attendance` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-   CONSTRAINT `attendance_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+   CONSTRAINT `attendance_user_ibfk_3` FOREIGN KEY (`attendance_id`) REFERENCES `attendance` (`id`) ON DELETE CASCADE,
+   CONSTRAINT `attendance_user_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Table structure for table `dokumenty`
