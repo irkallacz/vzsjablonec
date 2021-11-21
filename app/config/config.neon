@@ -41,13 +41,6 @@ parameters:
 	gallery:
 		albumDir: albums
 		thumbDir: %gallery.albumDir%/thumbs
-	cron:
-		- Calendar:default
-		- Drive:default
-		- People:update
-		- Idoklad:update
-		- Thumbs:default
-		- Youtube:default
 	mail:
 		account: %google.account%
 		title: 'VZS Jablonec'
@@ -138,7 +131,14 @@ services:
 
 	- App\MemberModule\Components\TexylaJsFactory(%wwwDir%)
 
-	- App\CronModule\Presenters\TaskerPresenter(%cron%)
+	- App\Console\CalendarCommand
+	- App\Console\DriveCommand
+	- App\Console\IDokladCommand
+	- App\Console\MessageCommand(%mail%, %messenger%)
+	- App\Console\PeopleCommand
+	- App\Console\YoutubeCommand
+
+	- App\CronModule\Presenters\TaskerPresenter([])
 	- App\CronModule\Presenters\MessagePresenter(%mail%, %messenger%)
 
 	googleClient:
@@ -155,6 +155,7 @@ services:
 				#https://www.googleapis.com/auth/admin.directory.user
 			])
 			- setCache(Stash\Pool(Stash\Driver\FileSystem([path: %tempDir%/stash])))
+
 	googleYouTubeClient:
 		class: Google_Client
 		autowired: false
@@ -186,6 +187,7 @@ extensions:
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
 	- Echo511\Plupload\DI\PluploadExtension
 	recaptcha: Contributte\ReCaptcha\DI\ReCaptchaExtension
+	console: Contributte\Console\DI\ConsoleExtension
 
 recaptcha:
 	siteKey: %recaptcha.siteKey%
