@@ -189,3 +189,8 @@ extensions:
 recaptcha:
 	siteKey: %recaptcha.siteKey%
 	secretKey: %recaptcha.secretKey%
+
+console:
+	name: Vzs Jablonec
+	url: https://member.vzs-jablonec.cz
+	catchExceptions: true

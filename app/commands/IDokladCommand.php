@@ -109,11 +109,11 @@ final class IDokladCommand extends Command {
 			$response = $this->iDokladService->sendRequest($request);
 			$person = $response->getData();
 			if (count($person) != 1) {
-				$this->log($user, 'NOT FOUND');
+				//$this->log($user, 'NOT FOUND');
 				continue;
 			}
 			$user->update(['iDokladId' => $person[0]['Id']]);
-			$this->log($user, 'LOCALY UPDATED');
+			//$this->log($user, 'LOCALY UPDATED');
 		}
 	}
 

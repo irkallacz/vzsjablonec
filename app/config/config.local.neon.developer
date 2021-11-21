@@ -19,9 +19,6 @@ tracy:
 	bar:
 		- Nextras\MailPanel\MailPanel(%tempDir%/mail-panel-latte)
 
-extensions:
-	console: Contributte\Console\DI\ConsoleExtension
-
 services:
 	http.response:
 		setup:
@@ -32,8 +29,3 @@ services:
 	nette.mailer:
 		class: Nette\Mail\IMailer
 		factory: Nextras\MailPanel\FileMailer(%tempDir%/mail-panel-mails)
-
-console:
-	name: Member Project
-	url: http://www.kdyby.org
-	catchExceptions: true

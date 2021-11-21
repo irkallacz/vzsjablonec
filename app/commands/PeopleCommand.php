@@ -53,7 +53,6 @@ final class PeopleCommand extends Command {
 		$this->peopleService = $peopleService;
 	}
 
-
 	protected function configure() {
 		$this->setName('cron:people')
 			->setDescription('Sync contacts from database to Google account');

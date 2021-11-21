@@ -68,8 +68,8 @@ final class MessageCommand extends Command {
 		$this->mailer = $mailer;
 		$this->linkGenerator = $linkGenerator;
 
-		$this->latte = new \Latte\Engine;
-		$this->latte->addFilter('texy', function(string $s) {
+		$this->latte = new \Latte\Engine();
+		$this->latte->addFilter('texy', function (string $s) {
 			$texy = new \Texy\Texy();
 			$texy->headingModule->balancing = \Texy\Modules\HeadingModule::FIXED;
 
@@ -97,7 +97,7 @@ final class MessageCommand extends Command {
 				if (array_key_exists('akce_id', $parameters)) {
 					$event = $this->akceService->getAkceById($parameters['akce_id']);
 					if ($event->confirm) {
-						$output->writeln(['Message delete, action confirm ', $event->id], Output::VERBOSITY_VERBOSE);
+						$output->writeln(join("\t", ['Message delete, action confirm ', $event->id]), Output::VERBOSITY_VERBOSE);
 						$message->delete();
 						continue;
 					}
@@ -162,7 +162,7 @@ final class MessageCommand extends Command {
 
 		$mail->setHtmlBody($this->latte->renderToString(__DIR__ .  '/../presenters/templates/Mail/newMail.latte', ['text' => $message->text]));
 
-		$mail->setSubject('['.$this->mailSettings->title.'] ' . $message->subject);
+		$mail->setSubject(sprintf('[%s] %s', $this->mailSettings->title, $message->subject));
 
 		if ($message->message_type_id == MessageService\Message::VOTE_NEW_TYPE) {
 			$mail->addTo($this->mailSettings->board);
@@ -220,6 +220,4 @@ final class MessageCommand extends Command {
 
 		return $notification;
 	}
-
-
 }
