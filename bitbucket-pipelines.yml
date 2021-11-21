@@ -11,8 +11,7 @@ pipelines:
       - step:
           script:
             - echo "Updating production server"
-            - git ftp push --force --user $FTP_USER --passwd $FTP_PASSWD ftpes://$FTP_SERVER
-            - lftp -e 'rm -r /tmp/cache; rm -r /log; mkdir -p /log; bye' -u $FTP_USER,$FTP_PASSWD $FTP_SERVER
+            - ssh $SSH_USER@SSH_SERVER
             - echo "Production server updated"
     testing:
       - step:
@@ -20,9 +19,3 @@ pipelines:
             - echo "Updating testing server"
             - ssh $SSH_USER_TEST@$SSH_SERVER_TEST
             - echo "Testing server updated"
-  custom:
-      init_production:
-        - step:
-            script:
-              - git ftp init --user $FTP_USER --passwd $FTP_PASSWD ftpes://$FTP_SERVER
-              - lftp -e 'rm -r /tmp/cache; rm -r /log; mkdir -p /log; bye' -u $FTP_USER,$FTP_PASSWD $FTP_SERVER
