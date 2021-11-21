@@ -49,6 +49,9 @@ final class MessageCommand extends Command {
 	/** @var ArrayHash */
 	private $messengerSettings;
 
+	/** @var \Latte\Engine */
+	private $latte;
+
 	/**
 	 * MessagePresenter constructor.
 	 * @param array $mailSettings
@@ -64,6 +67,14 @@ final class MessageCommand extends Command {
 		$this->akceService = $akceService;
 		$this->mailer = $mailer;
 		$this->linkGenerator = $linkGenerator;
+
+		$this->latte = new \Latte\Engine;
+		$this->latte->addFilter('texy', function(string $s) {
+			$texy = new \Texy\Texy();
+			$texy->headingModule->balancing = \Texy\Modules\HeadingModule::FIXED;
+
+			return new \Latte\Runtime\Html($texy->process($s));
+		});
 	}
 
 	protected function configure() {
@@ -149,8 +160,7 @@ final class MessageCommand extends Command {
 			$mail->addBcc($author->mail, UserService::getFullName($author));
 		}
 
-		$latte = new \Latte\Engine;
-		$mail->setHtmlBody($latte->renderToString(__DIR__ .  '/../presenters/templates/Mail/newMail.latte', ['text' => $message->text]));
+		$mail->setHtmlBody($this->latte->renderToString(__DIR__ .  '/../presenters/templates/Mail/newMail.latte', ['text' => $message->text]));
 
 		$mail->setSubject('['.$this->mailSettings->title.'] ' . $message->subject);
 
@@ -182,7 +192,7 @@ final class MessageCommand extends Command {
 			'botID' => (string) $this->messengerSettings->botID,
 			'title' => $message->subject,
 			'text' => Strings::truncate($message->text, 200),
-			'url' => $this->linkGenerator->link('//:Member:Mail:view', $message->id),
+			'url' => $this->linkGenerator->link('Member:Mail:view', ['id' => $message->id]),
 			'recipients' => [],
 		];
 
@@ -197,15 +207,15 @@ final class MessageCommand extends Command {
 
 		if (array_key_exists('session_id', $parameters)) {
 			$session = $this->userService->getPasswordSessionId($parameters['session_id']);
-			$notification['refer'] = $this->linkGenerator->link('//:Account:Sign:restorePassword', ['pubkey' => $session->pubkey]);
+			$notification['refer'] = $this->linkGenerator->link('Account:Sign:restorePassword', ['pubkey' => $session->pubkey]);
 		}
 
 		if (array_key_exists('akce_id', $parameters)) {
-			$notification['refer'] = $this->linkGenerator->link('//:Member:Akce:view', $parameters['akce_id']);
+			$notification['refer'] = $this->linkGenerator->link('Member:Akce:view', ['id' => $parameters['akce_id']]);
 		}
 
 		if (array_key_exists('hlasovani_id', $parameters)) {
-			$notification['refer'] = $this->linkGenerator->link('//:Member:Hlasovani:view', $parameters['hlasovani_id']);
+			$notification['refer'] = $this->linkGenerator->link('Member:Hlasovani:view', ['id' => $parameters['hlasovani_id']]);
 		}
 
 		return $notification;

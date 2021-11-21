@@ -138,9 +138,6 @@ services:
 	- App\Console\PeopleCommand
 	- App\Console\YoutubeCommand
 
-	- App\CronModule\Presenters\TaskerPresenter([])
-	- App\CronModule\Presenters\MessagePresenter(%mail%, %messenger%)
-
 	googleClient:
 		class: Google_Client
 		setup:

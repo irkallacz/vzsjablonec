@@ -53,17 +53,16 @@ final class PeopleCommand extends Command {
 		$this->peopleService = $peopleService;
 	}
 
-	/**
-	 * go through the contacts, update if there is a change
-	 * work only on contact with ID field
-	 * @param bool $force
-	 */
 
 	protected function configure() {
 		$this->setName('cron:people')
 			->setDescription('Sync contacts from database to Google account');
 	}
 
+	/**
+	 * go through the contacts, update if there is a change
+	 * work only on contact with ID field
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$force = false;
 
