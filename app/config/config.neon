@@ -193,4 +193,4 @@ recaptcha:
 console:
 	name: Vzs Jablonec
 	url: https://member.vzs-jablonec.cz
-	catchExceptions: true
+	catchExceptions: false
