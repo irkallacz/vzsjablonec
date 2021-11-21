@@ -21,7 +21,7 @@ class WordpressService {
     }
 
     public function getLastNews(){
-        $query = $this->database->query("SELECT post_content FROM nnx2_posts LEFT JOIN nnx2_term_relationships ON object_id = id WHERE term_taxonomy_id = ? AND post_status = 'publish' ORDER BY post_date DESC LIMIT 1", self::CATEGORY);
+        $query = $this->database->query("SELECT post_content FROM wp_posts LEFT JOIN wp_term_relationships ON object_id = id WHERE term_taxonomy_id = ? AND post_status = 'publish' ORDER BY post_date DESC LIMIT 1", self::CATEGORY);
         return $query->fetch();
     }
 }
