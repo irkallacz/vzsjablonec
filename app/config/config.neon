@@ -125,7 +125,7 @@ services:
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
-	- App\Model\YoutubeService(@googleYouTubeClient,%google.youtube.channel%)
+	- App\Model\YoutubeService(%google.youtube.channel%)
 
 	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %wwwDir%)
 
@@ -159,10 +159,11 @@ services:
 		setup:
 		    - setDeveloperKey(%google.youtube.key%)
 
-	- Google_Service_Drive
-	- Google_Service_Calendar
-	- Google_Service_PeopleService
-	- Google_Service_Gmail
+	- Google_Service_Drive(@googleClient)
+	- Google_Service_Calendar(@googleClient)
+	- Google_Service_PeopleService(@googleClient)
+	- Google_Service_Gmail(@googleClient)
+	- Google_Service_YouTube(@googleYouTubeClient)
 
 	googleLogin:
 		class: Vencax\GoogleLogin(%google.login%, vzsjablonec-social-login)

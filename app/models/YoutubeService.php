@@ -10,21 +10,17 @@ use Nette\Utils\DateTime;
 class YoutubeService extends DatabaseService {
 
 	const TABLE_VIDEA = 'videa';
-	/** @var \Google_Client */
-	public $googleClient;
 
 	/** @var string */
 	public $channelId;
 
 	/**
 	 * YoutubeService constructor.
-	 * @param \Google_Client $googleClient
 	 * @param string $channelId
 	 * @param Context $database
 	 */
-	public function __construct(\Google_Client $googleClient, string $channelId, Context $database) {
+	public function __construct(string $channelId, Context $database) {
 		parent::__construct($database);
-		$this->googleClient = $googleClient;
 		$this->channelId = $channelId;
 	}
 

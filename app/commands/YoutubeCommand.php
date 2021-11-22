@@ -11,17 +11,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class YoutubeCommand extends Command {
 
+	/** @var \Google_Service_YouTube */
+	private $youTubeClient;
+
 	/** @var YoutubeService */
-	private $youtubeService;
+	private $youTubeService;
 
 	/**
 	 * YoutubeCommand constructor.
+	 * @param \Google_Service_YouTube $youTubeClient
 	 * @param YoutubeService $youtubeService
 	 */
-	public function __construct(YoutubeService $youtubeService)
+	public function __construct(\Google_Service_YouTube $youTubeClient, YoutubeService $youtubeService)
 	{
 		parent::__construct();
-		$this->youtubeService = $youtubeService;
+		$this->youTubeClient = $youTubeClient;
+		$this->youTubeService = $youtubeService;
 	}
 
 	protected function configure() {
@@ -32,17 +37,16 @@ final class YoutubeCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln('Youtube command', Output::VERBOSITY_VERBOSE);
 
-		$youtube = new \Google_Service_YouTube($this->youtubeService->googleClient);
 
 		$videos = [];
-		$playlists = $youtube->channels->listChannels('contentDetails', ['id' => $this->youtubeService->channelId]);
+		$playlists = $this->youTubeClient->channels->listChannels('contentDetails', ['id' => $this->youTubeService->channelId]);
 
 		foreach ($playlists as $playlist) {
 			$playlistId = $playlist->contentDetails->relatedPlaylists->uploads;
 			$nextPageToken = '';
 
 			while (!is_null($nextPageToken)) {
-				$playlistItems = $youtube->playlistItems->listPlaylistItems('snippet', [
+				$playlistItems = $this->youTubeClient->playlistItems->listPlaylistItems('snippet', [
 					'playlistId' => $playlistId,
 					'maxResults' => 50,
 					'pageToken'  => $nextPageToken
@@ -66,7 +70,7 @@ final class YoutubeCommand extends Command {
 			];
 
 			$output->writeln(join("\t", array_merge(['Video'], $values)), Output::VERBOSITY_VERBOSE);
-			$this->youtubeService->addFile($values);
+			$this->youTubeService->addFile($values);
 		}
 	}
 }
