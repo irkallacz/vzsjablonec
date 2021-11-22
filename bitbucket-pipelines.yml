@@ -11,7 +11,7 @@ pipelines:
       - step:
           script:
             - echo "Updating production server"
-            - ssh $SSH_USER@SSH_SERVER
+            - ssh $SSH_USER@$SSH_SERVER
             - echo "Production server updated"
     testing:
       - step:
