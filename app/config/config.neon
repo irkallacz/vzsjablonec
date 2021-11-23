@@ -115,7 +115,7 @@ services:
 	- App\Model\AkceService
 	- App\Model\ForumService
 	- App\Model\UserService
-	- App\Model\DokumentyService(%google.driveDir%)
+	- App\Model\DokumentyService
 	- App\Model\IdokladService(%idoklad.credentialsFile%)
 	- App\Model\AttendanceService
 	- App\Model\AnketyService
@@ -125,18 +125,18 @@ services:
 	- App\Model\HlasovaniService
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
-	- App\Model\YoutubeService(%google.youtube.channel%)
+	- App\Model\YoutubeService
 
 	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %wwwDir%)
 
 	- App\MemberModule\Components\TexylaJsFactory(%wwwDir%)
 
 	- App\Console\CalendarCommand
-	- App\Console\DriveCommand
+	- App\Console\DriveCommand(%google.driveDir%)
 	- App\Console\IDokladCommand
 	- App\Console\MessageCommand(%mail%, %messenger%)
 	- App\Console\PeopleCommand
-	- App\Console\YoutubeCommand
+	- App\Console\YoutubeCommand(%google.youtube.channel%)
 
 	googleClient:
 		class: Google_Client

@@ -6,7 +6,6 @@
 
 namespace App\Model;
 
-use Nette\Database\Context;
 use Nette\Database\Table\IRow;
 use Nette\Database\Table\Selection;
 use Nette\Utils\DateTime;
@@ -18,24 +17,11 @@ class DokumentyService extends DatabaseService {
 
 	const DIR_MIME_TYPE = 'application/vnd.google-apps.folder';
 
-	/** @var string */
-	public $driveDir;
-
-	/**
-	 * DokumentyService constructor.
-	 * @param $driveDir
-	 * @param Context $database
-	 */
-	public function __construct(string $driveDir, Context $database) {
-		parent::__construct($database);
-		$this->driveDir = $driveDir;
-	}
-
-
 	public function emptyTables() {
 		$this->database->query('DELETE FROM ' . self::TABLE_DIRECTORIES);
 		$this->database->query('DELETE FROM ' . self::TABLE_DOKUMENTY );
 	}
+
 	/**
 	 * @return Selection
 	 */

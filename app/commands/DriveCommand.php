@@ -27,16 +27,21 @@ final class DriveCommand extends Command {
 	/** @var Google_Service_Drive */
 	private $driveService;
 
+	/** @var string */
+	private $driveDir;
+
 	/**
 	 * DriveCommand constructor.
+	 * @param string $driveDir
 	 * @param DokumentyService $dokumentyService
 	 * @param Google_Service_Drive $driveService
 	 */
-	public function __construct(DokumentyService $dokumentyService, Google_Service_Drive $driveService)
+	public function __construct(string $driveDir, DokumentyService $dokumentyService, Google_Service_Drive $driveService)
 	{
 		parent::__construct();
 		$this->dokumentyService = $dokumentyService;
 		$this->driveService = $driveService;
+		$this->driveDir = $driveDir;
 	}
 
 	protected function configure() {
@@ -52,7 +57,7 @@ final class DriveCommand extends Command {
 		$this->dokumentyService->emptyTables();
 
 		$this->dokumentyService->addDirectory([
-			'id' => $this->dokumentyService->driveDir,
+			'id' => $this->driveDir,
 			'name' => 'Web',
 			'parent' => NULL,
 			'webViewLink' => '',
@@ -60,8 +65,8 @@ final class DriveCommand extends Command {
 		]);
 
 		$output->writeln('Parsing structure', Output::VERBOSITY_VERBOSE);
-		$files = $this->getFilesByParent($this->dokumentyService->driveDir);
-		$this->parseFiles($files, $this->dokumentyService->driveDir, $output, 1);
+		$files = $this->getFilesByParent($this->driveDir);
+		$this->parseFiles($files, $this->driveDir, $output, 1);
 
 		$this->dokumentyService->commitTransaction();
 	}
