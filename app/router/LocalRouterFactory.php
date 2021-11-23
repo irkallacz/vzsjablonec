@@ -4,12 +4,12 @@ use Nette\Application\Routers\RouteList;
 use Nette\Application\Routers\Route;
 
 
-class LocalRouterFactory{
+class LocalRouterFactory {
 
 	/**
 	 * @return Nette\Application\IRouter
 	 */
-	public static function createRouter(){
+	public static function createRouter() {
 		$router = new RouteList;
 
 		$member = new RouteList('Member');
@@ -24,15 +24,11 @@ class LocalRouterFactory{
 		$photo[] = new Route('photo/album/<slug \d+-.+>/<action view|edit|add>','Album:view');
 		$photo[] = new Route('photo/<presenter>/<action>[/<id>]', 'News:default');
 
-		$cron = new RouteList('Cron');
-		$cron[] = new Route('cron/<presenter>/<action>[/<id>]', 'Cron:default');
-
 		$account = new RouteList('Account');
 		$account[] = new Route('account/<presenter>/<action>[/<id>]', 'Sign:default');
 
 		$router[] = $member;
 		$router[] = $photo;
-		$router[] = $cron;
 		$router[] = $account;
 
 		return $router;
