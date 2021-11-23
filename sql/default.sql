@@ -273,10 +273,10 @@ CREATE TABLE `attendance_user` (
 
 DROP TABLE IF EXISTS `dokumenty`;
 CREATE TABLE `dokumenty` (
-  `id` varchar(44) COLLATE utf8_czech_ci NOT NULL,
-  `name` varchar(50) COLLATE utf8_czech_ci NOT NULL,
-  `description` varchar(50) COLLATE utf8_czech_ci DEFAULT NULL,
-  `directory` varchar(44) COLLATE utf8_czech_ci DEFAULT NULL,
+  `id` varchar(60) COLLATE utf8_czech_ci NOT NULL,
+  `name` varchar(80) COLLATE utf8_czech_ci NOT NULL,
+  `description` varchar(80) COLLATE utf8_czech_ci DEFAULT NULL,
+  `directory` varchar(60) COLLATE utf8_czech_ci DEFAULT NULL,
   `modifiedTime` datetime NOT NULL,
   `mimeType` text COLLATE utf8_czech_ci NOT NULL,
   `webContentLink` text COLLATE utf8_czech_ci,
@@ -291,9 +291,9 @@ CREATE TABLE `dokumenty` (
 
 DROP TABLE IF EXISTS `dokumenty_directories`;
 CREATE TABLE `dokumenty_directories` (
-  `id` varchar(44) COLLATE utf8_czech_ci NOT NULL,
-  `name` varchar(50) COLLATE utf8_czech_ci NOT NULL,
-  `parent` varchar(44) COLLATE utf8_czech_ci DEFAULT NULL,
+  `id` varchar(60) COLLATE utf8_czech_ci NOT NULL,
+  `name` varchar(80) COLLATE utf8_czech_ci NOT NULL,
+  `parent` varchar(60) COLLATE utf8_czech_ci DEFAULT NULL,
   `webViewLink` text COLLATE utf8_czech_ci NOT NULL,
   `level` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
