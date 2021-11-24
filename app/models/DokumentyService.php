@@ -65,6 +65,15 @@ class DokumentyService extends DatabaseService {
 	}
 
 	/**
+	 * @param string $id
+	 * @return bool|int|IRow
+	 */
+	public function getDirectoryRoot() {
+		return $this->getDirectories()->where('parent IS NULL')->fetch();
+	}
+
+
+	/**
 	 * @param array $values
 	 * @return bool|int|IRow
 	 */

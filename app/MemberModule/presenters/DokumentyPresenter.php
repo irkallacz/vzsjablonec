@@ -27,7 +27,7 @@ class DokumentyPresenter extends LayerPresenter {
 		$this->template->TABLE_DOKUMENTY = DokumentyService::TABLE_DOKUMENTY;
 		$this->template->TABLE_DIRECTORIES = DokumentyService::TABLE_DIRECTORIES;
 
-		$this->template->dir = $this->dokumentyService->getDirectoryById($this->dokumentyService->driveDir);
+		$this->template->dir = $this->dokumentyService->getDirectoryRoot();
 	}
 
 	/**
