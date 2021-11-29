@@ -5,7 +5,6 @@ use App\Model\DokumentyService;
 use Nette\Utils\DateTime;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile as DriveFile;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +14,7 @@ use Tracy\Debugger;
  * Class CronPresenter
  * @package App\CronModule\presenters
  */
-final class DriveCommand extends Command {
+final class DriveCommand extends BaseCommand {
 
 	const SHORTCUT_MIME_TYPE = 'application/vnd.google-apps.shortcut';
 
@@ -50,10 +49,10 @@ final class DriveCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$output->writeln('<info>Drive Commnand</info>', Output::VERBOSITY_VERBOSE);
+		$this->writeln($output, '<info>Drive Commnand</info>');
 		$this->dokumentyService->beginTransaction();
 
-		$output->writeln('Truncate tables', Output::VERBOSITY_VERBOSE);
+		$this->writeln($output, 'Truncate tables');
 		$this->dokumentyService->emptyTables();
 
 		$this->dokumentyService->addDirectory([
@@ -64,7 +63,7 @@ final class DriveCommand extends Command {
 			'level' => 0,
 		]);
 
-		$output->writeln('Parsing structure', Output::VERBOSITY_VERBOSE);
+		$this->writeln($output,'Parsing structure');
 		$files = $this->getFilesByParent($this->driveDir);
 		$this->parseFiles($files, $this->driveDir, $output, 1);
 
@@ -92,7 +91,7 @@ final class DriveCommand extends Command {
 	 */
 	private function parseFiles(array $files, string $parent,  OutputInterface $output, int $level = 0) {
 		foreach ($files as $file) {
-			$output->writeln(join("\t", ['File', $file->mimeType, $file->id, $file->name]), Output::VERBOSITY_VERBOSE);
+			$this->writeln($output, 'File', $file->mimeType, $file->id, $file->name);
 
 			if ($file->mimeType == DokumentyService::DIR_MIME_TYPE) {
 				$this->dokumentyService->addDirectory([

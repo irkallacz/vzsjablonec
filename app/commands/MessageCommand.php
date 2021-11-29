@@ -16,7 +16,6 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +25,7 @@ use Tracy\Debugger;
  * Class MessagePresenter
  * @package App\CronModule\Presenters
  */
-final class MessageCommand extends Command {
+final class MessageCommand extends BaseCommand {
 
 	/** @var UserService */
 	private $userService;
@@ -87,7 +86,7 @@ final class MessageCommand extends Command {
 
 		$messages = $this->messageService->getMessagesToSend();
 
-		$output->writeln('<info>Sending messages</info>', Output::VERBOSITY_VERBOSE);
+		$this->writeln($output,'<info>Sending messages</info>');
 
 		foreach ($messages as $message) {
 			$parameters = $message->param ? Json::decode($message->param, Json::FORCE_ARRAY) : [];
@@ -97,7 +96,7 @@ final class MessageCommand extends Command {
 				if (array_key_exists('akce_id', $parameters)) {
 					$event = $this->akceService->getAkceById($parameters['akce_id']);
 					if ($event->confirm) {
-						$output->writeln(join("\t", ['Message delete, action confirm ', $event->id]), Output::VERBOSITY_VERBOSE);
+						$this->writeln($output, 'Message delete, action confirm ', $event->id);
 						$message->delete();
 						continue;
 					}
@@ -111,13 +110,13 @@ final class MessageCommand extends Command {
 					if (!$session) {
 						$message->delete();
 
-						$output->writeln(join("\t", ['Message delete', $message->id]), Output::VERBOSITY_VERBOSE);
+						$this->writeln($output, 'Message delete', $message->id);
 						continue;
 					} elseif ($session->date_end < date_create()) {
 						$session->delete();
 						$message->delete();
 
-						$output->writeln(join("\t", ['Message delete, session ', $session->id]), Output::VERBOSITY_VERBOSE);
+						$this->writeln($output, 'Message delete, session ', $session->id);
 						continue;
 					}
 				}
@@ -127,12 +126,12 @@ final class MessageCommand extends Command {
 			$mail = $this->createEmailMessage($message, $parameters);
 
 			$this->mailer->send($mail);
-			$output->writeln(join("\t", ['Sending message', $message->id]), Output::VERBOSITY_VERBOSE);
+			$this->writeln($output,'Sending message', $message->id);
 
 			$notification = $this->createMessengerMessage($message, $parameters);
 			if (count($notification['recipients'])){
 				$response = $client->request('POST', '/', ['json' => ['notification' => $notification]]);
-				$output->writeln(join("\t", ['Sending to Messenger', $message->id]), Output::VERBOSITY_VERBOSE);
+				$this->writeln($output, 'Sending to Messenger', $message->id);
 				//file_put_contents(__DIR__. '/notification-'.$message->id.'.json', Json::encode(['notification' => $notification]));
 			}
 

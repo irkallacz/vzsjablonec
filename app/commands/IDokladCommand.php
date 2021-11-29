@@ -16,7 +16,6 @@ use malcanek\iDoklad\request\iDokladFilter;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Utils\DateTime;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +25,7 @@ use Tracy\Debugger;
  * Class IdokladPresenter
  * @package App\CronModule\presenters
  */
-final class IDokladCommand extends Command {
+final class IDokladCommand extends BaseCommand {
 
 	/** @var UserService */
 	private $userService;
@@ -76,7 +75,7 @@ final class IDokladCommand extends Command {
 		foreach ($users as $user) {
 			if (!$user->iDokladId || !array_key_exists($user->iDokladId, $contacts)) {
 				$this->contactCreate($user);
-				$output->writeln(join("\t", ['Created', UserService::getFullName($user)]), Output::VERBOSITY_VERBOSE);
+				$this->writeln($output, 'Created', UserService::getFullName($user));
 				unset($users[$user->id]);
 			} else {
 				$update_time = new DateTime($contacts[$user->iDokladId]['DateLastChange']);
@@ -91,7 +90,7 @@ final class IDokladCommand extends Command {
 			}
 		}
 		if (count($users)) {
-			$output->writeln('ERROR - some users left without action', Output::VERBOSITY_VERBOSE);
+			$this->writeln($output,'ERROR - some users left without action');
 		}
 	}
 

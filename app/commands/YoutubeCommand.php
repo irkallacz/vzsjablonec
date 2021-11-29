@@ -4,13 +4,12 @@ namespace App\Console;
 
 use App\Model\YoutubeService;
 use DateTimeZone;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Google_Service_YouTube;
 
-final class YoutubeCommand extends Command {
+final class YoutubeCommand extends BaseCommand {
 
 	/** @var Google_Service_YouTube */
 	private $youTubeClient;
@@ -42,7 +41,7 @@ final class YoutubeCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$output->writeln('<info>Youtube command</info>', Output::VERBOSITY_VERBOSE);
+		$this->writeln($output, '<info>Youtube command</info>');
 
 		$videos = [];
 		$playlists = $this->youTubeClient->channels->listChannels('contentDetails', ['id' => $this->channelId]);
@@ -65,11 +64,11 @@ final class YoutubeCommand extends Command {
 		}
 
 		if (count($videos)) {
-			$output->writeln(sprintf('<comment>Found %d videos</comment>', count($videos)), Output::VERBOSITY_VERBOSE);
+			$this->writeln($output, sprintf('<comment>Found %d videos</comment>', count($videos)));
 
 			$this->youTubeService->beginTransaction();
 
-			$output->writeln('Truncate table', Output::VERBOSITY_VERBOSE);
+			$this->writeln($output, 'Truncate table');
 			$this->youTubeService->emptyTable();
 
 			foreach ($videos as $video) {
@@ -79,7 +78,7 @@ final class YoutubeCommand extends Command {
 					'publishedAt' => $video->publishedAt
 				];
 
-				$output->writeln(join("\t", $values), Output::VERBOSITY_VERBOSE);
+				$this->writeln($output, ...array_values($values));
 
 				$values['publishedAt'] = new \DateTime($values['publishedAt']);
 				$values['publishedAt']->setTimezone(new DateTimeZone('Europe/Prague'));
@@ -89,7 +88,7 @@ final class YoutubeCommand extends Command {
 
 			$this->youTubeService->commitTransaction();
 		} else {
-			$output->writeln('<comment>No videos found</comment>', Output::VERBOSITY_VERBOSE);
+			$this->writeln($output, '<comment>No videos found</comment>');
 		}
 
 	}

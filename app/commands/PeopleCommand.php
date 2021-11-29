@@ -21,7 +21,6 @@ use Google_Service_PeopleService_UserDefined;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Utils\DateTime;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,7 +30,7 @@ use Tracy\Debugger;
  * Class PeoplePresenter
  * @package App\CronModule\presenters
  */
-final class PeopleCommand extends Command {
+final class PeopleCommand extends BaseCommand {
 
 	const PERSON_FIELDS = 'names,emailAddresses,addresses,phoneNumbers,birthdays,userDefined';
 
@@ -81,7 +80,7 @@ final class PeopleCommand extends Command {
 					if (($force)or($user->date_update > $update_time)) {
 						$person = self::setPerson($person, $user);
 						$this->peopleService->people->updateContact($person->resourceName, $person, ['updatePersonFields' => self::PERSON_FIELDS]);
-						$output->writeln($person->resourceName, Output::VERBOSITY_VERBOSE);
+						$this->writeln($output, 'Upadte', $id, $person->resourceName, $update_time);
 					}
 				}
 			}
@@ -96,14 +95,14 @@ final class PeopleCommand extends Command {
 			$person = self::setID($person, $id);
 			$person = self::setPerson($person, $user);
 
-			$output->writeln(join("\t", ['Create', $this->peopleService->people->createContact($person)->resourceName]), Output::VERBOSITY_VERBOSE);
+			$this->writeln($output, 'Create', $id, $this->peopleService->people->createContact($person)->resourceName);
 		}
 
 		//if contact exists but user is not member anymore
 		foreach ($diffrerences['delete'] as $id) {
 			$resourceName = $persons[$id];
 			$this->peopleService->people->deleteContact($resourceName);
-			$output->writeln($resourceName, Output::VERBOSITY_VERBOSE);
+			$this->writeln($output, 'Delete', $id, $resourceName);
 		}
 	}
 

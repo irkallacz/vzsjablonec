@@ -6,12 +6,11 @@ use Nette\Utils\Finder;
 use Nette\Utils\Image;
 use Nette\Utils\ImageException;
 use Nette\Utils\Strings;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tracy\Debugger;
 
-final class CreateThumbsCommand extends Command {
+final class CreateThumbsCommand extends BaseCommand {
 
 	/** @var ImageService */
 	private $imageService;

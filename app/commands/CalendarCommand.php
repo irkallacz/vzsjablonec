@@ -5,7 +5,6 @@ namespace App\Console;
 
 use App\Model\AkceService;
 use App\Model\UserService;
-use Symfony\Component\Console\Command\Command;
 use Nette\Database\Table\ActiveRow;
 use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
@@ -16,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Tracy\Debugger;
 
 
-final class CalendarCommand extends Command
+final class CalendarCommand extends BaseCommand
 {
 	const CALENDAR_ID = 'primary';
 
@@ -49,9 +48,9 @@ final class CalendarCommand extends Command
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$output->writeln('<info>Events</info>', OutputInterface::VERBOSITY_VERBOSE);
+		$this->writeln($output,'<info>Events</info>');
 
-		$output->writeln('Updating events', OutputInterface::VERBOSITY_VERBOSE);
+		$this->writeln($output, 'Updating events');
 
 		$updateEvents = $this->akceService->getAkce()
 			->where('confirm', TRUE)
@@ -61,14 +60,14 @@ final class CalendarCommand extends Command
 			->order('date_add DESC');
 
 		foreach ($updateEvents as $updateEvent) {
-			$output->writeln(join("\t", ['Update', $updateEvent->calendarId, $updateEvent->id]), OutputInterface::VERBOSITY_VERBOSE);
+			$this->writeln($output, 'Update', $updateEvent->calendarId, $updateEvent->id);
 
 			$event = $this->calendarService->events->get(self::CALENDAR_ID, $updateEvent->calendarId);
 			$event = $this->setEvent($updateEvent, $event);
 			$this->calendarService->events->update(self::CALENDAR_ID, $updateEvent->calendarId, $event);
 		}
 
-		$output->writeln('Add new events', OutputInterface::VERBOSITY_VERBOSE);
+		$this->writeln($output,'Add new events');
 
 		$newEvents = $this->akceService->getAkce()
 			->where('confirm', TRUE)
@@ -82,10 +81,10 @@ final class CalendarCommand extends Command
 			$createdEvent = $this->calendarService->events->insert(self::CALENDAR_ID, $event);
 			$newEvent->update(['calendarId' => $createdEvent->getId()]);
 
-			$output->writeln(join("\t", ['Add', $createdEvent->getId(), $newEvent->id]), OutputInterface::VERBOSITY_VERBOSE);
+			$this->writeln($output, 'Add', $createdEvent->getId(), $newEvent->id);
 		}
 
-		$output->writeln('Deleting events', OutputInterface::VERBOSITY_VERBOSE);
+		$this->writeln($output, 'Deleting events');
 
 		$deleteEvents = $this->akceService->getAkce()
 			->where('confirm = ? OR enable = ?', FALSE, FALSE)
@@ -93,13 +92,13 @@ final class CalendarCommand extends Command
 			->order('date_add DESC');
 
 		foreach ($deleteEvents as $deleteEvent) {
-			$output->writeln(join("\t", ['Delete', $deleteEvent->calendarId, $deleteEvent->id]), OutputInterface::VERBOSITY_VERBOSE);
+			$this->writeln($output, 'Delete', $deleteEvent->calendarId, $deleteEvent->id);
 
 			$this->calendarService->events->delete(self::CALENDAR_ID, $deleteEvent->calendarId);
 			$deleteEvent->update(['calendarId' => NULL]);
 		}
 
-		$output->writeln('<info>Followers</info>', OutputInterface::VERBOSITY_VERBOSE);
+		$this->writeln($output, '<info>Followers</info>');
 
 		$futureFollowers = $this->userService->getUsers(UserService::MEMBER_LEVEL)
 			->where('mail LIKE ?', '%@gmail.com')
@@ -122,7 +121,7 @@ final class CalendarCommand extends Command
 
 		//Set new users to follow calendar
 		foreach ($differences['add'] as $mail) {
-			$output->writeln(join("\t", ['Add follower', $mail]), OutputInterface::VERBOSITY_VERBOSE);
+			$this->writeln($output, 'Add follower', $mail);
 			$aclRule = self::createAclRule($mail);
 			$this->calendarService->acl->insert(self::CALENDAR_ID, $aclRule);
 		}
@@ -130,7 +129,7 @@ final class CalendarCommand extends Command
 		//Remove followers from calendar witch are no longer users
 		foreach ($differences['delete'] as $mail) {
 			if (in_array($mail, $pastFollowers, TRUE)) {
-				$output->writeln(join("\t", ['Remove follower', $mail]), OutputInterface::VERBOSITY_VERBOSE);
+				$this->writeln($output, 'Remove follower', $mail);
 				$ruleId = array_search($mail, $currentFollowers);
 				$this->calendarService->acl->delete(self::CALENDAR_ID, $ruleId);;
 			}
