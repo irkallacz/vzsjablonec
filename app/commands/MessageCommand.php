@@ -48,6 +48,9 @@ final class MessageCommand extends BaseCommand {
 	/** @var ArrayHash */
 	private $messengerSettings;
 
+	/** @var string */
+	private $wwwDir;
+
 	/** @var \Latte\Engine */
 	private $latte;
 
@@ -56,10 +59,12 @@ final class MessageCommand extends BaseCommand {
 	 * @param array $mailSettings
 	 * @param array $messengerSettings
 	 */
-	public function __construct(array $mailSettings, array $messengerSettings, UserService $userService, MessageService $messageService, AkceService $akceService, IMailer $mailer, LinkGenerator $linkGenerator) {
+	public function __construct(array $mailSettings, array $messengerSettings, string $wwwDir, UserService $userService, MessageService $messageService, AkceService $akceService, IMailer $mailer, LinkGenerator $linkGenerator) {
 		parent::__construct();
 		$this->mailSettings = ArrayHash::from($mailSettings);
 		$this->messengerSettings = ArrayHash::from($messengerSettings);
+		$this->messengerSettings = ArrayHash::from($messengerSettings);
+		$this->wwwDir = $wwwDir;
 
 		$this->userService = $userService;
 		$this->messageService = $messageService;
@@ -173,7 +178,7 @@ final class MessageCommand extends BaseCommand {
 		}
 
 		if (array_key_exists('filename', $parameters)) {
-			$filename = WWW_DIR .'/'. MessageService::DIR_ATTACHMENTS .'/'. $parameters['filename'];
+			$filename = $this->wwwDir .'/'. MessageService::DIR_ATTACHMENTS .'/'. $parameters['filename'];
 			$mail->addAttachment($filename);
 		}
 

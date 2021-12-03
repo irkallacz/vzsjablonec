@@ -134,7 +134,7 @@ services:
 	- App\Console\CalendarCommand
 	- App\Console\DriveCommand(%google.driveDir%)
 	- App\Console\IDokladCommand
-	- App\Console\MessageCommand(%mail%, %messenger%)
+	- App\Console\MessageCommand(%mail%, %messenger%, %wwwDir%)
 	- App\Console\PeopleCommand
 	- App\Console\YoutubeCommand(%google.youtube.channel%)
 
