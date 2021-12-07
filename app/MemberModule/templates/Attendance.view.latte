@@ -17,7 +17,7 @@
         <tr class="first"><th></th><th>Osoba</th><th>Datum a čas vstupu</th></tr>
         </thead>
         <tbody n:inner-foreach="$attendances as $attendance">
-        <tr n:class="topic, hoverLike">
+        <tr n:if="$attendance->user" n:class="topic, hoverLike">
             <td class="count center">
                 {$iterator}
             </td>
@@ -28,7 +28,7 @@
                     </a>
                 </div>
             </td>
-            <td class="col title">
+            <td class="col title center">
                 <div class="no-wrap">
                     <time datetime="{$attendance->datetime|datetimeC}">{$attendance->datetime|date:'%H:%M:%S'}</time>
                 </div>

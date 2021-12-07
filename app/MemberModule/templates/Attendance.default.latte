@@ -1,37 +1,37 @@
 {block #head}
-    <style type="text/css" n:syntax="off">
+	<style type="text/css" n:syntax="off">
         table#items { border-collapse: collapse; width: 98%; }
         table#items tr.topic { border-top: 1px solid gray;}
         table#items .headerLike { border-radius: 0}
         table#items .title { padding-left: 1em;}
         table#items .count { padding: 1em 0 }
-    </style>
+	</style>
 {/block}
 
 <h1 n:block="title">Docházka</h1>
 
 {block #content}
-<p>Docházka se eviduje od září 2021. Denní výsledky se aktualizují vždy až po půlnoci.</p>
-
-<table id="items">
-    <thead>
-        <tr class="first"><th class="count"></th><th>Datum</th><th>Od</th><th>Do</th></tr>
-    </thead>
-    <tbody n:inner-foreach="$sessions as $session">
-        <tr n:class="topic, hoverLike, in_array($session->id, $attendance) ? logged">
-            <td class="count center headerLike">
-                {$session->related('attendance_user')->count()}
-            </td>
-            <td class="col title">
-                <a n:href="Attendance:view $session->id">
-                <strong>
-                    {$session->date|date:'%A %d.%m.%Y'}
-                </strong>
-                </a>
-            </td>
-            <td>{$session->from|date:' %H:%i'}</td>
-            <td>{$session->to|date:' %H:%i'}</td>
-        </tr>
-    </tbody>
-</table>
+	<p>Docházka se eviduje od září 2021. Denní výsledky se aktualizují vždy až po půlnoci.</p>
+	<p>V tomto roce proběhlo <strong>{count($sessions)} tréninků</strong>. Z toho jste se zúčastnili <strong>{count($attendance)}×</strong></p>
+	<table id="items">
+		<thead>
+		<tr class="first"><th class="count"></th><th>Datum</th><th>Od</th><th>Do</th></tr>
+		</thead>
+		<tbody n:inner-foreach="$sessions as $session">
+		<tr n:class="topic, hoverLike, in_array($session->id, $attendance) ? logged">
+			<td class="count center headerLike">
+				{$session->related('attendance_user')->count()}
+			</td>
+			<td class="col title">
+				<a n:href="Attendance:view $session->id">
+					<strong>
+						{$session->date|date:'%A %d.%m.%Y'}
+					</strong>
+				</a>
+			</td>
+			<td class="center">{$session->from|date:' %H:%i'}</td>
+			<td class="center">{$session->to|date:' %H:%i'}</td>
+		</tr>
+		</tbody>
+	</table>
 {/block}
