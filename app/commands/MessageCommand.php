@@ -27,6 +27,12 @@ use Tracy\Debugger;
  */
 final class MessageCommand extends BaseCommand {
 
+	const SEND_COUNT_LIMIT = 100;
+
+	const SENDING_TYPE_ALL = 1;
+	const SENDING_TYPE_PRIMARY = 2;
+	const SENDING_TYPE_SECONDARY = 3;
+
 	/** @var UserService */
 	private $userService;
 
@@ -128,9 +134,26 @@ final class MessageCommand extends BaseCommand {
 			}
 
 			$this->messageService->beginTransaction();
-			$mail = $this->createEmailMessage($message, $parameters);
 
-			$this->mailer->send($mail);
+			$recipients = 1;
+			foreach ($message->related('message_user') as $recipient) {
+				$recipients++;
+				if ($recipient->user->mail2 && $recipient->user->send_to_second) {
+					$recipients++;
+				}
+			}
+
+			if ($recipients >= self::SEND_COUNT_LIMIT) {
+				$sendingTypes = [self::SENDING_TYPE_PRIMARY, self::SENDING_TYPE_SECONDARY];
+			} else {
+				$sendingTypes = [self::SENDING_TYPE_ALL];
+			}
+
+			foreach ($sendingTypes as $type) {
+				$mail = $this->createEmailMessage($message, $parameters, $type);
+				$this->mailer->send($mail);
+			}
+
 			$this->writeln($output,'Sending message', $message->id);
 
 			$notification = $this->createMessengerMessage($message, $parameters);
@@ -150,9 +173,10 @@ final class MessageCommand extends BaseCommand {
 	/**
 	 * @param IRow|ActiveRow $message
 	 * @param array $parameters
+	 * @param int $type
 	 * @return Message
 	 */
-	private function createEmailMessage(IRow $message, array $parameters){
+	private function createEmailMessage(IRow $message, array $parameters, $type = self::SENDING_TYPE_ALL) {
 		$mail = new Message();
 		$mail->setFrom($this->mailSettings->account, $this->mailSettings->title);
 		$mail->addBcc($this->mailSettings->account);
@@ -172,8 +196,15 @@ final class MessageCommand extends BaseCommand {
 			$mail->addTo($this->mailSettings->board);
 		} else {
 			foreach ($message->related('message_user') as $recipient) {
-				$mail->addTo($recipient->user->mail, UserService::getFullName($recipient->user));
-				if ($recipient->user->mail2 && $recipient->user->send_to_second) $mail->addCc($recipient->user->mail2);
+				if ($type != self::SENDING_TYPE_SECONDARY) {
+					$mail->addTo($recipient->user->mail, UserService::getFullName($recipient->user));
+				}
+
+				if ($type != self::SENDING_TYPE_PRIMARY) {
+					if ($recipient->user->mail2 && $recipient->user->send_to_second) {
+						$mail->addCc($recipient->user->mail2);
+					}
+				}
 			}
 		}
 
