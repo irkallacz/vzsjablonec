@@ -57,13 +57,32 @@ final class CalendarCommand extends BaseCommand
 			->where('enable', TRUE)
 			->where('date_update > NOW() - INTERVAL 1 DAY')
 			->where('NOT calendarId', NULL)
-			->order('date_add DESC');
+			->order('date_add DESC')
+			->fetchPairs('id');
 
 		foreach ($updateEvents as $updateEvent) {
 			$this->writeln($output, 'Update', $updateEvent->calendarId, $updateEvent->id);
 
 			$event = $this->calendarService->events->get(self::CALENDAR_ID, $updateEvent->calendarId);
 			$event = $this->setEvent($updateEvent, $event);
+			$this->calendarService->events->update(self::CALENDAR_ID, $updateEvent->calendarId, $event);
+		}
+
+		//Attendees
+		$output->writeln('Attendees');
+
+		$attendeesEvents = $this->akceService->getAkce()
+			->where('confirm', TRUE)
+			->where('enable', TRUE)
+			->where('akce.id NOT', array_keys($updateEvents))
+			->where('NOT calendarId', NULL)
+			->where(':akce_member.date_add > NOW() - INTERVAL 1 DAY');
+
+		foreach ($attendeesEvents as $attendeesEvent) {
+			$this->writeln($output, 'Attendees event', $attendeesEvent->calendarId, $attendeesEvent->id);
+
+			$event = $this->calendarService->events->get(self::CALENDAR_ID, $attendeesEvent->calendarId);
+			$event = $this->setAttendees($attendeesEvent->id, $event);
 			$this->calendarService->events->update(self::CALENDAR_ID, $updateEvent->calendarId, $event);
 		}
 
@@ -97,6 +116,8 @@ final class CalendarCommand extends BaseCommand
 			$this->calendarService->events->delete(self::CALENDAR_ID, $deleteEvent->calendarId);
 			$deleteEvent->update(['calendarId' => NULL]);
 		}
+
+		//Followers
 
 		$this->writeln($output, '<info>Followers</info>');
 
@@ -157,8 +178,15 @@ final class CalendarCommand extends BaseCommand
 		$event->setVisibility($akce->visible ? 'public' : 'private');
 
 		//Add attendees to event
+		$event = $this->setAttendees($akce->id, $event);
+
+		return $event;
+	}
+
+	private function setAttendees(int $akceId, Google_Service_Calendar_Event $event): Google_Service_Calendar_Event
+	{
 		$attendees = [];
-		foreach ($this->userService->getUsersByAkceId($akce->id)->where('NOT role', NULL) as $member) {
+		foreach ($this->userService->getUsersByAkceId($akceId)->where('NOT role', NULL) as $member) {
 			$attendee = new Google_Service_Calendar_EventAttendee();
 			$attendee->setDisplayName(UserService::getFullName($member));
 			$attendee->setEmail($member->mail);
