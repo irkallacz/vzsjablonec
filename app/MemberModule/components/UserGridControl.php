@@ -289,6 +289,7 @@ class UserGridControl extends Control {
 			}
 
 			$writer = new \XLSXWriter();
+			$writer->setTempDir(WWW_DIR . '/../tmp');
 			$writer->writeSheetHeader('List1', $header, ['font-style' => 'bold', 'widths' => $widths]);
 
 			foreach ($selection as $id){
