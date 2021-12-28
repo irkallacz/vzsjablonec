@@ -12,7 +12,11 @@
 
 {block #content}
 	<p>Docházka se eviduje od září 2021. Denní výsledky se aktualizují vždy až po půlnoci.</p>
+
+	<p>{control yp}</p>
+
 	<p>V tomto roce proběhlo <strong>{count($sessions)} tréninků</strong>. Z toho jste se zúčastnili <strong>{count($attendance)}×</strong></p>
+
 	<table id="items">
 		<thead>
 		<tr class="first"><th class="count"></th><th>Datum</th><th>Od</th><th>Do</th></tr>

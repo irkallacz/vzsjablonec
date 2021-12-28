@@ -3,6 +3,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\YearPaginator;
 use App\Model\AttendanceService;
 
 final class AttendancePresenter extends LayerPresenter
@@ -12,8 +13,18 @@ final class AttendancePresenter extends LayerPresenter
 
 	public function renderDefault()
 	{
-		$this->template->sessions = $this->attendanceService->getCurrentSessions();
-		$this->template->attendance = $this->attendanceService->getAttendanceForUser($this->user->id);
+		$year = $this['yp']->year;
+		$this->template->year = $year;
+		$this->template->sessions = $this->attendanceService->getCurrentSessions()
+			->where('YEAR(date)', $year);
+		$this->template->attendance = $this->attendanceService->getAttendanceForUser($this->user->id, $year);
+	}
+
+	/**
+	 * @return YearPaginator
+	 */
+	public function createComponentYp() {
+		return new YearPaginator(2021, NULL, 1, intval(date('Y')));
 	}
 
 	public function renderView(int $id)

@@ -23,10 +23,11 @@ final class AttendanceService extends DatabaseService {
 			->order('date DESC');
 	}
 
-	public function getAttendanceForUser(int $userId) {
+	public function getAttendanceForUser(int $userId, int $year) {
 		return $this->getAttendance()
 			->where('user_id = ?', $userId)
 			//->where('datetime < CURDATE()')
+			->where('YEAR(datetime)', $year)
 			->fetchPairs(null, 'attendance_id');
 	}
 
