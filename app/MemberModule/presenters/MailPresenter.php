@@ -130,9 +130,17 @@ class MailPresenter extends LayerPresenter {
 	public function actionEdit(int $id) {
 		$message = $this->messageService->getMessageById($id);
 
-		if (!$message) throw new BadRequestException('Zpráva nenalezena');
-		if ((!$this->getUser()->isInRole('admin'))and($message->id !== $this->user->id)) throw new ForbiddenRequestException('Nemůžete editovat cizí zprávy');
-		if ($message->date_send) throw new ForbiddenRequestException('Nemůžete editovat již odeslané zprávy');
+		if (!$message) {
+			throw new BadRequestException('Zpráva nenalezena');
+		}
+
+		if ((!$this->getUser()->isInRole('admin'))and($message->user_id !== $this->user->id)) {
+			throw new ForbiddenRequestException('Nemůžete editovat cizí zprávy');
+		}
+
+		if ($message->date_send) {
+			throw new ForbiddenRequestException('Nemůžete editovat již odeslané zprávy');
+		}
 
 		$form = $this['mailForm'];
 		$form['text']->setDefaultValue($message->text);
