@@ -83,7 +83,7 @@ final class CalendarCommand extends BaseCommand
 
 			$event = $this->calendarService->events->get(self::CALENDAR_ID, $attendeesEvent->calendarId);
 			$event = $this->setAttendees($attendeesEvent->id, $event);
-			$this->calendarService->events->update(self::CALENDAR_ID, $updateEvent->calendarId, $event);
+			$this->calendarService->events->update(self::CALENDAR_ID, $attendeesEvent->calendarId, $event);
 		}
 
 		$this->writeln($output,'Add new events');
