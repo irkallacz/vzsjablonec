@@ -108,21 +108,21 @@ final class DriveCommand extends BaseCommand {
 				if ($file->getShortcutDetails()->getTargetMimeType() == DokumentyService::DIR_MIME_TYPE) {
 					continue;
 				}
-				
-				$targetId = $file->getShortcutDetails()->getTargetId();
-				$target = $this->driveService->files->get($targetId, ['fields' => self::FILE_FIELDS]);
+
+				//$targetId = $file->getShortcutDetails()->getTargetId();
+				//$target = $this->driveService->files->get($targetId, ['fields' => self::FILE_FIELDS]);
 				//$target->getParents();
 				//$this->driveService->files->delete($file->id);
 				$this->dokumentyService->addFile([
-					'id' => $target->id,
+					'id' => $file->shortcutDetails->targetId,
 					'name' => $file->name,
 					'directory' => $parent,
 					'description' => $file->description,
-					'modifiedTime' => new DateTime(($file->modifiedTime > $target->modifiedTime) ? $file->modifiedTime : $target->modifiedTime),
-					'mimeType' => $target->mimeType,
-					'webContentLink' => $target->webContentLink,
-					'webViewLink' => $target->webViewLink,
-					'iconLink' => $target->iconLink,
+					'modifiedTime' => new DateTime($file->modifiedTime),
+					'mimeType' => $file->shortcutDetails->targetMimeType,
+					'webContentLink' => $file->webContentLink,
+					'webViewLink' => $file->webViewLink,
+					'iconLink' =>  $file->iconLink,
 				]);
 			} else {
 				$this->dokumentyService->addFile([
