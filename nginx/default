@@ -1,0 +1,9 @@
+server {
+        # Resend unmatched traffic to public web
+        listen [::]:80 default_server;
+        listen 80 default_server;
+
+        server_name _;
+
+        return 301 https://www.vzs-jablonec.cz;
+}
