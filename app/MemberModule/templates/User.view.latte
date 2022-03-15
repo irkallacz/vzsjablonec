@@ -51,7 +51,7 @@
 					{include svg check} aktivovat
 				</a>
 			</li>
-			{if ($user->isInRole('board'))and(!is_null($member->role))}
+			{if ($user->isInRole('editor'))and(!is_null($member->role))}
 			<li>
 				<a class="buttonLike" n:href="resetPassword $member->id">
 					{include svg repeat} resetovat heslo
@@ -63,7 +63,7 @@
 				</a>
 			</li>
 			{/if}
-			<li n:if="(($user->isInRole('board')or($member->id == $user->getId()))and(!is_null($member->role)))">
+			<li n:if="(($user->isInRole('editor')or($member->id == $user->getId()))and(!is_null($member->role)))">
 				<a class="buttonLike" n:href="edit $member->id">
 					{include svg pencil} editovat
 				</a>
@@ -100,7 +100,7 @@
 </div>
 
 <div id="member">
-	{if $user->isInRole('board')}
+	{if $user->isInRole('editor')}
 		<p n:if="$member->date_born">
 			{include svg calendar} <b>Datum narození:</b> {$member->date_born|date:'d.m.Y'}
 			{if $member->rc}<b>Rodné číslo:</b> {$member->rc}{/if}
@@ -141,7 +141,7 @@
 		<li n:if="$member->telefon2">
 			{include svg phone-square} <b>Sekundární telefon:</b> <a href="tel:+420{$member->telefon2}">{$member->telefon2|phone}</a>
 		</li>
-		<li n:if="(($user->isInRole('board') or($member->id == $user->getId())) and ($member->bank_account))">
+		<li n:if="(($user->isInRole('editor') or($member->id == $user->getId())) and ($member->bank_account))">
 			{include svg dollar} <b>Číslo účtu:</b> {$member->bank_account}
 		</li>
 	</ul>
@@ -170,7 +170,7 @@
 				{/if}
 			{/foreach}
 		</p>
-	{/if ($user->isInRole('board')) and (isset($registration))}
+	{/if ($user->isInRole('editor')) and (isset($registration))}
 
     {if $user->isInRole('member')}
 		<h3>{include svg map-marker} Adresa {include mapy $member->ulice.' '.$member->mesto}</h3>
@@ -186,7 +186,7 @@
 
 	<p n:if="$user->isInRole('member')">
 		<a n:href="this#events-header showEvents => (!$showEvents)" n:class="buttonLike, $showEvents ? current">{include svg calendar} nedávné akce</a>
-		<a n:if="$user->isInRole('board')" n:href="registrationForm $member->id" class="buttonLike">{include svg file-pdf-o} stáhnout formulář</a>
+		<a n:if="$user->isInRole('editor')" n:href="registrationForm $member->id" class="buttonLike">{include svg file-pdf-o} stáhnout formulář</a>
 		<a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a>
 	</p>
 

@@ -17,7 +17,7 @@
 
 {block #content}
 	<ul class="buttonMenu">
-		<li n:if="$user->isInRole('board')"><a class="buttonLike" n:href="add">{include svg plus} nová zpráva</a></li>
+		<li n:if="$user->isInRole('editor')"><a class="buttonLike" n:href="add">{include svg plus} nová zpráva</a></li>
 		<li n:if="$presenter->action == send"><a class="buttonLike" n:href="default">{include svg envelope-o} doručené</a></li>
 		<li n:if="$presenter->action == default"><a class="buttonLike" n:href="send">{include svg envelope-o} odeslané</a></li>
 	</ul>

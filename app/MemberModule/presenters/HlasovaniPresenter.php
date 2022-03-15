@@ -316,7 +316,7 @@ class HlasovaniPresenter extends LayerPresenter {
 		$message->setSubject('Nové hlasování představenstva');
 		$message->setText($template);
 		$message->setAuthor($this->user->id);
-		$message->setRecipients($this->userService->getUsers(UserService::BOARD_LEVEL));
+		$message->setRecipients($this->userService->getUsersByRight('board'));
 		$message->setParameters(['hlasovani_id' => $hlasovani->id]);
 
 		$this->messageService->addMessage($message);

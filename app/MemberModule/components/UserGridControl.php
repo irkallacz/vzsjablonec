@@ -48,7 +48,7 @@ class UserGridControl extends Control {
 		UserService::DELETED_LEVEL 	=> 'Vše',
 		UserService::USER_LEVEL 	=> 'Uživatel',
 		UserService::MEMBER_LEVEL 	=> 'Člen',
-		UserService::BOARD_LEVEL 	=> 'Editor',
+		UserService::EDITOR_LEVEL 	=> 'Editor',
 		UserService::ADMIN_LEVEL 	=> 'Admin',
 	];
 

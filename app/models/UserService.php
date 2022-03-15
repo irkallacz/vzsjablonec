@@ -20,7 +20,7 @@ class UserService extends DatabaseService {
 	const DELETED_LEVEL	= 0;
 	const USER_LEVEL 	= 1;
 	const MEMBER_LEVEL 	= 2;
-	const BOARD_LEVEL 	= 3;
+	const EDITOR_LEVEL 	= 3;
 	const ADMIN_LEVEL 	= 4;
 
 	const LOGIN_METHOD_PASSWORD	= 1;

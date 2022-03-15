@@ -56,13 +56,13 @@ class UserPresenter extends LayerPresenter {
 			$searchList['members'] = $this->userService->searchUsers($q, UserService::MEMBER_LEVEL);
 			$this['memberSearchForm']['search']->setDefaultValue($q);
 
-			if ($this->getUser()->isInRole('board')) {
+			if ($this->getUser()->isInRole('editor')) {
 				$searchList['users'] = $this->userService->searchUsers($q)
 					->where('role', 0);
 			}
 		}else{
 			$searchList['members'] = $this->userService->getUsers(UserService::MEMBER_LEVEL);
-			if ($this->getUser()->isInRole('board')) {
+			if ($this->getUser()->isInRole('editor')) {
 				$searchList['users'] = $this->userService->getUsers()
 					->where('role', 0);
 			}
@@ -102,7 +102,7 @@ class UserPresenter extends LayerPresenter {
 		$searchList = [];
 		$searchList['members'] = $this->userService->searchUsers($search, UserService::MEMBER_LEVEL);
 
-		if ($this->getUser()->isInRole('board')) {
+		if ($this->getUser()->isInRole('editor')) {
 			$searchList['users'] = $this->userService->searchUsers($search)->where('role', 0);
 		}
 
@@ -124,7 +124,7 @@ class UserPresenter extends LayerPresenter {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		if ((!$user->role) and ($this->user->id != $id) and (!$this->getUser()->isInRole('board'))) {
+		if ((!$user->role) and ($this->user->id != $id) and (!$this->getUser()->isInRole('editor'))) {
 			throw new ForbiddenRequestException('Nemáte právo prohlížet tohoto uživatele');
 		}
 
@@ -175,7 +175,7 @@ class UserPresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @allow(board)
+	 * @allow(editor)
 	 */
 	public function actionTable() {
 
@@ -235,7 +235,7 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @param IRow|ActiveRow $user
 	 * @param IRow|ActiveRow $session
-	 * @allow(board)
+	 * @allow(editor)
 	 */
 	public function addLoggingMail(IRow $user, IRow $session) {
 		$template = $this->createTemplate();
@@ -261,7 +261,7 @@ class UserPresenter extends LayerPresenter {
 
 	/**
 	 * @param int $id
-	 * @allow(board)
+	 * @allow(editor)
 	 * @throws BadRequestException
 	 * @throws AbortException
 	 */
@@ -301,7 +301,7 @@ class UserPresenter extends LayerPresenter {
 
 	/**
 	 * @param int $id
-	 * @allow(board)
+	 * @allow(editor)
 	 * @throws BadRequestException
 	 * @throws AbortException
 	 */
@@ -357,7 +357,7 @@ class UserPresenter extends LayerPresenter {
 
 	/**
 	 * @param int $id
-	 * @allow(board)
+	 * @allow(editor)
 	 */
 	public function actionRegistrationForm(int $id) {
 		$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
@@ -376,7 +376,7 @@ class UserPresenter extends LayerPresenter {
 
 		$form->setCurrentGroup($form->getGroups()[' ']);
 
-		if ($this->getUser()->isInRole('board')) {
+		if ($this->getUser()->isInRole('editor')) {
 			$form['date_add'] = new \DateInput('Datum registrace');
 			$form['date_add']->setRequired('Vyplňte datum registrace');
 		}
@@ -432,7 +432,7 @@ class UserPresenter extends LayerPresenter {
 			throw new BadRequestException('Uživatel nenalezen');
 		}
 
-		if ((!$this->getUser()->isInRole('board')) and ($member->id != $this->getUser()->getId())) {
+		if ((!$this->getUser()->isInRole('editor')) and ($member->id != $this->getUser()->getId())) {
 			throw new ForbiddenRequestException('Nemáte právo editovat tohoto uživatele');
 		}
 
@@ -443,7 +443,7 @@ class UserPresenter extends LayerPresenter {
 
 
 	/**
-	 * @allow(board)
+	 * @allow(editor)
 	 */
 	public function renderAdd() {
 		/**@var Form $form */

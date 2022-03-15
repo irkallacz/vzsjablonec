@@ -21,7 +21,7 @@
 					<span>{include svg $root ? 'folder-open' : 'folder'}</span>
 					<strong>{$file->name}</strong>
 				</a>
-				<a n:if="$user->isInRole('board')and($root)" class="float-right" href="{$file->webViewLink}" target="_blank" title="otevřít">
+				<a n:if="$user->isInRole('editor')and($root)" class="float-right" href="{$file->webViewLink}" target="_blank" title="otevřít">
 					{include svg chain} otevřít
 				</a>
 			</li>

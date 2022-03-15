@@ -43,7 +43,7 @@ class MailPresenter extends LayerPresenter {
 
 	/**
 	 * @param array $recipients
-	 * @allow(board)
+	 * @allow(editor)
 	 */
 	public function renderAdd(array $recipients = [], int $eventId = NULL) {
 		$users = $this->userService->getUsers()->order('surname,name')->fetchPairs('id');
@@ -190,7 +190,7 @@ class MailPresenter extends LayerPresenter {
 		$akce = $this->akceService->getAkceById($id);
 		$users = $this->userService->getUsersByAkceId($id)->where('NOT role', NULL);
 
-		if ($this->user->isInRole('board')) {
+		if ($this->user->isInRole('editor')) {
 			$users = array_values($users->fetchPairs('id', 'id'));
 			$this->redirect('add', ['recipients' => $users, 'eventId' => $id]);
 		}
