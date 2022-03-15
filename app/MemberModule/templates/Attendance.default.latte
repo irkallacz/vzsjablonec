@@ -23,11 +23,12 @@
 		</thead>
 		<tbody n:inner-foreach="$sessions as $session">
 		<tr n:class="topic, hoverLike, in_array($session->id, $attendance) ? logged">
+			{var $count = $session->related('attendance_user')->count()}
 			<td class="count center headerLike">
-				{$session->related('attendance_user')->count()}
+				{if $count}{$count}{else}&nbsp;{/if}
 			</td>
 			<td class="col title">
-				<a n:href="Attendance:view $session->id">
+				<a n:tag-if="$count" n:href="Attendance:view $session->id">
 					<strong>
 						{$session->date|date:'%A %d.%m.%Y'}
 					</strong>
