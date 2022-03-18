@@ -4,11 +4,16 @@ SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 INSERT INTO `user` (`id`, `name`, `surname`, `mail`, `role`) VALUES
-	(0,	'Franta',	'Deleted',	'deleted@vzs-jablonec.cz',	NULL),
-	(1,	'Tonda',	'User',			'user@vzs-jablonec.cz',			0),
-	(2,	'Jirka',	'Member',		'member@vzs-jablonec.cz',		1),
-	(3,	'Pepa',		'Board',		'board@vzs-jablonec.cz',		2),
-	(4,	'Míra',		'Admin',		'admin@vzs-jablonec.cz',		3);
+	(0,	'Dan',	'Deleted',	'deleted@vzs-jablonec.cz',	NULL),
+	(1,	'Ulrik',	'User',			'user@vzs-jablonec.cz',			0),
+	(2,	'Martin',	'Member',		'member@vzs-jablonec.cz',		1),
+	(3,	'Bořek',	'Board',		'board@vzs-jablonec.cz',		1),
+	(4,	'Ctibor',	'Confirm',		'confirm@vzs-jablonec.cz',		1),
+	(5,	'Gabriel',	'Gallery',		'galleryd@vzs-jablonec.cz',		1),
+	(6,	'Evžen',	'Editor',		'editor@vzs-jablonec.cz',		2),
+	(5,	'Adam',		'Admin',		'admin@vzs-jablonec.cz',		3);
+
+INSERT INTO `user_rights` (`user_id`, `right_id`) VALUES (3, 3), (4, 1), (5, 2);
 
 INSERT INTO `akce` (`id`, `name`, `perex`, `description`, `date_start`, `date_end`, `date_deatline`, `date_add`, `date_update`, `akce_for_id`, `place`, `created_by`, `modified_by`, `confirm`) VALUES
 	(1, 'Minulá akce', 'Akce', 'Akce odehrávající se v minulosti', NOW() - INTERVAL 48 HOUR, NOW() - INTERVAL 47 HOUR, NOW() - INTERVAL 24 HOUR, NOW() - INTERVAL 12 HOUR, NOW() - INTERVAL 12 HOUR, 1, 'VD Mšeno', 2, 2, 1),
