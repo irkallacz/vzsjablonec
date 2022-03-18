@@ -460,7 +460,7 @@ class UserPresenter extends LayerPresenter {
 	 */
 	public function actionProfile() {
 		$id = $this->getUser()->getId();
-		$this->redirect('edit', $id);
+		$this->redirect('view', $id);
 	}
 
 	public function currentPassValidator($item) {
