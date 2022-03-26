@@ -165,7 +165,7 @@ class AkcePresenter extends LayerPresenter {
 		if ($with) {
 			$revision = $this->akceService->getRevisionById($with);
 			$text = $revision->text;
-			$member->where('date_add < ?', $revision->date_saved);
+			$members->where('date_add < ?', $revision->date_saved);
 		} else {
 			$text = $this->createRevision($this->akce);
 		}
