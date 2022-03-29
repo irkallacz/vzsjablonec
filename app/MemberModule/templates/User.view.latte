@@ -184,14 +184,20 @@
 		{$member->text|noescape|texy}
 	</div>
 
-	<p n:if="$user->isInRole('member')">
-		<a n:href="this#events-header showEvents => (!$showEvents)" n:class="buttonLike, $showEvents ? current">{include svg calendar} nedávné akce</a>
-		<a n:if="$user->isInRole('editor')" n:href="registrationForm $member->id" class="buttonLike">{include svg file-pdf-o} stáhnout formulář</a>
-		<a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a>
-	</p>
-
-	{if ($showEvents)and($user->isInRole('member'))}
+	{if ($user->isInRole('member'))}
+		{*
+		<p>
+			<a n:if="$user->isInRole('editor')" n:href="registrationForm $member->id" class="buttonLike">{include svg file-pdf-o} stáhnout formulář</a>
+			<a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a>
+		</p>
+		*}
 		{control userEvents $member->id}
+
+		{control userAttendance $member->id}
 	{/if}
 </div>
+
+	<script type="text/javascript" n:syntax="off" n:nonce>
+		$.nette.init();
+	</script>
 {/block}

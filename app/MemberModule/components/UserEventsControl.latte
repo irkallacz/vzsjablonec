@@ -11,13 +11,13 @@
 	<h3 id="events-header">{include svg calendar} Nedávné akce</h3>
 
 	<table id="events">
-		<caption n:snippet="events-loadMore">
-			<a class="buttonLike ajax" n:if="$offset" n:href="loadMoreUserEvents! $offset">{include svg repeat} načíst další</a>
+		<caption n:snippet="loadMore">
+			<a class="buttonLike ajax" n:if="$offset" n:href="loadMore! $offset">{include svg repeat} načíst další</a>
 		</caption>
 		<thead n:if="$offset">
 			<tr><th></th><th>Datum akce</th><th>Název</th><th>Datum přihlášení</th><th></th></tr>
 		</thead>
-		<tbody n:snippet="events-table" data-ajax-append="true">
+		<tbody n:snippet="table" data-ajax-append="true">
 			{foreach $events as $event}
                 {var $future = $event->date_start > $now}
 				{if $iterator->isFirst()}{var $last = $future}{/if}
@@ -39,6 +39,3 @@
 	</table>
 </div>
 
-<script type="text/javascript" n:syntax="off" n:nonce>
-	$.nette.init();
-</script>

@@ -2,11 +2,13 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\UserAttendanceControl;
 use App\MemberModule\Components\UserEventsControl;
 use App\MemberModule\Components\UserGridControl;
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\AkceService;
 use App\Model\AnketyService;
+use App\Model\AttendanceService;
 use App\Model\MessageService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
@@ -43,6 +45,9 @@ class UserPresenter extends LayerPresenter {
 
 	/** @var AnketyService @inject */
 	public $anketyService;
+
+	/** @var AttendanceService @inject */
+	public $attendanceService;
 
 	/** @var UserFormFactory @inject */
 	public $userFormFactory;
@@ -142,6 +147,14 @@ class UserPresenter extends LayerPresenter {
 	protected function createComponentUserEvents(){
 		$memberId = $this->getParameter('id');
 		return new UserEventsControl($this->akceService, $memberId);
+	}
+
+	/**
+	 * @return UserAttendanceControl
+	 */
+	protected function createComponentUserAttendance(){
+		$memberId = $this->getParameter('id');
+		return new UserAttendanceControl($this->attendanceService, $memberId);
 	}
 
 	/**

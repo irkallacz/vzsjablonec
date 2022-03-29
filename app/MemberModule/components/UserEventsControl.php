@@ -60,9 +60,9 @@ class UserEventsControl extends LayerControl
 	/**
 	 * @param int $offset
 	 */
-	public function handleLoadMoreUserEvents(int $offset) {
+	public function handleLoadMore(int $offset) {
 		$this->eventsOffset = $offset;
-		$this->redrawControl('events-table');
-		$this->redrawControl('events-loadMore');
+		$this->redrawControl('table');
+		$this->redrawControl('loadMore');
 	}
 }

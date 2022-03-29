@@ -1,0 +1,40 @@
+{import '../templates/@svg.latte'}
+
+<style type="text/css" n:syntax="off">
+	#attendance { caption-side: bottom; }
+	#attendance caption { margin-top: 1em; }
+	h3#events-header { margin-top: 2em; }
+	.count { width: 2em }
+</style>
+
+<div id="userAttendanceContol">
+	<h3 id="events-header">{include svg calendar-check-o} Poslední tréninky</h3>
+
+	<table id="attendance">
+		<caption n:snippet="loadMore">
+			<a class="buttonLike ajax" n:if="$offset" n:href="loadMore! $offset">{include svg repeat} načíst další</a>
+		</caption>
+		<thead n:if="$offset">
+			<tr><th></th><th class="left">Datum a čas tréninku</th><th>Datum příchodu na trénink</th><th></th></tr>
+		</thead>
+		<tbody n:snippet="table" data-ajax-append="true">
+			{foreach $attendances as $attendance}
+				{var $session = $attendance->attendance}
+				<tr>
+					<td class="count">
+						{$session->related('attendance_user')->count('user_id')}
+					</td>
+					<td>
+						<a href="{plink Attendance:view $session->id}" target="_blank">
+							<time datetime="{$session->date|datetimeC}">{$session->date|date:'d.m.Y'}</time>
+							{$session->from|date:'%H:%i'} - {$session->to|date:'%H:%i'}
+						</a>
+					</td>
+					<td class="right">
+						{$attendance->datetime|date:'d.m.Y H:i'}
+					</td>
+				</tr>
+			{/foreach}
+		</tbody>
+	</table>
+</div>
