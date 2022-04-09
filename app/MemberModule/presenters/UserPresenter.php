@@ -402,9 +402,11 @@ class UserPresenter extends LayerPresenter {
 				->addRule(Form::LENGTH, 'Osobní číslo musí mít %d číslic',6);
 
 			$form->addText('cardId', 'ID Karty', 8)
+				->setRequired(false)
 				->setNullable()
+				->addFilter([Strings::class, 'lower'])
 				->addCondition(Form::FILLED)
-				->addRule(Form::LENGTH, 'Číslo karty musí mít %d znaků',8);
+				->addRule(Form::PATTERN, 'Číslo karty musí mít obsahovat pouze písmena a číslice a mít alespoň 8 znaků','^\w{8,}$');
 
 			$form->addSelect('role', 'Role',
 				$this->userService->getRoleList()
