@@ -17,6 +17,7 @@ use Nette\Mail\IMailer;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
+use Nette\Utils\Strings;
 use WebLoader;
 use Tracy\Debugger;
 
@@ -485,12 +486,16 @@ class AkcePresenter extends LayerPresenter {
 
 		$form->addText('name', 'Název', 30)
 			->setAttribute('spellcheck', 'true')
+			->setAttribute('maxlength', 30)
 			->setRequired('Vyplňte %label akce')
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
+			->addFilter([Strings::class, 'firstUpper'])
+			->addRule(Form::MAX_LENGTH, '%label může mít max délku %d písmen', 30);
 
 		$form->addText('place', 'Místo', 50)
+			->setAttribute('maxlength', 50)
 			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label akce');
+			->setRequired('Vyplňte %label akce')
+			->addRule(Form::MAX_LENGTH, '%label může mít max délku %d písmen', 50);;
 
 		/** @var \DateTimeInput $dateTimeInput*/
 		$dateTimeInput = $form['date_start'] = new \DateTimeInput('Začátek');
@@ -577,13 +582,13 @@ class AkcePresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'perex')
 			->setRequired('Vyplňte %label akce')
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
+			->addFilter([Strings::class, 'firstUpper']);
 
 		$form->addTextArea('description', 'Podrobný popis')
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla')
 			->setRequired('Vyplňte %label akce')
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
+			->addFilter([Strings::class, 'firstUpper']);
 
 		$text = $this->akceService->getAkceMessageDefault();
 
@@ -597,7 +602,7 @@ class AkcePresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla')
 			->setDefaultValue($text)
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+			->addFilter([Strings::class, 'firstUpper'])
 			->setRequired(FALSE);
 
 		$form->addSubmit('save', 'Ulož')
