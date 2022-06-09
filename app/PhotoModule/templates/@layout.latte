@@ -91,7 +91,7 @@
 
 {define photoList}
 {if}
-<a n:href="//Album:view $album->slug" title="{$album->text|truncate:70}" class="round">
+<a n:href="//Album:view $album->slug" target="_blank" title="{$album->text|truncate:70}" class="round">
 	<h3>{$album->name}</h3>
 	{var $photos = $album->related('album_photo')}
 	{if ($album->visible) and (!$user->isLoggedIn())}{php $photos->where('visible', TRUE)}{/if}
