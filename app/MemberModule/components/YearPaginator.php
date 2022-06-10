@@ -31,7 +31,7 @@ class YearPaginator extends Control {
 	 * @param null $yearsEnd
 	 * @param int $yearsStep
 	 */
-	public function __construct(int $yearsStart, int $yearsEnd = NULL, int $yearsStep = 3, $default = NULL) {
+	public function __construct(int $yearsStart, int $yearsEnd = NULL, int $yearsStep = 3, int $default = NULL) {
 		parent::__construct();
 		$this->yearsStart = $yearsStart;
 		$this->yearsEnd = ($yearsEnd) ? $yearsEnd : intval(date('Y'));

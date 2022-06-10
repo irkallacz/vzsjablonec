@@ -4,12 +4,17 @@
 namespace App\MemberModule\Presenters;
 
 use App\MemberModule\Components\YearPaginator;
+use App\Model\AkceService;
 use App\Model\AttendanceService;
+use Nette\Application\BadRequestException;
 
 final class AttendancePresenter extends LayerPresenter
 {
 	/** @var AttendanceService @inject */
 	public $attendanceService;
+
+	/** @var AkceService @inject */
+	public $akceService;
 
 	public function renderDefault()
 	{
@@ -23,13 +28,22 @@ final class AttendancePresenter extends LayerPresenter
 	/**
 	 * @return YearPaginator
 	 */
-	public function createComponentYp() {
-		return new YearPaginator(2021, NULL, 1, intval(date('Y')));
+	public function createComponentYp()
+	{
+		return new YearPaginator(2021, NULL, 1, (int) date('Y'));
 	}
 
 	public function renderView(int $id)
 	{
-		$this->template->session = $this->attendanceService->getSessions()->get($id);
+		if (!($session = $this->attendanceService->getSessions()->get($id))) {
+			throw new BadRequestException('Training session does not exists');
+		}
+		if ($session->date > date_create('00:00:00')) {
+			throw new BadRequestException('Training session is not over');
+		}
+
+		$this->template->session = $session;
+		$this->template->events = $this->akceService->getAkceByDate($session->date);
 		$this->template->attendances = $this->attendanceService->getAttendanceForSession($id);
 	}
 }

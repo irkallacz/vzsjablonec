@@ -46,6 +46,17 @@ class AkceService extends DatabaseService {
 	}
 
 	/**
+	 * @param \DateTimeInterface $date
+	 * @return Selection
+	 */
+	public function getAkceByDate(\DateTimeInterface $date) {
+		return $this->getAkce()
+			->where('enable', TRUE)
+			->where('confirm', TRUE)
+			->where('? BETWEEN DATE(date_start) AND DATE(date_end)', $date);
+	}
+
+	/**
 	 * @param DateTime $date
 	 * @return Selection
 	 */

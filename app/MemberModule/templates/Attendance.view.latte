@@ -12,6 +12,7 @@
 
 {block #content}
     <p>Docházka tréninku <strong>{$session->date|date:'%A %d.%m.%Y'} {$session->from|date:'%H:%i'}-{$session->to|date:'%H:%i'}</strong></p>
+
     <table id="items">
         <thead>
         <tr class="first"><th></th><th>Osoba</th><th>Datum a čas vstupu</th></tr>
@@ -36,4 +37,12 @@
         </tr>
         </tbody>
     </table>
+
+    {if}
+        <p>V tento den probíhali tyto akce:</p>
+        <ul>
+            <li n:foreach="$events as $event"><a n:href="Akce:view $event->id">{$event->name}</a></li>
+        </ul>
+    {/if isset($event)}
+
 {/block}
