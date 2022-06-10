@@ -15,7 +15,7 @@
 			<a class="buttonLike ajax" n:if="$offset" n:href="loadMore! $offset">{include svg repeat} načíst další</a>
 		</caption>
 		<thead n:if="$offset">
-			<tr><th></th><th class="left">Datum a čas tréninku</th><th>Datum příchodu na trénink</th><th></th></tr>
+			<tr><th></th><th></th><th class="left">Datum a čas tréninku</th><th>Datum příchodu na trénink</th><th></th></tr>
 		</thead>
 		<tbody n:snippet="table" data-ajax-append="true">
 			{foreach $attendances as $attendance}
@@ -23,6 +23,9 @@
 				<tr>
 					<td class="count">
 						{$session->related('attendance_user')->count('user_id')}
+					</td>
+					<td>
+						{$session->date|date:'%A'}
 					</td>
 					<td>
 						<a href="{plink Attendance:view $session->id}" target="_blank">
