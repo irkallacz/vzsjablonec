@@ -393,6 +393,28 @@ CREATE TABLE `hlasovani_odpoved` (
   CONSTRAINT `hlasovani_odpoved_ibfk_2` FOREIGN KEY (`hlasovani_id`) REFERENCES `hlasovani` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Table structure for table `invoices`
+
+DROP TABLE IF EXISTS `invoices`;
+CREATE TABLE `invoices` (
+    `id` int(10) unsigned NOT NULL,
+    `number` char(10) COLLATE utf8_czech_ci NOT NULL,
+    `payment_status` tinyint(3) unsigned NOT NULL,
+    `user_id` smallint(5) unsigned NOT NULL,
+    `variable_symbol` char(9) COLLATE utf8_czech_ci NOT NULL,
+    `price` smallint(5) unsigned NOT NULL,
+    `description` varchar(90) COLLATE utf8_czech_ci NOT NULL,
+    `date_due_payment` date NOT NULL,
+    `date_payment` datetime DEFAULT NULL,
+    `date_reminder` datetime DEFAULT NULL,
+    `date_add` datetime NOT NULL,
+    `date_update` datetime NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `user_id` (`user_id`),
+    CONSTRAINT `invoices_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
+
 -- Table structure for table `message`
 
 DROP TABLE IF EXISTS `message`;

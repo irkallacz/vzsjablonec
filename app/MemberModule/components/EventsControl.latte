@@ -18,7 +18,7 @@
 			<tr><th></th><th>Datum akce</th><th>Název</th><th>Datum přihlášení</th><th></th></tr>
 		</thead>
 		<tbody n:snippet="table" data-ajax-append="true">
-			{foreach $events as $event}
+			{foreach $items as $event}
                 {var $future = $event->date_start > $now}
 				{if $iterator->isFirst()}{var $last = $future}{/if}
 				{* Pokud poslení záznam byl v budoucnosti a došlo ke změně -> udělej mezeru *}
@@ -29,7 +29,7 @@
 					<td><time datetime="{$event->date_add|datetimeC}">{$event->date_add|datetime}</time></td>
 					<td>
 						<a n:if="$event->created_by != $memberId" href="{plink User:view $event->created_by}" target="_blank">
-							{include svg check} {$event->ref('user', 'created_by')->surname} {$event->ref('user', 'created_by')->name}
+							{$event->ref('user', 'created_by')->surname} {$event->ref('user', 'created_by')->name}
 						</a>
 					</td>
 				</tr>

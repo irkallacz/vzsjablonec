@@ -18,7 +18,7 @@
 			<tr><th></th><th></th><th class="left">Datum a čas tréninku</th><th>Datum příchodu na trénink</th><th></th></tr>
 		</thead>
 		<tbody n:snippet="table" data-ajax-append="true">
-			{foreach $attendances as $attendance}
+			{foreach $items as $attendance}
 				{var $session = $attendance->attendance}
 				<tr>
 					<td class="count">

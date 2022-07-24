@@ -53,7 +53,7 @@ final class IDokladCommand extends BaseCommand {
 	 */
 
 	protected function configure() {
-		$this->setName('cron:idoklad')
+		$this->setName('cron:idoklad:contacts')
 			->setDescription('Sync contacts from database to iDoklad contacts');
 	}
 

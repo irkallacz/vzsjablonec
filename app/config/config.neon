@@ -38,6 +38,7 @@ parameters:
 		clientSecret: '98765432-lkji-hgfe-dcba-001234567890'
 		redirectUri: ''
 		credentialsFile: '%tempDir%/idoklad/credentials.json'
+		memberNumericSequence: 1249547
 	gallery:
 		albumDir: albums
 		thumbDir: %gallery.albumDir%/thumbs
@@ -116,13 +117,14 @@ services:
 	- App\Model\ForumService
 	- App\Model\UserService
 	- App\Model\DokumentyService
-	- App\Model\IdokladService(%idoklad.credentialsFile%)
+	- App\Model\IdokladService(%idoklad.credentialsFile%, %idoklad.memberNumericSequence%)
 	- App\Model\AttendanceService
 	- App\Model\AnketyService
 	- App\Model\RatingService
 	- App\Model\BillingService
 	- App\Model\MessageService
 	- App\Model\HlasovaniService
+	- App\Model\InvoiceService
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
 	- App\Model\YoutubeService
@@ -134,6 +136,7 @@ services:
 	- App\Console\CalendarCommand
 	- App\Console\DriveCommand(%google.driveDir%)
 	- App\Console\IDokladCommand
+	- App\Console\InvoiceCommand
 	- App\Console\MessageCommand(%mail%, %messenger%, %wwwDir%)
 	- App\Console\PeopleCommand
 	- App\Console\YoutubeCommand(%google.youtube.channel%)

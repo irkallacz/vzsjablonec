@@ -17,6 +17,7 @@ use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
 use Nette\Http\Response;
 use Nette\SmartObject;
+use Nette\Utils\DateTime;
 
 class IdokladService {
 	use SmartObject;
@@ -29,14 +30,22 @@ class IdokladService {
 	/** @var string */
 	private $credentialsFilePath;
 
+	/** @var string */
+	public $memberNumericSequence;
+
 	/**
 	 * IdokladService constructor.
 	 * @param iDoklad $iDoklad
 	 * @param string $credentialsFilePath
+	 * @param string $memberNumericSequence
 	 */
-	public function __construct($credentialsFilePath, iDoklad $iDoklad) {
+	public function __construct(string $credentialsFilePath, string $memberNumericSequence, iDoklad $iDoklad)
+	{
+		$iDoklad->httpExceptionsOn();
+
 		$this->iDoklad = $iDoklad;
 		$this->credentialsFilePath = $credentialsFilePath;
+		$this->memberNumericSequence = $memberNumericSequence;
 	}
 
 	/**
@@ -63,6 +72,15 @@ class IdokladService {
 	}
 
 	/**
+	 * @return iDokladRequest
+	 */
+	public function requestsInvoices() {
+		$request = new iDokladRequest('IssuedInvoices');
+
+		return $request;
+	}
+
+	/**
 	 * @param IRow|ActiveRow $user
 	 * @return iDokladResponse
 	 * @throws iDokladException
@@ -76,6 +94,33 @@ class IdokladService {
 
 		$response = $this->sendRequest($request);
 		return $response;
+	}
+
+	/**
+	 * @param array $data
+	 * @return array
+	 */
+	public static function createInvoice(array $data) {
+		$date_reminder = new DateTime($data['DateOfLastReminder']);
+		$date_payment = new DateTime($data['DateOfPayment']);
+
+		return [
+			'id' => $data['Id'],
+			'number' => $data['DocumentNumber'],
+			'payment_status' => $data['PaymentStatus'],
+			'variable_symbol' => $data['VariableSymbol'],
+			'price' => $data['TotalWithVat'],
+			'description' => $data['Description'],
+			'date_due_payment' => new DateTime($data['DateOfMaturity']),
+
+			//pro nulové hodnoty vrací rok 1753
+			'date_payment' =>  intval($date_payment->format('Y')) > 2000 ? $date_payment : NULL,
+			'date_reminder' => intval($date_reminder->format('Y')) > 2000 ? $date_reminder : NULL,
+			'date_add' => new DateTime($data['DateOfIssue']),
+
+			//neumíme uložit milisekundy
+			'date_update' => new DateTime(substr($data['DateLastChange'], 0, 19)),
+		];
 	}
 
 	/**

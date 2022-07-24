@@ -2,13 +2,15 @@
 
 namespace App\MemberModule\Presenters;
 
-use App\MemberModule\Components\UserAttendanceControl;
-use App\MemberModule\Components\UserEventsControl;
+use App\MemberModule\Components\AttendanceControl;
+use App\MemberModule\Components\EventsControl;
 use App\MemberModule\Components\UserGridControl;
+use App\MemberModule\Components\InvoiceControl;
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\AkceService;
 use App\Model\AnketyService;
 use App\Model\AttendanceService;
+use App\Model\InvoiceService;
 use App\Model\MessageService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
@@ -48,6 +50,9 @@ class UserPresenter extends LayerPresenter {
 
 	/** @var AttendanceService @inject */
 	public $attendanceService;
+
+	/** @var InvoiceService @inject */
+	public $invoiceService;
 
 	/** @var UserFormFactory @inject */
 	public $userFormFactory;
@@ -142,19 +147,27 @@ class UserPresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @return UserEventsControl
+	 * @return EventsControl
 	 */
 	protected function createComponentUserEvents(){
 		$memberId = $this->getParameter('id');
-		return new UserEventsControl($this->akceService, $memberId);
+		return new EventsControl($this->akceService, $memberId);
 	}
 
 	/**
-	 * @return UserAttendanceControl
+	 * @return AttendanceControl
 	 */
 	protected function createComponentUserAttendance(){
 		$memberId = $this->getParameter('id');
-		return new UserAttendanceControl($this->attendanceService, $memberId);
+		return new AttendanceControl($this->attendanceService, $memberId);
+	}
+
+	/**
+	 * @return InvoiceControl
+	 */
+	protected function createComponentUserInvoice(){
+		$memberId = $this->getParameter('id');
+		return new InvoiceControl($this->invoiceService, $memberId);
 	}
 
 	/**

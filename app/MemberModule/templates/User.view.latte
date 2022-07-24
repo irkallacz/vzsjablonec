@@ -194,6 +194,10 @@
 		{control userEvents $member->id}
 
 		{control userAttendance $member->id}
+
+		{if ($user->id == $member->id) or ($user->isInRole('editor'))}
+			{control userInvoice $member->id}
+		{/if}
 	{/if}
 </div>
 
