@@ -22,7 +22,7 @@ final class AttendanceControl extends AbstractAjaxControl
 		$this->template->setFile(__DIR__ . '/AttendanceControl.latte');
 		$this->items = $this->service->getAttendanceByUser($this->memberId)
 			->order('attendance_id DESC')
-			->limit(self::DEFAULT_OFFSET, $this->offset);
+			->limit(self::DEFAULT_COUNT, $this->offset);
 
 		parent::render();
 	}

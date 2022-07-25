@@ -23,7 +23,7 @@ final class InvoiceControl extends AbstractAjaxControl
 		$this->template->setFile(__DIR__ . '/InvoiceControl.latte');
 		$this->items = $this->service->getInvoicesByUserId($this->memberId)
 			->order('date_add DESC')
-			->limit(self::DEFAULT_OFFSET, $this->offset);
+			->limit(self::DEFAULT_COUNT, $this->offset);
 
 		parent::render();
 	}

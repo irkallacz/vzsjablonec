@@ -22,7 +22,7 @@ final class EventsControl extends AbstractAjaxControl
 	{
 		$this->template->setFile(__DIR__ . '/EventsControl.latte');
 		$this->items = $this->service->getAkceByMemberId($this->memberId)
-			->limit(self::DEFAULT_OFFSET, $this->offset);
+			->limit(self::DEFAULT_COUNT, $this->offset);
 
 		$this->template->now = new DateTime();
 

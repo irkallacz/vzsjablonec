@@ -12,7 +12,7 @@
 
 	<table id="attendance">
 		<caption n:snippet="loadMore">
-			<a class="buttonLike ajax" n:if="$offset" n:href="loadMore! $offset">{include svg repeat} načíst další</a>
+			<a class="buttonLike ajax" n:if="$loadMore" n:href="loadMore! $offset">{include svg repeat} načíst další</a>
 		</caption>
 		<thead n:if="$offset">
 			<tr><th title="Číslo účtu: 2101041433/2010">Variabilní symbol</th><th>Popis</th><th>Částka</th><th>Datum splatnosti</th></tr>

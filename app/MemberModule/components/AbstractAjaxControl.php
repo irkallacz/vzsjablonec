@@ -13,7 +13,7 @@ use Nette\Database\Table\Selection;
 
 abstract class AbstractAjaxControl extends LayerControl
 {
-	const DEFAULT_OFFSET = 10;
+	const DEFAULT_COUNT = 10;
 
 	/**
 	 * @var DatabaseService
@@ -53,7 +53,8 @@ abstract class AbstractAjaxControl extends LayerControl
 		$this->template->memberId = $this->memberId;
 		$this->template->items = $this->items;
 		$count = $this->items->count();
-		$this->template->offset = ($count) ? $this->offset + self::DEFAULT_OFFSET : 0;
+		$this->template->offset = ($count) ? $this->offset + self::DEFAULT_COUNT : 0;
+		$this->template->loadMore = $count == self::DEFAULT_COUNT;
 
 		$this->template->render();
 	}

@@ -12,7 +12,7 @@
 
 	<table id="events">
 		<caption n:snippet="loadMore">
-			<a class="buttonLike ajax" n:if="$offset" n:href="loadMore! $offset">{include svg repeat} načíst další</a>
+			<a class="buttonLike ajax" n:if="$loadMore" n:href="loadMore! $offset">{include svg repeat} načíst další</a>
 		</caption>
 		<thead n:if="$offset">
 			<tr><th></th><th>Datum akce</th><th>Název</th><th>Datum přihlášení</th><th></th></tr>
