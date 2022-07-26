@@ -2,6 +2,7 @@
 
 namespace App\Template;
 
+use Latte\Runtime\Html;
 use Tracy\Debugger;
 
 class LatteFilters {
@@ -48,6 +49,14 @@ class LatteFilters {
 	 */
 	public static function phone(int $number) {
 		return number_format($number,0,'',' ');
+	}
+
+	/**
+	 * @param int $number
+	 * @return Html
+	 */
+	public static function money(int $number, int $decimals = 0, string $units = 'Kč') {
+		return new Html(number_format($number, $decimals,',','&nbsp;') . '&nbsp;' . $units);
 	}
 
 	/**

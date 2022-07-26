@@ -22,12 +22,12 @@
 			<tr>
 				<td>
 					{if $invoice->payment_status == 1}
-						<span title="Zaplaceno: {$invoice->date_payment|datetime}">{include svg check-circle, green}
+						<span class="no-wrap" title="Zaplaceno: {$invoice->date_payment|datetime}">{include svg check-circle, green}
 					{else}
 						{if $invoice->date_reminder}
-							<span title="Upomínka zaslána: {$invoice->date_reminder|datetime}">
+							<span class="no-wrap" title="Upomínka zaslána: {$invoice->date_reminder|datetime}">
 						{else}
-							<span>
+							<span class="no-wrap">
 						{/if}
 						{include svg times-circle, red}
 					{/if}
@@ -37,7 +37,7 @@
 					{$invoice->description}
 				</td>
 				<td class="right">
-					{$invoice->price|number:0:',':' '} Kč
+					{$invoice->price|money}
 				</td>
 				<td class="right">
 					<span title="Vystaveno: {$invoice->date_add|date:'d.m.Y'}">{$invoice->date_due_payment|date:'d.m.Y'}
