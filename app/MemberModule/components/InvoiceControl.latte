@@ -1,10 +1,11 @@
 {import '../templates/@svg.latte'}
 
 <style type="text/css" n:syntax="off">
-	#attendance { caption-side: bottom; }
+	#attendance { caption-side: bottom; border-collapse: collapse; }
 	#attendance caption { margin-top: 1em; }
 	h3#events-header { margin-top: 2em; }
-	.count { width: 2em }
+	#text .target:target, #text .hoverLike:hover { color: black; }
+	.new { font-weight: bold}
 </style>
 
 <div id="userInvoiceContol">
@@ -19,7 +20,7 @@
 		</thead>
 		<tbody n:snippet="table" data-ajax-append="true">
 		{foreach $items as $invoice}
-			<tr>
+			<tr id="invoice-{$invoice->id}" n:class="hoverLike, target, $invoice->date_update > $user->getIdentity()->date_last ? 'new'">
 				<td>
 					{if $invoice->payment_status == 1}
 						<span class="no-wrap" title="Zaplaceno: {$invoice->date_payment|datetime}">{include svg check-circle, green}
@@ -27,7 +28,7 @@
 						{if $invoice->date_reminder}
 							<span class="no-wrap" title="Upomínka zaslána: {$invoice->date_reminder|datetime}">
 						{else}
-							<span class="no-wrap">
+							<span class="no-wrap" title="Nezaplaceno">
 						{/if}
 						{include svg times-circle, red}
 					{/if}
@@ -46,4 +47,5 @@
 		{/foreach}
 		</tbody>
 	</table>
+	<p><small>Při placení použijte variabilní symbol v tabulce a číslo účtu <strong>2101041433/2010</strong></small></p>
 </div>

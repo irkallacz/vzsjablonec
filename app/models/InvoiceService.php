@@ -5,6 +5,7 @@ namespace App\Model;
 
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\Selection;
+use Nette\Utils\DateTime;
 
 final class InvoiceService extends DatabaseService
 {
@@ -32,6 +33,17 @@ final class InvoiceService extends DatabaseService
 	public function getInvoicesByUserId(int $id) {
 		return $this->getInvoices()->where('user_id', $id);
 	}
+
+	/**
+	 * @param DateTime $date
+	 * @return Selection
+	 */
+	public function getInvoiceNews(DateTime $date, int $user_id) {
+		return $this->getInvoicesByUserId($user_id)
+			->where('date_update > ?', $date)
+			->order('date_update DESC');
+	}
+
 
 	/**
 	 * @param array $data

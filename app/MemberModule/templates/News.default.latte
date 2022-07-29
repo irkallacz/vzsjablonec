@@ -60,6 +60,12 @@
 		</ol>
 	{/if isset($album)}
 
+	{if}<h3>Faktury</h3>
+		<ol class="news" n:inner-foreach="$invoiceList as $invoice">
+			<li><a title="{$invoice->date_update|timeAgoInWords}" n:href="User:Profile#invoice-$invoice->id"> {$invoice->description}</a></li>
+		</ol>
+	{/if isset($invoice)}
+
 	{if}<h3>Videa</h3>
 		<ol class="news" n:inner-foreach="$videoList as $video">
 			<li><a href="https://www.youtube.com/watch?v={$video->videoId}" target="_blank" title="{$video->publishedAt|timeAgoInWords}">{$video->title}</a></li>

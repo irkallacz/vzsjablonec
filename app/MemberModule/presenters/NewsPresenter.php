@@ -31,7 +31,10 @@ class NewsPresenter extends LayerPresenter{
         /** @var Model\HlasovaniService @inject */
         public $hlasovaniService;
 
-        /** @var Model\YoutubeService @inject */
+		/** @var Model\InvoiceService @inject */
+		public $invoiceService;
+
+		/** @var Model\YoutubeService @inject */
         public $youtubeService;
 
         public function renderDefault(){
@@ -63,6 +66,8 @@ class NewsPresenter extends LayerPresenter{
                 $this->template->messageList = $this->messageService->getMessagesNews($datum, $user_id);
 
                 $this->template->albumList = $this->galleryService->getAlbumNews($datum);
+
+                $this->template->invoiceList = $this->invoiceService->getInvoiceNews($datum, $user_id);
 
                 $this->template->videoList = $this->youtubeService->getVideoNews($datum);
         }
