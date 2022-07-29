@@ -154,12 +154,12 @@ final class MessageCommand extends BaseCommand {
 				$this->mailer->send($mail);
 			}
 
-			$this->writeln($output,'Sending message', $message->id);
+			$this->writeln($output,' ', 'Sending message', $message->id);
 
 			$notification = $this->createMessengerMessage($message, $parameters);
 			if (count($notification['recipients'])){
 				$response = $client->request('POST', '/', ['json' => ['notification' => $notification]]);
-				$this->writeln($output, 'Sending to Messenger', $message->id);
+				$this->writeln($output, ' ', 'Sending to Messenger', $message->id);
 				//file_put_contents(__DIR__. '/notification-'.$message->id.'.json', Json::encode(['notification' => $notification]));
 			}
 

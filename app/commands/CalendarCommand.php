@@ -61,7 +61,7 @@ final class CalendarCommand extends BaseCommand
 			->fetchPairs('id');
 
 		foreach ($updateEvents as $updateEvent) {
-			$this->writeln($output, 'Update', $updateEvent->calendarId, $updateEvent->id);
+			$this->writeln($output, ' ', 'Update', $updateEvent->calendarId, $updateEvent->id);
 
 			$event = $this->calendarService->events->get(self::CALENDAR_ID, $updateEvent->calendarId);
 			$event = $this->setEvent($updateEvent, $event);
@@ -79,7 +79,7 @@ final class CalendarCommand extends BaseCommand
 			->where(':akce_member.date_add > NOW() - INTERVAL 1 DAY');
 
 		foreach ($attendeesEvents as $attendeesEvent) {
-			$this->writeln($output, 'Attendees event', $attendeesEvent->calendarId, $attendeesEvent->id);
+			$this->writeln($output, ' ', 'Attendees event', $attendeesEvent->calendarId, $attendeesEvent->id);
 
 			$event = $this->calendarService->events->get(self::CALENDAR_ID, $attendeesEvent->calendarId);
 			$event = $this->setAttendees($attendeesEvent->id, $event);
@@ -100,7 +100,7 @@ final class CalendarCommand extends BaseCommand
 			$createdEvent = $this->calendarService->events->insert(self::CALENDAR_ID, $event);
 			$newEvent->update(['calendarId' => $createdEvent->getId()]);
 
-			$this->writeln($output, 'Add', $createdEvent->getId(), $newEvent->id);
+			$this->writeln($output, ' ', 'Add', $createdEvent->getId(), $newEvent->id);
 		}
 
 		$this->writeln($output, 'Deleting events');
@@ -111,7 +111,7 @@ final class CalendarCommand extends BaseCommand
 			->order('date_add DESC');
 
 		foreach ($deleteEvents as $deleteEvent) {
-			$this->writeln($output, 'Delete', $deleteEvent->calendarId, $deleteEvent->id);
+			$this->writeln($output, ' ', 'Delete', $deleteEvent->calendarId, $deleteEvent->id);
 
 			$this->calendarService->events->delete(self::CALENDAR_ID, $deleteEvent->calendarId);
 			$deleteEvent->update(['calendarId' => NULL]);
@@ -142,7 +142,7 @@ final class CalendarCommand extends BaseCommand
 
 		//Set new users to follow calendar
 		foreach ($differences['add'] as $mail) {
-			$this->writeln($output, 'Add follower', $mail);
+			$this->writeln($output, ' ', 'Add follower', $mail);
 			$aclRule = self::createAclRule($mail);
 			$this->calendarService->acl->insert(self::CALENDAR_ID, $aclRule);
 		}
@@ -150,7 +150,7 @@ final class CalendarCommand extends BaseCommand
 		//Remove followers from calendar witch are no longer users
 		foreach ($differences['delete'] as $mail) {
 			if (in_array($mail, $pastFollowers, TRUE)) {
-				$this->writeln($output, 'Remove follower', $mail);
+				$this->writeln($output, ' ', 'Remove follower', $mail);
 				$ruleId = array_search($mail, $currentFollowers);
 				$this->calendarService->acl->delete(self::CALENDAR_ID, $ruleId);;
 			}

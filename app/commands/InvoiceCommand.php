@@ -104,6 +104,7 @@ final class InvoiceCommand extends BaseCommand {
 		//Máme nějaké faktury, co nejsou v idokladu -> smazat
 		if (($force) and (count($invoices))) {
 			foreach ($invoices as $id => $updateTime) {
+				$this->writeln($output, 'Delete', $id);
 				$this->invoiceService->getInvoiceById($id)
 					->delete();
 			}
