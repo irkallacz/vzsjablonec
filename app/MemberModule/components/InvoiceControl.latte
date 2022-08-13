@@ -1,5 +1,7 @@
 {import '../templates/@svg.latte'}
 
+{if $items->count()}
+
 <style type="text/css" n:syntax="off">
 	#attendance { caption-side: bottom; border-collapse: collapse; }
 	#attendance caption { margin-top: 1em; }
@@ -49,3 +51,4 @@
 	</table>
 	<p><small>Při placení použijte variabilní symbol v tabulce a číslo účtu <strong>2101041433/2010</strong></small></p>
 </div>
+{/if}

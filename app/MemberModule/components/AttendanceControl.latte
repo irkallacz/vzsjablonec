@@ -1,5 +1,7 @@
 {import '../templates/@svg.latte'}
 
+{if $items->count()}
+
 <style type="text/css" n:syntax="off">
 	#attendance { caption-side: bottom; }
 	#attendance caption { margin-top: 1em; }
@@ -41,3 +43,5 @@
 		</tbody>
 	</table>
 </div>
+
+{/if}
