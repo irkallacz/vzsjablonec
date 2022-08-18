@@ -486,7 +486,7 @@ class AkcePresenter extends LayerPresenter {
 
 		$form->addText('name', 'Název', 30)
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('maxlength', 30)
+			->setAttribute('maxlength', 60)
 			->setRequired('Vyplňte %label akce')
 			->addFilter([Strings::class, 'firstUpper'])
 			->addRule(Form::MAX_LENGTH, '%label může mít max délku %d písmen', 60);
