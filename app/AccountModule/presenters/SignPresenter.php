@@ -12,6 +12,7 @@ use App\AccountModule\StateCryptor;
 use App\Model\MessageService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
+use Firebase\JWT\JWT;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Database\IRow;
@@ -20,7 +21,6 @@ use Nette\Http\Request;
 use Nette\Security\AuthenticationException;
 use Nette\Security\IUserStorage;
 use Nette\Security\Passwords;
-use Nette\Utils\DateTime;
 use Nette\Utils\JsonException;
 use Nette\Utils\Random;
 use Nette\Utils\Strings;
@@ -203,11 +203,11 @@ class SignPresenter extends BasePresenter {
 	 * @throws AbortException
 	 */
 	private function afterLogin(int $loginMethod = UserService::LOGIN_METHOD_PASSWORD) {
-		$userId = $this->getUser()->getId();
-		$this->getUser()->setExpiration('14 days', IUserStorage::CLEAR_IDENTITY);
-		$this->getUser()->getIdentity()->login_method_id = $loginMethod;
+		$this->user->setExpiration('14 days', IUserStorage::CLEAR_IDENTITY);
+		$this->user->identity->login_method_id = $loginMethod;
+		$this->user->identity->expires_at = new \DateTimeImmutable('+14 days');
 
-		$this->userService->addUserLogin($userId, $loginMethod);
+		$this->userService->addUserLogin($this->getUser()->getId(), $loginMethod);
 
 		if ($this->backlink) $this->restoreRequest($this->backlink);
 		$this->redirect('Sign:default');

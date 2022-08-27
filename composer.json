@@ -9,6 +9,7 @@
 	  	"ext-imagick": "*",
 	  	"ext-curl": "*",
 	  	"ext-zip": "*",
+		"ext-redis": "*",
 		"nette/application": "^2.4",
 		"nette/bootstrap": "^2.4.2",
 		"nette/caching": "^2.5",
@@ -38,7 +39,7 @@
 		"mk-j/php_xlsxwriter": "^0.37.0",
 		"tmw/fpdm": "^2.9",
 		"caxy/php-htmldiff": "^0.1.7"
-	},
+    },
 	"require-dev": {
 	  "nette/tester": "^2.0",
 	  "nextras/mail-panel": "^2.3",
