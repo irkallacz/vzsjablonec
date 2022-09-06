@@ -81,6 +81,7 @@ class UserFormFactory {
 		$form->addText('telefon', 'Primární telefon', 30)
 			->setType('tel')
 			->setRequired('Vyplňte %label')
+			->addRule(Form::INTEGER, '%label musí obsahovat jenom čísla')
 			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 
 		$form->addText('mail2', 'Sekundární e-mail', 30)
@@ -106,6 +107,7 @@ class UserFormFactory {
 			->setNullable()
 			->addCondition(Form::FILLED)
 			->addRule(Form::NOT_EQUAL, 'Telefony se nesmí shodovat', $form['telefon'])
+			->addRule(Form::INTEGER, '%label musí obsahovat jenom čísla')
 			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 
 		$form->addText('bank_account', 'Číslo účtu',30)
