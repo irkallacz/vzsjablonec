@@ -61,7 +61,7 @@ final class RedisService
 		$accessToken = Random::generate(140);
 		$key = self::index('accessToken', $accessToken);
 		$this->client->hMSet($key, $data);
-		$this->client->expire($key, $data['expires_at'] - time());
+		$this->client->expire($key, $data['expires_in']);
 
 		return $accessToken;
 	}

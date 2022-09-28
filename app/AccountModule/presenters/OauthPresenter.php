@@ -34,13 +34,13 @@ final class OauthPresenter extends BasePresenter
 	public function actionAuth(string $response_type, string $access_type, string $client_id, string $redirect_uri, string $scope = null, string $state = null)
 	{
 		if ($response_type !== 'code') {
-			throw new BadRequestException('Response type should be "code"');
+			throw new ForbiddenRequestException('Response type should be "code"');
 		}
 
 		try {
 			$this->oauthService->verifyClient($client_id, $redirect_uri);
 		} catch (\Exception $e) {
-			throw new BadRequestException($e->getMessage());
+			throw new ForbiddenRequestException($e->getMessage());
 		}
 
 		if ($this->user->isLoggedIn()) {
@@ -69,25 +69,27 @@ final class OauthPresenter extends BasePresenter
 		$body = Json::decode($request->getRawBody());
 
 		if ($body->grant_type !== 'authorization_code') {
-			throw new BadRequestException('Grant type do not match');
+			throw new ForbiddenRequestException('Grant type do not match');
 		}
 
 		try {
 			$this->oauthService->verifyClientSecret($body->client_id, $body->client_secret);
 		} catch (\Exception $e) {
-			throw new BadRequestException($e->getMessage());
+			throw new ForbiddenRequestException($e->getMessage());
 		}
 
 		if (!($data = $this->redisService->getUserDataFromAuthorizationCode($body->client_id, $body->code))) {
 			throw new ForbiddenRequestException('Authorization code not found or expired');
 		}
 
+		$data['expires_in'] = $this->session->getOptions()['cookie_lifetime'];
+
 		$accessToken = $this->redisService->createAndStoreAccessToken($data);
 
 		$this->sendJson([
 			'access_token' => $accessToken,
 			'issued_at' => time(),
-			'expires_in' => $this->session->getOptions()['cookie_lifetime'],
+			'expires_in' => $data['expires_in'],
 			'account_name' => $data['mail'],
 		]);
 	}
