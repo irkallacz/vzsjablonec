@@ -46,7 +46,6 @@ final class OauthPresenter extends BasePresenter
 		if ($this->user->isLoggedIn()) {
 			$code = $this->redisService->createAndStoreAuthorizationCode($client_id, [
 				'user' => $this->user->id,
-				'expires_at' => $this->user->identity->expires_at->format('U'),
 				'mail' => $this->user->identity->mail
 			]);
 
@@ -88,7 +87,7 @@ final class OauthPresenter extends BasePresenter
 		$this->sendJson([
 			'access_token' => $accessToken,
 			'issued_at' => time(),
-			'expires_in' => $data['expires_at'] - time(),
+			'expires_in' => $this->session->getOptions()['cookie_lifetime'],
 			'account_name' => $data['mail'],
 		]);
 	}

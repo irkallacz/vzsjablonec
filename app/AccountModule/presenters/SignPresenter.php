@@ -205,7 +205,7 @@ class SignPresenter extends BasePresenter {
 	private function afterLogin(int $loginMethod = UserService::LOGIN_METHOD_PASSWORD) {
 		$this->user->setExpiration('14 days', IUserStorage::CLEAR_IDENTITY);
 		$this->user->identity->login_method_id = $loginMethod;
-		$this->user->identity->expires_at = new \DateTimeImmutable('+14 days');
+		$this->user->identity->expires_at = \DateTimeImmutable::createFromFormat('U', time() + $this->session->getOptions()['cookie_lifetime']);
 
 		$this->userService->addUserLogin($this->getUser()->getId(), $loginMethod);
 
