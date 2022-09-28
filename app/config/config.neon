@@ -12,8 +12,16 @@ parameters:
 			dbname: wordpress
 			user: root
 			password:
+	redis:
+		host: localhost
+		port: 6379
 	sso:
 		secret: gC4kWZXJxqLAEB0afYqmcgAp1WVemzfpSfSdfZVr
+	oauth:
+		62fa87e3d1a76-gallery:
+			secret: 'uO5iZ-irO5s-vsX11YwZuEsyHm9sLvx0nP3'
+			redirectUrl:
+				- 'https://gallery.vzs-jablonec.lh/sign/o-auth'
 	google:
 		account: 'info@vzs-jablonec.cz'
 		driveDir: olqBGlusVSO2QWsuaOq0WpazaQqK
@@ -128,6 +136,9 @@ services:
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
 	- App\Model\YoutubeService
+
+	- App\AccountModule\RedisService(%redis.host%, %redis.port%)
+	- App\AccountModule\OauthService(%oauth%)
 
 	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %wwwDir%)
 
