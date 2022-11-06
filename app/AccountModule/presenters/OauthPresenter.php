@@ -8,6 +8,8 @@ use App\AccountModule\RedisService;
 use App\Model\UserService;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
+use Nette\Http\Url;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 
@@ -31,7 +33,7 @@ final class OauthPresenter extends BasePresenter
 	 * @param string|null $state
 	 * @throws BadRequestException
 	 */
-	public function actionAuth(string $response_type, string $access_type, string $client_id, string $redirect_uri, string $scope = null, string $state = null)
+	public function actionAuthorize(string $response_type, string $client_id, string $redirect_uri, string $scope = null, string $state = null, string $access_type = null)
 	{
 		if ($response_type !== 'code') {
 			throw new ForbiddenRequestException('Response type should be "code"');
@@ -49,10 +51,10 @@ final class OauthPresenter extends BasePresenter
 				'mail' => $this->user->identity->mail
 			]);
 
-			$this->redirectUrl($redirect_uri . '?' . http_build_query(array_filter([
-				'code' => $code,
-				'state' => $state,
-			])));
+			$url = new Url($redirect_uri);
+			$url->setQueryParameter('code', $code);
+			$url->setQueryParameter('state', $state);
+			$this->redirectUrl($url);
 		} else {
 			$backlink = $this->storeRequest();
 			$this->redirect('Sign:in', ['backlink' => $backlink]);
@@ -66,7 +68,13 @@ final class OauthPresenter extends BasePresenter
 	public function actionToken()
 	{
 		$request = $this->getHttpRequest();
-		$body = Json::decode($request->getRawBody());
+		$header = $request->getHeader('Content-Type');
+
+		if ($header == 'application/json') {
+			$body = Json::decode($request->getRawBody());
+		} else {
+			$body = ArrayHash::from($request->getPost());
+		}
 
 		if ($body->grant_type !== 'authorization_code') {
 			throw new ForbiddenRequestException('Grant type do not match');
@@ -97,7 +105,7 @@ final class OauthPresenter extends BasePresenter
 	/**
 	 * @throws ForbiddenRequestException
 	 */
-	public function actionUser()
+	public function actionMe()
 	{
 		$request = $this->getHttpRequest();
 		if (!($token = $request->getHeader('Authorization'))) {
@@ -123,10 +131,10 @@ final class OauthPresenter extends BasePresenter
 		$this->sendJson([
 			'sub'=> $user->id,
 			'name'=> UserService::getFullName($user),
-			'given_name'=> $user->name,
-			'family_name'=> $user->surname,
+			'first_name'=> $user->name,
+			'last_name'=> $user->surname,
 			'picture'=> 'https://account.vzs-jablonec.cz/img/photos/' . $user->photo,
-			'email'=> $user->mail,
+			'user_email' => $user->mail,
 		]);
 	}
 
