@@ -31,7 +31,7 @@ class GalleryService {
 	 * @return Selection
 	 */
 	public function getAlbums() {
-		return $this->database->table('album');
+		return $this->database->table('albums');
 	}
 
 	/**
@@ -63,7 +63,7 @@ class GalleryService {
 	 * @return Selection
 	 */
 	public function getAlbumNews(DateTime $datetime) {
-		return $this->getAlbums()->order('date_add DESC')->where('date_update > ?', $datetime);
+		return $this->getAlbums()->order('created_at DESC')->where('modified_at > ?', $datetime);
 	}
 
 	/**
