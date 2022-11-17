@@ -546,7 +546,7 @@ class AkcePresenter extends LayerPresenter {
 			->setPrompt('');
 
 		$form->addSelect('album_id', 'Album')
-			->setItems($this->galleryService->getAlbums()->order('date_add DESC')->fetchPairs('id', 'name'))
+			->setItems($this->galleryService->getAlbums()->order('created_at DESC')->fetchPairs('id', 'name'))
 			->setPrompt('');
 
 		$form->addSelect('akce_for_id', 'Určeno')
