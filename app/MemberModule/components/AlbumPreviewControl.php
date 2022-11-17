@@ -40,7 +40,7 @@ class AlbumPreviewControl extends Control {
 	 */
 	public function render(int $id) {
 		$album = $this->galleryService->getAlbumById($id);
-		$photos = $album ? $album->related('album_photo')->order('order, date_add') : NULL;
+		$photos = $album ? $album->related('album_photos')->order('order, created_at') : NULL;
 
 		$this->template->setFile(__DIR__ . '/AlbumPreviewControl.latte');
 		$this->template->album = $album;
@@ -52,7 +52,7 @@ class AlbumPreviewControl extends Control {
 
 		//$this->template->photoUri = $this->presenter->link('//:Photo:News:');
 
-		$this->template->addFilter('thumb', [$this->imageService, 'getThumbPathFromPhoto']);
+		//$this->template->addFilter('thumb', [$this->imageService, 'getThumbPathFromPhoto']);
 
 		$this->template->render();
 	}

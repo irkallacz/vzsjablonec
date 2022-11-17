@@ -54,7 +54,7 @@ class GalleryService {
 	 * @return Selection
 	 */
 	public function getAlbumsPhotosCount() {
-		return $this->getAlbums()->select('album.id, COUNT(:album_photo.id)AS pocet')->group('album.id');
+		return $this->getAlbums()->select('albums.id, COUNT(:album_photos.id)AS pocet')->group('albums.id');
 	}
 
 
@@ -71,7 +71,7 @@ class GalleryService {
 	 * @return Selection
 	 */
 	public function getPhotoNews(DateTime $datetime) {
-		return $this->getAlbums()->group('album.id')->where(':album_photo.date_add > ?', $datetime);
+		return $this->getAlbums()->group('albums.id')->where(':album_photos.created_at > ?', $datetime);
 	}
 
 	/**
@@ -86,14 +86,14 @@ class GalleryService {
 	 * @return Selection
 	 */
 	public function getPhotos() {
-		return $this->database->table('album_photo');
+		return $this->database->table('album_photos');
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getPhotosCount($album_id) {
-		$result = $this->database->query('SELECT `id` FROM `album_photo` WHERE `order` IS NOT NULL AND `album_id` = ?', $album_id);
+		$result = $this->database->query('SELECT `id` FROM `album_photos` WHERE `order` IS NOT NULL AND `album_id` = ?', $album_id);
 		return $result->getRowCount();
 	}
 
@@ -119,7 +119,7 @@ class GalleryService {
 	 * @return Nette\Database\ResultSet
 	 */
 	public function updatePhoto(int $id, array $values) {
-		return $this->database->query('UPDATE album_photo SET', $values, 'WHERE id = ?', $id);
+		return $this->database->query('UPDATE albums_photo SET', $values, 'WHERE id = ?', $id);
 	}
 
 	/**
