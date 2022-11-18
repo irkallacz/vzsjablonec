@@ -2,6 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\Menu;
 use App\Template\LatteFilters;
 use App\Template\TemplateProperty;
 use Nette\Application\AbortException;
@@ -14,6 +15,13 @@ use Nette\Utils\Html;
  * @property-read TemplateProperty|\Nette\Bridges\ApplicationLatte\Template $template
  */
 abstract class BasePresenter extends Presenter {
+
+	/** @var Menu @inject */
+	public $menu;
+
+	protected function createComponentMenu() {
+		return $this->menu;
+	}
 
 	/**
 	 * @param $element

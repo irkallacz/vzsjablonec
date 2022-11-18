@@ -9,10 +9,9 @@
 
 namespace App\MemberModule\Components;
 
-use App\PhotoModule\ImageService;
 use Nette\Application\UI\Control;
+use App\Model\ImageService;
 use App\Model\GalleryService;
-use Nette\Database\Table\IRow;
 
 class AlbumPreviewControl extends Control {
 
@@ -34,7 +33,6 @@ class AlbumPreviewControl extends Control {
 		$this->imageService = $imageService;
 	}
 
-
 	/**
 	 * @param int $id
 	 */
@@ -50,9 +48,7 @@ class AlbumPreviewControl extends Control {
 			$this->template->photos = $photos->limit(5);
 		}
 
-		//$this->template->photoUri = $this->presenter->link('//:Photo:News:');
-
-		//$this->template->addFilter('thumb', [$this->imageService, 'getThumbPathFromPhoto']);
+		$this->template->imageService = $this->imageService;
 
 		$this->template->render();
 	}

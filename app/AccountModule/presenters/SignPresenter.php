@@ -37,7 +37,7 @@ use Tracy\Debugger;
 
 class SignPresenter extends BasePresenter {
 
-	const REDIRECTS = [':Member:Sign:ssoLogIn', ':Photo:Sign:ssoLogIn'];
+	const REDIRECTS = [':Member:Sign:ssoLogIn'];
 
 	/** @var Request @inject */
 	public $httpRequest;

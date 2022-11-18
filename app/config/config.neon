@@ -48,8 +48,10 @@ parameters:
 		credentialsFile: '%tempDir%/idoklad/credentials.json'
 		memberNumericSequence: 1249547
 	gallery:
+		galleryUrl: 'https://photo.vzs-jablonec.lh'
+		albumUrl: album
 		albumDir: albums
-		thumbDir: %gallery.albumDir%/thumbs
+		thumbDir: small
 	mail:
 		account: %google.account%
 		title: 'VZS Jablonec'
@@ -57,6 +59,66 @@ parameters:
 	messenger:
 		botID: 317919538845792
 		url: 'http://localhost/vzsjablonec/messenger'
+	menu:
+		news:
+			title: 'novinky'
+			action: 'News:'
+			current: 'News:*'
+			role: user
+			icon: home
+		events:
+			title: 'akce'
+			action: 'Akce:'
+			current: 'Akce:*'
+			role: user
+			icon: calendar
+		forum:
+			title: 'forum'
+			action: 'Forum:'
+			current: 'Forum:*'
+			role: user
+			icon: comments-o
+		users:
+			title: 'adresář'
+			action: 'User:'
+			current: 'User:*'
+			role: user
+			icon: address-book-o
+		documents:
+			title: 'dokumenty'
+			action: 'Dokumenty:'
+			current: 'Dokumenty:*'
+			role: user
+			icon: file-text-o
+		pools:
+			title: 'ankety'
+			action: 'Ankety:'
+			current: 'Ankety:*'
+			role: member
+			icon: list-ul
+		voting:
+			title: 'hlasovani'
+			action: 'Hlasovani:'
+			current: 'Hlasovani:*'
+			role: member
+			icon: balance-scale
+		attendance:
+			title: 'docházka'
+			action: 'Attendance:'
+			current: 'Attendance:*'
+			role: member
+			icon: calendar-check-o
+		messages:
+			title: 'zprávy'
+			action: 'Mail:'
+			current: 'Mail:*'
+			role: member
+			icon: envelope-o
+		gallery:
+			title: 'galerie'
+			link: %gallery.galleryUrl%/album
+			role: user
+			icon: image
 
 application:
 	errorPresenter: Error
@@ -120,6 +182,7 @@ services:
 	- App\AccountModule\StateCryptor({google: %google.login%, facebook: %facebook.login%})
 
 	- App\MemberModule\Forms\UserFormFactory
+	- App\MemberModule\Components\Menu(%menu%)
 
 	- App\Model\AkceService
 	- App\Model\ForumService
@@ -140,7 +203,7 @@ services:
 	- App\AccountModule\RedisService(%redis.host%, %redis.port%)
 	- App\AccountModule\OauthService(%oauth%)
 
-	- App\PhotoModule\ImageService(%gallery.albumDir%, %gallery.thumbDir%, %wwwDir%)
+	- App\Model\ImageService(%gallery.galleryUrl%, %gallery.albumUrl%, %gallery.albumDir%, %gallery.thumbDir%,)
 
 	- App\MemberModule\Components\TexylaJsFactory(%wwwDir%)
 

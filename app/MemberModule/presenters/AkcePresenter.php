@@ -3,7 +3,6 @@ namespace App\MemberModule\Presenters;
 
 use App\Model;
 use App\MemberModule\Components;
-use App\PhotoModule\ImageService;
 use App\Template\LatteFilters;
 use Caxy\HtmlDiff\HtmlDiff;
 use Nette\Application\AbortException;
@@ -45,7 +44,7 @@ class AkcePresenter extends LayerPresenter {
 	/** @var Model\GalleryService @inject */
 	public $galleryService;
 
-	/** @var ImageService @inject */
+	/** @var Model\ImageService @inject */
 	public $imageService;
 
 	/** @var Model\UserService @inject */

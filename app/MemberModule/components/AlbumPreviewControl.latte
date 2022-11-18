@@ -1,7 +1,7 @@
 <div id="album" n:if=$album>
-<a href="https://photo.vzs-jablonec.cz/album/{$album->slug}" target="_blank" title="{$album->summary|truncate:70}">{$album->title}
+<a href="{$imageService->getAlbumUrl($album->slug)}" target="_blank" title="{$album->summary|truncate:70}">{$album->title}
     <ul n:if="isset($photos)" n:inner-foreach="$photos as $photo" class="photoList">
-        <li><img src="https://photo.vzs-jablonec.cz/albums/{$album->id}/small/{$photo->thumbname}" width="150" height="100" alt="{$photo->filename}"></li>
+        <li><img src="{$imageService->getThumbUrl($photo->album_id, $photo->thumbname)}" width="150" height="100" alt="{$photo->filename}"></li>
     </ul>
 </a>
 

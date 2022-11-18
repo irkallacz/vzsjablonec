@@ -28,7 +28,10 @@ class NewsPresenter extends LayerPresenter{
 		/** @var Model\GalleryService @inject */
 		public $galleryService;
 
-        /** @var Model\HlasovaniService @inject */
+		/** @var Model\ImageService @inject */
+		public $imageService;
+
+		/** @var Model\HlasovaniService @inject */
         public $hlasovaniService;
 
 		/** @var Model\InvoiceService @inject */
@@ -65,7 +68,8 @@ class NewsPresenter extends LayerPresenter{
 
                 $this->template->messageList = $this->messageService->getMessagesNews($datum, $user_id);
 
-                $this->template->albumList = $this->galleryService->getAlbumNews($datum);
+                $this->template->imageService = $this->galleryService->getAlbumNews($datum);
+                $this->template->albumList = $this->imageService;
 
                 $this->template->invoiceList = $this->invoiceService->getInvoiceNews($datum, $user_id);
 

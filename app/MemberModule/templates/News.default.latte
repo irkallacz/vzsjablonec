@@ -55,7 +55,7 @@
 
 	{if}<h3>Alba</h3>
 		<ol class="news" n:inner-foreach="$albumList as $album">
-			<li><a n:class="$album->user_id == $user->getId() ? logged" href="https://photo.vzs-jablonec.cz/album/{$album->slug}"
+			<li><a n:class="$album->created_by == $user->getId() ? logged" href="{$imageService->getAlbumUrl($album->slug)}"
 						title="{$album->created_at|timeAgoInWords}" target="_blank">{$album->title}</a></li>
 		</ol>
 	{/if isset($album)}
