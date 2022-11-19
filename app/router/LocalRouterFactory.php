@@ -20,15 +20,10 @@ class LocalRouterFactory {
 		$member[] = new Route('member/forum/<action>/<id>[/page/<vp-page>]','Forum:topic');
 		$member[] = new Route('member/<presenter>/<action>[/<id>]', 'News:default');
 
-		$photo = new RouteList('Photo');
-		$photo[] = new Route('photo/album/<slug \d+-.+>/<action view|edit|add>','Album:view');
-		$photo[] = new Route('photo/<presenter>/<action>[/<id>]', 'News:default');
-
 		$account = new RouteList('Account');
 		$account[] = new Route('account/<presenter>/<action>[/<id>]', 'Sign:default');
 
 		$router[] = $member;
-		$router[] = $photo;
 		$router[] = $account;
 
 		return $router;

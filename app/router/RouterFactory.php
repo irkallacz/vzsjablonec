@@ -24,15 +24,10 @@ class RouterFactory {
 		$member[] = new Route('//member.%domain%/forum/<action>/<id>[/page/<vp-page>]','Forum:view');
 		$member[] = new Route('//member.%domain%/<presenter>/<action>[/<id>]', 'News:default');
 
-		$photo = new RouteList('Photo');
-		$photo[] = new Route('//photo.%domain%/album/<slug \d+-.+>/<action view|edit|add>','Album:view');
-		$photo[] = new Route('//photo.%domain%/<presenter>/<action>[/<id>]', 'News:default');
-
 		$account = new RouteList('Account');
 		$account[] = new Route('//account.%domain%/<presenter>/<action>[/<id>]', 'Sign:default');
 
 		$router[] = $member;
-		$router[] = $photo;
 		$router[] = $account;
 
 		return $router;
