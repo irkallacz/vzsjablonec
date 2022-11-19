@@ -116,11 +116,4 @@ class FeedPresenter extends BasePresenter {
 		$this->template->items = $items;
 	}
 
-	/**
-	 *
-	 */
-	public function renderAlbums() {
-		$this->template->items = $this->galleryService->getAlbums()->order('date_add DESC');
-	}
-
 }

@@ -203,7 +203,7 @@ services:
 	- App\AccountModule\RedisService(%redis.host%, %redis.port%)
 	- App\AccountModule\OauthService(%oauth%)
 
-	- App\Model\ImageService(%gallery.galleryUrl%, %gallery.albumUrl%, %gallery.albumDir%, %gallery.thumbDir%,)
+	- App\Model\ImageService(%gallery.galleryUrl%, %gallery.albumUrl%, %gallery.albumDir%, %gallery.thumbDir%)
 
 	- App\MemberModule\Components\TexylaJsFactory(%wwwDir%)
 
