@@ -68,8 +68,8 @@ class NewsPresenter extends LayerPresenter{
 
                 $this->template->messageList = $this->messageService->getMessagesNews($datum, $user_id);
 
-                $this->template->imageService = $this->galleryService->getAlbumNews($datum);
-                $this->template->albumList = $this->imageService;
+                $this->template->imageService = $this->imageService;
+                $this->template->albumList = $this->galleryService->getAlbumNews($datum);
 
                 $this->template->invoiceList = $this->invoiceService->getInvoiceNews($datum, $user_id);
 
