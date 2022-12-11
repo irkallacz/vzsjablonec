@@ -11,19 +11,19 @@ class LatteFilters {
 	 * @param $filter
 	 * @param $value
 	 */
-	public static function loader($filter, $value){
-		if (method_exists(__CLASS__, $filter)) {
-			$args = func_get_args();
-			array_shift($args);
-			return call_user_func_array([__CLASS__, $filter], $args);
+	public function loader(string $filter) {
+		if (in_array($filter, get_class_methods($this))) {
+			return [$this, $filter];
 		}
+
+		return null;
 	}
 
 	/**
 	 * @param \DateTimeInterface $date
 	 * @return string
 	 */
-	public static function datetime(\DateTimeInterface $date) {
+	public function datetime(\DateTimeInterface $date) {
 		return $date->format('d.m.Y H:i');
 	}
 
@@ -31,7 +31,7 @@ class LatteFilters {
 	 * @param \DateTimeInterface $date
 	 * @return string
 	 */
-	public static function datetimeN(\DateTimeInterface $date) {
+	public function datetimeN(\DateTimeInterface $date) {
 		return strftime('%A %d.%m.%Y %H:%M', $date->format('U'));
 	}
 
@@ -39,7 +39,7 @@ class LatteFilters {
 	 * @param \DateTimeInterface $date
 	 * @return string
 	 */
-	public static function datetimeC(\DateTimeInterface $date) {
+	public function datetimeC(\DateTimeInterface $date) {
 		return $date->format('c');
 	}
 
@@ -47,15 +47,15 @@ class LatteFilters {
 	 * @param int $number
 	 * @return string
 	 */
-	public static function phone(int $number) {
-		return number_format($number,0,'',' ');
+	public function phone(string $number) {
+		return number_format((int) $number,0,'',' ');
 	}
 
 	/**
 	 * @param int $number
 	 * @return Html
 	 */
-	public static function money(int $number, int $decimals = 0, string $units = 'Kč') {
+	public function money(int $number, int $decimals = 0, string $units = 'Kč') {
 		return new Html(number_format($number, $decimals,',','&nbsp;') . '&nbsp;' . $units);
 	}
 
@@ -63,7 +63,7 @@ class LatteFilters {
      * @param $time
      * @return string
      */
-    public static function timeAgoInWords($time){
+    public function timeAgoInWords($time){
         if (!$time) {
             return FALSE;
         } elseif (is_numeric($time)) {
@@ -111,7 +111,7 @@ class LatteFilters {
      * @param  int
      * @return mixed
      */
-    public static function plural($n){
+    public function plural($n){
         $args = func_get_args();
         return $args[($n == 1) ? 1 : (($n >= 2 && $n <= 4) ? 2 : 3)];
     }
@@ -123,7 +123,7 @@ class LatteFilters {
 	 * @param string $timeFormat
 	 * @return string
 	 */
-	public static function duration(\DateTime $start, \DateTime $end, string $dateFormat = 'd.m.Y', $timeFormat = 'H:i'){
+	public function duration(\DateTime $start, \DateTime $end, string $dateFormat = 'd.m.Y', $timeFormat = 'H:i'){
 		$duration = $start->format($dateFormat.' '.$timeFormat.' - ');
 
     	if ($start->format('Y-m-d') == $end->format('Y-m-d'))
@@ -139,7 +139,7 @@ class LatteFilters {
      * @param \DateTime $end
      * @return string
      */
-    public static function durationInWords(\DateTime $start, \DateTime $end){
+    public function durationInWords(\DateTime $start, \DateTime $end){
 		$duration = $end->diff($start);
 
 		$string = '';
@@ -178,7 +178,7 @@ class LatteFilters {
      * @param $s
      * @return \Latte\Runtime\Html
      */
-    public static function texy($s){
+    public function texy($s){
         $texy = self::createTexy();
         $texy->headingModule->balancing = \Texy\Modules\HeadingModule::FIXED;
 
@@ -189,7 +189,7 @@ class LatteFilters {
      * @param $s
      * @return \Latte\Runtime\Html
      */
-    public static function forumTexy($s){
+    public function forumTexy($s){
         $texy = self::createTexy();
 
 		$texy->allowedTags += ['mark' => TEXY_ALL];

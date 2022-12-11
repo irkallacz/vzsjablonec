@@ -170,7 +170,7 @@ services:
 
 	nette.latteFactory:
 		setup:
-			- addFilter(null, App\Template\LatteFilters::loader)
+			- addFilterLoader([App\Template\LatteFilters(), loader])
 
 	nette.mailer:
 		class: Nette\Mail\IMailer

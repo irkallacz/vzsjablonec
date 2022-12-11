@@ -48,7 +48,7 @@
 
 	{if}<h3>Zprávy</h3>
 		<ol class="news" n:inner-foreach="$messageList as $message">
-			<li><a n:class="$message->user_id == $user->getId() ? logged" n:href="Mail:default#message/$message->id"
+			<li><a n:class="$message->user_id == $user->getId() ? logged" n:href="Mail:default#message/{$message->id}"
 						title="{$message->date_add|timeAgoInWords}">{$message->subject}</a></li>
 		</ol>
 	{/if isset($message)}
@@ -62,7 +62,7 @@
 
 	{if}<h3>Faktury</h3>
 		<ol class="news" n:inner-foreach="$invoiceList as $invoice">
-			<li><a title="{$invoice->date_update|timeAgoInWords}" n:href="User:Profile#invoice-$invoice->id"> {$invoice->description}</a></li>
+			<li><a title="{$invoice->date_update|timeAgoInWords}" n:href="User:Profile#invoice-{$invoice->id}"> {$invoice->description}</a></li>
 		</ol>
 	{/if isset($invoice)}
 
@@ -90,7 +90,7 @@
 
 		{if}<h3>Hodnocení akce</h3>
 		<ol class="news" n:inner-foreach="$ratingList as $rating">
-			<li><a n:class="$rating->rating_user_id == $user->getId() ? logged" n:href="Akce:view#rating/$rating->rating_user_id $rating->id"
+			<li><a n:class="$rating->rating_user_id == $user->getId() ? logged" n:href="Akce:view#rating/{$rating->rating_user_id} $rating->id"
 			title="{$rating->rating_date_add|timeAgoInWords}">{$rating->name}</a></li>
 		</ol>
 		{/if isset($rating)}
