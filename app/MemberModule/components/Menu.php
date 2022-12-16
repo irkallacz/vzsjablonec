@@ -55,7 +55,7 @@ final class Menu extends Control
 				->setText($item->title);
 		}
 
-		print $ul->render();
+		print $ul->render(true);
 	}
 
 
