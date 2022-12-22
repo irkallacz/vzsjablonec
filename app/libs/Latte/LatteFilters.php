@@ -23,7 +23,7 @@ class LatteFilters {
 	 * @param \DateTimeInterface $date
 	 * @return string
 	 */
-	public function datetime(\DateTimeInterface $date) {
+	public static function datetime(\DateTimeInterface $date) {
 		return $date->format('d.m.Y H:i');
 	}
 
@@ -31,7 +31,7 @@ class LatteFilters {
 	 * @param \DateTimeInterface $date
 	 * @return string
 	 */
-	public function datetimeN(\DateTimeInterface $date) {
+	public static function datetimeN(\DateTimeInterface $date) {
 		return strftime('%A %d.%m.%Y %H:%M', $date->format('U'));
 	}
 
@@ -39,7 +39,7 @@ class LatteFilters {
 	 * @param \DateTimeInterface $date
 	 * @return string
 	 */
-	public function datetimeC(\DateTimeInterface $date) {
+	public static function datetimeC(\DateTimeInterface $date) {
 		return $date->format('c');
 	}
 
@@ -47,7 +47,7 @@ class LatteFilters {
 	 * @param int $number
 	 * @return string
 	 */
-	public function phone(string $number) {
+	public static function phone(string $number) {
 		return number_format((int) $number,0,'',' ');
 	}
 
@@ -55,7 +55,7 @@ class LatteFilters {
 	 * @param int $number
 	 * @return Html
 	 */
-	public function money(int $number, int $decimals = 0, string $units = 'Kč') {
+	public static function money(int $number, int $decimals = 0, string $units = 'Kč') {
 		return new Html(number_format($number, $decimals,',','&nbsp;') . '&nbsp;' . $units);
 	}
 
@@ -63,7 +63,7 @@ class LatteFilters {
      * @param $time
      * @return string
      */
-    public function timeAgoInWords($time){
+    public static function timeAgoInWords($time) {
         if (!$time) {
             return FALSE;
         } elseif (is_numeric($time)) {
@@ -111,7 +111,7 @@ class LatteFilters {
      * @param  int
      * @return mixed
      */
-    public function plural($n){
+    public static function plural($n) {
         $args = func_get_args();
         return $args[($n == 1) ? 1 : (($n >= 2 && $n <= 4) ? 2 : 3)];
     }
@@ -123,7 +123,7 @@ class LatteFilters {
 	 * @param string $timeFormat
 	 * @return string
 	 */
-	public function duration(\DateTime $start, \DateTime $end, string $dateFormat = 'd.m.Y', $timeFormat = 'H:i'){
+	public static function duration(\DateTime $start, \DateTime $end, string $dateFormat = 'd.m.Y', $timeFormat = 'H:i'){
 		$duration = $start->format($dateFormat.' '.$timeFormat.' - ');
 
     	if ($start->format('Y-m-d') == $end->format('Y-m-d'))
@@ -139,7 +139,7 @@ class LatteFilters {
      * @param \DateTime $end
      * @return string
      */
-    public function durationInWords(\DateTime $start, \DateTime $end){
+    public static function durationInWords(\DateTime $start, \DateTime $end) {
 		$duration = $end->diff($start);
 
 		$string = '';
@@ -160,7 +160,7 @@ class LatteFilters {
 	/**
 	 * @return \Texy\Texy
 	 */
-	private static function createTexy(){
+	private static function createTexy() {
 		$texy = new \Texy\Texy();
 
 		$texy->addHandler('phrase', function (\Texy\HandlerInvocation $invocation){
@@ -178,7 +178,7 @@ class LatteFilters {
      * @param $s
      * @return \Latte\Runtime\Html
      */
-    public function texy($s){
+    public static function texy($s) {
         $texy = self::createTexy();
         $texy->headingModule->balancing = \Texy\Modules\HeadingModule::FIXED;
 
@@ -189,7 +189,7 @@ class LatteFilters {
      * @param $s
      * @return \Latte\Runtime\Html
      */
-    public function forumTexy($s){
+    public static function forumTexy($s) {
         $texy = self::createTexy();
 
 		$texy->allowedTags += ['mark' => TEXY_ALL];
