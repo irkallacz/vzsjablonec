@@ -18,7 +18,7 @@
             <td class="col title">
 				<a title="{$topic->title|firstUpper}{if $topic->locked} (uzamčeno){/if}" href="{plink Forum:topic,$topic->id}">
 					<strong>{if $topic->locked}{include svg lock}{/if}
-						{if !$search}{$topic->title|firstUpper}{else}{$topic->title|replace:$search:'<em class="highlight">'.$search.'</em>'|firstUpper|noescape}{/if}
+						{if !$search}{$topic->title|firstUpper}{else}{$topic->title|replace:$search,'<em class="highlight">'.$search.'</em>'|firstUpper|noescape}{/if}
 					</strong>
 				</a>
 

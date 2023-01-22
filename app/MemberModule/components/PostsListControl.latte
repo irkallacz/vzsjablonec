@@ -19,7 +19,7 @@
 
         <div class="message">
 			{include copy $post->text}
-			{if !$search}{$post->text|forumTexy|noescape}{else}{$post->text|replace:$search:"<mark>$search</mark>"|forumTexy|noescape}{/if}
+			{if !$search}{$post->text|forumTexy|noescape}{else}{$post->text|replace:$search,"<mark>$search</mark>"|forumTexy|noescape}{/if}
         </div>
 
         {var $isTopic = ($post->id == $post->forum_topic_id)}
