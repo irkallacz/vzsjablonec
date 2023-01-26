@@ -15,6 +15,7 @@ use Tracy\Debugger;
 
 class AkceService extends DatabaseService {
 	const TABLE_AKCE_NAME = 'akce';
+	const TABLE_AKCE_SERIES = 'akce_sequence';
 	const TABLE_AKCE_MEMBER_NAME = 'akce_member';
 	const TABLE_AKCE_REVISION = 'akce_revision';
 
@@ -177,6 +178,29 @@ class AkceService extends DatabaseService {
 			->where('deleted_by', NULL)
 			->where('user_id', $id)
 			->order('akce.date_start DESC');
+	}
+
+	/**
+	 * @param int $id
+	 * @return Selection
+	 */
+	public function getAkceBySeries(int $id) {
+		return $this->database
+			->table(self::TABLE_AKCE_NAME)
+			->where('enable', TRUE)
+			->where('confirm', TRUE)
+			->where('sequence_id', $id)
+			->order('date_start DESC');
+	}
+
+	/**
+	 * @param int $id
+	 * @return ActiveRow
+	 */
+	public function getSerieById(int $id) {
+		return $this->database
+			->table(self::TABLE_AKCE_SERIES)
+			->get($id);
 	}
 
 	/**

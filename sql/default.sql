@@ -96,7 +96,6 @@ CREATE TABLE `akce_member` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
 
 -- Table structure for table `akce_rating_member`
-
 DROP TABLE IF EXISTS `akce_rating_member`;
 CREATE TABLE `akce_rating_member` (
   `akce_id` smallint(6) unsigned NOT NULL,
@@ -112,6 +111,13 @@ CREATE TABLE `akce_rating_member` (
   CONSTRAINT `akce_rating_user_ibfk_1` FOREIGN KEY (`akce_id`) REFERENCES `akce` (`id`) ON DELETE CASCADE,
   CONSTRAINT `akce_rating_user_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_czech_ci;
+
+-- Table structure for table `akce_sequence`
+DROP TABLE IF EXISTS `akce_sequence`;
+CREATE TABLE `akce_sequence` (
+    `id` smallint unsigned NOT NULL,
+    `name` varchar(60) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_czech_ci;
 
 -- Table structure for table `akce_revision`
 DROP TABLE IF EXISTS  `akce_revision`;

@@ -106,29 +106,33 @@
 
 {control signEvent}
 
-	<p n:if="$user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))" id="mail">
-		<a class="buttonLike" n:href="Mail:akce $akce->id">{include svg envelope} poslat mail účastníkům</a>
-	</p>
+<p n:if="$user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))" id="mail">
+	<a class="buttonLike" n:href="Mail:akce $akce->id">{include svg envelope} poslat mail účastníkům</a>
+</p>
 
-	{if $akceIsOld}
-		{if $akce->message}
-			<h3>Zpráva z akce</h3>
-			<div class="texy">
-				{include copy $akce->message}
-				{$akce->message|texy}
-			</div>
-		{/if}
-
-		{control rating}
-
-		{if $user->isInRole('member')}
-			{control billing}
-
-			<p n:if="strlen($akce->bill) > 1">
-				<a class="buttonLike" href="{$baseUrl}/doc/vyuctovani/{$akce->bill}">{include svg download} stáhnout</a>
-			</p>
-		{/if}
+{if $akceIsOld}
+	{if $akce->message}
+		<h3>Zpráva z akce</h3>
+		<div class="texy">
+			{include copy $akce->message}
+			{$akce->message|texy}
+		</div>
 	{/if}
+
+	{control rating}
+
+	{if $user->isInRole('member')}
+		{control billing}
+
+		<p n:if="strlen($akce->bill) > 1">
+			<a class="buttonLike" href="{$baseUrl}/doc/vyuctovani/{$akce->bill}">{include svg download} stáhnout</a>
+		</p>
+	{/if}
+{/if}
+
+{if $akce->sequence_id}
+	{control eventSeries}
+{/if}
 
 {if $akce->album_id}
 <h3>{include svg image} Fotografie</h3>

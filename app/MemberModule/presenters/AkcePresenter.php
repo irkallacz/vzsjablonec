@@ -403,6 +403,13 @@ class AkcePresenter extends LayerPresenter {
 	}
 
 	/**
+	 * @return Components\SeriesControl
+	 */
+	protected function createComponentEventSeries() {
+		return new Components\SeriesControl($this->akceService, $this->akce->id, $this->akce->sequence_id);
+	}
+
+	/**
 	 * @return Components\AlbumPreviewControl
 	 */
 	protected function createComponentAlbum() {

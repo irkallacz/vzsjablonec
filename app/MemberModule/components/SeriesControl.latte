@@ -1,0 +1,45 @@
+{import '../templates/@svg.latte'}
+
+{if $items->count()}
+
+<style type="text/css" n:syntax="off">
+	#events { caption-side: bottom; }
+	#events caption { margin-top: 1em; }
+	h3#events-header { margin-top: 2em; }
+	.separator td { padding-top: 1em; }
+</style>
+
+<div id="seriesEventsContol">
+	<h3 id="events-header">{include svg calendar} {$seriesName}</h3>
+
+	<table id="events">
+		<caption n:snippet="loadMore">
+			<a class="buttonLike ajax" n:if="$loadMore" n:href="loadMore! $offset">{include svg repeat} načíst další</a>
+		</caption>
+		<thead n:if="$offset">
+			<tr><th></th><th>Datum akce</th><th>Název</th></tr>
+		</thead>
+		<tbody n:snippet="table" data-ajax-append="true">
+			{foreach $items as $event}
+                {var $future = $event->date_start > $now}
+				{if $iterator->isFirst()}{var $last = $future}{/if}
+				{* Pokud poslení záznam byl v budoucnosti a došlo ke změně -> udělej mezeru *}
+				<tr n:class="(($last)and(!$future)) ? separator">
+					<td>
+						{if ($member = $event->related('akce_member')->where('user_id', $presenter->user->id)->where('deleted_by', NULL)->fetch())}
+							{if ($member->organizator)}
+								{include svg user}
+							{else}
+								{include svg user-o}
+							{/if}
+						{/if}
+					</td>
+					<td><time datetime="{$event->date_start|datetimeC}">{$event->date_start|date:'d.m.Y'}</time></td>
+					<td><a n:tag-if="$eventId != $event->id" href="{plink Akce:view $event->id}" target="_blank">{$event->name}</a></td>
+				</tr>
+                {var $last = $event->date_start > $now}
+			{/foreach}
+		</tbody>
+	</table>
+</div>
+{/if}
