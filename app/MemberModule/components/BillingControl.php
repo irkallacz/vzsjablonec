@@ -122,7 +122,7 @@ final class BillingControl extends LayerControl {
 				->setHtmlAttribute('title', 'Účtováno přes náš spolek nebo placeno z peněz spolku')
 				->setDefaultValue(FALSE);
 
-			$item->addText('invoice', 'Faktura', 10)
+			$item->addText('invoice', 'Číslo faktury', 10)
 				->setNullable();
 
 			$item->addHidden('id');
