@@ -15,7 +15,7 @@
 </script>
 
 {if isset($ratings)and($ratings)}
-    <h3 id="rating">Hodnocení {include svg star}</span></h3>
+    <h3 id="rating">{include svg star} Hodnocení</span></h3>
     <div n:if="isset($rating_stars)"><span class="stars">{$rating_stars|stars}</span> ({$rating_count})</div>
     <div id="ratings">
         {var $limit = 100}

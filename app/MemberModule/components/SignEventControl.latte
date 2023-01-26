@@ -39,12 +39,12 @@
 <div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
 
 <div class="float-left list-component">
-	<h3>Účastníci {include svg user-o}</h3>
+	<h3>{include svg user-o} Účastníci</h3>
 	{include #userList isOrg => FALSE, isAllowLogin => $isUserAllow, isLogged => $userIsInUserList, items => clone $items}
 </div>
 
 <div class="float-left list-component">
-	<h3>Organizátoři {include svg user}</span></h3>
+	<h3>{include svg user} Organizátoři</span></h3>
 	{include #userList isOrg => TRUE, isAllowLogin => $isOrgAllow, isLogged => $userIsInOrgList}
 </div>
 {/snippet}
