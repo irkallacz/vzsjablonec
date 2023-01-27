@@ -140,7 +140,6 @@
 {/if}
 
 {if $akce->anketa_id}
-<hr>
 <h3>{include svg list-ul} Anketa </h3>
 
 <p><a n:href="Ankety:view $akce->anketa_id" n:tag-if="$user->isInRole('member')">{$anketa->title|firstUpper}</a><p>
@@ -149,7 +148,6 @@
 {/if}
 
 {if $akce->forum_topic_id}
-<hr>
 <h3>{include svg comments-o} Poslední příspěvky</h3>
 
 <a n:if="(!$topic->locked)and($user->isInRole('member'))" class="buttonLike float-right" n:href="Forum:add $topic->id">{include svg plus} nový příspěvěk</a>
