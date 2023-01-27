@@ -573,6 +573,10 @@ class AkcePresenter extends LayerPresenter {
 			->addConditionOn($form['login_org'], Form::EQUAL, FALSE)
 				->addRule(FORM::FILLED, 'Musíte vybrat organizátora');
 
+		$form->addSelect('sequence_id', 'Řada')
+			->setItems($this->akceService->getSeriesArray())
+			->setPrompt('');
+
 		$form->addUpload('file', 'Soubor')
 			->setRequired(FALSE)
 			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 10 MB.', 10 * 1024 * 1024);

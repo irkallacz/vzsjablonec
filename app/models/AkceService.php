@@ -205,6 +205,18 @@ class AkceService extends DatabaseService {
 
 	/**
 	 * @param int $id
+	 * @return array
+	 */
+	public function getSeriesArray() {
+		return $this->database
+			->table(self::TABLE_AKCE_SERIES)
+			->select('id, name')
+			->order('name')
+			->fetchPairs('id', 'name');
+	}
+
+	/**
+	 * @param int $id
 	 * @param bool $org
 	 * @return array
 	 */
