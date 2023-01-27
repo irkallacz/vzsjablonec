@@ -110,6 +110,10 @@
 	<a class="buttonLike" n:href="Mail:akce $akce->id">{include svg envelope} poslat mail účastníkům</a>
 </p>
 
+{if $akce->sequence_id}
+	{control eventSeries}
+{/if}
+
 {if $akceIsOld}
 	{if $akce->message}
 		<h3>Zpráva z akce</h3>
@@ -128,10 +132,6 @@
 			<a class="buttonLike" href="{$baseUrl}/doc/vyuctovani/{$akce->bill}">{include svg download} stáhnout</a>
 		</p>
 	{/if}
-{/if}
-
-{if $akce->sequence_id}
-	{control eventSeries}
 {/if}
 
 {if $akce->album_id}

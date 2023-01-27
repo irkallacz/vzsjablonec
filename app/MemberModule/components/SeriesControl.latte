@@ -17,7 +17,7 @@
 			<a class="buttonLike ajax" n:if="$loadMore" n:href="loadMore! $offset">{include svg repeat} načíst další</a>
 		</caption>
 		<thead n:if="$offset">
-			<tr><th></th><th>Datum akce</th><th>Název</th></tr>
+			<tr><th></th><th>Datum akce</th><th>Název akce</th></tr>
 		</thead>
 		<tbody n:snippet="table" data-ajax-append="true">
 			{foreach $items as $event}
@@ -35,7 +35,7 @@
 						{/if}
 					</td>
 					<td><time datetime="{$event->date_start|datetimeC}">{$event->date_start|date:'d.m.Y'}</time></td>
-					<td><a n:tag-if="$eventId != $event->id" href="{plink Akce:view $event->id}" target="_blank">{$event->name}</a></td>
+					<td><a n:tag-if="$eventId != $event->id" href="{plink Akce:view $event->id}" target="_blank">{$event->name|firstUpper}</a></td>
 				</tr>
                 {var $last = $event->date_start > $now}
 			{/foreach}
