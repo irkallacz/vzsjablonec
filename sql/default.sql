@@ -546,6 +546,7 @@ CREATE TABLE `user` (
   `telefon` char(9) COLLATE utf8_czech_ci DEFAULT NULL,
   `telefon2` char(9) COLLATE utf8_czech_ci DEFAULT NULL,
   `bank_account` varchar(50) COLLATE utf8_czech_ci DEFAULT NULL,
+  `membership_fee` smallint(5) unsigned DEFAULT NULL,
   `text` text COLLATE utf8_czech_ci,
   `role` tinyint(4) DEFAULT '0',
   `photo` varchar(60) COLLATE utf8_czech_ci DEFAULT NULL,

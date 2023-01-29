@@ -214,6 +214,7 @@ services:
 	- App\Console\MessageCommand(%mail%, %messenger%, %wwwDir%)
 	- App\Console\PeopleCommand
 	- App\Console\YoutubeCommand(%google.youtube.channel%)
+	- App\Console\MembershipFeesCommand(clientId: %idoklad.clientId%, clientSecret: %idoklad.clientSecret%)
 
 	googleClient:
 		class: Google_Client
