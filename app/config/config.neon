@@ -119,6 +119,11 @@ parameters:
 			link: %gallery.galleryUrl%/album
 			role: user
 			icon: image
+		eshop:
+			title: 'eshop'
+			link: 'https://eshop.vzs-jablonec.cz'
+			role: user
+			icon: shopping-cart
 
 application:
 	errorPresenter: Error
