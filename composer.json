@@ -6,10 +6,10 @@
 	"require": {
 		"php": ">= 7.0",
 	  	"ext-openssl": "*",
-	  	"ext-imagick": "*",
 	  	"ext-curl": "*",
 	  	"ext-zip": "*",
 		"ext-redis": "*",
+		"ext-mbstring": "*",
 		"nette/application": "^2.4",
 		"nette/bootstrap": "^2.4.2",
 		"nette/caching": "^2.5",
