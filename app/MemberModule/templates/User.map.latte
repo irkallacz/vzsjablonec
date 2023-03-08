@@ -25,25 +25,21 @@
 		layer.enable();
 
 		for (const address of addresses) {
-			$.ajax({
-				type: 'GET',
-				url: 'https://api.mapy.cz/geocode?query='+address.title,
-				dataType: 'xml',
-				success: function (xml) {
-					var item = $(xml).find('item')[0];
+			new SMap.Geocoder(address.title, function (geocoder) {
+				var results = geocoder.getResults();
+				var item = results[0].results[0];
 
-					if (item) {
-						var card = new SMap.Card();
-						card.getHeader().innerHTML = '<strong>'+address.user+'</strong>';
-						card.getBody().innerHTML = '<p><i>'+address.title+'</i></p>';
-						card.getBody().innerHTML+= item.getAttribute('title');
-						card.getBody().innerHTML+= '<p><a target="_blank" href="https://member.vzs-jablonec.cz/user/view/'+address.id+'">Osobní profil</a></p>';
+				if (item) {
+					var card = new SMap.Card();
+					card.getHeader().innerHTML = '<strong>'+address.user+'</strong>';
+					card.getBody().innerHTML = '<p><i>'+address.title+'</i></p>';
+					card.getBody().innerHTML+= item.label;
+					card.getBody().innerHTML+= '<p><a target="_blank" href="https://member.vzs-jablonec.cz/user/view/'+address.id+'">Osobní profil</a></p>';
 
-						var point = SMap.Coords.fromWGS84(item.getAttribute('x'), item.getAttribute('y'));
-						var marker = new SMap.Marker(point, address.id);
-						marker.decorate(SMap.Marker.Feature.Card, card);
-						layer.addMarker(marker);
-					}
+					var point = SMap.Coords.fromWGS84(item.coords.x, item.coords.y);
+					var marker = new SMap.Marker(point, address.id);
+					marker.decorate(SMap.Marker.Feature.Card, card);
+					layer.addMarker(marker);
 				}
 			});
 		}
