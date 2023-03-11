@@ -32,11 +32,11 @@
 					<td>
 						<a href="{plink Attendance:view $session->id}" target="_blank">
 							<time datetime="{$session->date|datetimeC}">{$session->date|date:'d.m.Y'}</time>
-							{$session->from|date:'%H:%i'} - {$session->to|date:'%H:%i'}
+							{$session->from|date:'%H:%I'} - {$session->to|date:'%H:%I'}
 						</a>
 					</td>
 					<td class="right">
-						{$attendance->datetime|date:'d.m.Y H:i'}
+						{$attendance->datetime|date:'d.m.Y H:I'}
 					</td>
 				</tr>
 			{/foreach}
