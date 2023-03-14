@@ -59,6 +59,12 @@ parameters:
 	messenger:
 		botID: 317919538845792
 		url: 'http://localhost/vzsjablonec/messenger'
+	chat:
+		url: https://chat.googleapis.com/v1/spaces
+		space: AAAAJNSjszs
+		key: rWawgHbVOe3RWpLNnAkfSOojuIZ1Cy3KI8QIYbR1
+		token: ucMJ2jIXeuTPSZc5t2lTain8zOdA9oy7vA3N7bxN
+		active: false
 	menu:
 		news:
 			title: 'novinky'
@@ -209,6 +215,8 @@ services:
 	- App\AccountModule\OauthService(%oauth%)
 
 	- App\Model\ImageService(%gallery.galleryUrl%, %gallery.albumUrl%, %gallery.albumDir%, %gallery.thumbDir%)
+
+	- App\Model\ChatService(%chat.url%, %chat.space%, %chat.key%, %chat.token%, %chat.active%)
 
 	- App\MemberModule\Components\TexylaJsFactory(%wwwDir%)
 

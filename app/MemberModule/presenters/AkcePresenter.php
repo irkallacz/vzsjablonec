@@ -44,6 +44,9 @@ class AkcePresenter extends LayerPresenter {
 	/** @var Model\GalleryService @inject */
 	public $galleryService;
 
+	/** @var Model\ChatService @inject */
+	public $chatService;
+
 	/** @var Model\ImageService @inject */
 	public $imageService;
 
@@ -346,6 +349,11 @@ class AkcePresenter extends LayerPresenter {
 
 		$akce = $this->akceService->getAkceById($id);
 		$akce->update($values);
+
+		if ($allow) {
+			$this->chatService->newEventMessage($akce->name, $this->link('//Akce:view', $akce->id), $akce->perex);
+		}
+
 		$this->redirect('view', $id);
 	}
 
@@ -676,6 +684,8 @@ class AkcePresenter extends LayerPresenter {
 				$this->addConfirmMail($akce);
 				$next = $this->messageService->getNextSendTime();
 				$this->flashMessage('Email pro schválení akce bude odeslán '.LatteFilters::timeAgoInWords($next));
+			} else {
+				$this->chatService->newEventMessage($akce->name, $this->link('//Akce:view', $akce->id), $akce->perex);
 			}
 
 			$id = $akce->id;
