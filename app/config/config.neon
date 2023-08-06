@@ -114,6 +114,12 @@ parameters:
 			current: 'Attendance:*'
 			role: member
 			icon: calendar-check-o
+		service:
+			title: 'služba'
+			action: 'ServiceRecord:'
+			current: 'ServiceRecord:*'
+			role: board
+			icon: life-bouy
 		messages:
 			title: 'zprávy'
 			action: 'Mail:'
@@ -210,6 +216,7 @@ services:
 	- App\Model\GalleryService
 	- App\Model\WordpressService(@database.wordpress.context)
 	- App\Model\YoutubeService
+	- App\Model\RecordService(%appDir%/../records)
 
 	- App\AccountModule\RedisService(%redis.host%, %redis.port%)
 	- App\AccountModule\OauthService(%oauth%)

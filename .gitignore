@@ -47,6 +47,7 @@ tmp/
 session/
 log/
 vendor/
+records/
 config.local.neon
 google_api_service.json
 composer.lock

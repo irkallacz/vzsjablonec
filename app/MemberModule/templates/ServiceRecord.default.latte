@@ -1,0 +1,113 @@
+{block #head}
+<style>
+    aside nav ol { padding: 0 2em 0 0 }
+    aside nav ol li { display: block }
+    main { display: flex; flex-flow: row; }
+    article { width: 100%;}
+    article table { border-collapse: collapse; width: 100%; background-color: #fffff6;}
+    body.black article table { background-color: #1f1f1f;}
+    article table th, article table td { border: 1px solid #ccc; padding: 1ex;}
+    #text .texy { padding: 1em; }
+</style>
+{/block}
+
+<h1 n:block="title">Služební záznamy {if $year}{$year}{/if}</h1>
+
+{block #content}
+    <main>
+    <aside>
+        <nav>
+            <ol>
+                <li n:foreach="$list as $item">
+                    <a n:tag-if="($item != $day)" n:href="default, $year, $item">{$item|date:'d.m.Y'}</a>
+                </li>
+            </ol>
+        </nav>
+    </aside>
+
+    <article n:ifset="$record">
+        <h2>{$record->date|date:'%A %d. %B %Y'}</h2>
+
+        <div class="prev-next">
+            <a n:tag-if="$next" class="buttonLike float-right" n:href="default, $year, $next">
+                <span n:tag-if="!$next" class="buttonLike float-right gray">Další {include svg forward}</span>
+            </a>
+
+            <a n:tag-if="$prev" class="buttonLike" n:href="default, $year, $prev">
+                <span n:tag-if="!$prev" class="buttonLike gray">{include svg backward} Předchozí</span>
+            </a>
+
+            <p class="clearfix"></p>
+        </div>
+
+        <div class="texy">{$record->message|nl2br}</div>
+
+        <h3>Počasí</h3>
+        <div class="texy">{$record->weather|nl2br}</div>
+
+        <p class="record"><strong>Návštěvnost:</strong> {$record->attendance}</p>
+
+        <p class="record"><strong>Čísla záznamů o ošetření:</strong> {foreach $record->medicalRecords as $item}<a href="https://www.vzs.evidsoft.cz/admin/parere/edit-parere?entity_ID={$item}" target="_blank">{$item}</a>{sep}, {/sep}{/foreach}</p>
+
+        <h3>Ve službě</h3>
+        <div class="record">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Příjmení a jméno</th>
+                        <th>Od</th>
+                        <th>Do</th>
+                        <th>Pozice</th>
+                        <th>Kvalifikace</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr n:foreach="$record->serviceRecords as $service">
+                        <td>{$service->person}</td>
+                        <td>{$service->fromTime}</td>
+                        <td>{$service->toTime}</td>
+                        <td>{$service->position}</td>
+                        <td>{$service->qualifications}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Lodní deník</h3>
+        <div class="record">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loď</th>
+                        <th>Od</th>
+                        <th>Do</th>
+                        <th>VMP</th>
+                        <th>Účel</th>
+                        <th>MH před</th>
+                        <th>MH po</th>
+                        <th>Tankování</th>
+                        <th>Poznámka</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr n:foreach="$record->boatRecords as $boat">
+                        <td>{$boat->boat}
+                        <td>{$boat->fromTime}</td>
+                        <td>{$boat->toTime}</td>
+                        <td>{$boat->vmp}</td>
+                        <td>{$boat->purpose}</td>
+                        <td>{$boat->motoHoursBefore}</td>
+                        <td>{$boat->motoHoursAfter}</td>
+                        <td>{$boat->fuel}</td>
+                        <td>{$boat->note}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="record"><strong>Zapsal:</strong> {$record->author} {$record->datetime|date:'d.m.Y H:i:s'}</p>
+
+    </article>
+    </main>
+
+{/block}
