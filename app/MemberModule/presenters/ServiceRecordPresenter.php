@@ -15,6 +15,9 @@ final class ServiceRecordPresenter extends LayerPresenter
 	 */
 	public $recordService;
 
+	/**
+	 * @allow(board)
+	 */
 	public function renderDefault(int $year = 2023, string $day = null)
 	{
 		$this->template->addFilter('nl2br',function ($text) {
