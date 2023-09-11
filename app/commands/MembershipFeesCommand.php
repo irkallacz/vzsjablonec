@@ -57,7 +57,7 @@ final class MembershipFeesCommand extends BaseCommand
 
 		$token = $this->authorize();
 
-		foreach ($this->userService->getUsers(UserService::MEMBER_LEVEL) as $member) {
+		foreach ($this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name') as $member) {
 			if (!$member->iDokladId) {
 				continue;
 			}
