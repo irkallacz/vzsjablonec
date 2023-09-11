@@ -118,7 +118,7 @@ parameters:
 			title: 'služba'
 			action: 'ServiceRecord:'
 			current: 'ServiceRecord:*'
-			role: board
+			role: member
 			icon: life-bouy
 		messages:
 			title: 'zprávy'

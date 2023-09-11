@@ -16,7 +16,7 @@ final class ServiceRecordPresenter extends LayerPresenter
 	public $recordService;
 
 	/**
-	 * @allow(board)
+	 * @allow(member)
 	 */
 	public function renderDefault(int $year = 2023, string $day = null)
 	{
