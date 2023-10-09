@@ -6,10 +6,11 @@
 		.docs .new a.link { color: #12397e; }
 		ol.root li.dir { margin-top: 1em; }
 		ol.root ol li.dir { margin-top: 0; }
-		li.file { margin-left: 4px; }
-		li.file .file-icon { vertical-align: bottom; }
+		li.file { margin-left: 4px; display: flex; flex-flow: row wrap-reverse;}
+		li.file .file-icon { vertical-align: bottom; margin-right: 4px; }
 		li.dir .icon { font-size: 16px}
-		.toogleDir { background: none; border: none; color: #009bff}
+		.toogleDir { background: none; border: none; color: #009bff; padding: 0; }
+		.flex-right { flex-grow: 1; text-align: right}
 	</style>
 {/block}
 
@@ -32,9 +33,9 @@
 				<img class="file-icon" height="16" width="16" src="https://drive-thirdparty.googleusercontent.com/16/type/{$file->mimeType}" title="{$file->mimeType}" alt="{$file->mimeType}">
 				<a class="link" target="_blank" title="Datum změny: {$file->modifiedTime|datetime}" href="{$file->webViewLink}">{$file->name}</a>
 				{if ($file->webContentLink)and(!Nette\Utils\Strings::startsWith($file->mimeType, 'application/vnd.google-apps'))}
-					<a class="float-right" href="{$file->webContentLink}" title="stáhnout">{include svg download} stáhnout</a>
+					<a class="flex-right" href="{$file->webContentLink}" title="stáhnout">{include svg download} stáhnout</a>
 				{else}
-					<a class="float-right" n:href="getPdf $file->id" title="stáhnout jako PDF">{include svg download} stáhnout</a>
+					<a class="flex-right" n:href="getPdf $file->id" title="stáhnout jako PDF">{include svg download} stáhnout</a>
 				{/if}
 				<small class="description">{$file->description}</small>
 			</li>
