@@ -9,6 +9,7 @@
 		li.file { margin-left: 4px; }
 		li.file .file-icon { vertical-align: bottom; }
 		li.dir .icon { font-size: 16px}
+		.toogleDir { background: none; border: none; color: #009bff}
 	</style>
 {/block}
 
@@ -17,10 +18,10 @@
 {block #fileList}
 	{foreach $dir->related($TABLE_DIRECTORIES)->order('name') as $file}
 			<li class="dir">
-				<a id="{$file->id}" class="toogleDir">
+				<button id="{$file->id}" class="toogleDir">
 					<span>{include svg $root ? 'folder-open' : 'folder'}</span>
 					<strong>{$file->name}</strong>
-				</a>
+				</button>
 			</li>
 			<ol id="folder-{$file->id}" n:class="!$root ? hide">
 				{include #fileList, dir => $file, root => FALSE}
