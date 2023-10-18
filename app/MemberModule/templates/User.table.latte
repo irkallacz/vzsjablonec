@@ -5,6 +5,9 @@
 		.grid-global-actions { text-align: left;}
 		.grid table tr:nth-child(2n) td { background-color: #eee;}
 		#columnsForm { margin-top: 1em;}
+		.thumb { position: relative}
+		.thumb span { display: none; position: absolute}
+		.thumb:hover span, .thumb:focus span { display: block; top: 10px; left: 10px; z-index: 1; }
 	</style>
 
 	{*<script type="text/javascript" src="{$baseUrl}/js/nette.ajax.js"></script>*}

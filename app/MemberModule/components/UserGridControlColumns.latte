@@ -40,7 +40,7 @@
 
 {define col-photo}
 	<td class="center">
-		{if $cell}<a href="{$baseUrl}/img/photos/{$cell}">{include svg image}</a>{/if}
+		{if $cell}<a class="thumb" href="{$baseUrl}/img/photos/{$cell}">{include svg image}<span><img alt="photo" width="200" src="{$baseUrl}/img/photos/{$cell}"></span></a>{/if}
 	</td>
 {/define}
 
