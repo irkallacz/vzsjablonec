@@ -182,7 +182,28 @@ class UserService extends DatabaseService {
 		} else {
 			$this->database->query('INSERT INTO user_registration', [
 				'user_id' => $user_id,
-				'year' => $year
+				'year' => $year,
+				'date_add' => new DateTime(),
+			]);
+			return true;
+		}
+	}
+
+	/**
+	 * @param int $user_id
+	 * @return bool
+	 */
+	public function addApproval(int $user_id) {
+		$row = $this->database->table('user')
+			->where('id', $user_id)
+			->where('approved_from IS NULL')
+			->fetch();
+
+		if (!$row) {
+			return false;
+		} else {
+			$row->update([
+				'approved_from' => new DateTime(),
 			]);
 			return true;
 		}

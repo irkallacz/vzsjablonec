@@ -158,6 +158,7 @@ class UserGridControl extends Control {
 		$grid->addGlobalAction('export', 'export', [$this, 'export']);
 		$grid->addGlobalAction('mail', 'mail', [$this, 'mail']);
 		$grid->addGlobalAction('registration', 'registrace', [$this, 'registration']);
+		$grid->addGlobalAction('approval', 'schválení', [$this, 'approval']);
 
 		return $grid;
 	}
@@ -345,6 +346,21 @@ class UserGridControl extends Control {
 			}
 
 			$this->flashMessage(sprintf('Registrováno %d uživatelů', $count), $count ? 'info' : 'error');
+		}
+	}
+
+	public function approval(array $selection) {
+		if (empty($selection)) {
+			$this->flashMessage('Musíte vybrat uživatele', 'error');
+		} else {
+			$count = 0;
+			foreach ($selection as $user_id) {
+				if ($this->userService->addApproval($user_id)) {
+					$count++;
+				}
+			}
+
+			$this->flashMessage(sprintf('Schváleno %d uživatelů', $count), $count ? 'info' : 'error');
 		}
 	}
 

@@ -233,6 +233,7 @@ services:
 	- App\Console\InvoiceCommand
 	- App\Console\MessageCommand(%mail%, %messenger%, %wwwDir%)
 	- App\Console\PeopleCommand
+	- App\Console\AchievementCommand
 	- App\Console\YoutubeCommand(%google.youtube.channel%)
 	- App\Console\MembershipFeesCommand(clientId: %idoklad.clientId%, clientSecret: %idoklad.clientSecret%)
 
