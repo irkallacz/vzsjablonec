@@ -153,10 +153,10 @@ final class AchievementCommand extends BaseCommand
 
 			if ($success) {
 				$values = [
-					'achievement_id' => 12,
 					'user_id' => $member->user_id,
-					'summary' => $attendance->id,
+					'summary' => $attendance->attendance_id,
 					'date' => $attendance->date,
+					'achievement_id' => 12,
 					'date_add' => new \DateTime(),
 				];
 
@@ -188,8 +188,8 @@ final class AchievementCommand extends BaseCommand
 			if ($attendance = $attendances->fetch()) {
 				$values = [
 					'user_id' => $member->user_id,
-					'achievement_id' => 17,
 					'date' => new \DateTime($attendance->year . '-01-01'),
+					'achievement_id' => 17,
 					'date_add' => new \DateTime(),
 				];
 
