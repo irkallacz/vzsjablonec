@@ -144,6 +144,10 @@ class UserPresenter extends LayerPresenter {
 
 		$this->template->title = UserService::getFullName($user);
 		$this->template->showEvents = $showEvents;
+
+		$this->template->badges = $this->akceService->getBadges($id)->order('date DESC');
+		$this->template->achievements = $this->akceService->getAchievements()->fetchPairs('id', 'pocet');
+		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->count('id');
 	}
 
 	/**
