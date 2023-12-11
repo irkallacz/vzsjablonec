@@ -21,11 +21,12 @@
 		#badges strong { font-size: large; }
 		#badges table { width: 100%}
 		#badges .badge img { height: 50px; }
+		#badges .gold { filter: sepia(1);}
+
+		#badges #badge-table.inline .badge:hover .lookup { display: none; }
 		#badges .badge:hover .lookup { display: block; width: 200px; height: 200px; border: 1px solid gray; position: absolute; top: 20%; left: 20%; background-color: gray; background-size: 200px;
 			z-index: 2;}
 
-		#badges .gold { filter: sepia(1)}
-		#badges #badge-table.inline .badge:hover .lookup { display: none; }
 		#badge-table th { position: relative; }
 		#badge-table .progress { height: 1ex; background-color: gray; border-radius: 1em;}
 
@@ -212,17 +213,17 @@
 					<tbody>
 					{foreach $badges as $badge}
 					{var $percent = $achievements[$badge->achievement_id] / $users * 100}
-					<tr n:class="($percent < 10) ? gold">
+					<tr>
 						<th rowspan="2">
 							<a href="{$baseUrl}/img/badges/{$badge->achievement->code}.png" class="badge" title="{$badge->achievement->name} - {$badge->achievement->description} - {$badge->date|date:'d.m.Y'}">
-								<img src="{$baseUrl}/img/badges/{$badge->achievement->code}.png">
+								<img src="{$baseUrl}/img/badges/{$badge->achievement->code}.png" n:class="($percent < 10) ? gold">
 								<span class="lookup" style="background-image: url('{$baseUrl}/img/badges/{$badge->achievement->code}.png')"></span>
 							</a>
 						</th>
 						<td class="details details-text">
 							<strong>{$badge->achievement->name}</strong><br> {$badge->achievement->description}
 						</td>
-						<td class="details center">{$percent|round:2}%</td>
+						<td class="details center"><b n:class="($percent < 10) ? gold">{$percent|round:2}%</b></td>
 						<td class="details center">{$achievements[$badge->achievement_id]}</td>
 						<td class="details center"><a n:tag-if="$badge->event_id" n:href="Akce:view, $badge->event_id">{$badge->date|date:'d.m.Y'}</a></td>
 					</tr>
