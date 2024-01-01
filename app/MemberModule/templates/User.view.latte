@@ -215,10 +215,10 @@
 					{var $percent = $achievements[$badge->achievement_id] / $users * 100}
 					<tr>
 						<th rowspan="2">
-							<div class="badge" title="{$badge->achievement->name} - {$badge->achievement->description} - {$badge->date|date:'d.m.Y'}">
+							<a href="{$baseUrl}/img/badges/{$badge->achievement->code}.png" class="badge" title="{$badge->achievement->name} - {$badge->achievement->description} - {$badge->date|date:'d.m.Y'}">
 								<img src="{$baseUrl}/img/badges/{$badge->achievement->code}.png" n:class="($percent < 10) ? gold">
 								<span class="lookup" style="background-image: url('{$baseUrl}/img/badges/{$badge->achievement->code}.png')"></span>
-							</div>
+							</a>
 						</th>
 						<td class="details details-text">
 							<strong>{$badge->achievement->name}</strong><br> {$badge->achievement->description}
