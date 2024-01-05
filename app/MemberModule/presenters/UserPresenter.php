@@ -2,11 +2,14 @@
 
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\AbstractAjaxControl;
+use App\MemberModule\Components\AchievementsControl;
 use App\MemberModule\Components\AttendanceControl;
 use App\MemberModule\Components\EventsControl;
 use App\MemberModule\Components\UserGridControl;
 use App\MemberModule\Components\InvoiceControl;
 use App\MemberModule\Forms\UserFormFactory;
+use App\Model\AchievementsService;
 use App\Model\AkceService;
 use App\Model\AnketyService;
 use App\Model\AttendanceService;
@@ -50,6 +53,9 @@ class UserPresenter extends LayerPresenter {
 
 	/** @var AttendanceService @inject */
 	public $attendanceService;
+
+	/** @var AchievementsService @inject */
+	public $achievementsService;
 
 	/** @var InvoiceService @inject */
 	public $invoiceService;
@@ -144,10 +150,14 @@ class UserPresenter extends LayerPresenter {
 
 		$this->template->title = UserService::getFullName($user);
 		$this->template->showEvents = $showEvents;
+	}
 
-		$this->template->badges = $this->akceService->getBadges($id)->order('date DESC');
-		$this->template->achievements = $this->akceService->getAchievements()->fetchPairs('id', 'pocet');
-		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->count('id');
+	/**
+	 * @return AchievementsControl
+	 */
+	protected function createComponentAchievements(){
+		$memberId = $this->getParameter('id');
+		return new AchievementsControl($this->achievementsService, $this->userService, $memberId);
 	}
 
 	/**

@@ -18,8 +18,6 @@ class AkceService extends DatabaseService {
 	const TABLE_AKCE_SERIES = 'akce_sequence';
 	const TABLE_AKCE_MEMBER_NAME = 'akce_member';
 	const TABLE_AKCE_REVISION = 'akce_revision';
-	const TABLE_BADGES = 'achievement_users';
-	const TABLE_ACHIEVEMENT = 'achievements';
 
 	/**
 	 * @return Selection
@@ -316,19 +314,5 @@ class AkceService extends DatabaseService {
 			'date_add' => new DateTime(),
 			'text' => $text,
 		]);
-	}
-
-	/**
-	 * @return Selection
-	 */
-	public function getBadges(int $userId) {
-		return $this->database->table(self::TABLE_BADGES)->where('user_id', $userId);
-	}
-
-	/**
-	 * @return Selection
-	 */
-	public function getAchievements() {
-		return $this->database->table(self::TABLE_BADGES)->select('achievement_id AS id, COUNT(user_id) AS pocet')->group('achievement_id');
 	}
 }

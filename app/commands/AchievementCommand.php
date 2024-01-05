@@ -4,6 +4,7 @@
 namespace App\Console;
 
 
+use App\Model\AchievementsService;
 use Nette\Database\Context;
 use Nette\Iterators\CachingIterator;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,13 +15,19 @@ final class AchievementCommand extends BaseCommand
 	/** @var Context */
 	public $database;
 
+	/** @var AchievementsService */
+	public $achievementsService;
+
 	/**
-	 * DatabaseService constructor.
+	 * AchievementCommand constructor.
 	 * @param Context $database
+	 * @param AchievementsService $achievementsService
 	 */
-	public function __construct(Context $database) {
+	public function __construct(Context $database, AchievementsService $achievementsService)
+	{
 		parent::__construct();
 		$this->database = $database;
+		$this->achievementsService = $achievementsService;
 	}
 
 	protected function configure() {
@@ -62,9 +69,11 @@ final class AchievementCommand extends BaseCommand
 
 		//freeze
 		$this->writeln($output, '<info>Omrzlík</info>');
-		$members = $this->database->query('SELECT user_id FROM akce_member JOIN akce ON akce_id = akce.id WHERE sequence_id = 899 AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id NOT IN (SELECT user_id FROM achievement_users WHERE achievement_id = 3) GROUP BY user_id HAVING COUNT(user_id) >= 3');
+		$members = $this->achievementsService->getMembersForAchievement(3, [899]);
+		//$members = $this->database->query('SELECT user_id FROM akce_member JOIN akce ON akce_id = akce.id WHERE sequence_id = 899 AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id NOT IN (SELECT user_id FROM achievement_users WHERE achievement_id = 3) GROUP BY user_id HAVING COUNT(user_id) >= 3');
 		foreach ($members as $member) {
-			$events = $this->database->query('SELECT user_id, akce_id AS event_id, date_end AS `date` FROM akce_member JOIN akce ON akce_id = akce.id WHERE sequence_id = 899 AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id = ? ORDER BY date_start LIMIT 1 OFFSET 2', $member->user_id);
+			$events = $this->achievementsService->getEventForAchievement($member->user_id, [899]);
+			//$events = $this->database->query('SELECT user_id, akce_id AS event_id, date_end AS `date` FROM akce_member JOIN akce ON akce_id = akce.id WHERE sequence_id = 899 AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id = ? ORDER BY date_start LIMIT 1 OFFSET 2', $member->user_id);
 			if ($event = $events->fetch()) {
 				$values = iterator_to_array($event);
 				$values['achievement_id'] = 3;
@@ -76,9 +85,9 @@ final class AchievementCommand extends BaseCommand
 
 		//statue
 		$this->writeln($output, '<info>Chlouba spolku</info>');
-		$members = $this->database->query('SELECT user_id FROM akce_member JOIN akce ON akce_id = akce.id WHERE (sequence_id IN (6,10,13,16,73,278) OR akce_id IN (694, 1069)) AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id NOT IN (SELECT user_id FROM achievement_users WHERE achievement_id = 8) GROUP BY user_id HAVING COUNT(user_id) >=3');
+		$members = $this->achievementsService->getMembersForAchievement(8, [6,10,13,16,73,278], [694, 1069]);
 		foreach ($members as $member) {
-			$events = $this->database->query('SELECT user_id, akce_id AS event_id, date_end AS `date` FROM akce_member JOIN akce ON akce_id = akce.id WHERE (sequence_id IN (6,10,13,16,73,278) OR akce_id IN (694, 1069)) AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id = ? ORDER BY date_start LIMIT 1 OFFSET 2', $member->user_id);
+			$events = $this->achievementsService->getEventForAchievement($member->user_id, [6,10,13,16,73,278], [694, 1069]);
 			if ($event = $events->fetch()) {
 				$values = iterator_to_array($event);
 				$values['achievement_id'] = 8;
@@ -87,6 +96,21 @@ final class AchievementCommand extends BaseCommand
 				$this->writeln($output, ...array_values($values));
 			}
 		}
+
+		//skull
+		$this->writeln($output, '<info>Lovec lebek</info>');
+		$members = $this->achievementsService->getMembersForAchievement(15, [495, 616, 18]);
+		foreach ($members as $member) {
+			$events = $this->achievementsService->getEventForAchievement($member->user_id, [495, 616, 18]);
+			if ($event = $events->fetch()) {
+				$values = iterator_to_array($event);
+				$values['achievement_id'] = 15;
+				$values['date_add'] = new \DateTime();
+				$this->database->query('INSERT INTO achievement_users ?', $values);
+				$this->writeln($output, ...array_values($values));
+			}
+		}
+
 
 		//photo
 		$this->writeln($output, '<info>Paparazzi</info>');
@@ -160,21 +184,6 @@ final class AchievementCommand extends BaseCommand
 					'date_add' => new \DateTime(),
 				];
 
-				$this->database->query('INSERT INTO achievement_users ?', $values);
-				$this->writeln($output, ...array_values($values));
-			}
-		}
-
-
-		//skull
-		$this->writeln($output, '<info>Lovec lebek</info>');
-		$members = $this->database->query('SELECT user_id  FROM akce_member JOIN akce ON akce_id = akce.id WHERE sequence_id IN (495, 616, 18) AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id NOT IN (SELECT user_id FROM achievement_users WHERE achievement_id = 15) GROUP BY user_id HAVING COUNT(user_id) >= 3');
-		foreach ($members as $member) {
-			$events = $this->database->query('SELECT user_id, akce_id AS event_id, date_end AS `date` FROM akce_member JOIN akce ON akce_id = akce.id WHERE sequence_id IN (495, 616, 18) AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id = ? ORDER BY date_start LIMIT 1 OFFSET 2', $member->user_id);
-			if ($event = $events->fetch()) {
-				$values = iterator_to_array($event);
-				$values['achievement_id'] = 15;
-				$values['date_add'] = new \DateTime();
 				$this->database->query('INSERT INTO achievement_users ?', $values);
 				$this->writeln($output, ...array_values($values));
 			}
