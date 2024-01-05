@@ -1,0 +1,80 @@
+{import '../templates/@svg.latte'}
+
+{if $badgesCount}
+
+<style type="text/css" n:syntax="off">
+    #badges { width: 100%; max-width: 50em;}
+    #badges strong { font-size: large; }
+    #badges table { width: 100%}
+    #badges .badge img { height: 50px; }
+    #badges .gold { filter: sepia(1);}
+    #badges .deactive img, #badges .deactive .progress { opacity: 50%; }
+    #badges .deactive { color: rgba(34, 34, 34, 0.5);}
+    .black #badges .deactive { color: rgba(255, 255, 255, 0.5);}
+
+    #badges #badge-table.inline .badge:hover .lookup { display: none; }
+    #badges .badge:hover .lookup { display: block; width: 200px; height: 200px; border: 1px solid gray; position: absolute; top: 20%; left: 20%; background-color: gray; background-size: 200px; z-index: 2;}
+
+    #badge-table th { position: relative; }
+    #badge-table .progress { height: 1ex; background-color: gray; border-radius: 1em;}
+
+    #badge-table.inline thead, #badge-table.inline .details { display: none }
+    #badge-table.inline .deactive { display: none }
+    #badge-table.inline tr, #badge-table.inline td { display: inline; }
+    #badges #badge-table.inline .badge img { height: 75px; }
+</style>
+
+<h3>{include svg tags} Odznáčky</h3>
+<div id="badges">
+    <div id="badge-table" class="inline">
+        <table>
+            <thead>
+            <tr>
+                <th></th><th>Název a popis</th><th>Procento</th><th>Počet</th><th>Získáno</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach $badges as $badge}
+                {if array_key_exists($badge->id, $achievementsCount)}
+                    {var $percent = $achievementsCount[$badge->id] / $users * 100}
+                {else}
+                    {var $percent = null}
+                {/if}
+                <tr n:class="$badge->achievement_date ? active : deactive">
+                    <th rowspan="2">
+                        <a href="{$baseUrl}/img/badges/{$badge->code}.png" class="badge" title="{$badge->name} - {$badge->description} {if $badge->achievement_date}- {$badge->achievement_date|date:'d.m.Y'}{/if}">
+                            <img src="{$baseUrl}/img/badges/{$badge->code}.png" n:class="(($percent < 10)&&($percent)) ? gold">
+                            <span class="lookup" style="background-image: url('{$baseUrl}/img/badges/{$badge->code}.png')"></span>
+                        </a>
+                    </th>
+                    <td class="details details-text">
+                        <strong>{$badge->name}</strong><br> {$badge->description}
+                    </td>
+                    <td class="details center"><b n:if="$percent" n:class="(($percent < 10)&&($percent)) ? gold">{$percent|round:2}%</b></td>
+                    <td class="details center">{$achievementsCount[$badge->id] ?? null}</td>
+                    <td class="details center"><a n:if="$badge->achievement_date" n:tag-if="$badge->event_id" href="{plink Akce:view, $badge->event_id}">{$badge->achievement_date|date:'d.m.Y'}</a></td>
+                </tr>
+                <tr n:class="(($percent < 10)&&($percent)) ? gold, $badge->achievement_date ? active : deactive">
+                    <td class="details" colspan="4"><div n:if="$percent" class="progress" style="width: {$percent|number:2|noescape}%;"></div></td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+    <p class="center" id="badge-list-button"><button class="buttonLike">{include svg chevron-down} Zobrazit podrobnosti</button></p>
+    <p class="center hide" id="badge-table-button"><button class="buttonLike">{include svg chevron-up} Skrýt podrobnosti</button></p>
+</div>
+
+    <script type="text/javascript" n:syntax="off" n:nonce>
+        document.getElementById('badge-list-button').addEventListener('click', function (){
+            document.getElementById('badge-list-button').classList.add('hide');
+            document.getElementById('badge-table').classList.remove('inline');
+            document.getElementById('badge-table-button').classList.remove('hide');
+        });
+        document.getElementById('badge-table-button').addEventListener('click', function (){
+            document.getElementById('badge-table').classList.add('inline');
+            document.getElementById('badge-list-button').classList.remove('hide');
+            document.getElementById('badge-table-button').classList.add('hide');
+        });
+    </script>
+{/if}
