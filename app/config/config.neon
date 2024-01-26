@@ -208,6 +208,7 @@ services:
 	- App\Model\IdokladService(%idoklad.credentialsFile%, %idoklad.memberNumericSequence%)
 	- App\Model\AttendanceService
 	- App\Model\AchievementsService
+	- App\Model\AddressesService
 	- App\Model\AnketyService
 	- App\Model\RatingService
 	- App\Model\BillingService
@@ -235,6 +236,7 @@ services:
 	- App\Console\MessageCommand(%mail%, %messenger%, %wwwDir%)
 	- App\Console\PeopleCommand
 	- App\Console\AchievementCommand
+	- App\Console\CompleteAddressCommand
 	- App\Console\YoutubeCommand(%google.youtube.channel%)
 	- App\Console\MembershipFeesCommand(clientId: %idoklad.clientId%, clientSecret: %idoklad.clientSecret%)
 
