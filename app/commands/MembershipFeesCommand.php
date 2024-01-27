@@ -128,7 +128,7 @@ final class MembershipFeesCommand extends BaseCommand
 			],
 			'RecurringSetting' => [
 				'CopyCountEnd' => 2,
-				'DateOfStart' => '2023-02-01',
+				'DateOfStart' => $year . '-02-01',
 				'DateOfEnd' => null,
 				'IssueLastDayOfMonth' => false,
 				'RecurrenceCount' => 7,
