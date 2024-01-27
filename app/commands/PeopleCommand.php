@@ -201,8 +201,9 @@ final class PeopleCommand extends BaseCommand {
 		$person->setEmailAddresses($emailAddresses);
 
 		$address = new Google_Service_PeopleService_Address;
-		$address->setStreetAddress($user->ulice);
-		$address->setCity($user->mesto);
+		$address->setCity($user->city);
+		$address->setStreetAddress($user->street . ' ' . $user->street_number);
+		$address->setPostalCode($user->postal_code);
 		$address->setCountry('Česká Republika');
 		$address->setCountryCode('CZ');
 		$address->setType('home');

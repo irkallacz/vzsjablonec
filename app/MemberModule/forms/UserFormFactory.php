@@ -8,14 +8,13 @@
 
 namespace App\MemberModule\Forms;
 
+use App\Form\DropdownInput;
 use App\Model\UserService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\BaseControl;
-use Nette\Forms\Controls\TextInput;
 use Nette\SmartObject;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
-use Tracy\Debugger;
 
 class UserFormFactory {
 	use SmartObject;
@@ -44,19 +43,20 @@ class UserFormFactory {
 
 		$form->addGroup('Osobní data');
 
-		$form->addText('name', 'Jméno', 30)
+		$form->addText('name', 'Jméno', 30, 40)
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Vyplňte %label')
 			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
 
-		$form->addText('surname', 'Příjmení', 30)
+		$form->addText('surname', 'Příjmení', 30, 40)
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Vyplňte %label')
 			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
 
-		$form['date_born'] = new \DateInput('Datum narození');
-		$form['date_born']->setRequired('Vyplňte datum narození')
-			->setDefaultValue(new DateTime());
+		$form->addComponent((new \DateInput('Datum narození'))
+			->setRequired('Vyplňte %label')
+			->setDefaultValue(new DateTime()),
+	'date_born');
 
 		$form->addText('rc', 'Rodné číslo', 11)
 			->setRequired(FALSE)
@@ -117,13 +117,32 @@ class UserFormFactory {
 
 		$form->addGroup('Adresa');
 
-		$form->addText('ulice', 'Ulice', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte ulici');
+		$form->addComponent((new DropdownInput('Město', 50))
+			//->setHtmlAttribute('data-url', $this->link('//Search:city'))
+			->setRequired()
+			->setHtmlId('city'),
+		'city');
 
-		$form->addText('mesto', 'Město', 30)
-			->setAttribute('spellcheck', 'true')
-			->setRequired('Vyplňte %label');
+		$form->addComponent((new DropdownInput('Ulice', 50))
+			//->setHtmlAttribute('data-url', $this->link('//Search:street'))
+			->setRequired('Vyplňte %label')
+			->setHtmlId('street'),
+		'street');
+
+		$form->addText('street_number', 'č.p./č.e.', 8, 15)
+			->setRequired('Vyplňte %label')
+			->addConditionOn($form['street'], Form::FILLED)
+			->addRule(Form::FILLED);
+
+		$form->addComponent((new DropdownInput('PSČ', 8))
+			//->setHtmlAttribute('data-url', $this->link('//Search:psc'))
+			->setHtmlType('number')
+			->setRequired('Vyplňte %label')
+			->setAttribute('size', 8)
+			->setHtmlId('postal-code')
+			->addRule(Form::INTEGER, '%label musí obsahovat jenom čísla')
+			->addRule(Form::RANGE, '%label musí být mezi %d a %d', [10000, 80000]),
+		'postal_code');
 
 		return $form;
 	}

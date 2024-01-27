@@ -34,6 +34,10 @@ class RegisterPresenter extends BasePresenter {
 	protected function createComponentRegisterForm() {
 		$form = $this->userFormFactory->create();
 
+		$form['city']->setHtmlAttribute('data-url', $this->link('//Search:city'));
+		$form['street']->setHtmlAttribute('data-url', $this->link('//Search:street'));
+		$form['postal_code']->setHtmlAttribute('data-url', $this->link('//Search:postalCode'));
+
 		$form['mail']->caption = 'E-mail';
 		$form['telefon']->caption = 'Telefon';
 

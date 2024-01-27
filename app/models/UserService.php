@@ -145,7 +145,7 @@ class UserService extends DatabaseService {
 			'mail2' => $user->mail2,
 			'phone' => $user->telefon,
 			'phone2' => $user->telefon2,
-			'address' => $user->ulice.', '.$user->mesto,
+			'address' => $user->street . ' ' . $user->street_number . ', '. $user->postal_code . ' ' . $user->city,
 			'occupation' => $user->zamestnani,
 		];
 
@@ -350,7 +350,7 @@ class UserService extends DatabaseService {
 	 * @return Selection
 	 */
 	public function searchUsers(string $search, int $userLevel = self::DELETED_LEVEL) {
-		$where = self::prepareSearchParams(['name', 'surname', 'zamestnani', 'mesto', 'ulice', 'mail', 'mail2', 'telefon', 'telefon2'], $search);
+		$where = self::prepareSearchParams(['name', 'surname', 'zamestnani', 'city', 'street', 'mail', 'mail2', 'telefon', 'telefon2'], $search);
 
 		return $this->getUsers($userLevel)->whereOr($where)->order('surname, name');
 	}

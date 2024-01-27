@@ -235,7 +235,7 @@ class UserPresenter extends LayerPresenter {
 			$addresses[] = [
 				'id' => $member->id,
 				'user' => UserService::getFullName($member),
-				'title' => $member->mesto . ' ' . $member->ulice,
+				'title' => $member->street . ' ' . $member->street_number . ', ' . $member->postal_code . ' ' . $member->city,
 			];
 		}
 
@@ -413,6 +413,10 @@ class UserPresenter extends LayerPresenter {
 		$form = $this['editMemberForm'];
 		$form['name']->setAttribute('readonly');
 		$form['surname']->setAttribute('readonly');
+
+		$form['city']->setHtmlAttribute('data-url', $this->link('//Search:city'));
+		$form['street']->setHtmlAttribute('data-url', $this->link('//Search:street'));
+		$form['postal_code']->setHtmlAttribute('data-url', $this->link('//Search:postalCode'));
 
 		$form->setCurrentGroup($form->getGroups()[' ']);
 

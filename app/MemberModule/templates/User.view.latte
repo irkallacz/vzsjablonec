@@ -173,10 +173,10 @@
 	{/if ($user->isInRole('editor')) and (isset($registration))}
 
     {if $user->isInRole('member')}
-		<h3>{include svg map-marker} Adresa {include mapy $member->ulice.' '.$member->mesto}</h3>
+		<h3>{include svg map-marker} Adresa {include mapy $member->street . ' ' . $member->street_number . ', ' . $member->postal_code . ' ' . $member->city}</h3>
 		<address class="out">
-			{$member->ulice}<br>
-			{$member->mesto}
+			{$member->street} {$member->street_number}<br>
+			{$member->postal_code} {$member->city}
 		</address>
 	{/if}
 
