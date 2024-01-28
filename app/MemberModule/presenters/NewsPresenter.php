@@ -5,7 +5,7 @@ namespace App\MemberModule\Presenters;
 use App\Model;
 use Nette\Utils\DateTime;
 
-class NewsPresenter extends LayerPresenter{
+class NewsPresenter extends LayerPresenter {
 
         /** @var Model\AkceService @inject */
         public $akceService;
@@ -22,7 +22,10 @@ class NewsPresenter extends LayerPresenter{
         /** @var Model\AnketyService @inject */
         public $anketyService;
 
-		/** @var Model\MessageService @inject */
+		/** @var Model\AchievementsService @inject */
+		public $achievementsService;
+
+	/** @var Model\MessageService @inject */
 		public $messageService;
 
 		/** @var Model\GalleryService @inject */
@@ -60,6 +63,8 @@ class NewsPresenter extends LayerPresenter{
                 $this->template->dokumentyList = $this->dokumentyService->getDokumentyNews($datum);
                 $this->template->anketyList = $this->anketyService->getAnketyNews($datum);
                 $this->template->hlasovaniList = $this->hlasovaniService->getHlasovaniNews($datum, $this->user->isInRole('board'));
+
+                $this->template->badgesList = $this->achievementsService->getBadgesNews($datum, $user_id);
 
                 $this->template->ratingList = $this->akceService->getRatingNews($datum, $user_id);
 

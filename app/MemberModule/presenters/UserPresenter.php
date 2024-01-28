@@ -152,6 +152,12 @@ class UserPresenter extends LayerPresenter {
 		$this->template->showEvents = $showEvents;
 	}
 
+	public function renderAchievements()
+	{
+		$this->template->achievements = $this->achievementsService->getAchievements()->order('name');
+		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->count('id');
+	}
+
 	/**
 	 * @return AchievementsControl
 	 */

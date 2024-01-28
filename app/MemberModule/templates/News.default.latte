@@ -4,6 +4,7 @@
 	h3 { margin-bottom: 1ex; }
 	.logged { color: #C22; }
 	.files li { list-style: none;}
+	.achievement img { vertical-align: middle;}
 </style>
 
 {/block}
@@ -73,6 +74,12 @@
 	{/if isset($video)}
 
 	{if $user->isInRole('member')}
+
+		{if}<h3>Získali jste <a n:href="User:profile#badges">odznaky</a></h3>
+			<ol class="news" n:inner-foreach="$badgesList as $badge">
+				<li class="achievement"><strong>{$badge->achievement->name}</strong> <img src="{$baseUrl}/img/badges/{$badge->achievement->code}.png" height="50" title="{$badge->achievement->description}"></li>
+			</ol>
+		{/if isset($badge)}
 
 		{if}<h3>Ankety</h3>
 		<ol class="news" n:inner-foreach="$anketyList as $anketa">

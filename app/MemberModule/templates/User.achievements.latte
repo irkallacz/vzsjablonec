@@ -1,0 +1,57 @@
+{block head}
+<style type="text/css" n:syntax="off">
+    #badges { width: 100%; max-width: 50em; margin-top: 1em}
+    #badges strong { font-size: large; }
+    #badges table { width: 100%}
+    #badges .badge img { height: 50px; }
+    #badges .gold { filter: sepia(1);}
+    #badges .deactive img, #badges .deactive .progress { opacity: 50%; }
+    #badges .deactive { color: rgba(34, 34, 34, 0.5);}
+    .black #badges .deactive { color: rgba(255, 255, 255, 0.5);}
+
+    #badges #badge-table.inline .badge:hover .lookup { display: none; }
+    #badges .badge:hover .lookup { display: block; width: 200px; height: 200px; border: 1px solid gray; position: absolute; top: 20%; left: 20%; background-color: gray; background-size: 200px; z-index: 2;}
+
+    #badge-table th { position: relative; }
+    #badge-table .progress { height: 1ex; background-color: gray; border-radius: 1em;}
+</style>
+{/block}
+
+<h1 n:block="title">Odznáčky</h1>
+
+{block content}
+<div id="badges">
+    <div id="badge-table">
+        <table>
+            <thead>
+            <tr>
+                <th></th><th>Název a popis</th><th>Počet členů</th><th>Procento</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach $achievements as $achievement}
+                {continueIf (!$achievement->enable)&&(!$user->isInRole('admin'))}
+
+                {var $count = $achievement->related('achievement_users')->count('id')}
+                {var $percent = $count / $users * 100}
+                <tr n:class="$achievement->enable ? active : deactive">
+                    <th rowspan="2">
+                        <a href="{$baseUrl}/img/badges/{$achievement->code}.png" class="badge" title="{$achievement->name} - {$achievement->description}">
+                            <img src="{$baseUrl}/img/badges/{$achievement->code}.png" n:class="(($percent < 10)&&($percent)) ? gold">
+                            <span class="lookup" style="background-image: url('{$baseUrl}/img/badges/{$achievement->code}.png')"></span>
+                        </a>
+                    </th>
+                    <td class="details details-text">
+                        <strong>{$achievement->name}</strong><br> {$achievement->description}
+                    </td>
+                    <td class="details center">{$count}</td>
+                    <td class="details center"><b n:if="$percent" n:class="(($percent < 10)&&($percent)) ? gold">{$percent|round:2}%</b></td>
+                </tr>
+                <tr n:class="(($percent < 10)&&($percent)) ? gold, $achievement->enable ? active : deactive">
+                    <td class="details" colspan="4"><div n:if="$percent" class="progress" style="width: {$percent|number:2|noescape}%;"></div></td>
+                </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>

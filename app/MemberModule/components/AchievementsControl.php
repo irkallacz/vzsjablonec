@@ -41,9 +41,9 @@ final class AchievementsControl extends LayerControl
 	{
 		$this->template->setFile(__DIR__ . '/AchievementsControl.latte');
 
-		$this->template->badgesCount = $this->achievementsService->getBadges($this->memberId)->count('achievement_id');
+		$this->template->badgesCount = $this->achievementsService->getBadgesForUser($this->memberId)->count('achievement_id');
 		$this->template->badges = $this->achievementsService->getBadgesAchievements($this->memberId);
-		$this->template->achievementsCount = $this->achievementsService->getAchievements()->fetchPairs('id', 'pocet');
+		$this->template->achievementsCount = $this->achievementsService->getBadgesCount()->fetchPairs('id', 'pocet');
 		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->count('id');
 
 		$this->template->render();
