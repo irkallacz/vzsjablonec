@@ -105,7 +105,7 @@ final class MembershipFeesCommand extends BaseCommand
 					[
 						'Amount' => 1,
 						'ItemType' => 0,
-						'Name' => 'Členské příspěvky za pololetí ' . $year,
+						'Name' => 'Členské příspěvky za pololetí ' . $year . ' - plavání a další sportovní aktivity',
 						'PriceType' => 1,
 						'PriceListItemId' => null,
 						'UnitPrice' => $amount,
