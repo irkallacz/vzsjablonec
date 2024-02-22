@@ -203,7 +203,7 @@ final class PeopleCommand extends BaseCommand {
 		$address = new Google_Service_PeopleService_Address;
 		$address->setCity($user->city);
 		$address->setStreetAddress($user->street . ' ' . $user->street_number);
-		$address->setPostalCode($user->postal_code);
+		//$address->setPostalCode($user->postal_code);
 		$address->setCountry('Česká Republika');
 		$address->setCountryCode('CZ');
 		$address->setType('home');
