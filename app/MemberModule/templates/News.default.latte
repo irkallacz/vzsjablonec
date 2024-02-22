@@ -77,7 +77,10 @@
 
 		{if}<h3>Získali jste <a n:href="User:profile#badges">odznaky</a></h3>
 			<ol class="news" n:inner-foreach="$badgesList as $badge">
-				<li class="achievement"><strong>{$badge->achievement->name}</strong> <img src="{$baseUrl}/img/badges/{$badge->achievement->code}.png" height="50" title="{$badge->achievement->description}"></li>
+				<li class="achievement">
+					<strong>{$badge->achievement->name}</strong>
+					<img src="{$baseUrl}/img/badges/{$badge->achievement->code}.png" alt="{$badge->achievement->code}" height="50" title="{$badge->achievement->description|format:$badge->achievement->threshold}">
+				</li>
 			</ol>
 		{/if isset($badge)}
 

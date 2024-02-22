@@ -35,27 +35,23 @@
             </thead>
             <tbody>
             {foreach $badges as $badge}
-                {if array_key_exists($badge->id, $achievementsCount)}
-                    {var $percent = $achievementsCount[$badge->id] / $users * 100}
-                {else}
-                    {var $percent = null}
-                {/if}
-                <tr n:class="$badge->achievement_date ? active : deactive">
+                {var $percent = $badge->progress / $badge->threshold * 100}
+                <tr n:class="$badge->date_finish ? active : deactive">
                     <th rowspan="2">
-                        <a href="{$baseUrl}/img/badges/{$badge->code}.png" class="badge" title="{$badge->name} - {$badge->description} {if $badge->achievement_date}- {$badge->achievement_date|date:'d.m.Y'}{/if}">
-                            <img src="{$baseUrl}/img/badges/{$badge->code}.png" n:class="(($percent < 10)&&($percent)) ? gold">
+                        <a href="{$baseUrl}/img/badges/{$badge->code}.png" class="badge" title="{$badge->name} - {$badge->description|format:$badge->threshold} {if $badge->date_finish}- {$badge->date_finish|date:'d.m.Y'}{/if}">
+                            <img src="{$baseUrl}/img/badges/{$badge->code}.png" n:class="in_array($badge->id, $goldies) ? gold">
                             <span class="lookup" style="background-image: url('{$baseUrl}/img/badges/{$badge->code}.png')"></span>
                         </a>
                     </th>
                     <td class="details details-text">
-                        <strong>{$badge->name}</strong><br> {$badge->description}
+                        <strong>{$badge->name}</strong><br> {$badge->description|format:$badge->threshold}
                     </td>
-                    <td class="details center"><b n:if="$percent" n:class="(($percent < 10)&&($percent)) ? gold">{$percent|round:2}%</b></td>
-                    <td class="details center">{$achievementsCount[$badge->id] ?? null}</td>
-                    <td class="details center"><a n:if="$badge->achievement_date" n:tag-if="$badge->event_id" href="{plink Akce:view, $badge->event_id}">{$badge->achievement_date|date:'d.m.Y'}</a></td>
+                    <td class="details center"><b n:if="$percent">{$percent|round:2}%</b></td>
+                    <td class="details center">{$badge->progress}</td>
+                    <td class="details center"><a n:if="$badge->date_finish" n:tag-if="$badge->event_id" href="{plink Akce:view, $badge->event_id}">{$badge->date_finish|date:'d.m.Y'}</a></td>
                 </tr>
-                <tr n:class="(($percent < 10)&&($percent)) ? gold, $badge->achievement_date ? active : deactive">
-                    <td class="details" colspan="4"><div n:if="$percent" class="progress" style="width: {$percent|number:2|noescape}%;"></div></td>
+                <tr n:class="$badge->date_finish ? active : deactive">
+                    <td class="details" colspan="4"><div n:if="!$badge->date_finish" class="progress" style="width: {$percent|number:2|noescape}%;"></div></td>
                 </tr>
             {/foreach}
             </tbody>

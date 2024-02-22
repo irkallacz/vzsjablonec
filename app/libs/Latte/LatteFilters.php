@@ -156,6 +156,11 @@ class LatteFilters {
         return trim($string);     	
     }
 
+    public static function format(string $text, ...$parameters): string
+	{
+		return sprintf($text, ...$parameters);
+	}
+
 
 	/**
 	 * @return \Texy\Texy

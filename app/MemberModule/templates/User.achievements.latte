@@ -32,17 +32,17 @@
             {foreach $achievements as $achievement}
                 {continueIf (!$achievement->enable)&&(!$user->isInRole('admin'))}
 
-                {var $count = $achievement->related('achievement_users')->count('id')}
+                {var $count = $achievement->related('achievement_users')->where('date_finish IS NOT NULL')->count('id')}
                 {var $percent = $count / $users * 100}
                 <tr n:class="$achievement->enable ? active : deactive">
                     <th rowspan="2">
-                        <a href="{$baseUrl}/img/badges/{$achievement->code}.png" class="badge" title="{$achievement->name} - {$achievement->description}">
+                        <a href="{$baseUrl}/img/badges/{$achievement->code}.png" class="badge" title="{$achievement->name} - {$achievement->description|format:$achievement->threshold}">
                             <img src="{$baseUrl}/img/badges/{$achievement->code}.png" n:class="(($percent < 10)&&($percent)) ? gold">
                             <span class="lookup" style="background-image: url('{$baseUrl}/img/badges/{$achievement->code}.png')"></span>
                         </a>
                     </th>
                     <td class="details details-text">
-                        <strong>{$achievement->name}</strong><br> {$achievement->description}
+                        <strong>{$achievement->name}</strong><br> {$achievement->description|format:$achievement->threshold}
                     </td>
                     <td class="details center">{$count}</td>
                     <td class="details center"><b n:if="$percent" n:class="(($percent < 10)&&($percent)) ? gold">{$percent|round:2}%</b></td>

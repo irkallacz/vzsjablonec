@@ -152,6 +152,9 @@ class UserPresenter extends LayerPresenter {
 		$this->template->showEvents = $showEvents;
 	}
 
+	/**
+	 * @allow(editor)
+	 */
 	public function renderAchievements()
 	{
 		$this->template->achievements = $this->achievementsService->getAchievements()->order('name');

@@ -43,8 +43,9 @@ final class AchievementsControl extends LayerControl
 
 		$this->template->badgesCount = $this->achievementsService->getBadgesForUser($this->memberId)->count('achievement_id');
 		$this->template->badges = $this->achievementsService->getBadgesAchievements($this->memberId);
-		$this->template->achievementsCount = $this->achievementsService->getBadgesCount()->fetchPairs('id', 'pocet');
-		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->count('id');
+
+		$users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->count('id');
+		$this->template->goldies = $this->achievementsService->getBadgesCount()->having('COUNT(`id`) < ?', $users / 10)->fetchPairs(null, 'achievement_id');
 
 		$this->template->render();
 	}
