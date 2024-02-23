@@ -121,7 +121,7 @@ final class AchievementCommand extends BaseCommand
 		foreach ($members as $member) {
 			//$this->writeln($output, $member->user_id);
 
-			$attendances = $this->database->query('SELECT attendance_id, `date` FROM attendance_user JOIN attendance ON attendance_id = attendance.id WHERE user_id = ? ORDER BY `date`', $member->user_id);
+			$attendances = $this->database->query('SELECT attendance_id, `date` FROM attendance_user JOIN attendance ON attendance_id = attendance.id WHERE user_id = ? ORDER BY `date`', $member->user_id)->fetchAll();
 
 			$success = false;
 			$count = 1;
@@ -161,7 +161,7 @@ final class AchievementCommand extends BaseCommand
 				//spočítat progress od posledního tréninku zpět
 				$members = $this->database->query('SELECT user_id FROM attendance_user WHERE user_id NOT IN (SELECT user_id FROM achievement_users WHERE achievement_id = ?) AND attendance_id = ? GROUP BY user_id', $achievement->id, $last_attendance->id);
 				foreach ($members as $member) {
-					$attendances = $this->database->query('SELECT attendance_id, `date` FROM attendance_user JOIN attendance ON attendance_id = attendance.id WHERE user_id = ? ORDER BY `date` DESC', $member->user_id);
+					$attendances = $this->database->query('SELECT attendance_id, `date` FROM attendance_user JOIN attendance ON attendance_id = attendance.id WHERE user_id = ? ORDER BY `date` DESC', $member->user_id)->fetchAll();
 					$count = 1;
 					foreach ($iterator = new CachingIterator($attendances) as $attendance) {
 						if ($attendance->date->format('N') == '3') {
