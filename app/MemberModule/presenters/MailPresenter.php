@@ -49,7 +49,8 @@ class MailPresenter extends LayerPresenter {
 	 */
 	public function renderAdd(array $recipients = [], int $eventId = NULL) {
 		$users = $this->userService->getUsers()->order('surname,name')->fetchPairs('id');
-		$this->template->members = $users;
+		$this->template->users = $users;
+
 
 		/** @var Form $form */
 		$form = $this['mailForm'];
@@ -223,16 +224,29 @@ class MailPresenter extends LayerPresenter {
 		$form->addButton('open')
 			->setOmitted();
 
-		$form->addSubmit('choose', 'vybrat')
+		$form->addButton('choose', 'vybrat')
 			->setAttribute('class', 'buttonLike')
-			->setValidationScope([])
-			->onClick[] = [$this, 'mailFormGroupChosen'];
+			->setHtmlId('choose-group')
+			->setOmitted();
 
-		$form->addSelect('group', 'Skupina', [
-			'members' => 'Členové',
-			'adults' => 'Dospělí',
-			'children' => 'Mládež',
-		]);
+		$selection = $this->userService->getUsers(UserService::MEMBER_LEVEL);
+		$threshold = new \DateTime('-18 years');
+
+		$adults = clone $selection;
+		$adults = $adults->where('date_born <= ? ', $threshold);
+
+		$children = clone $selection;
+		$children = $children->where('date_born > ? ', $threshold);
+
+		$groups = [
+			 'členové' => Json::encode($selection->fetchPairs(null, 'id')),
+			 'dospělí' => Json::encode($adults->fetchPairs(null, 'id')),
+			 'mládež' => Json::encode($children->fetchPairs(null, 'id')),
+		];
+
+		$form->addSelect('group', 'Skupina', array_flip($groups))
+			->setHtmlId('group')
+			->setOmitted();
 
 		$form->addCheckboxList('users', 'Příjemci')
 			->setItems($this->userService->getUsersArray(UserService::USER_LEVEL));
@@ -241,7 +255,6 @@ class MailPresenter extends LayerPresenter {
 			->setRequired('Vyplňte %label')
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'max');
-
 
 		$form->addUpload('file', 'Příloha')
 			->setAttribute('class', 'max')
@@ -310,32 +323,6 @@ class MailPresenter extends LayerPresenter {
 		$this->flashMessage('Váš mail bude odeslán ' . LatteFilters::timeAgoInWords($next));
 
 		if (isset($akceId)) $this->redirect('Akce:view', $akceId); else $this->redirect('Mail:default');
-	}
-
-	/**
-	 * @param Button $form
-	 * @param ArrayHash $values
-	 * @allow(member)
-	 */
-	public function mailFormGroupChosen(Button $form, ArrayHash $values) {
-		$recipients = [];
-
-		if ($values->group) {
-			$members = $this->userService->getUsers(UserService::MEMBER_LEVEL);
-			$threshold = new \DateTime('-18 years');
-
-			if ($values->group == 'adults') {
-				$members->where('date_born < ?', $threshold);
-			}
-
-			if ($values->group == 'children') {
-				$members->where('date_born > ?', $threshold);
-			}
-
-			$recipients = $members->fetchPairs(null, 'id');
-		}
-
-		$this->redirect('add', ['recipients' => $recipients]);
 	}
 
 	/**

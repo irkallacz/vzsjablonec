@@ -30,23 +30,6 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 		baseDir: {$baseUrl}+'/texyla',
 		previewPath: {link texyPreview}
 	});
-
-	$(function() {
-		$('.texyla').textareaAutoSize();
-		$('.texyla').texyla(forum);
-
-		$('#openButton').click(function(){
-			if($('#adresati').is(":visible")) {
-				$('#frm-mailForm-to').val('');
-				$('#adresati .label input:checked').each(function(index) {
-					$('#frm-mailForm-to').val($('#frm-mailForm-to').val()+this.getAttribute('data-mail')+',');
-				});
-			}
-			$('#adresati').slideToggle('fast');
-		})
-
-		$('#frm-mailForm').areYouSure();
-    });    
 </script>
 {/block}
 
@@ -67,9 +50,12 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 	<div class="right">
 		{label group /} {input group} {input choose}
 	</div>
-	{foreach $members as $member}
+	{foreach $users as $member}
 		{if $iterator->isFirst()}<div class="float-left">{/if}
-		<div class="label"><input n:name="users:$member->id" class="member" {if !isset($isAkce)}data-mail="{$member->mail}"{/if}> <label n:name="users:$member->id">{$member->surname} {$member->name}</label></div>
+		<div class="label">
+			<input n:name="users:$member->id" class="member" {if !isset($isAkce)}data-mail="{$member->mail}"{/if}>
+			<label n:name="users:$member->id">{$member->surname} {$member->name}</label>
+		</div>
 		{if !($iterator->getCounter()%$pocet)} </div><div class="float-left"> {/if}
 	{/foreach}
 </fieldset>
@@ -81,5 +67,31 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 </table>
 <p>{input ok}</p>
 {/form}
+
+<script type="text/javascript" n:nonce>
+	document.getElementById('choose-group').addEventListener('click', function () {
+		const users = JSON.parse(document.getElementById('group').value);
+		for (const user of users) {
+			document.getElementById('frm-mailForm-users-' + user).checked = true;
+		}
+	});
+</script>
+
+<script type="text/javascript" n:nonce>
+	$('.texyla').textareaAutoSize();
+	$('.texyla').texyla(forum);
+
+	$('#openButton').click(function(){
+		if($('#adresati').is(":visible")) {
+			$('#frm-mailForm-to').val('');
+			$('#adresati .label input:checked').each(function(index) {
+				$('#frm-mailForm-to').val($('#frm-mailForm-to').val()+this.getAttribute('data-mail')+',');
+			});
+		}
+		$('#adresati').slideToggle('fast');
+	})
+
+	$('#frm-mailForm').areYouSure();
+</script>
 
 {/block}
