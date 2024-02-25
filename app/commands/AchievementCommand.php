@@ -35,7 +35,7 @@ final class AchievementCommand extends BaseCommand
 
 	protected function configure() {
 		$this->setName('cron:achievement')
-			->setDescription('Get documents and dir structure from Google Drive');
+			->setDescription('Count requirements and progress for members achievements');
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
