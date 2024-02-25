@@ -12,7 +12,9 @@ use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls\Button;
 use Nette\Mail\IMailer;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 use Tracy\Debugger;
@@ -221,6 +223,17 @@ class MailPresenter extends LayerPresenter {
 		$form->addButton('open')
 			->setOmitted();
 
+		$form->addSubmit('choose', 'vybrat')
+			->setAttribute('class', 'buttonLike')
+			->setValidationScope([])
+			->onClick[] = [$this, 'mailFormGroupChosen'];
+
+		$form->addSelect('group', 'Skupina', [
+			'members' => 'Členové',
+			'adults' => 'Dospělí',
+			'children' => 'Mládež',
+		]);
+
 		$form->addCheckboxList('users', 'Příjemci')
 			->setItems($this->userService->getUsersArray(UserService::USER_LEVEL));
 
@@ -240,19 +253,19 @@ class MailPresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla');
 
-		$form->addSubmit('ok', 'Odeslat');
-		$form->onSuccess[] = [$this, 'mailFormSubmitted'];
+		$form->addSubmit('ok', 'Odeslat')
+			->onClick[] = [$this, 'mailFormSubmitted'];
 
 		return $form;
 	}
 
 	/**
-	 * @param Form $form
+	 * @param Button $button
+	 * @param ArrayHash $values
 	 * @allow(member)
-	 * @throws AbortException
 	 */
-	public function mailFormSubmitted(Form $form) {
-		$values = $form->getValues();
+	public function mailFormSubmitted(Button $button, ArrayHash $values) {
+		$form = $this['mailForm'];
 		$parameters = [];
 
 		$message = new MessageService\Message();
@@ -271,8 +284,6 @@ class MailPresenter extends LayerPresenter {
 				$message->setType(MessageService\Message::CUSTOM_MESSAGE_TYPE);
 			}
 		}
-
-
 
 		$members->where('NOT user.id', $this->user->id);
 		$message->setRecipients($members);
@@ -299,6 +310,32 @@ class MailPresenter extends LayerPresenter {
 		$this->flashMessage('Váš mail bude odeslán ' . LatteFilters::timeAgoInWords($next));
 
 		if (isset($akceId)) $this->redirect('Akce:view', $akceId); else $this->redirect('Mail:default');
+	}
+
+	/**
+	 * @param Button $form
+	 * @param ArrayHash $values
+	 * @allow(member)
+	 */
+	public function mailFormGroupChosen(Button $form, ArrayHash $values) {
+		$recipients = [];
+
+		if ($values->group) {
+			$members = $this->userService->getUsers(UserService::MEMBER_LEVEL);
+			$threshold = new \DateTime('-18 years');
+
+			if ($values->group == 'adults') {
+				$members->where('date_born < ?', $threshold);
+			}
+
+			if ($values->group == 'children') {
+				$members->where('date_born > ?', $threshold);
+			}
+
+			$recipients = $members->fetchPairs(null, 'id');
+		}
+
+		$this->redirect('add', ['recipients' => $recipients]);
 	}
 
 	/**

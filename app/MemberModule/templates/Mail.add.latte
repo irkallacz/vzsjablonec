@@ -20,28 +20,18 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 #adresati p { clear: both; padding-top: 1em; margin-bottom: 0px;}
 </style>
 <script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" src="{$baseUrl}/js/jquery.shortcuts.min.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
 
 {control texylaJs}
 
 <script type="text/javascript" n:nonce>
-	$.Shortcuts.add({
-	    	mask: 'Ctrl+A',
-	    	handler: function() {
-        		if($('#adresati').is(":visible")) $('#adresati input').attr('checked','true');
-    		}
-	});
-
 	$.texyla.setDefaults({
 		baseDir: {$baseUrl}+'/texyla',
 		previewPath: {link texyPreview}
 	});
 
 	$(function() {
-        $.Shortcuts.start();
-
 		$('.texyla').textareaAutoSize();
 		$('.texyla').texyla(forum);
 
@@ -73,11 +63,15 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 <table id="mail">
 	<tr><th>{label to /}</th><td class="no-wrap">{input to} {if !isset($isAkce)}<button id="openButton" class="buttonLike" n:name="open">{include svg group}</button>{/if}</td></tr>
 <tr><td colspan="2">
-<fieldset id="adresati" class="hide" n:inner-foreach="$members as $member">
-    {if $iterator->isFirst()}<div class="float-left">{/if}
+<fieldset id="adresati" class="hide">
+	<div class="right">
+		{label group /} {input group} {input choose}
+	</div>
+	{foreach $members as $member}
+		{if $iterator->isFirst()}<div class="float-left">{/if}
 		<div class="label"><input n:name="users:$member->id" class="member" {if !isset($isAkce)}data-mail="{$member->mail}"{/if}> <label n:name="users:$member->id">{$member->surname} {$member->name}</label></div>
-    {if !($iterator->getCounter()%$pocet)} </div><div class="float-left"> {/if}
-	{if $iterator->isLast()}</div><p><i>Pro výběr všech položek využijte klávesovou zkratku Ctrl + A</i></p>{/if}
+		{if !($iterator->getCounter()%$pocet)} </div><div class="float-left"> {/if}
+	{/foreach}
 </fieldset>
 </td></tr>
 <tr><th>{label subject /}</th><td>{input subject}</td></tr>
