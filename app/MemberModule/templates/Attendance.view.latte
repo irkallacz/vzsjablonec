@@ -6,11 +6,27 @@
         table#items .author { padding: 0.5ex;}
         table#items a.logged { color: #C22 }
     </style>
+
+    <script type="text/javascript" src="{$baseUrl}/js/confirm.js"></script>
 {/block}
 
 <h1 n:block="title">Docházka</h1>
 
 {block #content}
+
+	<p>
+		<a n:tag-if="$next" n:href="view $next->id">
+			<span n:class="buttonLike, float-right, $next ?: gray">Další {include svg forward}</span>
+		</a>
+		<a n:tag-if="$prev" n:href="view $prev->id">
+			<span n:class="buttonLike, $prev ?: gray">{include svg backward} Předchozí</span>
+		</a>
+	</p>
+
+	<p class="float-right" n:if="$user->isInRole('admin')">
+		<a class="buttonLike confirm" data-query="Opravdu chcete tuto docházku tréninku smazat?" n:href="delete, $session->id">{include svg trash} smazat</a>
+	</p>
+
     <p>Docházka tréninku <strong>{$session->date|date:'%A %d.%m.%Y'} {$session->from|date:'%H:%I'}-{$session->to|date:'%H:%I'}</strong></p>
 
     <table id="items">

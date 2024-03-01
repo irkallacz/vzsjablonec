@@ -45,5 +45,22 @@ final class AttendancePresenter extends LayerPresenter
 		$this->template->session = $session;
 		$this->template->events = $this->akceService->getAkceByDate($session->date);
 		$this->template->attendances = $this->attendanceService->getAttendanceForSession($id);
+
+		$this->template->prev = $this->attendanceService->getPrevSession($session->date);
+		$this->template->next = $this->attendanceService->getNextSession($session->date);
+	}
+
+	/**
+	 * @allow(admin)
+	 */
+	public function actionDelete(int $id)
+	{
+		if (!($session = $this->attendanceService->getSessions()->get($id))) {
+			throw new BadRequestException('Training session does not exists');
+		}
+
+		$session->delete();
+		$this->flashMessage('Docházka tréninku byla smazána');
+		$this->redirect('default');
 	}
 }

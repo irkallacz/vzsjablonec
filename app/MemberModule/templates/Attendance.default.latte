@@ -28,7 +28,7 @@
 				{if $count}{$count}{else}&nbsp;{/if}
 			</td>
 			<td class="col title">
-				<a n:tag-if="$count" n:href="Attendance:view $session->id">
+				<a n:tag-if="$count or $user->isInRole('admin')" n:href="Attendance:view $session->id">
 					<strong>
 						{$session->date|date:'%A %d.%m.%Y'}
 					</strong>
