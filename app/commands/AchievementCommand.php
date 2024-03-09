@@ -62,6 +62,30 @@ final class AchievementCommand extends BaseCommand
 		$this->writeln($output, '<info>Lovec lebek</info>');
 		$this->eventMember(15, $output, [495, 616, 18]);
 
+		//diver
+		$this->writeln($output, '<info>Podvodník</info>');
+		$achievement = $this->achievementsService->getAchievementById(9);
+		$members = $this->database->query('SELECT member_id AS user_id, date_start AS `date_finish` FROM `qualification_members` WHERE `qualification_id` IN (2,3) AND `member_id` NOT IN (SELECT `user_id` FROM `achievement_users` WHERE `achievement_id` = ? AND `date_finish` IS NOT NULL) GROUP BY member_id', $achievement->id);
+		foreach ($members as $member) {
+			$this->saveResult(iterator_to_array($member), $achievement, $output, true);
+		}
+
+		//boat
+		$this->writeln($output, '<info>Lodník</info>');
+		$achievement = $this->achievementsService->getAchievementById(10);
+		$members = $this->database->query('SELECT member_id AS user_id, date_start AS `date_finish` FROM `qualification_members` WHERE `type` LIKE "%M%" AND `qualification_id` = 1 AND `type` NOT LIKE "%M20%" AND `member_id` NOT IN (SELECT `user_id` FROM `achievement_users` WHERE `achievement_id` = ? AND `date_finish` IS NOT NULL) GROUP BY member_id', $achievement->id);
+		foreach ($members as $member) {
+			$this->saveResult(iterator_to_array($member), $achievement, $output, true);
+		}
+
+		//sail
+		$this->writeln($output, '<info>Plachťák</info>');
+		$achievement = $this->achievementsService->getAchievementById(14);
+		$members = $this->database->query('SELECT member_id AS user_id, date_start AS `date_finish` FROM `qualification_members` WHERE RIGHT(`type`, 1) = "S" AND `qualification_id` = 1 AND `type` NOT LIKE "%S20%" AND `member_id` NOT IN (SELECT `user_id` FROM `achievement_users` WHERE `achievement_id` = ? AND `date_finish` IS NOT NULL) GROUP BY member_id', $achievement->id);
+		foreach ($members as $member) {
+			$this->saveResult(iterator_to_array($member), $achievement, $output, true);
+		}
+
 		//officer
 		$this->writeln($output, '<info>Vyšší šarže</info>');
 		$achievement = $this->achievementsService->getAchievementById(4);
