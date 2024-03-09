@@ -56,7 +56,7 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 			<input n:name="users:$member->id" class="member" {if !isset($isAkce)}data-mail="{$member->mail}"{/if}>
 			<label n:name="users:$member->id">{$member->surname} {$member->name}</label>
 		</div>
-		{if !($iterator->getCounter()%$pocet)} </div><div class="float-left"> {/if}
+		{if !($iterator->getCounter()%(count($users)/3))} </div><div class="float-left"> {/if}
 	{/foreach}
 </fieldset>
 </td></tr>

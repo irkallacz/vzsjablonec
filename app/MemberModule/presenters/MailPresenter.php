@@ -51,12 +51,8 @@ class MailPresenter extends LayerPresenter {
 		$users = $this->userService->getUsers()->order('surname,name')->fetchPairs('id');
 		$this->template->users = $users;
 
-
 		/** @var Form $form */
 		$form = $this['mailForm'];
-		if (!$form->isSubmitted()) {
-			$this->template->pocet = ceil(count($users) / 3);
-		}
 
 		if (!empty($recipients)) {
 			$to = [];
