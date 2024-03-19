@@ -73,7 +73,7 @@ final class AchievementCommand extends BaseCommand
 		//boat
 		$this->writeln($output, '<info>Lodník</info>');
 		$achievement = $this->achievementsService->getAchievementById(10);
-		$members = $this->database->query('SELECT member_id AS user_id, date_start AS `date_finish` FROM `qualification_members` WHERE `type` LIKE "%M%" AND `qualification_id` = 1 AND `type` NOT LIKE "%M20%" AND `member_id` NOT IN (SELECT `user_id` FROM `achievement_users` WHERE `achievement_id` = ? AND `date_finish` IS NOT NULL) GROUP BY member_id', $achievement->id);
+		$members = $this->database->query('SELECT member_id AS user_id, date_start AS `date_finish` FROM `qualification_members` WHERE `qualification_id` = 1 AND `type` LIKE "%M%" AND `type` NOT LIKE "%M20%" AND `member_id` NOT IN (SELECT `user_id` FROM `achievement_users` WHERE `achievement_id` = ? AND `date_finish` IS NOT NULL) GROUP BY member_id', $achievement->id);
 		foreach ($members as $member) {
 			$this->saveResult(iterator_to_array($member), $achievement, $output, true);
 		}
@@ -81,7 +81,7 @@ final class AchievementCommand extends BaseCommand
 		//sail
 		$this->writeln($output, '<info>Plachťák</info>');
 		$achievement = $this->achievementsService->getAchievementById(14);
-		$members = $this->database->query('SELECT member_id AS user_id, date_start AS `date_finish` FROM `qualification_members` WHERE RIGHT(`type`, 1) = "S" AND `qualification_id` = 1 AND `type` NOT LIKE "%S20%" AND `member_id` NOT IN (SELECT `user_id` FROM `achievement_users` WHERE `achievement_id` = ? AND `date_finish` IS NOT NULL) GROUP BY member_id', $achievement->id);
+		$members = $this->database->query('SELECT member_id AS user_id, date_start AS `date_finish` FROM `qualification_members` WHERE `qualification_id` = 1 AND `type` LIKE "%S%" AND `type` NOT LIKE "%S20%" AND `member_id` NOT IN (SELECT `user_id` FROM `achievement_users` WHERE `achievement_id` = ? AND `date_finish` IS NOT NULL) GROUP BY member_id', $achievement->id);
 		foreach ($members as $member) {
 			$this->saveResult(iterator_to_array($member), $achievement, $output, true);
 		}
