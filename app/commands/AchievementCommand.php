@@ -62,6 +62,10 @@ final class AchievementCommand extends BaseCommand
 		$this->writeln($output, '<info>Lovec lebek</info>');
 		$this->eventMember(15, $output, [495, 616, 18]);
 
+		//agent
+		$this->writeln($output, '<info>Agent</info>');
+		$this->eventMember(27, $output, [34]);
+
 		//diver
 		$this->writeln($output, '<info>Podvodník</info>');
 		$achievement = $this->achievementsService->getAchievementById(9);
