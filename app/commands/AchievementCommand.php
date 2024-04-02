@@ -276,9 +276,9 @@ final class AchievementCommand extends BaseCommand
 		//$members = $this->database->query('SELECT user_id FROM akce_member JOIN akce ON akce_id = akce.id WHERE sequence_id = 899 AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id NOT IN (SELECT user_id FROM achievement_users WHERE achievement_id = 3) GROUP BY user_id HAVING COUNT(user_id) >= 3');
 		foreach ($members as $member) {
 			if ($member->progress >= $achievement->threshold) {
-				$events = $this->achievementsService->getEventForAchievement($member->user_id, $achievement->threshold, $sequence, $events);
+				$items = $this->achievementsService->getEventForAchievement($member->user_id, $achievement->threshold, $sequence, $events);
 				//$events = $this->database->query('SELECT user_id, akce_id AS event_id, date_end AS `date` FROM akce_member JOIN akce ON akce_id = akce.id WHERE sequence_id = 899 AND NOW() > date_end AND deleted_by IS NULL AND enable = 1 AND user_id = ? ORDER BY date_start LIMIT 1 OFFSET 2', $member->user_id);
-				if ($event = $events->fetch()) {
+				if ($event = $items->fetch()) {
 					$this->saveResult(iterator_to_array($event), $achievement, $output, true);
 				}
 			} else {
