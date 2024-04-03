@@ -247,7 +247,12 @@ final class AchievementCommand extends BaseCommand
 			$values['progress'] = $achievement->threshold;
 		}
 
-		$this->database->query('INSERT INTO achievement_users ? ON DUPLICATE KEY UPDATE ?', $values, $values);
+		if ($row = $this->database->query('SELECT id FROM achievement_users WHERE achievement_id = ? AND user_id = ?', $achievement->id, $values['user_id'])->fetch()) {
+			$this->database->query('UPDATE achievement_users SET', $values, 'WHERE id = ?', $row->id);
+		} else {
+			$this->database->query('INSERT INTO achievement_users ?', $values);
+		}
+
 		$this->writeln($output, ...array_values($values));
 	}
 
