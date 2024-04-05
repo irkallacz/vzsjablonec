@@ -262,19 +262,19 @@ class MailPresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'texyla');
 
-		$form->addSubmit('ok', 'Odeslat')
-			->onClick[] = [$this, 'mailFormSubmitted'];
+		$form->addSubmit('ok', 'Odeslat');
+
+		$form->onSuccess[] = [$this, 'mailFormSubmitted'];
 
 		return $form;
 	}
 
 	/**
-	 * @param Button $button
+	 * @param Form $form
 	 * @param ArrayHash $values
 	 * @allow(member)
 	 */
-	public function mailFormSubmitted(Button $button, ArrayHash $values) {
-		$form = $this['mailForm'];
+	public function mailFormSubmitted(Form $form, ArrayHash $values) {
 		$parameters = [];
 
 		$message = new MessageService\Message();
@@ -328,9 +328,7 @@ class MailPresenter extends LayerPresenter {
 	 * @throws AbortException
 	 * @throws JsonException
 	 */
-	public function mailFormUpdate(Form $form) {
-		$values = $form->getValues();
-
+	public function mailFormUpdate(Form $form, ArrayHash $values) {
 		$id = $this->getParameter('id');
 		$message = $this->messageService->getMessageById($id);
 
