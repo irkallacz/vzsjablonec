@@ -215,6 +215,12 @@ class AkceService extends DatabaseService {
 			->fetchPairs('id', 'name');
 	}
 
+	public function addSeries(int $id, string $name) {
+		return $this->database
+			->table(self::TABLE_AKCE_SERIES)
+			->insert(['id' => $id, 'name' => $name]);
+	}
+
 	/**
 	 * @param int $id
 	 * @param bool $org

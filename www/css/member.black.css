@@ -1,4 +1,4 @@
-body.black {background-color: black; color: white}
+body.black, dialog {background-color: black; color: white}
 body.black #text .texy, body.black textarea {background-color: #1f1f1f; color: white;}
 body.black textarea.texyla {background-color: white; color: black;}
 body.black #billing table, body.black #tabs .active, body.black .grid table tr:nth-child(2n) td, body.black .message blockquote {background-color: #1f1f1f;}

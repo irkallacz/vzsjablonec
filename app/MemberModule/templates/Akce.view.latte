@@ -37,8 +37,7 @@
 <ul n:if="$user->isInRole('member')" class="buttonMenu" n:snippet="menuOnTop">
 	{if $user->isInRole('admin') or array_key_exists($user->id,$orgList)}
 	<li><a class="buttonLike" n:href="edit, $akce->id">{include svg pencil} editovat</a></li>
-	<li><a class="buttonLike confirm" data-query="Opravdu chcete akci smazat?" n:href="delete, $akce->id">
-	{include svg trash} smazat</a></li>
+	<li><a class="buttonLike confirm" data-query="Opravdu chcete akci smazat?" n:href="delete, $akce->id">{include svg trash} smazat</a></li>
 	{/if}
 
 	{if $user->isInRole('confirm')}
@@ -112,6 +111,21 @@
 
 {if $akce->sequence_id}
 	{control eventSeries}
+{elseif $user->isInRole('admin')}
+	<p><button id="sequence-form-button" class="buttonLike">{include svg calendar} vytvořit řadu</button></p>
+	<dialog id="sequence-form-dialog">
+		<form n:name=sequenceForm class=form>
+			<table>
+				<tr>
+					<th><label n:name=name>Název</label> <td><input n:name=name size=30 autofocus value={$akce->name}></td>
+				</tr>
+				<tr>
+					<th></th><td><input n:name=save> <input n:name=close></td>
+				</tr>
+			</table>
+		</form>
+
+	</dialog>
 {/if}
 
 {if $akceIsOld}
@@ -160,5 +174,13 @@
 
 {control postsList}
 {/if}
+
+<script type="application/javascript" n:nonce>
+	if (button = document.getElementById('sequence-form-button')) {
+		button.addEventListener('click', function (){
+			document.getElementById('sequence-form-dialog').showModal();
+		});
+	}
+</script>
 
 {/block}

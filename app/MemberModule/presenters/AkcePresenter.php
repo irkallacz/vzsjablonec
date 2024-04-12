@@ -693,4 +693,39 @@ class AkcePresenter extends LayerPresenter {
 
 		$this->redirect('Akce:view', $id);
 	}
+
+	public function createComponentSequenceForm()
+	{
+		$form = new Form;
+
+		$form->addText('name', 'Název', 30)
+			->setAttribute('spellcheck', 'true')
+			->setAttribute('maxlength', 60)
+			->setRequired('Vyplňte %label řady')
+			->addFilter([Strings::class, 'firstUpper'])
+			->addRule(Form::MAX_LENGTH, '%label může mít max délku %d písmen', 60);
+
+		$form->addSubmit('save','uložit');
+		$form->addButton('close','zavřit');
+
+		$form->onSuccess[] = [$this, 'sequenceFormSubmitted'];
+
+		return $form;
+	}
+
+	/**
+	 * @allow(admin)
+	*/
+	public function sequenceFormSubmitted(Form $form, ArrayHash $values)
+	{
+		$id = (int) $this->getParameter('id');
+
+		$this->akceService->addSeries($id, $values->name);
+		$event = $this->akceService->getAkceById($id);
+		$event->update(['sequence_id' => $id]);
+
+		$this->flashMessage('Řada byla přidána');
+
+		$this->redirect('Akce:view', $id);
+	}
 }
