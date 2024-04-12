@@ -676,7 +676,7 @@ class UserPresenter extends LayerPresenter {
 	 * @return string
 	 */
 	private static function getUserImageName(IRow $user){
-		return '/img/photos/' . Strings::webalize(UserService::getFullName($user)) . '-' . $user->id . '.jpg';
+		return  sprintf('/img/photos/%s-%d-%s.jpg', Strings::webalize(UserService::getFullName($user)), $user->id, date('YmdHis'));
 	}
 
 	/**
