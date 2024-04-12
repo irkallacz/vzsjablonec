@@ -42,34 +42,35 @@
 <h1 n:block="#title">Osobní profil</h1>
 
 {block #content}
+
+<ul class="buttonMenu">
+	<li n:if="($user->isInRole('admin'))and(is_null($member->role))">
+		<a class="buttonLike confirm" n:href="activate $member->id" data-query="Opravdu chcete tohoto uživatele aktivovat?">
+			{include svg check} aktivovat
+		</a>
+	</li>
+	{if ($user->isInRole('editor'))and(!is_null($member->role))}
+		<li>
+			<a class="buttonLike" n:href="resetPassword $member->id">
+				{include svg repeat} resetovat heslo
+			</a>
+		</li>
+		<li>
+			<a class="buttonLike confirm" n:href="delete $member->id" data-query="Opravdu chcete tohoto člena smazat? Tento krok může vrátit jen admin.">
+				{include svg trash} smazat
+			</a>
+		</li>
+	{/if}
+	<li n:if="(($user->isInRole('editor')or($member->id == $user->getId()))and(!is_null($member->role)))">
+		<a class="buttonLike" n:href="edit $member->id">
+			{include svg pencil} editovat
+		</a>
+	</li>
+</ul>
+
 <div n:class="$member->role ? card">
 	<img n:if="$member->role" src="{$baseUrl}/img/vzs.svg" alt="logo" height="150" id="logo">
-	<div class="line red" id="first">
-		<ul class="buttonMenu">
-			<li n:if="($user->isInRole('admin'))and(is_null($member->role))">
-				<a class="buttonLike confirm" n:href="activate $member->id" data-query="Opravdu chcete tohoto uživatele aktivovat?">
-					{include svg check} aktivovat
-				</a>
-			</li>
-			{if ($user->isInRole('editor'))and(!is_null($member->role))}
-			<li>
-				<a class="buttonLike" n:href="resetPassword $member->id">
-					{include svg repeat} resetovat heslo
-				</a>
-			</li>
-			<li>
-				<a class="buttonLike confirm" n:href="delete $member->id" data-query="Opravdu chcete tohoto člena smazat? Tento krok může vrátit jen admin.">
-					{include svg trash} smazat
-				</a>
-			</li>
-			{/if}
-			<li n:if="(($user->isInRole('editor')or($member->id == $user->getId()))and(!is_null($member->role)))">
-				<a class="buttonLike" n:href="edit $member->id">
-					{include svg pencil} editovat
-				</a>
-			</li>
-		</ul>
-	</div>
+	<div class="line red" id="first"></div>
 	<div class="line yellow"></div>
 	<div class="line blue">Vodní záchranná služba ČČK, Jablonec nad Nisou, p.s.</div>
 	<div class="square">
