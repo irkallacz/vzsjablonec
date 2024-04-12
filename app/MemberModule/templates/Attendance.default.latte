@@ -15,7 +15,8 @@
 
 	<p>{control yp}</p>
 
-	<p>V tomto roce proběhlo <strong>{count($sessions)} tréninků</strong>. Z toho jste se zúčastnili <strong>{count($attendance)}×</strong></p>
+	<p>V tomto roce proběhlo <strong>{count($sessions)} tréninků</strong>. Z toho jste se zúčastnili <strong>{count($attendance)}×</strong>.
+	{if count($attendance)}Vaše průměrná docházka tento rok je <strong>{count($attendance) / count($sessions) * 100 |number:0}%</strong>{/if} </p>
 
 	<table id="items">
 		<thead>
