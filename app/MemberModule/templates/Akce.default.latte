@@ -99,11 +99,8 @@ $akce->date_add > $user->getIdentity()->date_last ? 'new',
 {/if}
 {/foreach}
 {/foreach}
-<p>
-	<a n:href="Feed:akce" class="buttonLike float-right">{include svg feed} RSS Akce</a>
-</p>
 
-<p n:if="$year != INF">
+<p n:if="($user->isInRole('admin')) and ($year != INF)">
 	<a class="buttonLike" n:href="this, yp-year => INF">{include svg check} Zobrazit všechny akce</a>
 </p>
 
