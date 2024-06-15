@@ -198,7 +198,7 @@ class MailPresenter extends LayerPresenter {
 		$form['subject']->setDefaultValue($akce->name);
 
 		$this->template->isAkce = TRUE;
-		$this->template->members = $users->fetchPairs('id');
+		$this->template->users = $users->fetchPairs('id');
 
 		$this->template->pocet = ceil(count($users) / 3);
 		$this->setView('add');
