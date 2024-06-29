@@ -118,7 +118,7 @@ final class AchievementCommand extends BaseCommand
 		$members = $this->database->query('SELECT created_by AS user_id, COUNT(id) AS progress FROM album_photos WHERE created_by IS NOT NULL AND created_by NOT IN (SELECT user_id FROM achievement_users WHERE achievement_id = ? AND `date_finish` IS NOT NULL) GROUP BY created_by', $achievement->id);
 		foreach ($members as $member) {
 			if ($member->progress >= $achievement->threshold) {
-				$photos = $this->database->query('SELECT created_by AS user_id, id AS summary, created_at AS `date_finish` FROM album_photos WHERE created_by = ? ORDER BY `created_at` LIMIT 1 OFFSET ?', $member->created_by, $achievement->threshold - 1);
+				$photos = $this->database->query('SELECT created_by AS user_id, id AS summary, created_at AS `date_finish` FROM album_photos WHERE created_by = ? ORDER BY `created_at` LIMIT 1 OFFSET ?', $member->user_id, $achievement->threshold - 1);
 				if ($photo = $photos->fetch()) {
 					$this->saveResult(iterator_to_array($photo), $achievement, $output, true);
 				}
