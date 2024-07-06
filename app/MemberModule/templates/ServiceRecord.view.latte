@@ -19,7 +19,7 @@
         <nav>
             <ol>
                 <li n:foreach="$list as $item">
-                    <a n:tag-if="($item != $day)" n:href="view, $year, $item">{$item|date:'d.m.Y'}</a>
+                    <a n:tag-if="($item != $day)" n:href="view, $item">{$item|date:'d.m.Y'}</a>
                 </li>
             </ol>
         </nav>
@@ -29,11 +29,11 @@
         <h2>{$record->date|date:'%A %d. %B %Y'}</h2>
 
         <div class="prev-next">
-            <a n:tag-if="$next" class="buttonLike float-right" n:href="view, $year, $next">
+            <a n:tag-if="$next" class="buttonLike float-right" n:href="view, $next">
                 <span n:tag-if="!$next" class="buttonLike float-right gray">Další {include svg forward}</span>
             </a>
 
-            <a n:tag-if="$prev" class="buttonLike" n:href="view, $year, $prev">
+            <a n:tag-if="$prev" class="buttonLike" n:href="view, $prev">
                 <span n:tag-if="!$prev" class="buttonLike gray">{include svg backward} Předchozí</span>
             </a>
 

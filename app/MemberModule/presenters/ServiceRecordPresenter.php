@@ -4,6 +4,7 @@
 namespace App\MemberModule\Presenters;
 
 
+use App\MemberModule\Components\YearPaginator;
 use App\Model\RecordService;
 use Nette\Application\BadRequestException;
 use Nette\Utils\ArrayHash;
@@ -19,8 +20,9 @@ final class ServiceRecordPresenter extends LayerPresenter
 	/**
 	 * @allow(member)
 	 */
-	public function renderDefault(int $year = 2023)
+	public function renderDefault()
 	{
+		$year = $this['yp']->year;
 		$list = $this->recordService->getList($year);
 
 		$this->template->year = $year;
@@ -47,18 +49,27 @@ final class ServiceRecordPresenter extends LayerPresenter
 	}
 
 	/**
+	 * @return YearPaginator
+	 */
+	public function createComponentYp() {
+		return new YearPaginator(2023, NULL, 1, intval(date('Y')));
+	}
+
+	/**
 	 * @allow(member)
 	 */
-	public function renderView(int $year, string $day)
+	public function renderView(string $day)
 	{
 		$this->template->addFilter('nl2br',function ($text) {
 			return new \Latte\Runtime\Html(nl2br($text));
 		});
 
-		$list = $this->recordService->getList($year);
+		$date = \DateTimeImmutable::createFromFormat('Y-m-d', $day);
+
+		$list = $this->recordService->getList($date->format('Y'));
 
 		$this->template->list = $list;
-		$this->template->year = $year;
+		$this->template->year = $date->format('Y');
 		$this->template->day = $day;
 
 
@@ -71,7 +82,7 @@ final class ServiceRecordPresenter extends LayerPresenter
 		$this->template->prev = $list[$id-1] ?? null;
 		$this->template->next = $list[$id+1] ?? null;
 
-		$this->template->record = $this->recordService->getRecord($year, $day);
+		$this->template->record = $this->recordService->getRecord($date->format('Y'), $day);
 
 	}
 

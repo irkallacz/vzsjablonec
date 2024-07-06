@@ -14,6 +14,8 @@
 <h1 n:block="title">Služební záznamy {if $year}{$year}{/if}</h1>
 
 {block #content}
+    <p>{control yp}</p>
+
     <main>
     <article>
         <h2>Denní záznamy</h2>
@@ -29,7 +31,7 @@
                 </thead>
                 <tbody>
                 <tr n:foreach="$dayRecords as $day => $record">
-                    <td><a n:href="view, $year, $day">{$day|date:'d.m.Y'}</a></td>
+                    <td><a n:href="view, $day">{$day|date:'d.m.Y'}</a></td>
                     <td>{$record->attendance}</td>
                     <td>{$record->weather}</td>
                     <td>
@@ -57,7 +59,7 @@
                 <tbody>
                 {foreach $serviceRecords as $day => $records}
                     <tr n:foreach="$records as $service">
-                        <td><a n:href="view, $year, $day">{$day|date:'d.m.Y'}</a></td>
+                        <td><a n:href="view, $day">{$day|date:'d.m.Y'}</a></td>
                         <td>{$service->fromTime}</td>
                         <td>{$service->toTime}</td>
                         <td>{$service->person}</td>
@@ -89,7 +91,7 @@
                 <tbody>
                 {foreach $boatRecords as $day => $records}
                     <tr n:foreach="$records as $boat">
-                        <td><a n:href="view, $year, $day">{$day|date:'d.m.Y'}</a></td>
+                        <td><a n:href="view, $day">{$day|date:'d.m.Y'}</a></td>
                         <td>{$boat->fromTime}</td>
                         <td>{$boat->toTime}</td>
                         <td>{$boat->boat}</td>
@@ -117,7 +119,7 @@
                 <tbody>
                 {foreach $medicalRecords as $day => $records}
                 <tr n:foreach="$records as $item">
-                    <td><a n:href="view, $year, $day">{$day|date:'d.m.Y'}</a></td>
+                    <td><a n:href="view, $day">{$day|date:'d.m.Y'}</a></td>
                     <td><a href="https://www.vzs.evidsoft.cz/admin/parere/edit-parere?entity_ID={$item}" target="_blank">{$item}</a></td>
                 </tr>
                 {/foreach}
