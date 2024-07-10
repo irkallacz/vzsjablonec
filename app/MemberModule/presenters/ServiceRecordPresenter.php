@@ -65,12 +65,15 @@ final class ServiceRecordPresenter extends LayerPresenter
 		});
 
 		$date = \DateTimeImmutable::createFromFormat('Y-m-d', $day);
+		$date = $date->setTime(8, 0, 0);
 
 		$list = $this->recordService->getList($date->format('Y'));
 
 		$this->template->list = $list;
 		$this->template->year = $date->format('Y');
 		$this->template->day = $day;
+		$this->template->dateStart = intval($date->format('U')) * 1000;
+		$this->template->dateEnd = (intval($date->format('U')) + 3600 * 12) * 1000;
 
 
 		if (!in_array($day, $list)) {
@@ -83,8 +86,5 @@ final class ServiceRecordPresenter extends LayerPresenter
 		$this->template->next = $list[$id+1] ?? null;
 
 		$this->template->record = $this->recordService->getRecord($date->format('Y'), $day);
-
 	}
-
-
 }

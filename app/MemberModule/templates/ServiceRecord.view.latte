@@ -42,7 +42,7 @@
 
         <div class="texy">{$record->message|nl2br}</div>
 
-        <h3>Počasí</h3>
+        <h3>Počasí <a title="Teplota" href="https://grafana.vzs-jablonec.cz/d/a96d76c3-8194-4154-9910-7a5073642dac/teploty-jabloneckeho-more?orgId=1&from={$dateStart}&to={$dateEnd}" target="_blank">{include svg line-chart}</a></h3>
         <div class="texy">{$record->weather|nl2br}</div>
 
         <p class="record"><strong>Návštěvnost:</strong> {$record->attendance}</p>

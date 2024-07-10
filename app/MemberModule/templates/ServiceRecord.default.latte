@@ -26,6 +26,7 @@
                     <th>Datum</th>
                     <th>Návštěvnost</th>
                     <th>Počasí</th>
+                    <th>Teplota</th>
                     <th>Zapsal</th>
                 </tr>
                 </thead>
@@ -34,6 +35,10 @@
                     <td><a n:href="view, $day">{$day|date:'d.m.Y'}</a></td>
                     <td>{$record->attendance}</td>
                     <td>{$record->weather}</td>
+                    <td>
+                        {var $dateStart = intval(date_create($day)->setTime(8,0,0)->format('U'))}
+                        <a title="Teplota" href="https://grafana.vzs-jablonec.cz/d/a96d76c3-8194-4154-9910-7a5073642dac/teploty-jabloneckeho-more?orgId=1&from={$dateStart * 1000}&to={($dateStart + 3600 * 12) *1000}" target="_blank">{include svg line-chart}</a>
+                    </td>
                     <td>
                         {$record->author}
                         {$record->datetime|date:'d.m.Y H:i:s'}
