@@ -44,6 +44,8 @@ final class ServiceRecordPresenter extends LayerPresenter
 				'weather' => $record->weather,
 				'author' => $record->author,
 				'datetime' => $record->datetime,
+				'dateStart' => intval(date_create($day)->setTime(8,0,0)->format('U')) * 1000,
+				'dateEnd' => intval(date_create($day)->setTime(20,0,0)->format('U')) * 1000,
 			]);
 		}
 	}
