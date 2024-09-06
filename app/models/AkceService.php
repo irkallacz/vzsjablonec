@@ -126,6 +126,23 @@ class AkceService extends DatabaseService {
 
 	/**
 	 * @param int $id
+	 * @return Selection
+	 */
+	public function getEventsByMemberId(int $userId, array $events = null): Selection
+	{
+		$attendance = $this->database->table(self::TABLE_AKCE_MEMBER_NAME)
+			->where('user_id', $userId)
+			->where('deleted_by', NULL);
+
+		if ($events) {
+			$attendance->where('akce_id', $events);
+		}
+
+		return $attendance;
+	}
+
+	/**
+	 * @param int $id
 	 * @param bool $org
 	 * @return array
 	 */

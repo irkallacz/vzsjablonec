@@ -4,7 +4,7 @@
         table#items .count, table#items .author { padding: 0 1ex; }
         table#items .title { padding-left: 1em;}
         table#items .author { padding: 0.5ex;}
-        table#items a.logged { color: #C22 }
+        table#items a.logged, li a.logged { color: #C22 }
     </style>
 
     <script type="text/javascript" src="{$baseUrl}/js/confirm.js"></script>
@@ -57,7 +57,7 @@
     {if}
         <p>V tento den probíhali tyto akce:</p>
         <ul>
-            <li n:foreach="$events as $event"><a n:href="Akce:view $event->id">{$event->name}</a></li>
+            <li n:foreach="$events as $event"><a n:href="Akce:view $event->id" n:class="in_array($event->id, $eventsUser) ? logged">{$event->name}</a></li>
         </ul>
     {/if isset($event)}
 

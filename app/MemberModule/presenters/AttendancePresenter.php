@@ -43,7 +43,10 @@ final class AttendancePresenter extends LayerPresenter
 		}
 
 		$this->template->session = $session;
-		$this->template->events = $this->akceService->getAkceByDate($session->date);
+		$events = $this->akceService->getAkceByDate($session->date);
+		$this->template->events = $events;
+
+		$this->template->eventsUser = $this->akceService->getEventsByMemberId($this->user->id, $events->fetchPairs(null, 'id'))->fetchPairs(null, 'akce_id');
 		$this->template->attendances = $this->attendanceService->getAttendanceForSession($id);
 
 		$this->template->prev = $this->attendanceService->getPrevSession($session->date);
