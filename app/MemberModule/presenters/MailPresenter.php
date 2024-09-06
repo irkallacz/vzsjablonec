@@ -17,6 +17,7 @@ use Nette\Mail\IMailer;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
+use Nette\Utils\Strings;
 use Tracy\Debugger;
 use WebLoader\InvalidArgumentException;
 use WebLoader\Nette\JavaScriptLoader;
@@ -250,7 +251,8 @@ class MailPresenter extends LayerPresenter {
 		$form->addText('subject', 'Předmět', 50)
 			->setRequired('Vyplňte %label')
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class', 'max');
+			->setAttribute('class', 'max')
+			->addFilter([Strings::class, 'firstUpper']);
 
 		$form->addUpload('file', 'Příloha')
 			->setAttribute('class', 'max')
