@@ -65,7 +65,7 @@ class UserFormFactory {
 			->addCondition(Form::FILLED)
 			->addRule(Form::MAX_LENGTH, 'Rodné číslo by nemělo být delší než %d znaků', 11);
 
-		$form->addText('zamestnani', 'Zaměstnání/Škola', 30)
+		$form->addText('zamestnani', 'Zaměstnání/Škola', 30, 50)
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Vyplňte %label');
 
