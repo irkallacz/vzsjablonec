@@ -503,12 +503,15 @@ class AkcePresenter extends LayerPresenter {
 			->setAttribute('maxlength', 60)
 			->setRequired('Vyplňte %label akce')
 			->addFilter([Strings::class, 'firstUpper'])
+			->addFilter([$this, 'removeEmoji'])
 			->addRule(Form::MAX_LENGTH, '%label může mít max délku %d písmen', 60);
 
 		$form->addText('place', 'Místo', 50)
 			->setAttribute('maxlength', 50)
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Vyplňte %label akce')
+			->addFilter([Strings::class, 'firstUpper'])
+			->addFilter([$this, 'removeEmoji'])
 			->addRule(Form::MAX_LENGTH, '%label může mít max délku %d písmen', 50);;
 
 		/** @var \DateTimeInput $dateTimeInput*/
@@ -600,6 +603,7 @@ class AkcePresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'perex')
 			->setRequired('Vyplňte %label akce')
+			->addFilter([$this, 'removeEmoji'])
 			->addFilter([Strings::class, 'firstUpper']);
 
 		$form->addTextArea('description', 'Podrobný popis')

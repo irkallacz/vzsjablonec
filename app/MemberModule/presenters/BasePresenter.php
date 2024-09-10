@@ -51,4 +51,9 @@ abstract class BasePresenter extends Presenter {
 		}
 	}
 
+	public static function removeEmoji(string $s): string
+	{
+		return preg_replace('/[^ -\x{2122}]\s+|\s*[^ -\x{2122}]/u','', $s);
+	}
+
 }

@@ -252,6 +252,7 @@ class MailPresenter extends LayerPresenter {
 			->setRequired('Vyplňte %label')
 			->setAttribute('spellcheck', 'true')
 			->setAttribute('class', 'max')
+			->addFilter([$this, 'removeEmoji'])
 			->addFilter([Strings::class, 'firstUpper']);
 
 		$form->addUpload('file', 'Příloha')

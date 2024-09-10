@@ -9,12 +9,14 @@
 namespace App\MemberModule\Forms;
 
 use App\Form\DropdownInput;
+use App\MemberModule\Presenters\BasePresenter;
 use App\Model\UserService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\BaseControl;
 use Nette\SmartObject;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
+use Nette\Utils\Strings;
 
 class UserFormFactory {
 	use SmartObject;
@@ -46,19 +48,21 @@ class UserFormFactory {
 		$form->addText('name', 'Jméno', 30, 40)
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Vyplňte %label')
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
+			->addFilter([BasePresenter::class, 'removeEmoji'])
+			->addFilter([Strings::class, 'firstUpper']);
 
 		$form->addText('surname', 'Příjmení', 30, 40)
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Vyplňte %label')
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper']);
+			->addFilter([BasePresenter::class, 'removeEmoji'])
+			->addFilter([Strings::class, 'firstUpper']);
 
 		$form->addComponent((new \DateInput('Datum narození'))
 			->setRequired('Vyplňte %label')
 			->setDefaultValue(new DateTime()),
 	'date_born');
 
-		$form->addText('rc', 'Rodné číslo', 11)
+		$form->addText('rc', 'Rodné číslo', 11, 11)
 			->setRequired(FALSE)
 			->setNullable()
 			->setHtmlAttribute('placeholder', '000000/0000')
@@ -67,18 +71,19 @@ class UserFormFactory {
 
 		$form->addText('zamestnani', 'Zaměstnání/Škola', 30, 50)
 			->setAttribute('spellcheck', 'true')
+			->addFilter([BasePresenter::class, 'removeEmoji'])
 			->setRequired('Vyplňte %label');
 
 		$form->addGroup('Kontakty');
 
 		$form->addText('mail', 'Primární e-mail', 30)
 			->setType('email')
-			->addFilter(['\Nette\Utils\Strings', 'lower'])
+			->addFilter([Strings::class, 'lower'])
 			->addRule(Form::EMAIL, 'Zadejte platný email')
 			->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
 			->setRequired('Vyplňte %label');
 
-		$form->addText('telefon', 'Primární telefon', 30)
+		$form->addText('telefon', 'Primární telefon', 30, 9)
 			->setType('tel')
 			->setRequired('Vyplňte %label')
 			->addRule(Form::INTEGER, '%label musí obsahovat jenom čísla')
@@ -88,7 +93,7 @@ class UserFormFactory {
 			->setType('email')
 			->setNullable()
 			->addCondition(Form::FILLED)
-			->addFilter(['\Nette\Utils\Strings', 'lower'])
+			->addFilter([Strings::class, 'lower'])
 			->addRule(Form::EMAIL, 'Zadejte platný email')
 			->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
 			->addRule(Form::NOT_EQUAL, 'E-maily se nesmí shodovat', $form['mail'])
@@ -102,7 +107,7 @@ class UserFormFactory {
 			->addConditionOn($form['send_to_second'], Form::EQUAL, TRUE)
 			->addRule(Form::EMAIL, 'Vyplňte sekundární email');
 
-		$form->addText('telefon2', 'Sekundární telefon', 30)
+		$form->addText('telefon2', 'Sekundární telefon', 30, 9)
 			->setType('tel')
 			->setNullable()
 			->addCondition(Form::FILLED)
@@ -120,17 +125,21 @@ class UserFormFactory {
 		$form->addComponent((new DropdownInput('Město', 50))
 			//->setHtmlAttribute('data-url', $this->link('//Search:city'))
 			->setRequired()
+			->addFilter([BasePresenter::class, 'removeEmoji'])
+			->addFilter([Strings::class, 'firstUpper'])
 			->setHtmlId('city'),
 		'city');
 
 		$form->addComponent((new DropdownInput('Ulice', 50))
 			//->setHtmlAttribute('data-url', $this->link('//Search:street'))
 			->setRequired('Vyplňte %label')
+			->addFilter([BasePresenter::class, 'removeEmoji'])
 			->setHtmlId('street'),
 		'street');
 
 		$form->addText('street_number', 'č.p./č.e.', 8, 15)
 			->setRequired('Vyplňte %label')
+			->addFilter([BasePresenter::class, 'removeEmoji'])
 			->addConditionOn($form['street'], Form::FILLED)
 			->addRule(Form::FILLED);
 

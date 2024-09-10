@@ -19,6 +19,7 @@ use Nette\Utils\Html;
 use Nette\Database\SqlLiteral;
 use Nette\Utils\DateTime;
 use Nette\Utils\Paginator;
+use Nette\Utils\Strings;
 use Tracy\Debugger;
 use WebLoader\InvalidArgumentException;
 use WebLoader\Nette\JavaScriptLoader;
@@ -476,10 +477,12 @@ class ForumPresenter extends LayerPresenter {
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
 		$form->addText('title')
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+			->addFilter([Strings::class, 'firstUpper'])
+			->addFilter([$this, 'removeEmoji'])
 			->setAttribute('placeholder', 'Název tématu')
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Zadejte prosím předmet');
+
 		$form->addTextArea('text')
 			->setRequired('Zadejte prosím text zprávy')
 			->setAttribute('spellcheck', 'true')

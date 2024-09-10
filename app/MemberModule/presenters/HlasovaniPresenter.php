@@ -13,6 +13,7 @@ use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
+use Nette\Utils\Strings;
 use Tracy\Debugger;
 use WebLoader\InvalidArgumentException;
 use WebLoader\Nette\JavaScriptLoader;
@@ -215,12 +216,13 @@ class HlasovaniPresenter extends LayerPresenter {
 		$form = new Form;
 
 		$form->addText('title', 'Název', 30)
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+			->addFilter([Strings::class, 'firstUpper'])
+			->addFilter([$this, 'removeEmoji'])
 			->setRequired('Vyplňte název')
 			->setAttribute('spellcheck', 'true');
 
 		$form->addTextArea('text', 'Otázka', 60)
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+			->addFilter([Strings::class, 'firstUpper'])
 			->setRequired('Vyplňte otázku')
 			->setAttribute('spellcheck', 'true');
 

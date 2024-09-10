@@ -9,6 +9,7 @@ use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
+use Nette\Utils\Strings;
 use WebLoader;
 use Tracy\Debugger;
 
@@ -136,18 +137,20 @@ class AnketyPresenter extends LayerPresenter {
 
 		$form->addText('title', 'Název', 30)
 			->setRequired('Vyplňte prosím název ankety')
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+			->addFilter([Strings::class, 'firstUpper'])
+			->addFilter([$this, 'removeEmoji'])
 			->setAttribute('spellcheck', 'true');
 
 		$form->addTextArea('text', 'Otázka', 60)
 			->setRequired('Vyplňte prosím text ankety')
-			->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+			->addFilter([Strings::class, 'firstUpper'])
 			->setAttribute('spellcheck', 'true');
 
 		$users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) {
 			$user->addText('text', 'Odpověď', 30)
 				->setRequired('Vyplňte prosím text odpovědi')
-				->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+				->addFilter([Strings::class, 'firstUpper'])
+				->addFilter([$this, 'removeEmoji'])
 				->setAttribute('spellcheck', 'true');
 
 			$user->addHidden('id');
