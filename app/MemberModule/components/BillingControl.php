@@ -9,6 +9,7 @@
 namespace App\MemberModule\Components;
 
 
+use App\MemberModule\Presenters\BasePresenter;
 use App\Model\BillingService;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
@@ -17,6 +18,7 @@ use Nette\Database\Table\IRow;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
+use Nette\Utils\Strings;
 use Tracy\Debugger;
 use WebChemistry\Forms\Controls\Multiplier;
 
@@ -83,7 +85,8 @@ final class BillingControl extends LayerControl {
 		$container = function (\Nette\Forms\Container $item) {
 			$item->addText('name', 'Název', 20)
 				->setRequired('Vyplňte prosím nazev položky')
-				->addFilter(['\Nette\Utils\Strings', 'firstUpper'])
+				->addFilter([Strings::class, 'firstUpper'])
+				->addFilter([BasePresenter::class, 'removeEmoji'])
 				->setHtmlAttribute('class', 'name')
 				->setHtmlAttribute('spellcheck', 'true');
 
