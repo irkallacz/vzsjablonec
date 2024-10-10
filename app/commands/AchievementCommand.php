@@ -90,6 +90,14 @@ final class AchievementCommand extends BaseCommand
 			$this->saveResult(iterator_to_array($member), $achievement, $output, true);
 		}
 
+		//truck
+		$this->writeln($output, '<info>Tahoun</info>');
+		$achievement = $this->achievementsService->getAchievementById(28);
+		$members = $this->database->query('SELECT member_id AS user_id, date_start AS `date_finish` FROM `qualification_members` WHERE `qualification_id` = 4 AND `type` LIKE "%E" AND `member_id` NOT IN (SELECT `user_id` FROM `achievement_users` WHERE `achievement_id` = ? AND `date_finish` IS NOT NULL) GROUP BY member_id', $achievement->id);
+		foreach ($members as $member) {
+			$this->saveResult(iterator_to_array($member), $achievement, $output, true);
+		}
+
 		//officer
 		$this->writeln($output, '<info>Vyšší šarže</info>');
 		$achievement = $this->achievementsService->getAchievementById(4);
