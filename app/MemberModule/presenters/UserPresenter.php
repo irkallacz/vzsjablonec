@@ -608,6 +608,10 @@ class UserPresenter extends LayerPresenter {
 
 		$form = $this->userFormFactory->create();
 
+		$form['city']->setHtmlAttribute('data-url', $this->link('//Search:city'));
+		$form['street']->setHtmlAttribute('data-url', $this->link('//Search:street'));
+		$form['postal_code']->setHtmlAttribute('data-url', $this->link('//Search:postalCode'));
+
 		$form->addGroup(' ');
 
 		$form->setCurrentGroup(NULL);
