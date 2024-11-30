@@ -1,9 +1,8 @@
 {block #head}
-<link rel="stylesheet" href="{$baseUrl}/css/member.forum.css" type="text/css">
-
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/css/jquery-ui.custom.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="{$baseUrl}/css/member.forum.css">
+<link rel="stylesheet" type="text/css" href="{$baseUrl}/css/tiny-mde.min.css">
+<script type="text/javascript" src="{$baseUrl}/js/tiny-mde.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/editor-common.js"></script>
 
 <style type="text/css" n:syntax="off">
 .inline-nav { list-style-type: none; padding: 0px; margin-bottom: 1ex;}
@@ -13,24 +12,6 @@
 #frm-addPostForm table td textarea, #frm-addTopicForm table td textarea { width: 100%}
 #frm-addTopicForm table #frm-addTopicForm-title { width: 100% }
 </style>
-
-<script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
-
-{control texylaJs}
-
-<script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
-
-<script type="text/javascript" n:nonce>
-	$.texyla.setDefaults({
-		baseDir: {$baseUrl}+'/texyla',
-		previewPath: {link texyPreview}
-	});
-
-	$(function () {
-		$('.texyla').textareaAutoSize();
-		$('.texyla').texyla(forum);
-	});
-</script>
 
 {/block}
 
@@ -46,6 +27,11 @@
 
 <h2>{if isset($isEdit)}Upravit{else}Přidat{/if} {if isset($isTopic)}téma{else}příspěvek{/if}</h2>
 
-{if isset($isTopic)}{control addTopicForm}{else}{control addPostForm}{/if}
+{if isset($isTopic)}
+    {control addTopicForm}
+{else}
+    {control addPostForm}
+{/if}
 
+<script type="text/javascript" src="{$baseUrl}/js/editor-forum.js"></script>
 {/block}

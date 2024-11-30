@@ -15,6 +15,7 @@ use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
+use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\DateTime;
@@ -82,7 +83,7 @@ final class BillingControl extends LayerControl {
 	protected function createComponentBillingForm() {
 		$form = new Form();
 
-		$container = function (\Nette\Forms\Container $item) {
+		$container = function (Container $item) {
 			$item->addText('name', 'Název', 20)
 				->setRequired('Vyplňte prosím nazev položky')
 				->addFilter([Strings::class, 'firstUpper'])

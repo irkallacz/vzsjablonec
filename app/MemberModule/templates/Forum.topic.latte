@@ -4,30 +4,13 @@
 <link rel="stylesheet" href="{$baseUrl}/css/member.forum.css" type="text/css">
 <link rel="stylesheet" href="{$baseUrl}/css/member.forum.posts.css" type="text/css">
 
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/css/jquery-ui.custom.css" type="text/css">
-
-{control texylaJs}
-
 <script type="text/javascript" src="{$baseUrl}/js/confirm.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/copy.js"></script>
-<script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
-{*<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>*}
 
-<script type="text/javascript" n:nonce>
-	$.texyla.setDefaults({
-		baseDir: {$baseUrl}+'/texyla',
-		previewPath: {link texyPreview}
-	});
+<link rel="stylesheet" href="{$baseUrl}/css/tiny-mde.min.css">
 
-	$(function () {
-		// $('#frm-addPostForm').areYouSure();
-		$('.texyla').textareaAutoSize();
-		$('.texyla').texyla(forum);
-	});
-</script>
-
+<script type="text/javascript" src="{$baseUrl}/js/tiny-mde.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/editor-common.js"></script>
 {/block}
 
 <h1 n:block="title">Fórum</h1>
@@ -60,4 +43,5 @@
 	{control addPostForm}
 {/if}
 
+<script type="text/javascript" src="{$baseUrl}/js/editor-forum.js"></script>
 {/block}

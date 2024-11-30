@@ -2,7 +2,7 @@
 namespace App\MemberModule\Presenters;
 
 use App\MemberModule\Components\AnketaControl;
-use App\MemberModule\Components\TexylaJsFactory;
+use App\MemberModule\Components\TinyMde;
 use App\Model\AnketyService;
 use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
@@ -10,7 +10,6 @@ use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
-use WebLoader;
 use Tracy\Debugger;
 
 /** @allow(member) */
@@ -18,9 +17,6 @@ class AnketyPresenter extends LayerPresenter {
 
 	/** @var AnketyService @inject */
 	public $anketyService;
-
-	/** @var TexylaJsFactory @inject */
-	public $texylaJsFactory;
 
 	/**
 	 *
@@ -121,15 +117,6 @@ class AnketyPresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @allow(member)
-	 * @return WebLoader\Nette\JavaScriptLoader
-	 * @throws WebLoader\InvalidArgumentException
-	 */
-	public function createComponentTexylaJs() {
-		return $this->texylaJsFactory->create('texyla_anketa', $this->template->basePath, ['table', 'color', 'symbol', 'textTransform']);
-	}
-
-	/**
 	 * @return Form
 	 */
 	protected function createComponentAnketaForm() {
@@ -141,10 +128,12 @@ class AnketyPresenter extends LayerPresenter {
 			->addFilter([$this, 'removeEmoji'])
 			->setAttribute('spellcheck', 'true');
 
-		$form->addTextArea('text', 'Otázka', 60)
+		$form->addComponent((new TinyMde( 'Otázka'))
 			->setRequired('Vyplňte prosím text ankety')
 			->addFilter([Strings::class, 'firstUpper'])
-			->setAttribute('spellcheck', 'true');
+			->setHtmlAttribute('cols', 60)
+			->setAttribute('spellcheck', 'true')
+			->setAttribute('class', 'editor'), 'text');
 
 		$users = $form->addMultiplier('users', function (\Nette\Forms\Container $user) {
 			$user->addText('text', 'Odpověď', 30)

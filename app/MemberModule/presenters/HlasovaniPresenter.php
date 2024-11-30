@@ -2,7 +2,7 @@
 
 namespace App\MemberModule\Presenters;
 
-use App\MemberModule\Components\TexylaJsFactory;
+use App\MemberModule\Components\TinyMde;
 use App\Model\HlasovaniService;
 use App\Model\MessageService;
 use App\Model\UserService;
@@ -15,8 +15,6 @@ use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
-use WebLoader\InvalidArgumentException;
-use WebLoader\Nette\JavaScriptLoader;
 
 /** @allow(member) */
 class HlasovaniPresenter extends LayerPresenter {
@@ -29,9 +27,6 @@ class HlasovaniPresenter extends LayerPresenter {
 
 	/** @var UserService @inject */
 	public $userService;
-
-	/** @var TexylaJsFactory @inject */
-	public $texylaJsFactory;
 
 	/**
 	 *
@@ -199,16 +194,6 @@ class HlasovaniPresenter extends LayerPresenter {
 		$this->redirect('view', $id);
 	}
 
-
-	/**
-	 * @allow(member)
-	 * @return JavaScriptLoader
-	 * @throws InvalidArgumentException
-	 */
-	public function createComponentTexylaJs() {
-		return $this->texylaJsFactory->create('texyla_anketa', $this->template->basePath, ['table', 'color', 'symbol', 'textTransform']);
-	}
-
 	/**
 	 * @return Form
 	 */
@@ -221,10 +206,12 @@ class HlasovaniPresenter extends LayerPresenter {
 			->setRequired('Vyplňte název')
 			->setAttribute('spellcheck', 'true');
 
-		$form->addTextArea('text', 'Otázka', 60)
+		$form->addComponent((new TinyMde( 'Otázka'))
+			->setRequired('Vyplňte prosím text ankety')
 			->addFilter([Strings::class, 'firstUpper'])
-			->setRequired('Vyplňte otázku')
-			->setAttribute('spellcheck', 'true');
+			->setHtmlAttribute('cols', 60)
+			->setAttribute('spellcheck', 'true')
+			->setAttribute('class', 'editor'), 'text');
 
 		$form['date_deatline'] = new \DateInput('Konec hlasování');
 		$form['date_deatline']->setRequired('Vyplňte datum konce hlasování')

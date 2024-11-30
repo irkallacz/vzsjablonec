@@ -29,15 +29,21 @@ eventStart = getDateTimeInput('event-start');
 document.getElementById('event-start-date').addEventListener('change', eventStartChange);
 document.getElementById('event-start-time').addEventListener('change', eventStartChange);
 
-//$('#frm-akceForm-perex').texyla(akce_public);
-$('.texyla').texyla(akce);
 
-var elem = document.createElement('input');
-elem.setAttribute('type', 'date');
+if (document.getElementById('frm-akceForm-addMessage')) {
+	if (document.getElementById('frm-akceForm-addMessage').checked) {
+		document.getElementById('message-container').classList.remove('hide');
+	} else  {
+		document.getElementById('message-container').classList.add('hide');
+	}
 
-if (elem.type === 'text') {
-	$('.date').datepicker();
+	document.getElementById('frm-akceForm-addMessage').addEventListener('click', function(e) {
+		if (this.checked) {
+			document.getElementById('message-container').classList.remove('hide');
+		} else  {
+			document.getElementById('message-container').classList.add('hide');
+		}
+	});
 }
 
-$('#frm-akceForm-description').textareaAutoSize();
 $('#frm-akceForm').areYouSure();

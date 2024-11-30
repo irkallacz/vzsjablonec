@@ -1,7 +1,8 @@
 {block #head}
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/css/jquery-ui.custom.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="{$baseUrl}/css/tiny-mde.min.css">
+<script type="text/javascript" src="{$baseUrl}/js/tiny-mde.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/editor-common.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
 
 <style type="text/css" n:syntax="off">
 	#frm-akceForm textarea { width: 100%;}
@@ -12,21 +13,6 @@
 	#ui-datepicker-div { font-size: 0.9em; }
 	.perex { width: 98%}
 </style>
-
-<script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
-
-{control texylaJs}
-
-<script type="text/javascript" src="{$baseUrl}/js/jquery.ui.datepicker-cs.js"></script>
-<script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
-<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
-
-<script type="text/javascript" n:nonce>
-	$.texyla.setDefaults({
-		baseDir: {$baseUrl}+'/texyla',
-		previewPath: {link texyPreview, TRUE}
-	});
-</script>
 
 {/block}
 
@@ -78,18 +64,19 @@ uvidí ji na webu pouze její organizatoři. Dokončením tohoto formuláře se 
 <p>{label description class => 'hint', title => 'Tento text uvidí pouze naši členové'/}</p>
 <p>{input description}</p>
 
-{if !isset($nova)}
-{if $akce->date_start < date_create()}
+{if (!isset($nova)) && ($akce->date_start < date_create())}
 	<p>{label addMessage} {input addMessage}{/label}</p>
-	<p>{label message class => 'hint', title => 'Podrobná zpráva z akce'/}</p>
-	<p>{input message}</p>
-{/if}
+	<div id="message-container">
+		<p>{label message class => 'hint', title => 'Podrobná zpráva z akce'/}</p>
+		<p>{input message}</p>
+	</div>
 {/if}
 
 <p>{input save}</p>
 
 {/form akceForm}
 
+<script type="text/javascript" src="{$baseUrl}/js/editor-akce.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/akce.js" defer></script>
 
 {/block}

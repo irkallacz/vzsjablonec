@@ -1,0 +1,15 @@
+.editor-toolbar { background-color: #EEEEEE}
+
+.fa:before { width: 20px; height: 20px;}
+.fa-bold:before { content: url('../../img/editor/bold.svg'); }
+.fa-italic:before { content: url('../../img/editor/italic.svg'); }
+.fa-header:before { content: url('../../img/editor/header.svg'); }
+.fa-list-ol:before { content: url('../../img/editor/list-ol.svg'); }
+.fa-list-ul:before { content: url('../../img/editor/list-ul.svg'); }
+.fa-link:before { content: url('../../img/editor/link.svg'); }
+.fa-image:before { content: url('../../img/editor/image.svg'); }
+.fa-quote-left:before { content: url('../../img/editor/quote-left.svg'); }
+.fa-strikethrough:before { content: url('../../img/editor/strikethrough.svg'); }
+.fa-minus:before { content: url('../../img/editor/minus.svg'); }
+.fa-eye:before { content: url('../../img/editor/eye.svg'); }
+.fa-question-circle:before { content: url('../../img/editor/question-circle.svg'); }

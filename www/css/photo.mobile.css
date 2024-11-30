@@ -1,7 +1,0 @@
-#header img {display: none;}
-#header h1 {left: 0}
-#header h1 span {display: none;}
-#header h1:before, #header h1:after {display: none;}
-#slides {display: none;}
-ul.photoList {width: 100%; overflow-x: scroll; -webkit-overflow-scrolling: touch; scrollbar-width: none;}
-ul.photoList::-webkit-scrollbar {display: none;}

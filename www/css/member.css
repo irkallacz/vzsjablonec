@@ -2,6 +2,8 @@ body {margin: 0; padding: 0;}
 body, body table {font-family: Verdana,Arial,Helvetica,Calibri,sans-serif; font-size: 90%;}
 #main {min-width: 22em; width: 90%; max-width: 70em; margin: 0 auto; position: relative; padding-bottom: 2em;}
 
+dialog {min-width: 22em; width: 90%; max-width: 70em; margin: auto auto;  padding-bottom: 2em;}
+
 #top {border-bottom: 4px solid #e1001a; padding: 0;}
 #top img {padding: 3px;}
 
@@ -59,7 +61,7 @@ padding: 0 1em; background-color: #fffff6; position: relative;}
 .texy table th {background-color: silver; }
 .texy table table, .texy table td, .texy table th {border: 1px solid gray; padding: 1ex;}
 
-body #text div#texyPreview.texy {border: none; padding: 0; background-color: white; color: #222 }
+body #text div#texyPreview.texy {border: none; padding: 0; }
 
 #text .texy h1 {font-size: 1.5em; text-transform: uppercase;}
 #text .texy h1, #text .texy h2, #text .texy h3, #text .texy h4 {margin-bottom: 0;}
@@ -73,6 +75,10 @@ body #text div#texyPreview.texy {border: none; padding: 0; background-color: whi
 
 .buttonMenu {padding: 0; text-align: right;}
 .buttonMenu li {float: right; display: inline; list-style-type: none; margin-left: 1ex; margin-bottom: 1ex;}
+
+form .TinyMDE { font-size: 1em; line-height: 1.3em; border-color: gray; border-style: solid; border-width: 0 1px 1px 1px;}
+form .editor-toolbar { border-color: gray; border-style: solid; border-width: 1px 1px 0 1px; }
+
 
 h2 {font-size: 1.3em; margin-top: 1ex;}
 h3 {font-size: 1em;}

@@ -3,8 +3,8 @@
 namespace App\MemberModule\Presenters;
 
 use App\MemberModule\Components\PostsListControl;
-use App\MemberModule\Components\TexylaJsFactory;
 use App\MemberModule\Components\TopicsListControl;
+use App\MemberModule\Components\TinyMde;
 use App\Model\ForumService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
@@ -21,8 +21,6 @@ use Nette\Utils\DateTime;
 use Nette\Utils\Paginator;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
-use WebLoader\InvalidArgumentException;
-use WebLoader\Nette\JavaScriptLoader;
 
 class ForumPresenter extends LayerPresenter {
 
@@ -30,9 +28,6 @@ class ForumPresenter extends LayerPresenter {
 
 	/** @var ForumService @inject */
 	public $forumService;
-
-	/** @var TexylaJsFactory @inject */
-	public $texylaJsFactory;
 
 	/** @var ActiveRow */
 	private $topic;
@@ -457,16 +452,6 @@ class ForumPresenter extends LayerPresenter {
 		$this->redirect('topic', $post->forum_topic_id);
 	}
 
-
-	/**
-	 * @allow(member)
-	 * @return JavaScriptLoader
-	 * @throws InvalidArgumentException
-	 */
-	public function createComponentTexylaJs() {
-		return $this->texylaJsFactory->create('texyla_forum', $this->template->basePath, ['img', 'emoji']);
-	}
-
 	/**
 	 * @allow(member)
 	 * @return Form
@@ -483,12 +468,15 @@ class ForumPresenter extends LayerPresenter {
 			->setAttribute('spellcheck', 'true')
 			->setRequired('Zadejte prosím předmet');
 
-		$form->addTextArea('text')
+		//$form->addTextArea('text')
+		$form->addComponent((new TinyMde())
 			->setRequired('Zadejte prosím text zprávy')
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class', 'texyla');
+			->setAttribute('class', 'editor'), 'text');
 
-		$form->onSuccess[] = [$this, 'processAddTopicForm'];
+		$form->addSubmit('submit', 'Odeslat')
+			->onClick[] = [$this, 'processAddTopicForm'];
+
 		return $form;
 	}
 
@@ -530,16 +518,19 @@ class ForumPresenter extends LayerPresenter {
 
 		$form->addProtection('Vypršel časový limit, odešlete formulář znovu');
 
-		$form->addTextArea('text')
+		$form->addComponent((new TinyMde())
 			->setRequired('Zadejte prosím text zprávy')
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class', 'texyla');
+			->setAttribute('class', 'editor'),
+		'text');
 
 		$form->addHidden('id', 0);
 		$form->addHidden('forum_topic_id');
 		$form->addHidden('forum_id');
 
-		$form->onSuccess[] = [$this, 'processAddPostForm'];
+		$form->addSubmit('submit', 'Odeslat')
+			->onClick[] = [$this, 'processAddPostForm'];
+
 		return $form;
 	}
 

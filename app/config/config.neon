@@ -227,8 +227,6 @@ services:
 
 	- App\Model\ChatService(%chat.url%, %chat.space%, %chat.key%, %chat.token%, %chat.active%)
 
-	- App\MemberModule\Components\TexylaJsFactory(%wwwDir%)
-
 	- App\Console\CalendarCommand
 	- App\Console\DriveCommand(%google.driveDir%)
 	- App\Console\IDokladCommand

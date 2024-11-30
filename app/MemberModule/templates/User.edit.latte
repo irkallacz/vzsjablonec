@@ -15,22 +15,7 @@
 	.error { color: red;}
 </style>
 
-<script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" src="{$baseUrl}/js/jquery.ui.datepicker-cs.js"></script>
 <script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
-<script type="text/javascript" n:nonce>
-	$(function() {		
-		var elem = document.createElement('input');
-      	elem.setAttribute('type', 'date');
-
-      	if ( elem.type === 'text' ) {
-			$('.date').datepicker();
-		}
-
-		$('#frm-editMemberForm').areYouSure();
-		$('#frm-addMemberForm').areYouSure();
-	});
-</script>
 {/block}
 
 <h1 n:block="title">Osobní profil</h1>
@@ -54,5 +39,10 @@
 {/if}
 
 <script type="application/javascript" src="{$baseUrl}/js/address-dropdown.js"></script>
-
+<script type="text/javascript" n:nonce>
+	$(function() {
+		$('#frm-editMemberForm').areYouSure();
+		$('#frm-addMemberForm').areYouSure();
+	});
+</script>
 {/block}

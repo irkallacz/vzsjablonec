@@ -2,8 +2,8 @@
 
 namespace App\MemberModule\Presenters;
 
-use App\MemberModule\Components\TexylaJsFactory;
 use App\MemberModule\Components\YearPaginator;
+use App\MemberModule\Components\TinyMde;
 use App\Model\AkceService;
 use App\Model\UserService;
 use App\Model\MessageService;
@@ -12,15 +12,12 @@ use Nette\Application\AbortException;
 use Nette\Application\BadRequestException;
 use Nette\Application\ForbiddenRequestException;
 use Nette\Application\UI\Form;
-use Nette\Forms\Controls\Button;
 use Nette\Mail\IMailer;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
-use WebLoader\InvalidArgumentException;
-use WebLoader\Nette\JavaScriptLoader;
 
 /**
  * Class MailPresenter
@@ -37,9 +34,6 @@ class MailPresenter extends LayerPresenter {
 
 	/** @var MessageService @inject */
 	public $messageService;
-
-	/** @var TexylaJsFactory @inject */
-	public $texylaJsFactory;
 
 	/** @var IMailer @inject */
 	public $mailer;
@@ -260,10 +254,12 @@ class MailPresenter extends LayerPresenter {
 			->addCondition(Form::FILLED)
 			->addRule(Form::MAX_FILE_SIZE, 'Maximální velikost souboru je 16 MB.', 16 * 1024 * 1024 /* v bytech */);
 
-		$form->addTextArea('text', 'Text e-mailu', 45)
+		$form->addComponent((new TinyMde('Text e-mailu'))
 			->setRequired('Vyplňte %label')
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class', 'texyla');
+			->setHtmlAttribute('cols', 60)
+			->setAttribute('class', 'editor'),
+		'text');
 
 		$form->addSubmit('ok', 'Odeslat');
 
@@ -373,15 +369,4 @@ class MailPresenter extends LayerPresenter {
 		$this->flashMessage('Zpráva byla uložena');
 		$this->redirect("send#message/$id");
 	}
-
-
-	/**
-	 * @allow(member)
-	 * @return JavaScriptLoader
-	 * @throws InvalidArgumentException
-	 */
-	public function createComponentTexylaJs() {
-		return $this->texylaJsFactory->create('texyla_mail', $this->template->basePath);
-	}
-
 }

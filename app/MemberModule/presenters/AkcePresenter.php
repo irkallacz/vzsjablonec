@@ -1,6 +1,7 @@
 <?php
 namespace App\MemberModule\Presenters;
 
+use App\MemberModule\Components\TinyMde;
 use App\Model;
 use App\MemberModule\Components;
 use App\Template\LatteFilters;
@@ -17,7 +18,6 @@ use Nette\Utils\ArrayHash;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use Nette\Utils\Strings;
-use WebLoader;
 use Tracy\Debugger;
 
 class AkcePresenter extends LayerPresenter {
@@ -52,9 +52,6 @@ class AkcePresenter extends LayerPresenter {
 
 	/** @var Model\UserService @inject */
 	public $userService;
-
-	/** @var Components\TexylaJsFactory @inject */
-	public $texylaJsFactory;
 
 	/** @var IMailer @inject */
 	public $mailer;
@@ -480,15 +477,6 @@ class AkcePresenter extends LayerPresenter {
 
 	/**
 	 * @allow(member)
-	 * @return WebLoader\Nette\JavaScriptLoader
-	 * @throws WebLoader\InvalidArgumentException
-	 */
-	public function createComponentTexylaJs() {
-		return $this->texylaJsFactory->create('texyla_akce', $this->template->basePath, ['table', 'color', 'symbol', 'textTransform']);
-	}
-
-	/**
-	 * @allow(member)
 	 * @return Form
 	 */
 	protected function createComponentAkceForm() {
@@ -606,26 +594,26 @@ class AkcePresenter extends LayerPresenter {
 			->addFilter([$this, 'removeEmoji'])
 			->addFilter([Strings::class, 'firstUpper']);
 
-		$form->addTextArea('description', 'Podrobný popis')
-			->setAttribute('spellcheck', 'true')
-			->setAttribute('class', 'texyla')
-			->setRequired('Vyplňte %label akce')
-			->addFilter([Strings::class, 'firstUpper']);
+		$form->addComponent((new TinyMde('Podrobný popis'))
+				->setAttribute('spellcheck', 'true')
+				->setAttribute('class', 'editor')
+				->setRequired('Vyplňte %label akce')
+				->addFilter([Strings::class, 'firstUpper']),
+			'description');
 
 		$text = $this->akceService->getAkceMessageDefault();
 
 		$form->addCheckbox('addMessage', 'Připojit zprávu z akce')
-			->setDefaultValue(FALSE)
-			->addCondition(Form::EQUAL, TRUE)
-				->toggle('frm-akceForm-message');
+			->setDefaultValue(FALSE);
 
-		$form->addTextArea('message', 'Zpráva z akce')
+		$form->addComponent((new TinyMde('Zpráva z akce'))
 			->setNullable()
 			->setAttribute('spellcheck', 'true')
-			->setAttribute('class', 'texyla')
+			->setAttribute('class', 'editor')
 			->setDefaultValue($text)
 			->addFilter([Strings::class, 'firstUpper'])
-			->setRequired(FALSE);
+			->setRequired(FALSE),
+		'message');
 
 		$form->addSubmit('save', 'Ulož')
 			->setAttribute('class', 'default');

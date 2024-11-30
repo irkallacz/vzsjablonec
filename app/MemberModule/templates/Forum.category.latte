@@ -2,14 +2,9 @@
 <link rel="alternate" title="VZS Jablonec Forum : {$forum->title}" n:href="//Feed:forum, fid => $forum->id" type="application/rss+xml">
 
 <link rel="stylesheet" href="{$baseUrl}/css/member.forum.css" type="text/css">
-
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/css/jquery-ui.custom.css" type="text/css">
-
-<script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
-
-{control texylaJs}
+<link rel="stylesheet" type="text/css" href="{$baseUrl}/css/tiny-mde.min.css">
+<script type="text/javascript" src="{$baseUrl}/js/tiny-mde.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/editor-common.js"></script>
 
 <style type="text/css" n:syntax="off">
 	table#items .headerLike { border-radius: 0}
@@ -17,20 +12,11 @@
 	table#items .author { padding: 0.5ex;}
 </style>
 
-
-	{*<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>*}
-<script type="text/javascript" src="{$baseUrl}/js/jquery.textarea_autosize.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
 
 <script type="text/javascript" n:nonce>
-	$.texyla.setDefaults({
-		baseDir: {$baseUrl}+'/texyla',
-		previewPath: {link texyPreview}
-	});
-
 	$(function () {
-		// $('#frm-addTopicForm').areYouSure();
-		$('.texyla').textareaAutoSize();
-		$('.texyla').texyla(forum);
+		 $('#frm-addTopicForm').areYouSure();
 	});
 </script>
 {/block}
@@ -67,4 +53,5 @@
 	{control addTopicForm}
 {/if}
 
+<script type="text/javascript" src="{$baseUrl}/js/editor-forum.js"></script>
 {/block}

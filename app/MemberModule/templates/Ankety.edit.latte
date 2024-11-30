@@ -1,7 +1,8 @@
 {block #head}
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/style.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/texyla/css/theme.css" type="text/css">
-<link rel="stylesheet" href="{$baseUrl}/css/jquery-ui.custom.css" type="text/css">
+<link rel="stylesheet" type="text/css" href="{$baseUrl}/css/tiny-mde.min.css">
+<script type="text/javascript" src="{$baseUrl}/js/tiny-mde.min.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/editor-common.js"></script>
+<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
 
 <style type="text/css" n:syntax="off">
 input.buttonLike { border: none; cursor: pointer; font-size: 1.1em; font-family: inherit;}
@@ -13,26 +14,14 @@ input.buttonLike:active { background-color: #da251c; color: white; background-im
 div.texyla div.textarea-container { clear: right;}
 </style>
 
-<script type="text/javascript" src="{$baseUrl}/js/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" src="{$baseUrl}/js/jquery.are-you-sure.js"></script>
-
-{control texylaJs}
-
 <script type="text/javascript" n:nonce>
 	function removeRow(elem){
   		p = elem.parentNode.parentNode;
   		p.parentNode.removeChild(p);
 	}
-	
-	$.texyla.setDefaults({
-		baseDir: {$baseUrl}+'/texyla',
-		previewPath: {link texyPreview, TRUE}
-		
-	});
 
 	$(function () {
 		$('#frm-anketaForm').areYouSure();
-		$('.texyla').texyla(anketa);
 	});
 </script>
 {/block}
@@ -58,4 +47,5 @@ bude to mít za následek vymazání dosavadních hlasů a resetování ankety.<
 <p>{input save}</p>
 {/form}
 
+<script type="text/javascript" src="{$baseUrl}/js/editor-anketa.js"></script>
 {/block}
