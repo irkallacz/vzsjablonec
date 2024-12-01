@@ -186,6 +186,8 @@ class LatteFilters {
     public static function texy($s) {
         $texy = self::createTexy();
         $texy->headingModule->balancing = \Texy\Modules\HeadingModule::FIXED;
+		$texy->headingModule->top = 2;
+        $texy->headingModule->moreMeansHigher = false;
 
 		return new \Latte\Runtime\Html($texy->process($s));
     }
