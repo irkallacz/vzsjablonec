@@ -65,6 +65,10 @@ parameters:
 		key: rWawgHbVOe3RWpLNnAkfSOojuIZ1Cy3KI8QIYbR1
 		token: ucMJ2jIXeuTPSZc5t2lTain8zOdA9oy7vA3N7bxN
 		active: false
+	evidsoft:
+		url: https://www.vzs.evidsoft.cz/admin/
+		usernname: info@vzs-jablonec.cz
+		password: EWsdsrGRaFTGrteAWaw
 	menu:
 		news:
 			title: 'novinky'
@@ -226,11 +230,13 @@ services:
 	- App\Model\ImageService(%gallery.galleryUrl%, %gallery.albumUrl%, %gallery.albumDir%, %gallery.thumbDir%)
 
 	- App\Model\ChatService(%chat.url%, %chat.space%, %chat.key%, %chat.token%, %chat.active%)
+	- App\Model\EvidsoftService(%evidsoft.url%, %evidsoft.username%, %evidsoft.password%)
 
 	- App\Console\CalendarCommand
 	- App\Console\DriveCommand(%google.driveDir%)
 	- App\Console\IDokladCommand
 	- App\Console\InvoiceCommand
+	- App\Console\EvidsoftCommand
 	- App\Console\MessageCommand(%mail%, %messenger%, %wwwDir%)
 	- App\Console\PeopleCommand
 	- App\Console\AchievementCommand
