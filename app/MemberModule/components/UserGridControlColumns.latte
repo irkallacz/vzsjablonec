@@ -20,11 +20,23 @@
 	{include cell-date}
 {/define}
 
-{define cell-telefon}
+{define cell-approved_from}
+	{include cell-date}
+{/define}
+
+{define cell-proper_from}
+	{include cell-date}
+{/define}
+
+{define cell-evidsoft_id}
+	{if $cell}<a href="https://www.vzs.evidsoft.cz/admin/person/edit-person?entity_ID={$cell}">{$cell}</a>>{/if}
+{/define}
+
+{define cell-phone}
 	{if $cell}{$cell|phone}{/if}
 {/define}
 
-{define cell-telefon2}
+{define cell-phone2}
 	{if $cell}{$cell|phone}{/if}
 {/define}
 
@@ -52,7 +64,7 @@
 	{include col-yes-no}
 {/define}
 
-{define col-cardId}
+{define col-card_idd}
 	<td style="font-size: larger"><code>{$cell}</code></td>
 {/define}
 
@@ -62,7 +74,7 @@
 	</td>
 {/define}
 
-{define cell-iDokladId}
+{define cell-idoklad_id}
 	<a href="https://app.idoklad.cz/Contact/Detail/{$cell}" target="_blank">{$cell}</a>
 {/define}
 

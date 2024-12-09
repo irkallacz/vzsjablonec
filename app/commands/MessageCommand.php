@@ -231,8 +231,8 @@ final class MessageCommand extends BaseCommand {
 			'recipients' => [],
 		];
 
-		foreach ($message->related('message_user')->where('user.messengerId NOT', NULL) as $recipient) {
-			if ($recipient->user->messengerId) $notification['recipients'][] = $recipient->user->messengerId;
+		foreach ($message->related('message_user')->where('user.messenger_id NOT', NULL) as $recipient) {
+			if ($recipient->user->messenger_id) $notification['recipients'][] = $recipient->user->messenger_id;
 		}
 
 		if (array_key_exists('filename', $parameters)) {

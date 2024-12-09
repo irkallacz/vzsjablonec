@@ -69,7 +69,7 @@ class UserFormFactory {
 			->addCondition(Form::FILLED)
 			->addRule(Form::MAX_LENGTH, 'Rodné číslo by nemělo být delší než %d znaků', 11);
 
-		$form->addText('zamestnani', 'Zaměstnání/Škola', 30, 50)
+		$form->addText('occupation', 'Zaměstnání/Škola', 30, 50)
 			->setAttribute('spellcheck', 'true')
 			->addFilter([BasePresenter::class, 'removeEmoji'])
 			->setRequired('Vyplňte %label');
@@ -83,7 +83,7 @@ class UserFormFactory {
 			->addRule([$this, 'uniqueMailValidator'], 'V databázi se již vyskytuje osoba se stejnou emailovou adresou')
 			->setRequired('Vyplňte %label');
 
-		$form->addText('telefon', 'Primární telefon', 30, 9)
+		$form->addText('phone', 'Primární telefon', 30, 9)
 			->setType('tel')
 			->setRequired('Vyplňte %label')
 			->addRule(Form::INTEGER, '%label musí obsahovat jenom čísla')
@@ -107,11 +107,11 @@ class UserFormFactory {
 			->addConditionOn($form['send_to_second'], Form::EQUAL, TRUE)
 			->addRule(Form::EMAIL, 'Vyplňte sekundární email');
 
-		$form->addText('telefon2', 'Sekundární telefon', 30, 9)
+		$form->addText('phone2', 'Sekundární telefon', 30, 9)
 			->setType('tel')
 			->setNullable()
 			->addCondition(Form::FILLED)
-			->addRule(Form::NOT_EQUAL, 'Telefony se nesmí shodovat', $form['telefon'])
+			->addRule(Form::NOT_EQUAL, 'Telefony se nesmí shodovat', $form['phone'])
 			->addRule(Form::INTEGER, '%label musí obsahovat jenom čísla')
 			->addRule(Form::LENGTH, '%label musí mít %d znaků', 9);
 

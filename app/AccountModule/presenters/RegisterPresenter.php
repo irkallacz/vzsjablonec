@@ -39,13 +39,13 @@ class RegisterPresenter extends BasePresenter {
 		$form['postal_code']->setHtmlAttribute('data-url', $this->link('//Search:postalCode'));
 
 		$form['mail']->caption = 'E-mail';
-		$form['telefon']->caption = 'Telefon';
+		$form['phone']->caption = 'Telefon';
 
 		$form['mail2']->caption = 'Druhý e-mail';
 		$form['mail2']->setOption('description','(na rodiče atd...)');
 
-		$form['telefon2']->caption = 'Druhý telefon';
-		$form['telefon2']->setOption('description','(na rodiče atd...)');
+		$form['phone2']->caption = 'Druhý telefon';
+		$form['phone2']->setOption('description','(na rodiče atd...)');
 
 		unset($form['bank_account']);
 
@@ -68,7 +68,7 @@ class RegisterPresenter extends BasePresenter {
 
 		$form->onValidate[] = function (Form $form){
 			$values = $form->getValues();
-			if (($values->date_born->diff(date_create())->y < 18)and((!$values->mail2)or(!$values->telefon2))) {
+			if (($values->date_born->diff(date_create())->y < 18)and((!$values->mail2)or(!$values->phone2))) {
 				$form->addError('U nezletilých je potřeba vyplnit e-mail a telefon rodičů');
 			}
 		};

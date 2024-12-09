@@ -34,7 +34,7 @@ class UserGridControl extends Control {
 	/**
 	 * @var array $columns
 	 */
-	private $columns = ['surname', 'name', 'date_born', 'age', 'mail', 'telefon', 'date_add'];
+	private $columns = ['surname', 'name', 'date_born', 'age', 'mail', 'phone', 'date_add'];
 
 	/**
 	 * @var int $itemsPerPage;
@@ -58,27 +58,30 @@ class UserGridControl extends Control {
 	const COLUMNS = [
 		'surname' 		=> ['label' => 'Příjmení',		'size' => 20,	'format' => 'string'],
 		'name' 			=> ['label' => 'Jméno',			'size' => 20,	'format' => 'string'],
-		'date_born' 	=> ['label' => 'Datum nar.', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
+		'date_born' 	=> ['label' => 'Narození', 		'size' => 12,	'format' => 'DD.MM.YYYY'],
 		'age' 			=> ['label' => 'Věk', 			'size' =>  5,	'format' => 'integer',	'order' => FALSE],
 		'rc' 			=> ['label' => 'Rodné čís.', 	'size' => 12,	'format' => 'string'],
 		'mail' 			=> ['label' => 'E-mail', 		'size' => 30,	'format' => 'string'],
-		'telefon' 		=> ['label' => 'Telefon', 		'size' => 12,	'format' => '000 000 000'],
+		'phone' 		=> ['label' => 'Telefon', 		'size' => 12,	'format' => '000 000 000'],
 		'mail2' 		=> ['label' => 'E-mail2', 		'size' => 30,	'format' => 'string'],
-		'telefon2' 		=> ['label' => 'Telefon2', 		'size' => 12,	'format' => '000 000 000'],
+		'phone2' 		=> ['label' => 'Telefon2', 		'size' => 12,	'format' => '000 000 000'],
 		'send_to_second'=> ['label' => 'Kopie', 		'size' =>  5,	'format' => 'string',	'order' => FALSE],
 		'street' 		=> ['label' => 'Ulice',			'size' => 20,	'format' => 'string'],
 		'street_number'	=> ['label' => 'Číslo p.',		'size' => 8,	'format' => 'string'],
 		'city'	 		=> ['label' => 'Město',			'size' => 20,	'format' => 'string'],
 		'postal_code'	=> ['label' => 'PSČ',			'size' => 8,	'format' => 'integer'],
 		'bank_account'	=> ['label' => 'Číslo účtu',	'size' => 20,	'format' => 'string'],
-		'zamestnani'	=> ['label' => 'Zaměstnání',	'size' => 20,	'format' => 'string'],
+		'occupation'	=> ['label' => 'Zaměstnání',	'size' => 20,	'format' => 'string'],
 		'photo' 		=> ['label' => 'Fotka',			'size' =>  5,	'format' => 'string',	'order' => FALSE],
 		'hash' 			=> ['label' => 'Heslo', 		'size' =>  5,	'format' => 'string',	'order' => FALSE],
-		'vzsId' 		=> ['label' => 'Vzs ID', 		'size' =>  8,	'format' => 'integer'],
-		'cardId' 		=> ['label' => 'ID Karty', 		'size' =>  8,	'format' => 'string'],
-		'iDokladId' 	=> ['label' => 'iDokladID', 	'size' =>  8,	'format' => 'integer'],
-		'date_add' 		=> ['label' => 'Datum reg.', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
-		'date_update'	=> ['label' => 'Datum akt.', 	'size' => 12,	'format' => 'DD.MM.YYYY HH:MM'],
+		'vzs_id' 		=> ['label' => 'Vzs ID', 		'size' =>  8,	'format' => 'integer'],
+		'evidsoft_id' 	=> ['label' => 'Evidsfot ID', 	'size' =>  8,	'format' => 'integer'],
+		'card_id' 		=> ['label' => 'ID Karty', 		'size' =>  8,	'format' => 'string'],
+		'idoklad_id' 	=> ['label' => 'iDokladID', 	'size' =>  8,	'format' => 'integer'],
+		'approved_from'	=> ['label' => 'Schválený od',	'size' => 12, 	'format' => 'DD.MM.YYYY'],
+		'proper_from'	=> ['label' => 'Řádný od',		'size' => 12, 	'format' => 'DD.MM.YYYY'],
+		'date_add' 		=> ['label' => 'Registrace', 	'size' => 12,	'format' => 'DD.MM.YYYY'],
+		'date_update'	=> ['label' => 'Aktualizace', 	'size' => 12,	'format' => 'DD.MM.YYYY HH:MM'],
 	];
 
 	/**

@@ -172,13 +172,13 @@ final class PeopleCommand extends BaseCommand {
 		$phoneNumbers = [];
 		$phoneNumber = new Google_Service_PeopleService_PhoneNumber;
 		$phoneNumber->setType('mobile');
-		$phoneNumber->setValue('+420' . $user->telefon);
+		$phoneNumber->setValue('+420' . $user->phone);
 		$phoneNumbers[] = $phoneNumber;
 
-		if ($user->telefon2) {
+		if ($user->phone2) {
 			$phoneNumber = new Google_Service_PeopleService_PhoneNumber;
 			$phoneNumber->setType('other');
-			$phoneNumber->setValue('+420' . $user->telefon2);
+			$phoneNumber->setValue('+420' . $user->phone2);
 			$phoneNumbers[] = $phoneNumber;
 		}
 

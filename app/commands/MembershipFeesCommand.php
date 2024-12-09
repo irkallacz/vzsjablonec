@@ -58,7 +58,7 @@ final class MembershipFeesCommand extends BaseCommand
 		$token = $this->authorize();
 
 		foreach ($this->userService->getUsers(UserService::MEMBER_LEVEL)->order('surname, name') as $member) {
-			if (!$member->iDokladId) {
+			if (!$member->idoklad_id) {
 				continue;
 			}
 
@@ -79,7 +79,7 @@ final class MembershipFeesCommand extends BaseCommand
 				continue;
 			}
 
-			$invoice = $this->createInvoice($member->iDokladId, $name, (int) $now->format('Y'), $amount);
+			$invoice = $this->createInvoice($member->idoklad_id, $name, (int) $now->format('Y'), $amount);
 			$invoice = Json::encode($invoice);
 
 			$this->sendInvoice($token, $invoice);

@@ -127,7 +127,7 @@ class UserService extends DatabaseService {
 	 */
 	public function getDataForUser(IRow $user){
 		$array = $user->toArray();
-		$keys = ['id', 'hash', 'name', 'surname', 'mail', 'mail2', 'role', 'theme', 'vzsId'];
+		$keys = ['id', 'hash', 'name', 'surname', 'mail', 'mail2', 'role', 'theme', 'vzs_id'];
 		return array_intersect_key($array, array_flip($keys));
 	}
 
@@ -143,10 +143,10 @@ class UserService extends DatabaseService {
 			'date_born' => $user->date_born->format('d. m. Y'),
 			'mail' => $user->mail,
 			'mail2' => $user->mail2,
-			'phone' => $user->telefon,
-			'phone2' => $user->telefon2,
+			'phone' => $user->phone,
+			'phone2' => $user->phone2,
 			'address' => $user->street . ' ' . $user->street_number . ', '. $user->postal_code . ' ' . $user->city,
-			'occupation' => $user->zamestnani,
+			'occupation' => $user->occupation,
 		];
 
 		return $fields;
@@ -350,7 +350,7 @@ class UserService extends DatabaseService {
 	 * @return Selection
 	 */
 	public function searchUsers(string $search, int $userLevel = self::DELETED_LEVEL) {
-		$where = self::prepareSearchParams(['name', 'surname', 'zamestnani', 'city', 'street', 'mail', 'mail2', 'telefon', 'telefon2'], $search);
+		$where = self::prepareSearchParams(['name', 'surname', 'occupation', 'city', 'street', 'mail', 'mail2', 'phone', 'phone2'], $search);
 
 		return $this->getUsers($userLevel)->whereOr($where)->order('surname, name');
 	}

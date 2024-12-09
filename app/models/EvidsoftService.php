@@ -136,8 +136,8 @@ class EvidsoftService
 
 		$person['RegistrationNumber'] = $member->id;
 
-		if ($member->vzsId) {
-			$person['VZSNumber'] = $member->vzsId;
+		if ($member->vzs_id) {
+			$person['VZSNumber'] = $member->vzs_id;
 		}
 
 		if ($member->proper_from) {

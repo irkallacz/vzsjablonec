@@ -57,7 +57,7 @@ final class InvoiceCommand extends BaseCommand {
 		$force = $input->getArgument('force') == 'force';
 
 		$users = $this->userService->getUsers($force ? UserService::DELETED_LEVEL: UserService::MEMBER_LEVEL)
-			->fetchPairs('iDokladId', 'id');
+			->fetchPairs('idoklad_id', 'id');
 		$invoices = $this->invoiceService->getInvoices()
 			->fetchPairs('id', 'date_update');
 

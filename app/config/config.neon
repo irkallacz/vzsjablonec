@@ -67,7 +67,7 @@ parameters:
 		active: false
 	evidsoft:
 		url: https://www.vzs.evidsoft.cz/admin/
-		usernname: info@vzs-jablonec.cz
+		username: info@vzs-jablonec.cz
 		password: EWsdsrGRaFTGrteAWaw
 	menu:
 		news:

@@ -184,7 +184,7 @@ class IdokladService {
 			'Firstname' 	=> $user->name,
 			'Surname' 		=> $user->surname,
 			'Email' 		=> (($user->send_to_second) && (isset($user->mail2))) ? $user->mail2 : $user->mail,
-			'Mobile'		=> $user->telefon,
+			'Mobile'		=> $user->phone,
 			'City'			=> $user->city,
 			'Street'		=> $user->street .' '. $user->street_number,
 			'PostalCode'	=> $user->postal_code,

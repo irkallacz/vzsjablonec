@@ -38,7 +38,7 @@
 	<div id="top">
 		<div id="top-right">
 			<span id="profile" n:if="$user->isLoggedIn()">
-			  <a n:href="User:profile"><b>{$user->identity->name} {$user->identity->surname}</b></a> ({if $user->identity->vzsId}{$user->identity->vzsId}{else}{$user->id}{/if})
+			  <a n:href="User:profile"><b>{$user->identity->name} {$user->identity->surname}</b></a> ({if $user->identity->vzs_id}{$user->identity->vzs_id}{else}{$user->id}{/if})
 			</span>
 			{if $user->isLoggedIn()}
 				<a n:href="Sign:out">odhlásit</a>

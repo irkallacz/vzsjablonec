@@ -73,15 +73,15 @@ final class IDokladCommand extends BaseCommand {
 		}
 
 		foreach ($users as $user) {
-			if (!$user->iDokladId || !array_key_exists($user->iDokladId, $contacts)) {
+			if (!$user->idoklad_id || !array_key_exists($user->idoklad_id, $contacts)) {
 				$this->contactCreate($user);
 				$this->writeln($output, 'Created', UserService::getFullName($user));
 				unset($users[$user->id]);
 			} else {
-				$update_time = new DateTime($contacts[$user->iDokladId]['DateLastChange']);
+				$update_time = new DateTime($contacts[$user->idoklad_id]['DateLastChange']);
 				$update_time->setTimezone(new DateTimeZone('+0100'));
 				if ($force || $user->date_update > $update_time) {
-					$this->iDokladService->updateContact($user->iDokladId, $user);
+					$this->iDokladService->updateContact($user->idoklad_id, $user);
 					$output->writeln(join("\t", ['Update', UserService::getFullName($user)]), Output::VERBOSITY_VERBOSE);
 				} else {
 					$output->writeln(join("\t", ['No change', UserService::getFullName($user)]), Output::VERBOSITY_VERBOSE);
@@ -111,7 +111,7 @@ final class IDokladCommand extends BaseCommand {
 				//$this->log($user, 'NOT FOUND');
 				continue;
 			}
-			$user->update(['iDokladId' => $person[0]['Id']]);
+			$user->update(['idoklad_id' => $person[0]['Id']]);
 			//$this->log($user, 'LOCALY UPDATED');
 		}
 	}
@@ -125,6 +125,6 @@ final class IDokladCommand extends BaseCommand {
 		$this->iDokladService->authenticate();
 		$response = $this->iDokladService->createContact($user);
 		$id = $response->getData()['Id'];
-		return $user->update(['iDokladId' => $id]);
+		return $user->update(['idoklad_id' => $id]);
 	}
 }

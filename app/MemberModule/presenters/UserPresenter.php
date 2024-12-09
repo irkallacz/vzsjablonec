@@ -435,13 +435,13 @@ class UserPresenter extends LayerPresenter {
 		}
 
 		if ($this->getUser()->isInRole('admin')) {
-			$form->addText('vzsId', 'VZS ID', 8)
+			$form->addText('vzs_id', 'VZS ID', 8)
 				->setNullable()
 				->addCondition(Form::FILLED)
 				->addRule(Form::INTEGER, 'Osobní číslo musí obsahovat jen číslice')
 				->addRule(Form::LENGTH, 'Osobní číslo musí mít %d číslic',6);
 
-			$form->addText('cardId', 'ID Karty', 8)
+			$form->addText('card_id', 'ID Karty', 8)
 				->setRequired(false)
 				->setNullable()
 				->addFilter([Strings::class, 'lower'])

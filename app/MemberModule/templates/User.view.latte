@@ -88,7 +88,7 @@
 				<th>Příjmení</th><td>{$member->surname}</td>
 			</tr>
 			<tr>
-				<th>Osobní číslo</th><td>{$member->id|padLeft:3,0} {if $member->vzsId}({$member->vzsId}){/if}</td>
+				<th>Osobní číslo</th><td>{$member->id|padLeft:3,0} {if $member->vzs_id}({$member->vzs_id}){/if}</td>
 			</tr>
 			<tr>
 				<th>Registrace</th><td>{if $member->date_add}{$member->date_add|date:'d.m.Y'}{/if}</td>
@@ -133,21 +133,21 @@
 		<li n:if="$member->mail">
 			{include svg envelope} <b>E-mail:</b> <a href="mailto:{$member->mail}">{$member->mail}</a>
 		</li>
-		<li n:if="$member->telefon">
-			{include svg phone} <b>Telefon:</b> <a href="tel:+420{$member->telefon}">{$member->telefon|phone}</a>
+		<li n:if="$member->phone">
+			{include svg phone} <b>Telefon:</b> <a href="tel:+420{$member->phone}">{$member->phone|phone}</a>
 		</li>
 		<li n:if="$member->mail2">
 			{include svg envelope-o} <b>Sekundární e-mail:</b> <a href="mailto:{$member->mail2}">{$member->mail2}</a>
 		</li>
-		<li n:if="$member->telefon2">
-			{include svg phone-square} <b>Sekundární telefon:</b> <a href="tel:+420{$member->telefon2}">{$member->telefon2|phone}</a>
+		<li n:if="$member->phone2">
+			{include svg phone-square} <b>Sekundární telefon:</b> <a href="tel:+420{$member->phone2}">{$member->phone2|phone}</a>
 		</li>
 		<li n:if="(($user->isInRole('editor') or($member->id == $user->getId())) and ($member->bank_account))">
 			{include svg dollar} <b>Číslo účtu:</b> {$member->bank_account}
 		</li>
 	</ul>
 
-	<p>{include svg building} <b>Zaměstnání/Škola:</b> {$member->zamestnani}</p>
+	<p>{include svg building} <b>Zaměstnání/Škola:</b> {$member->occupation}</p>
 
 	<p n:if="$age"><b>Věk:</b> {$age->format('%y')}</p>
 
