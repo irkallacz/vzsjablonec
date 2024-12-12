@@ -153,71 +153,48 @@ final class AchievementCommand extends BaseCommand
 		//watch
 		$this->writeln($output, '<info>Přesný jako hodinky</info>');
 		$achievement = $this->achievementsService->getAchievementById(12);
+
+		//vytáhneme seznam uživatelů kteří mají alespoň 10 účastí na tréninku a nemají odznak
 		$members = $this->database->query('SELECT user_id FROM attendance_user WHERE user_id NOT IN (SELECT user_id FROM achievement_users WHERE achievement_id = ? AND `date_finish` IS NOT NULL) GROUP BY user_id HAVING COUNT(attendance_id) >= ?', $achievement->id, $achievement->threshold);
 		foreach ($members as $member) {
-			//$this->writeln($output, $member->user_id);
+			//pro každého z nich vytáhneme seznam termínů kdy byli na tréninku jako pole
+			$query = $this->database->query('SELECT `attendance`.`id`, DATE_FORMAT(`date`, "%Y-%m-%d") AS `datetime` FROM `attendance` INNER JOIN `attendance_user` ON `attendance`.`id` = `attendance_id` WHERE `user_id` = ? ORDER BY `date`', $member->user_id);
+			$dates = $query->fetchPairs('datetime', 'id');
 
-			$attendances = $this->database->query('SELECT attendance_id, `date` FROM attendance_user JOIN attendance ON attendance_id = attendance.id WHERE user_id = ? ORDER BY `date`', $member->user_id)->fetchAll();
+			if (!count($dates)) {
+				continue;
+			}
 
-			$success = false;
-			$count = 1;
-			foreach ($iterator = new CachingIterator($attendances) as $attendance) {
-				if ($iterator->hasNext()) {
-					if ($count == $achievement->threshold) {
-						$success = true;
-						break;
+			//vybereme min a max
+			$interval = new \DateInterval('P1D');
+			$datesStart = new \DateTimeImmutable(array_key_first($dates));
+			$datesEnd = new \DateTimeImmutable(array_key_last($dates));
+			$datesEnd = $datesEnd->add($interval);
+
+			$count = 0;
+			$max = 0;
+
+			foreach (new \DatePeriod($datesStart, $interval, $datesEnd) as $date) {
+				if (!in_array($date->format('N'), [3, 5])) {
+					continue;
+				}
+
+				if (array_key_exists($date->format('Y-m-d'), $dates)) {
+					$count++;
+				} else {
+					if ($count > $max) {
+						$max = $count;
 					}
+					$count = 0;
+				}
 
-					if ($attendance->date->format('N') == '3') {
-						$next = $attendance->date->modifyClone('next friday');
-					} else {
-						$next = $attendance->date->modifyClone('next wednesday');
-					}
-
-					if ($iterator->getNextValue()->date->format('Y-m-d') == $next->format('Y-m-d')) {
-						$count++;
-					} else {
-						$count = 1;
-					}
+				if ($count == 10) {
+					$this->saveResult(['user_id' => $member->user_id, 'summary' => $dates[$date->format('Y-m-d')], 'date_finish' => $date], $achievement, $output,true);
+					continue 2;
 				}
 			}
 
-			if ($success) {
-				$this->saveResult(['user_id' => $member->user_id, 'summary' => $attendance->attendance_id, 'date_finish' => $attendance->date], $achievement, $output ,true);
-			}
-		}
-
-		//zjistit jaký je den
-		if ((date('N') != '3') && (date('N') != '5')) {
-			$wednesday = new \DateTime('last wednesday');
-			$friday = new \DateTime('last friday');
-
-			//zjistit kdy byl poslední trénink a ověřit že má cenu počítat progress
-			if ($last_attendance = $this->database->query('SELECT id, `date` FROM attendance WHERE `date` = ? ', ($friday > $wednesday) ? $friday: $wednesday)->fetch()) {
-				//spočítat progress od posledního tréninku zpět
-				$members = $this->database->query('SELECT user_id FROM attendance_user WHERE user_id NOT IN (SELECT user_id FROM achievement_users WHERE achievement_id = ?) AND attendance_id = ? GROUP BY user_id', $achievement->id, $last_attendance->id);
-				foreach ($members as $member) {
-					$attendances = $this->database->query('SELECT attendance_id, `date` FROM attendance_user JOIN attendance ON attendance_id = attendance.id WHERE user_id = ? ORDER BY `date` DESC', $member->user_id)->fetchAll();
-					$count = 1;
-					foreach ($iterator = new CachingIterator($attendances) as $attendance) {
-						if ($attendance->date->format('N') == '3') {
-							$next = $attendance->date->modifyClone('last friday');
-						} else {
-							$next = $attendance->date->modifyClone('last wednesday');
-						}
-
-						if ($iterator->getNextValue()->date->format('Y-m-d') == $next->format('Y-m-d')) {
-							$count++;
-						} else {
-							break;
-						}
-					}
-					$this->saveResult(['user_id' => $member->user_id, 'progress' => $count], $achievement, $output);
-				}
-			} else {
-				//pokud ne, vynulovat progress všem kdo to nemá uzavřeno
-				$this->database->query('DELETE FROM achievement_users WHERE achievement_id = ? AND `date_finish` IS NULL', $achievement->id);
-			}
+			$this->saveResult(['user_id' => $member->user_id, 'progress' => $max], $achievement, $output);
 		}
 
 		//heart
