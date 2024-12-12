@@ -15,6 +15,8 @@ use Nette\Application\Responses\TextResponse;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Database\Table\IRow;
+use Nette\Forms\Controls\SubmitButton;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Html;
 use Nette\Database\SqlLiteral;
 use Nette\Utils\DateTime;
@@ -535,11 +537,12 @@ class ForumPresenter extends LayerPresenter {
 	}
 
 	/**
-	 * @param $form Form
+	 * @param SubmitButton $button
+	 * @param ArrayHash $values
+	 * @throws AbortException
 	 * @allow(member)
 	 */
-	public function processAddPostForm(Form $form) {
-		$values = $form->values;
+	public function processAddPostForm(SubmitButton $button, ArrayHash $values) {
 		$datum = new DateTime();
 		$values->date_update = $datum;
 
