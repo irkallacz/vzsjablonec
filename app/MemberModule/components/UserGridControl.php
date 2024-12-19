@@ -100,7 +100,11 @@ class UserGridControl extends Control {
 		$this->session = $session;
 
 		if ($session->columns) {
-			$this->columns = $session->columns;
+			$columns = array_intersect(array_keys(self::COLUMNS), $session->columns);
+
+			if (count($columns)) {
+				$this->columns = $columns;
+			}
 		}
 
 		if ($session->itemsPerPage){
