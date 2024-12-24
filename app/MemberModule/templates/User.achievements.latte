@@ -14,6 +14,7 @@
 
     #badge-table th { position: relative; }
     #badge-table .progress { height: 1ex; background-color: gray; border-radius: 1em;}
+    #badge-table .progress.outline { background-color: transparent; border: 1px solid gray;}
 </style>
 {/block}
 
@@ -32,23 +33,34 @@
             {foreach $achievements as $achievement}
                 {continueIf (!$achievement->enable)&&(!$user->isInRole('admin'))}
 
-                {var $count = $achievement->related('achievement_users')->where('date_finish IS NOT NULL')->count('id')}
-                {var $percent = $count / $users * 100}
+                {var $finishCount = $achievement->related('achievement_users')->where('date_finish IS NOT NULL')->count('id')}
+                {var $finishPercent = min($finishCount / $users * 100, 100)}
+                {var $progressCount = $achievement->related('achievement_users')->where('date_finish IS NULL')->count('id')}
+                {var $progressPercent = min($progressCount / $users * 100, 100)}
                 <tr n:class="$achievement->enable ? active : deactive">
-                    <th rowspan="2">
+                    <th rowspan="3">
                         <a href="{$baseUrl}/img/badges/{$achievement->code}.png" class="badge" title="{$achievement->name} - {$achievement->description|format:$achievement->threshold}">
-                            <img src="{$baseUrl}/img/badges/{$achievement->code}.png" n:class="(($percent < 10)&&($percent)) ? gold">
+                            <img src="{$baseUrl}/img/badges/{$achievement->code}.png" n:class="(($finishPercent < 10) && ($finishPercent)) ? gold">
                             <span class="lookup" style="background-image: url('{$baseUrl}/img/badges/{$achievement->code}.png')"></span>
                         </a>
                     </th>
                     <td class="details details-text">
                         <strong>{$achievement->name}</strong><br> {$achievement->description|format:$achievement->threshold}
                     </td>
-                    <td class="details center"><a n:tag-if="$count" n:href="UserTable:achievement $achievement->id">{$count}</a></td>
-                    <td class="details center"><b n:if="$percent" n:class="(($percent < 10)&&($percent)) ? gold">{$percent|round:2}%</b></td>
+                    <td></td>
+                    <td></td>
                 </tr>
-                <tr n:class="(($percent < 10)&&($percent)) ? gold, $achievement->enable ? active : deactive">
-                    <td class="details" colspan="4"><div n:if="$percent" class="progress" style="width: {$percent|number:2|noescape}%;"></div></td>
+                <tr n:class="(($finishPercent < 10)&&($finishPercent)) ? gold, $achievement->enable ? active : deactive">
+                    <td class="details"><div n:if="$finishCount" class="progress" style="width: {$finishPercent|number:2|noescape}%;"></div></td>
+                    <td class="details center"><a n:tag-if="$finishCount" n:href="UserTable:achievement $achievement->id, true">{$finishCount}</a></td>
+                    <td class="details center"><b n:if="$finishPercent">{$finishPercent|round:2}%</b></td>
+                </tr>
+                <tr n:class="$achievement->enable ? active : deactive">
+                    {if $achievement->threshold > 1}
+                    <td class="details"><div n:if="$progressCount" class="progress outline" style="width: {$progressPercent|number:2|noescape}%;"></div></td>
+                    <td class="details center"><a n:if="$progressCount" n:href="UserTable:achievement $achievement->id, false">{$progressCount}</a></td>
+                    <td class="details center"><b n:if="$progressPercent">{$progressPercent|round:2}%</b></td>
+                    {/if}
                 </tr>
             {/foreach}
             </tbody>

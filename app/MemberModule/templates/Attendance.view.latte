@@ -54,6 +54,10 @@
         </tbody>
     </table>
 
+	<p n:if="$user->isInRole('editor')" id="table">
+		<a class="buttonLike" n:href="UserTable:attendance $session->id">{include svg table} tabulka účastníků</a>
+	</p>
+
     {if}
         <p>V tento den probíhali tyto akce:</p>
         <ul>

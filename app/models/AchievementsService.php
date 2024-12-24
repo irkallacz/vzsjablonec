@@ -35,9 +35,19 @@ final class AchievementsService extends DatabaseService
 		return $this->getBadges()->where('user_id', $userId);
 	}
 
-	public function getUsersForBadge(int $id): Selection
+	public function getUsersForBadge(int $id, bool $finish = true): Selection
 	{
-		return $this->getBadges()->where('achievement_id', $id);
+		$users = $this->getBadges()
+			->where('achievement_id', $id);
+
+		if ($finish) {
+			$users->where('date_finish IS NOT NULL');
+		} else {
+			$users->where('date_finish IS NULL');
+		}
+
+		return $users;
+
 	}
 
 	public function getBadgesCount(): Selection

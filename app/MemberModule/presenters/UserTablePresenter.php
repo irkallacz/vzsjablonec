@@ -4,6 +4,7 @@ namespace App\MemberModule\Presenters;
 
 use App\Model\AchievementsService;
 use App\Model\AnketyService;
+use App\Model\AttendanceService;
 use App\Model\UserService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -22,6 +23,11 @@ final class UserTablePresenter extends LayerPresenter
 	 * @var AchievementsService $achievementsService @inject
 	 */
 	public $achievementsService;
+
+	/**
+	 * @var AttendanceService $attendanceService @inject
+	 */
+	public $attendanceService;
 
 	/**
 	 * @var AnketyService $anketyService @inject
@@ -119,9 +125,24 @@ final class UserTablePresenter extends LayerPresenter
 		$this->setView('default');
 	}
 
-	public function actionAchievement(int $id)
+	public function actionAchievement(int $id, $finish = true)
 	{
-		$this->selection = $this->achievementsService->getUsersForBadge($id)->fetchPairs(null, 'user_id');
+		$this->selection = $this->achievementsService->getUsersForBadge($id, $finish)->fetchPairs(null, 'user_id');
+
+		if (is_null($this->filter)) {
+			$this->filter = true;
+		}
+
+		if (is_null($this->role)) {
+			$this->role = UserService::USER_LEVEL;
+		}
+
+		$this->setView('default');
+	}
+
+	public function actionAttendance(int $id)
+	{
+		$this->selection = $this->attendanceService->getAttendanceForSession($id)->fetchPairs(null, 'user_id');
 
 		if (is_null($this->filter)) {
 			$this->filter = true;
