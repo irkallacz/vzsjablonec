@@ -31,6 +31,7 @@ class MessageService extends DatabaseService {
 			$message->getText(),
 			$message->getAuthor(),
 			$message->getRecipients(),
+			$message->getSendAt(),
 			$message->getParameters(),
 			$message->getType()
 		);
@@ -44,7 +45,7 @@ class MessageService extends DatabaseService {
 	 * @param array|NULL $parameters
 	 * @param int $type
 	 */
-	private function insertMessage(string $subject, string $text, int $author_id, $recipients, array $parameters = NULL, int $type = Message::CUSTOM_MESSAGE_TYPE) {
+	private function insertMessage(string $subject, string $text, int $author_id, $recipients, \DateTime $sendAt, array $parameters = NULL, int $type = Message::CUSTOM_MESSAGE_TYPE) {
 		$parameters = $parameters ? Json::encode($parameters) : NULL;
 
 		$this->database->query('INSERT INTO ' . self::TABLE_MESSAGE, [
@@ -52,6 +53,7 @@ class MessageService extends DatabaseService {
 			'subject' => $subject,
 			'user_id' => $author_id,
 			'date_add' => new DateTime,
+			'date_send_at' => $sendAt,
 			'text' => $text,
 			'param' => $parameters
 		]);
@@ -115,7 +117,11 @@ class MessageService extends DatabaseService {
 	 * @return Selection
 	 */
 	public function getMessagesToSend() {
-		return $this->getMessages()->where('date_send IS NULL')->order('date_add DESC');
+		return $this->getMessages()
+			->where('date_send_at >= NOW()')
+			->where('date_send IS NULL')
+			->order('date_send_at DESC')
+			->order('date_add DESC');
 	}
 
 

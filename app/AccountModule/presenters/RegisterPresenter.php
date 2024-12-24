@@ -108,6 +108,7 @@ class RegisterPresenter extends BasePresenter {
 		$message->setAuthor($user->id);
 		$message->setRecipients($this->userService->getUsers(UserService::ADMIN_LEVEL));
 		$message->setParameters(['user_id' => $user->id]);
+		$message->setSendAt(new \DateTime('+5 minutes'));
 
 		$this->messageService->addMessage($message);
 	}

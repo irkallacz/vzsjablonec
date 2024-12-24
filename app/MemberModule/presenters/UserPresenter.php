@@ -302,6 +302,7 @@ class UserPresenter extends LayerPresenter {
 		$filename = Strings::webalize(UserService::getFullName($user)).'.pdf';
 		$filePath = WWW_DIR .'/'. MessageService::DIR_ATTACHMENTS .'/'. $filename;
 		$this->registrationForm($user, 'F', $filePath);
+		$message->setSendAt(new \DateTime('+5 minutes'));
 
 		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id, 'filename' => $filename]);
 
@@ -343,6 +344,7 @@ class UserPresenter extends LayerPresenter {
 		$message->setAuthor($this->getUser()->isLoggedIn() ? $this->user->id : $user->id);
 		$message->addRecipient($user->id);
 		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id]);
+		$message->setSendAt(new \DateTime('+5 minutes'));
 
 		$this->messageService->addMessage($message);
 

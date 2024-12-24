@@ -307,6 +307,7 @@ class HlasovaniPresenter extends LayerPresenter {
 		$message->setAuthor($this->user->id);
 		$message->setRecipients($this->userService->getUsersByRight('board'));
 		$message->setParameters(['hlasovani_id' => $hlasovani->id]);
+		$message->setSendAt(new \DateTime('+5 minutes'));
 
 		$this->messageService->addMessage($message);
 

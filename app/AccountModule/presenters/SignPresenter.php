@@ -21,6 +21,7 @@ use Nette\Http\Request;
 use Nette\Security\AuthenticationException;
 use Nette\Security\IUserStorage;
 use Nette\Security\Passwords;
+use Nette\Utils\DateTime;
 use Nette\Utils\JsonException;
 use Nette\Utils\Random;
 use Nette\Utils\Strings;
@@ -248,7 +249,8 @@ class SignPresenter extends BasePresenter {
 
 		if ($member) {
 			if (!$this->userService->haveActivePasswordSession($member->id)) {
-				$next = $this->messageService->getNextSendTime();
+				//$next = $this->messageService->getNextSendTime();
+				$next = new DateTime('+ 5 minutes');
 				$session = $this->userService->addPasswordSession($member->id, '3 HOUR');
 				$this->backlink = '';
 				$this->addRestoreMail($member, $session);
@@ -277,6 +279,7 @@ class SignPresenter extends BasePresenter {
 		$message->setAuthor($user->id);
 		$message->addRecipient($user->id);
 		$message->setParameters(['user_id' => $user->id,'session_id' => $session->id]);
+		$message->setSendAt(new \DateTime('+5 minutes'));
 
 		$this->messageService->addMessage($message);
 

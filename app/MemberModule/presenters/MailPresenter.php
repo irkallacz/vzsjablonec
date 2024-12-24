@@ -311,6 +311,7 @@ class MailPresenter extends LayerPresenter {
 		$message->setText($values->text);
 		$message->setAuthor($this->user->id);
 		$message->setParameters($parameters);
+		$message->setSendAt(new \DateTime('+30 minutes'));
 
 		$this->messageService->addMessage($message);
 

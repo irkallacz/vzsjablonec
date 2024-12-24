@@ -52,6 +52,11 @@ class Message {
 	private $type = self::CUSTOM_MESSAGE_TYPE;
 
 	/**
+	 * @var \DateTime
+	 */
+	private $sendAt = null;
+
+	/**
 	 * Message constructor.
 	 * @param int $type
 	 */
@@ -148,6 +153,22 @@ class Message {
 	 */
 	public function setType(int $type) {
 		$this->type = $type;
+	}
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getSendAt(): \DateTime
+	{
+		return $this->sendAt;
+	}
+
+	/**
+	 * @param \DateTime $sendAt
+	 */
+	public function setSendAt(\DateTime $sendAt): void
+	{
+		$this->sendAt = $sendAt;
 	}
 
 

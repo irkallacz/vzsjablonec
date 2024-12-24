@@ -464,6 +464,7 @@ class AkcePresenter extends LayerPresenter {
 		$message->setAuthor($this->user->id);
 		$message->setRecipients($this->userService->getUsersByRight('confirm'));
 		$message->setParameters(['akce_id' => $akce->id]);
+		$message->setSendAt(new \DateTime('+5 minutes'));
 
 		$this->messageService->addMessage($message);
 	}
