@@ -57,7 +57,7 @@
 <ul class="buttonMenu">
 	{*<li n:if="$user->isInRole('member')"><a n:href="vcfArchive" class="buttonLike">{include svg address-card-o} stáhnout vizitky</a></li>*}
 	<li n:if="$user->isInRole('editor')"><a n:href="achievements" class="buttonLike">{include svg tags} odznáčky</a></li>
-	<li n:if="$user->isInRole('editor')"><a n:href="table" class="buttonLike">{include svg table} tabulka</a></li>
+	<li n:if="$user->isInRole('editor')"><a n:href="UserTable:default" class="buttonLike">{include svg table} tabulka</a></li>
 	<li n:if="$user->isInRole('member')"><a n:href="map" class="buttonLike">{include svg map-marker} mapa</a></li>
 	<li n:if="$user->isInRole('editor')"><a n:href="add" class="buttonLike">{include svg user-plus} nový člen</a></li>
 </ul>

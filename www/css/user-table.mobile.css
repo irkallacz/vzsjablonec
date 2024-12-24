@@ -1,0 +1,4 @@
+#content { flex-flow: row wrap;  }
+#menu { margin-top: 0; }
+#menu li { padding: 0.3ex; }
+#text { margin-left: 0; }

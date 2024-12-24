@@ -44,7 +44,7 @@
                     <td class="details details-text">
                         <strong>{$achievement->name}</strong><br> {$achievement->description|format:$achievement->threshold}
                     </td>
-                    <td class="details center">{$count}</td>
+                    <td class="details center"><a n:tag-if="$count" n:href="UserTable:achievement $achievement->id">{$count}</a></td>
                     <td class="details center"><b n:if="$percent" n:class="(($percent < 10)&&($percent)) ? gold">{$percent|round:2}%</b></td>
                 </tr>
                 <tr n:class="(($percent < 10)&&($percent)) ? gold, $achievement->enable ? active : deactive">

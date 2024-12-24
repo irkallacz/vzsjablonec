@@ -1,0 +1,6 @@
+#main { max-width: 180em;}
+#content { display: flex; flex-flow: row; align-content: flex-start; }
+#text { margin-left: 2em; }
+#menu { float: none; min-width: 11em; margin-top: 1ex;}
+#menu li { font-size: 1.4em; padding: 0 0 0 0.5ex; }
+#top h1 { vertical-align: middle}

@@ -32,4 +32,8 @@
 
 {control anketa:whole}
 
+<p n:if="$user->isInRole('editor')" id="table">
+	<a class="buttonLike" n:href="UserTable:survey $anketa->id">{include svg table} tabulka hlasujících</a>
+</p>
+
 {/block}

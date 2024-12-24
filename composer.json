@@ -32,7 +32,6 @@
 		"venca-x/social-login": "^1.0",
 		"malcanek/idoklad-v2": "dev-master",
 		"contributte/recaptcha": "^3.1",
-		"nextras/datagrid": "^3.0",
 		"mk-j/php_xlsxwriter": "^0.37.0",
 		"tmw/fpdm": "^2.9",
 		"caxy/php-htmldiff": "^0.1.7"

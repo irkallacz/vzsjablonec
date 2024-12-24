@@ -16,7 +16,7 @@ border-radius: 0 0 1em 1em; float: right; color: #12397e; font-weight: bold; fon
 #menu {float: left; list-style-type: none; margin: 0; padding: 0; }
 #menu li a {display: block; text-decoration: none; color: inherit;}
 #menu li {background-color: #60afe4; text-decoration: none; border: 1px solid black; 
-font-size: 1.5em;  font-family: Arial, sans-serif; margin-top: 10%; border-radius: 1ex;
+font-size: 1.5em; font-family: Arial, sans-serif; margin-bottom: 10%; border-radius: 1ex;
 width: 100%; display: block; color: white; font-weight: bold; padding: 0.1ex 0.1ex 0.1ex 0.5ex;
 	background-image: -moz-linear-gradient(#60afe4,#0089d2); 
 	background-image: -webkit-linear-gradient(#60afe4,#0089d2); 

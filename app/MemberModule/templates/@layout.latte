@@ -55,13 +55,15 @@
 		{include #title}
 	</div>
 
-	{if $presenter instanceof \App\MemberModule\Presenters\BasePresenter}
-		{control menu $baseUrl}
-	{/if}
+	<div id="content">
+		{if $presenter instanceof \App\MemberModule\Presenters\BasePresenter}
+			{control menu $baseUrl}
+		{/if}
 
-	<div id="text">
-		<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
-		{include #content}
+		<div id="text">
+			<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+			{include #content}
+		</div>
 	</div>
 
 </div>

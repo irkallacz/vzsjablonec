@@ -1,0 +1,77 @@
+{block head}
+	<link rel="stylesheet" href="{$baseUrl}/css/bootstrap.min.css">
+	<link rel="stylesheet" href="{$baseUrl}/css/bootstrap-table.min.css">
+	<link rel="stylesheet" href="{$baseUrl}/css/user-table.css" type="text/css">
+	<link rel="stylesheet" href="{$baseUrl}/css/user-table.mobile.css" type="text/css" media="screen and (max-width: 900px)">
+	<link rel="stylesheet" href="{$baseUrl}/css/user-table.mobile.css" type="text/css" media="screen and (orientation: portrait)">
+	<script src="{$baseUrl}/js/bootstrap.bundle.min.js"></script>
+	<script src="{$baseUrl}/js/bootstrap-table.min.js"></script>
+	<script src="{$baseUrl}/js/bootstrap-table-cookie.min.js"></script>
+{/block}
+
+<h1 n:block="title">Tabulka uživatelů</h1>
+
+{block content}
+	{form gridForm}
+
+	<div id="toolbar">{input export} {input email} {input approve} {label role /} {input role} {input ok}
+		{if $presenter->action != default}
+			<a class="buttonLike" n:href="this, filter: !$filter">{include svg filter} {if $filter}ne{/if}filtrovat</a>
+		{/if}
+
+	</div>
+
+	<table data-toggle="table" data-toolbar="#toolbar" data-pagination="true" data-pagination-parts="['pageInfo']" data-page-size="500" data-search="true" data-select-item-name="id[]" data-id-field="id"
+		   data-show-columns="true" data-cookie="true" data-cookie-id-table="userTable" data-cookie-storage="localStorage" n:class="table, table-striped, table-hover, $user->identity->theme ? table-dark">
+		<thead>
+		<tr>
+			<th data-checkbox="true"></th>
+			<th n:foreach="$columns as $column => $setting" data-field="{$column}" data-visible="{$setting->visible ? 'true' : 'false'}" data-sortable="{$setting->order ? 'true' : 'false'}" {if $column == 'id'}data-formatter="userLink"{/if}>{$setting->label}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr n:foreach="$rows as $row">
+			<td>{in_array($row->id, $selection)}</td>
+			<td n:foreach="$columns as $column => $setting">
+                {switch $setting->type}
+				{case date}
+					<time datetime="{$row->{$column}|date:'Y-m-d'}">{$row->{$column}|date:'d.m.Y'}</time>
+                {case datetime}
+					<time datetime="{$row->{$column}|date:'Y-m-d H:i:s'}">{$row->{$column}|date:'d.m.Y H:i'}</time>
+                {case phone}
+                	{if $row->{$column}}{$row->{$column}|number:0, '.', '&nbsp;'|noescape}{/if}
+                {case bool}
+                	{$row->{$column} ? '✓' : '✗'}
+                {case code}
+					<code>{$row->{$column}}</code>
+                {default}
+                	{switch $column}
+                    {case idoklad_id}
+						<a href="https://app.idoklad.cz/Contact/Detail/{$row->idoklad_id}" target="_blank" n:if="$row->idoklad_id">{$row->idoklad_id}</a>
+                    {case evidsoft_id}
+						<a href="https://www.vzs.evidsoft.cz/admin/person/edit-person?entity_ID={$row->evidsoft_id}" target="_blank" n:if="$row->evidsoft_id">{$row->evidsoft_id}</a>
+					{case photo}
+						{* <button n:if="$row->photo" type="button" class="image-popover btn btn-outline-primary btn-sm" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="HA">
+							<svg class="icon icon-image"><use xlink:href="/img/symbols.svg#icon-image"></use></svg>
+						</button> *}
+						<a n:if="$row->photo" target="_blank" href="{$baseUrl}/img/photo/{$row->photo}">
+							<svg class="icon icon-image"><use xlink:href="/img/symbols.svg#icon-image"></use></svg>
+						</a>
+                    {default}
+						{$row->{$column}}
+                    {/switch}
+                {/switch}
+			</td>
+		</tr>
+		</tbody>
+	</table>
+
+	{/form}
+
+	<script n:nonce>
+		function userLink(id) {
+			return '<a target="_blank" href="/user/view/'+ id +'">' + id + '</a>'
+		}
+	</script>
+
+{/block}

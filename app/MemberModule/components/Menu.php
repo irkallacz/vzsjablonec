@@ -33,8 +33,13 @@ final class Menu extends Control
 			$li = $ul->create('li');
 
 			if (property_exists($item, 'current')) {
-				if ($this->presenter->isLinkCurrent($item->current)) {
-					$li->setAttribute('class', 'current');
+				$currents = ($item->current instanceof ArrayHash) ? $item->current : [$item->current];
+
+				foreach ($currents as $current) {
+					if ($this->presenter->isLinkCurrent($current)) {
+						$li->setAttribute('class', 'current');
+						break;
+					}
 				}
 			}
 

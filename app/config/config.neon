@@ -91,7 +91,9 @@ parameters:
 		users:
 			title: 'adresář'
 			action: 'User:'
-			current: 'User:*'
+			current:
+				- 'User:*'
+				- 'UserTable:*'
 			role: user
 			icon: address-book-o
 		documents:
@@ -289,7 +291,6 @@ services:
 
 extensions:
 	- WebChemistry\Forms\Controls\DI\MultiplierExtension
-	- Echo511\Plupload\DI\PluploadExtension
 	recaptcha: Contributte\ReCaptcha\DI\ReCaptchaExtension
 	console: Contributte\Console\DI\ConsoleExtension
 

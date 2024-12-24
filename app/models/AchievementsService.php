@@ -35,6 +35,11 @@ final class AchievementsService extends DatabaseService
 		return $this->getBadges()->where('user_id', $userId);
 	}
 
+	public function getUsersForBadge(int $id): Selection
+	{
+		return $this->getBadges()->where('achievement_id', $id);
+	}
+
 	public function getBadgesCount(): Selection
 	{
 		return $this->getBadges()->select('achievement_id')

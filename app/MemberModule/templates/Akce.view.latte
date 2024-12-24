@@ -105,8 +105,12 @@
 
 {control signEvent}
 
-<p n:if="$user->isInRole('admin') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))" id="mail">
+<p n:if="$user->isInRole('editor') or (($user->isInRole('member'))and(array_key_exists($user->id,$orgList)))" id="mail">
 	<a class="buttonLike" n:href="Mail:akce $akce->id">{include svg envelope} poslat mail účastníkům</a>
+</p>
+
+<p n:if="$user->isInRole('editor')" id="table">
+	<a class="buttonLike" n:href="UserTable:event $akce->id">{include svg table} tabulka účastníků</a>
 </p>
 
 {if $akce->sequence_id}
