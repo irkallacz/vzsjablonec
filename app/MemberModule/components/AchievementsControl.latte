@@ -51,7 +51,7 @@
                     <td class="details center"><a n:if="$badge->date_finish" n:tag-if="$badge->event_id" href="{plink Akce:view, $badge->event_id}">{$badge->date_finish|date:'d.m.Y'}</a></td>
                 </tr>
                 <tr n:class="$badge->date_finish ? active : deactive">
-                    <td class="details" colspan="4"><div n:if="!$badge->date_finish" class="progress" style="width: {$percent|number:2|noescape}%;"></div></td>
+                    <td class="details"><div n:if="!$badge->date_finish" class="progress" style="width: {$percent|number:2|noescape}%;"></div></td>
                 </tr>
             {/foreach}
             </tbody>
@@ -62,12 +62,12 @@
 </div>
 
     <script type="text/javascript" n:syntax="off" n:nonce>
-        document.getElementById('badge-list-button').addEventListener('click', function (){
+        document.getElementById('badge-list-button').addEventListener('click', (e) => {
             document.getElementById('badge-list-button').classList.add('hide');
             document.getElementById('badge-table').classList.remove('inline');
             document.getElementById('badge-table-button').classList.remove('hide');
         });
-        document.getElementById('badge-table-button').addEventListener('click', function (){
+        document.getElementById('badge-table-button').addEventListener('click', (e) => {
             document.getElementById('badge-table').classList.add('inline');
             document.getElementById('badge-list-button').classList.remove('hide');
             document.getElementById('badge-table-button').classList.add('hide');
