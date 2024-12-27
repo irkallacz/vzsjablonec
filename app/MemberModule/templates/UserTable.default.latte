@@ -14,7 +14,7 @@
 {block content}
 	{form gridForm}
 
-	<div id="toolbar">{input export} {input email} {input approve} {label role /} {input role} {input ok}
+	<div id="toolbar">{input export} {input email} {if $user->isInRole('admin')}{input approve}{/if} {label role /} {input role} {input ok}
 		{if $presenter->action != default}
 			<a class="buttonLike" n:href="this, filter: !$filter">{include svg filter} {if $filter}ne{/if}filtrovat</a>
 		{/if}
