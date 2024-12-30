@@ -233,6 +233,8 @@ final class UserTablePresenter extends LayerPresenter
 						case 'send_to_second':
 							$value = self::YES_NO_ARRAY[boolval($user->{$column})];
 							break;
+						case 'approved_from':
+						case 'proper_from':
 						case 'date_born':
 						case 'date_add':
 						case 'date_update':
