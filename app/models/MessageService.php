@@ -118,7 +118,7 @@ class MessageService extends DatabaseService {
 	 */
 	public function getMessagesToSend() {
 		return $this->getMessages()
-			->where('date_send_at >= NOW()')
+			->where('date_send_at <= NOW()')
 			->where('date_send IS NULL')
 			->order('date_send_at DESC')
 			->order('date_add DESC');
