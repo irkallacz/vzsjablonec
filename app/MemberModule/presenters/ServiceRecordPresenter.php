@@ -54,7 +54,7 @@ final class ServiceRecordPresenter extends LayerPresenter
 	 * @return YearPaginator
 	 */
 	public function createComponentYp() {
-		return new YearPaginator(2023, NULL, 1, intval(date('Y')));
+		return new YearPaginator(2023, 2024, 1, 2024);
 	}
 
 	/**
