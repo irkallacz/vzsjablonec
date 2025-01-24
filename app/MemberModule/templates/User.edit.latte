@@ -43,6 +43,13 @@
 	$(function() {
 		$('#frm-editMemberForm').areYouSure();
 		$('#frm-addMemberForm').areYouSure();
+
+		const element = document.getElementById('frm-editMemberForm-card_id');
+		if (element) {
+			element.addEventListener('keyup', event => {
+				event.target.value = event.target.value.toLowerCase().replaceAll(new RegExp('[^0-9a-f]', 'g'), '');
+			});
+		}
 	});
 </script>
 {/block}
