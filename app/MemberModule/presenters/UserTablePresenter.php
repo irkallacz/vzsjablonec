@@ -183,7 +183,7 @@ final class UserTablePresenter extends LayerPresenter
 
 		$form->addSubmit('approve', 'Schválení')
 			->setHtmlAttribute('class', 'buttonLike')
-			->onClick[] = [$this, 'processApprove'];
+			->onClick[] = [$this, 'processApproval'];
 
 		return $form;
 	}
