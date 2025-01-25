@@ -65,6 +65,7 @@
 					</div>
 					<div class="file" n:ifset="$param->filename">{include svg paperclip} <a href="{$baseUrl}/doc/message/{$param->filename}">{$param->filename}</a></div>
 					<ul class="buttonMenu" n:if="$presenter->action == 'send'">
+						<li n:if="$user->isInRole('editor')" id="table"><a class="buttonLike" n:href="UserTable:message $message->id">{include svg table} tabulka účastníků</a></li>
 						<li n:if="!$message->date_send"><a class="buttonLike" n:href="edit $message->id">{include svg pencil} editovat</a></li>
 						<li n:if="($user->isInRole('admin'))or(!$message->date_send)"><a class="buttonLike" n:href="delete $message->id">{include svg trash} smazat</a></li>
 					</ul>

@@ -5,6 +5,7 @@ namespace App\MemberModule\Presenters;
 use App\Model\AchievementsService;
 use App\Model\AnketyService;
 use App\Model\AttendanceService;
+use App\Model\MessageService;
 use App\Model\UserService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -33,6 +34,11 @@ final class UserTablePresenter extends LayerPresenter
 	 * @var AnketyService $anketyService @inject
 	 */
 	public $anketyService;
+
+	/**
+	 * @var MessageService $messageService @inject
+	 */
+	public $messageService;
 
 	/**
 	 * @var array $selection
@@ -110,64 +116,48 @@ final class UserTablePresenter extends LayerPresenter
 		$this->template->columns = ArrayHash::from(self::COLUMNS);
 	}
 
-	public function actionEvent(int $id)
+	protected function filterAction()
 	{
-		$this->selection = $this->userService->getUsersByAkceId($id)->fetchPairs(null, 'id');
-
 		if (is_null($this->filter)) {
 			$this->filter = true;
 		}
 
-		if (is_null($this->filter)) {
+		if (is_null($this->role)) {
 			$this->role = UserService::USER_LEVEL;
 		}
 
 		$this->setView('default');
+	}
+
+	public function actionEvent(int $id)
+	{
+		$this->selection = $this->userService->getUsersByAkceId($id)->fetchPairs(null, 'id');
+
+		$this->filterAction();
 	}
 
 	public function actionAchievement(int $id, $finish = true)
 	{
 		$this->selection = $this->achievementsService->getUsersForBadge($id, $finish)->fetchPairs(null, 'user_id');
-
-		if (is_null($this->filter)) {
-			$this->filter = true;
-		}
-
-		if (is_null($this->role)) {
-			$this->role = UserService::USER_LEVEL;
-		}
-
-		$this->setView('default');
+		$this->filterAction();
 	}
 
 	public function actionAttendance(int $id)
 	{
 		$this->selection = $this->attendanceService->getAttendanceForSession($id)->fetchPairs(null, 'user_id');
-
-		if (is_null($this->filter)) {
-			$this->filter = true;
-		}
-
-		if (is_null($this->role)) {
-			$this->role = UserService::USER_LEVEL;
-		}
-
-		$this->setView('default');
+		$this->filterAction();
 	}
 
 	public function actionSurvey(int $id)
 	{
 		$this->selection = $this->anketyService->getMembersByAnketaId($id)->fetchPairs(null, 'user_id');
+		$this->filterAction();
+	}
 
-		if (is_null($this->filter)) {
-			$this->filter = true;
-		}
-
-		if (is_null($this->role)) {
-			$this->role = UserService::USER_LEVEL;
-		}
-
-		$this->setView('default');
+	public function actionMessage(int $id)
+	{
+		$this->selection = $this->messageService->getRecipients($id)->fetchPairs(null, 'user_id');
+		$this->filterAction();
 	}
 
 	public function createComponentGridForm(): Form
