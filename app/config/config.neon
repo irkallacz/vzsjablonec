@@ -239,6 +239,7 @@ services:
 	- App\Console\IDokladCommand
 	- App\Console\InvoiceCommand
 	- App\Console\EvidsoftCommand
+	- App\Console\QualificationCommand
 	- App\Console\MessageCommand(%mail%, %messenger%, %wwwDir%)
 	- App\Console\PeopleCommand
 	- App\Console\AchievementCommand

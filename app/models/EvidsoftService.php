@@ -47,6 +47,39 @@ class EvidsoftService
 		}
 	}
 
+	public function expertiseCourseList(string $type = 'qualification', int $start = null, int $count = null, string $sort = null)
+	{
+		$query = [
+			'Type' => $type,
+			'start' => $start,
+			'count' => $count,
+			'sort' => $sort,
+		];
+
+		$response = $this->client->request('GET', 'expertise-course/data-list', ['query' => array_filter($query)]);
+		$response = $response->getBody()->getContents();
+
+		return Json::decode($response);
+	}
+
+	public function expertiseCoursePersonList(int $expertiseCourseID, bool $onlyActiveParticipation = true, bool $onlyActiveMembership = false, string $type = 'qualification', int $start = null, int $count = null, string $sort = null)
+	{
+		$query = [
+			'ExpertiseCourse_ID' => $expertiseCourseID,
+			'OnlyActiveMembership' => $onlyActiveMembership,
+			'OnlyActiveParticipation' => $onlyActiveParticipation,
+			'ExpertiseType' => $type,
+			'start' => $start,
+			'count' => $count,
+			'sort' => $sort,
+		];
+
+		$response = $this->client->request('GET', 'expertise-course-person/data-list', ['query' => array_filter($query)]);
+		$response = $response->getBody()->getContents();
+
+		return Json::decode($response);
+	}
+
 	public function personList(bool $onlyActiveMembership = null, int $start = null, int $count = null, string $sort = null): object
 	{
 		$query = [
