@@ -385,4 +385,9 @@ class UserService extends DatabaseService {
 	{
 		return $this->getQualificationMembers()->where('evidsoft_id', $id)->fetch();
 	}
+
+	public function getQualificationMemberByMemberId(int $id): Selection
+	{
+		return $this->getQualificationMembers()->where('member_id', $id);
+	}
 }

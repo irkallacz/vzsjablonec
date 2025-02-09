@@ -192,6 +192,11 @@
 			<a n:href="vcf $member->id" class="buttonLike">{include svg address-card-o} stáhnout vizitku</a>
 		</p>
 		*}
+
+		{if ($user->id == $member->id) || ($user->isInRole('board'))}
+			{control qualifications $member->id}
+		{/if}
+
 		{control achievements $member->id}
 
 		{control userEvents $member->id}

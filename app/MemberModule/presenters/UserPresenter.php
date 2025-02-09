@@ -6,6 +6,7 @@ use App\MemberModule\Components\AbstractAjaxControl;
 use App\MemberModule\Components\AchievementsControl;
 use App\MemberModule\Components\AttendanceControl;
 use App\MemberModule\Components\EventsControl;
+use App\MemberModule\Components\QualificationControl;
 use App\MemberModule\Components\UserGridControl;
 use App\MemberModule\Components\InvoiceControl;
 use App\MemberModule\Forms\UserFormFactory;
@@ -164,9 +165,18 @@ class UserPresenter extends LayerPresenter {
 	/**
 	 * @return AchievementsControl
 	 */
-	protected function createComponentAchievements(){
+	protected function createComponentAchievements()
+	{
+		return new AchievementsControl($this->achievementsService, $this->userService);
+	}
+
+	/**
+	 * @return QualificationControl
+	 */
+	protected function createComponentQualifications()
+	{
 		$memberId = $this->getParameter('id');
-		return new AchievementsControl($this->achievementsService, $this->userService, $memberId);
+		return new QualificationControl($this->userService, $memberId);
 	}
 
 	/**

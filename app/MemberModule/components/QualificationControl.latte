@@ -1,0 +1,37 @@
+{import '../templates/@svg.latte'}
+
+<style type="text/css" n:syntax="off">
+    #snippet-qualifications-table { width: 100%; max-width: 50em; caption-side: bottom; border-collapse: collapse;}
+</style>
+
+{if $qualifications->count()}
+<h3>{include svg id-badge} Kvalifikace</h3>
+
+<table n:snippet="table">
+    <thead>
+        <tr>
+            <th colspan="3">Název</th><th>Číslo</th><th>Platnost od</th><th>Platnost do</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr n:foreach="$qualifications as $qualification" class="hoverLike target">
+            <td>{if (!is_null($qualification->date_end)) && (date_create() > $qualification->date_end)}
+                    <span title="Kvalifikaci vypršela platnost">{include svg times-circle, red}</span>
+                {elseif (!is_null($qualification->date_end)) && ($qualification->date_end < date_create('+1 year'))}
+                    <span title="Kvalifikaci brzy vyprší platnost">{include svg exclamation-circle, orange}</span>
+                {else}
+                    {include svg check-circle, green}
+                {/if}
+            </td>
+            <td>{$qualification->type ?? $qualification->qualification->shortcut}</td>
+            <td>{$qualification->qualification->name}</td>
+            <td>{$qualification->number}</td>
+            <td>{$qualification->date_start|date:'d.m.Y'}</td>
+            <td>{$qualification->date_end|date:'d.m.Y'}</td>
+        </tr>
+    </tbody>
+    <caption n:if="$showButton">
+        <p><a n:href="showAll! !$showAll" class="buttonLike ajax">{if $showAll}{include svg chevron-up} Zobrazit aktivní{else}{include svg chevron-down} Zobrazit všechny{/if}</a></p>
+    </caption>
+</table>
+{/if}
