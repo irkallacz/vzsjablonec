@@ -375,19 +375,4 @@ class UserService extends DatabaseService {
 	public static function getFullName(IRow $user){
 		return $user->surname . ' ' . $user->name;
 	}
-
-	public function getQualificationMembers(): Selection
-	{
-		return $this->database->table('qualification_members');
-	}
-
-	public function getQualificationMemberByNumber(int $id)
-	{
-		return $this->getQualificationMembers()->where('evidsoft_id', $id)->fetch();
-	}
-
-	public function getQualificationMemberByMemberId(int $id): Selection
-	{
-		return $this->getQualificationMembers()->where('member_id', $id);
-	}
 }

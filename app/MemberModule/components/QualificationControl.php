@@ -4,6 +4,7 @@
 namespace App\MemberModule\Components;
 
 
+use App\Model\QualificationService;
 use App\Model\UserService;
 use Nette\Application\UI\Control;
 
@@ -12,7 +13,7 @@ class QualificationControl extends Control
 	/**
 	 * @var UserService
 	 */
-	protected $userService;
+	protected $qualificationService;
 
 	/**
 	 * @var bool
@@ -26,26 +27,26 @@ class QualificationControl extends Control
 
 	/**
 	 * QualificationControl constructor.
-	 * @param UserService $userService
+	 * @param QualificationService $qualificationService
 	 */
-	public function __construct(UserService $userService, int $memberId)
+	public function __construct(QualificationService $qualificationService, int $memberId)
 	{
 		parent::__construct();
-		$this->userService = $userService;
+		$this->qualificationService = $qualificationService;
 		$this->memberId = $memberId;
 	}
 
 	public function render()
 	{
 		$showButton = true;
-		$qualifications = $this->userService->getQualificationMemberByMemberId($this->memberId);
+		$qualifications = $this->qualificationService->getQualificationMemberByMemberId($this->memberId);
 
 		if (!$this->showAll) {
 			$qualifications->where('date_end IS NULL OR date_end > NOW()');
 		}
 
 		if (!$qualifications->count()) {
-			$qualifications = $this->userService->getQualificationMemberByMemberId($this->memberId);
+			$qualifications = $this->qualificationService->getQualificationMemberByMemberId($this->memberId);
 			$this->showAll = true;
 			$showButton = false;
 		}

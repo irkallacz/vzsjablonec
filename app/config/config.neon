@@ -214,6 +214,7 @@ services:
 	- App\Model\IdokladService(%idoklad.credentialsFile%, %idoklad.memberNumericSequence%)
 	- App\Model\AttendanceService
 	- App\Model\AchievementsService
+	- App\Model\QualificationService
 	- App\Model\AddressesService
 	- App\Model\AnketyService
 	- App\Model\RatingService

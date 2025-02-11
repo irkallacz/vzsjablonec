@@ -6,6 +6,7 @@ use App\Model\AchievementsService;
 use App\Model\AnketyService;
 use App\Model\AttendanceService;
 use App\Model\MessageService;
+use App\Model\QualificationService;
 use App\Model\UserService;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
@@ -29,6 +30,11 @@ final class UserTablePresenter extends LayerPresenter
 	 * @var AttendanceService $attendanceService @inject
 	 */
 	public $attendanceService;
+
+	/**
+	 * @var QualificationService $qualificationService @inject
+	 */
+	public $qualificationService;
 
 	/**
 	 * @var AnketyService $anketyService @inject
@@ -157,6 +163,18 @@ final class UserTablePresenter extends LayerPresenter
 	public function actionMessage(int $id)
 	{
 		$this->selection = $this->messageService->getRecipients($id)->fetchPairs(null, 'user_id');
+		$this->filterAction();
+	}
+
+	public function actionQualification(int $id, bool $active)
+	{
+		$selection = $this->qualificationService->getQualificationMemberByQualificationId($id);
+
+		if ($active) {
+			$selection->where('date_end > NOW() OR date_end IS NULL');
+		}
+
+		$this->selection = array_values($selection->fetchPairs('member_id', 'member_id'));
 		$this->filterAction();
 	}
 

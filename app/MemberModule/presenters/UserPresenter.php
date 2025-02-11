@@ -7,7 +7,6 @@ use App\MemberModule\Components\AchievementsControl;
 use App\MemberModule\Components\AttendanceControl;
 use App\MemberModule\Components\EventsControl;
 use App\MemberModule\Components\QualificationControl;
-use App\MemberModule\Components\UserGridControl;
 use App\MemberModule\Components\InvoiceControl;
 use App\MemberModule\Forms\UserFormFactory;
 use App\Model\AchievementsService;
@@ -16,6 +15,7 @@ use App\Model\AnketyService;
 use App\Model\AttendanceService;
 use App\Model\InvoiceService;
 use App\Model\MessageService;
+use App\Model\QualificationService;
 use App\Model\UserService;
 use App\Template\LatteFilters;
 use Nette\Application\BadRequestException;
@@ -57,6 +57,9 @@ class UserPresenter extends LayerPresenter {
 
 	/** @var AchievementsService @inject */
 	public $achievementsService;
+
+	/** @var QualificationService @inject */
+	public $qualificationService;
 
 	/** @var InvoiceService @inject */
 	public $invoiceService;
@@ -163,6 +166,14 @@ class UserPresenter extends LayerPresenter {
 	}
 
 	/**
+	 * @allow(editor)
+	 */
+	public function renderQualifications()
+	{
+		$this->template->qualifications = $this->qualificationService->getQualifications()->order('id');
+	}
+
+	/**
 	 * @return AchievementsControl
 	 */
 	protected function createComponentAchievements()
@@ -176,7 +187,7 @@ class UserPresenter extends LayerPresenter {
 	protected function createComponentQualifications()
 	{
 		$memberId = $this->getParameter('id');
-		return new QualificationControl($this->userService, $memberId);
+		return new QualificationControl($this->qualificationService, $memberId);
 	}
 
 	/**

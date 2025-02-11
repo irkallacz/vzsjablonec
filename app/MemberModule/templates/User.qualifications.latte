@@ -1,0 +1,49 @@
+<h1 n:block="#title">Kvalifikace</h1>
+
+{block content}
+    <style type="text/css" n:syntax="off">
+        .qualifications { width: 100%; caption-side: bottom; border-collapse: collapse;}
+    </style>
+
+    <p class="right">
+        <a n:href="add" class="buttonLike">{include svg plus} nová kvalifikace</a>
+    </p>
+
+    {foreach $qualifications as $qualification}
+        {var $items = $qualification->related('qualification_members')}
+        {if $items->count()}
+        <h2>{include svg id-badge} {$qualification->name}</h2>
+        <table class="qualifications">
+            <thead>
+            <tr>
+                <th colspan="3">Jméno</th><th>Číslo</th><th>Platnost od</th><th>Platnost do</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach $items->order('date_start DESC, date_end DESC') as $item}
+            <tr class="hoverLike target">
+                <td>{if (!is_null($item->date_end)) && (date_create() > $item->date_end)}
+                        <span title="Kvalifikaci vypršela platnost">{include svg times-circle, red}</span>
+                    {elseif (!is_null($item->date_end)) && ($item->date_end < date_create('+1 year'))}
+                        <span title="Kvalifikaci brzy vyprší platnost">{include svg exclamation-circle, orange}</span>
+                    {else}
+                        {include svg check-circle, green}
+                    {/if}
+                </td>
+                <td>{$item->type ?? $qualification->shortcut}</td>
+                <td><a n:href="User:view $item->member_id">{$item->member->surname} {$item->member->name}</a></td>
+                <td>{$item->number}</td>
+                <td>{$item->date_start|date:'d.m.Y'}</td>
+                <td>{$item->date_end|date:'d.m.Y'}</td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+        <p class="right">
+            <strong>{include svg table} Tabulka členů</strong>
+            <a class="buttonLike" n:href="UserTable:qualification $qualification->id, true">jen aktivní</a>
+            <a class="buttonLike" n:href="UserTable:qualification $qualification->id, false">všichni</a>
+        </p>
+        {/if}
+    {/foreach}
+{/block}

@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Model\EvidsoftService;
 use App\Model\Qualification;
+use App\Model\QualificationService;
 use App\Model\UserService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,19 +31,27 @@ final class QualificationCommand extends BaseCommand
 	protected $userService;
 
 	/**
+	 * @var QualificationService
+	 */
+	protected $qualificationService;
+
+	/**
 	 * @var EvidsoftService
 	 */
 	protected $evidsoftService;
 
 	/**
+	 * QualificationCommand constructor.
 	 * @param UserService $userService
+	 * @param QualificationService $qualificationService
 	 * @param EvidsoftService $evidsoftService
 	 */
-	public function __construct(UserService $userService, EvidsoftService $evidsoftService)
+	public function __construct(UserService $userService, QualificationService $qualificationService, EvidsoftService $evidsoftService)
 	{
 		parent::__construct();
 
 		$this->userService = $userService;
+		$this->qualificationService = $qualificationService;
 		$this->evidsoftService = $evidsoftService;
 	}
 
@@ -79,7 +88,7 @@ final class QualificationCommand extends BaseCommand
 
 				if (!($id = $matches[1] ?? null)) {
 					continue;
-				} elseif ($this->userService->getQualificationMemberByNumber($id)) {
+				} elseif ($this->qualificationService->getQualificationMemberByNumber($id)) {
 					continue;
 				}
 
@@ -113,7 +122,7 @@ final class QualificationCommand extends BaseCommand
 					}
 				}
 
-				$this->userService->getQualificationMembers()->insert([
+				$this->qualificationService->getQualificationMembers()->insert([
 					'member_id' => $memberId,
 					'qualification_id' => $qualificationId,
 					'evidsoft_id' => $id,
