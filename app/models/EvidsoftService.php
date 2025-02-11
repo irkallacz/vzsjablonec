@@ -4,6 +4,7 @@ namespace App\Model;
 
 use GuzzleHttp\Client;
 use Nette\Database\Table\ActiveRow;
+use Nette\Security\AuthenticationException;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
 
@@ -44,6 +45,10 @@ class EvidsoftService
 
 		if (!$response->hasHeader('Set-Cookie')) {
 			throw new \Exception('Session id not found');
+		}
+
+		if ($response->getBody()->getContents() == 'Fail') {
+			throw new AuthenticationException('Wrong credentials');
 		}
 	}
 
