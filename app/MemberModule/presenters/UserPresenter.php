@@ -174,6 +174,64 @@ class UserPresenter extends LayerPresenter {
 	}
 
 	/**
+	 * @allow(admin)
+	 */
+	public function renderQualification(int $id = null)
+	{
+
+	}
+
+	/**
+	 * @allow(admin)
+	 * @return Form
+	 */
+	protected function createComponentQualificationForm(): Form
+	{
+		$form = new Form();
+
+		$qualifications = $this->qualificationService->getQualifications()->where('id', [1,2,3,4])->fetchPairs('id', 'name');
+
+		$form->addSelect('qualification_id', 'Kvalifikace', $qualifications);
+
+		$form->addSelect('member_id', 'Člen', $this->userService->getUsersArray(UserService::MEMBER_LEVEL));
+
+		$form->addText('type', 'Typ', 10, 30)
+			->setOption('description', 'OWD, IMCS, BE, ...')
+			->setNullable();
+
+		$form->addText('number', 'Číslo', 10, 30)
+			->setNullable();
+
+		$form->addComponent((new \DateInput('Začátek platnosti'))
+			->setRequired('Vyplňte %label')
+			->setDefaultValue(new DateTime()),
+			'date_start');
+
+		$form->addComponent((new \DateInput('Konec platnosti'))
+			->setRequired(false)
+			->setDefaultValue(new DateTime('+2 years')),
+			'date_end');
+
+		$form->addText('note', 'Poznámka')
+			->setNullable();
+
+		$form->addSubmit('save', 'Uložit');
+
+		$form->onSuccess[] = function (Form $form) {
+			$values = $form->getValues(true);
+			$values['date_add'] = new DateTime();
+
+			$this->qualificationService->getQualificationMembers()->insert($values);
+
+			$this->flashMessage('Kvalifikace byla uložena');
+			$this->redirect('qualifications');
+		};
+
+		return $form;
+	}
+
+
+	/**
 	 * @return AchievementsControl
 	 */
 	protected function createComponentAchievements()

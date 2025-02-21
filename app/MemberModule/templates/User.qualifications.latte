@@ -5,8 +5,8 @@
         .qualifications { width: 100%; caption-side: bottom; border-collapse: collapse;}
     </style>
 
-    <p class="right">
-        <a n:href="add" class="buttonLike">{include svg plus} nová kvalifikace</a>
+    <p class="right" n:if="$user->isinRole('admin')">
+        <a n:href="qualification" class="buttonLike">{include svg plus} nová kvalifikace</a>
     </p>
 
     {foreach $qualifications as $qualification}
