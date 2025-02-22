@@ -47,11 +47,11 @@
         <td>
             {$invoice->description}
         </td>
-        <td class="right">
-            {$invoice->price|money}
+        <td>
+            <div class="right">{$invoice->price|money}</div>
         </td>
-        <td class="right">
-            <span title="Splatnost: {$invoice->date_due_payment|date:'d.m.Y'}">{$invoice->date_add|date:'d.m.Y'}
+        <td>
+            <time datetime="{$invoice->date_add|date:'Y-m-d'}"><span title="Splatnost: {$invoice->date_due_payment|date:'d.m.Y'}">{$invoice->date_add|date:'d.m.Y'}</span></time>
         </td>
         <td n:if="$user->isInRole('admin')">
             <a n:href="deleteInvoice $invoice->id" class="buttonLike confirm" data-query="Opravdu chete fakturu smazat?" title="Smazat">{include svg trash}</a>
