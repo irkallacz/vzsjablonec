@@ -165,6 +165,25 @@ class UserPresenter extends LayerPresenter {
 		$this->template->users = $this->userService->getUsers(UserService::MEMBER_LEVEL)->count('id');
 	}
 
+	/*
+	* @allow(editor)
+	*/
+	public function renderInvoices()
+	{
+		$this->template->invoices = $this->invoiceService->getInvoices()->order('id');
+	}
+
+	/*
+	* @allow(admin)
+	*/
+	public function actionDeleteInvoice(int $id)
+	{
+		$this->invoiceService->getInvoicesByUserId($id)->delete();
+
+		$this->flashMessage('Faktura byla smanáza');
+		$this->redirect('this');
+	}
+
 	/**
 	 * @allow(editor)
 	 */

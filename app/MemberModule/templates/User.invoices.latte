@@ -1,0 +1,68 @@
+{block head}
+    <link rel="stylesheet" href="{$baseUrl}/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{$baseUrl}/css/bootstrap-table.min.css">
+    <link rel="stylesheet" href="{$baseUrl}/css/user-table.css" type="text/css">
+    <link rel="stylesheet" href="{$baseUrl}/css/user-table.mobile.css" type="text/css" media="screen and (max-width: 900px)">
+    <link rel="stylesheet" href="{$baseUrl}/css/user-table.mobile.css" type="text/css" media="screen and (orientation: portrait)">
+    <script src="{$baseUrl}/js/bootstrap.bundle.min.js"></script>
+    <script src="{$baseUrl}/js/bootstrap-table.min.js"></script>
+    <script src="{$baseUrl}/js/confirm.js"></script>
+{/block}
+
+<h1 n:block="title">Faktury</h1>
+
+{block content}
+
+<table data-toggle="table" data-pagination="true" data-page-size="100" data-search="true" n:class="table, table-striped, table-hover, $user->identity->theme ? table-dark">
+    <thead>
+    <tr>
+        <th data-field="id" data-sortable="true">ID</th>
+        <th data-field="status" data-sortable="true">Stav</th>
+        <th data-field="number" data-sortable="true">Var. symbol</th>
+        <th data-field="user" data-sortable="true">Příjemnce</th>
+        <th data-field="popis" data-sortable="true">Text</th>
+        <th data-field="Částka" data-sortable="true">Částka</th>
+        <th data-field="date" data-sortable="true">Vystaveno</th>
+        <th n:if="$user->isInRole('admin')" data-field="button"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr n:foreach="$invoices as $invoice">
+        <td><a href="https://app.idoklad.cz/IssuedInvoice/Preview/{$invoice->id}/Info" target="_blank">{$invoice->id}</td>
+        <td>
+            {if $invoice->payment_status == 1}
+            <div class="center" title="Zaplaceno: {$invoice->date_payment|datetime}">{include svg check-circle, green}
+                {else}
+                    {if $invoice->date_reminder}
+                        <div class="center" title="Upomínka zaslána: {$invoice->date_reminder|datetime}">
+                    {else}
+                        <div class="center" title="Nezaplaceno">
+                    {/if}
+                    {include svg times-circle, red}
+            {/if}
+            </div>
+        </td>
+        <td><code>{$invoice->variable_symbol}</code></td>
+        <td><data value="{$invoice->user->surname} {$invoice->user->name}"><a n:href="User:view $invoice->user_id" target="_blank">{$invoice->user->surname} {$invoice->user->name}</a></data></td>
+        <td>
+            {$invoice->description}
+        </td>
+        <td class="right">
+            {$invoice->price|money}
+        </td>
+        <td class="right">
+            <span title="Splatnost: {$invoice->date_due_payment|date:'d.m.Y'}">{$invoice->date_add|date:'d.m.Y'}
+        </td>
+        <td n:if="$user->isInRole('admin')">
+            <a n:href="deleteInvoice $invoice->id" class="buttonLike confirm" data-query="Opravdu chete fakturu smazat?" title="Smazat">{include svg trash}</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+<script n:nonce>
+	function userLink(id) {
+		return '<a target="_blank" href="/user/view/'+ id +'">' + id + '</a>'
+	}
+</script>
