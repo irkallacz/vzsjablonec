@@ -7,6 +7,9 @@
 	<script src="{$baseUrl}/js/bootstrap.bundle.min.js"></script>
 	<script src="{$baseUrl}/js/bootstrap-table.min.js"></script>
 	<script src="{$baseUrl}/js/bootstrap-table-cookie.min.js"></script>
+	<style>
+        #main { max-width: 180em;}
+    </style>
 {/block}
 
 <h1 n:block="title">Tabulka uživatelů</h1>
@@ -21,7 +24,7 @@
 
 	</div>
 
-	<table data-toggle="table" data-toolbar="#toolbar" data-pagination="true" data-pagination-parts="['pageInfo']" data-page-size="500" data-search="true" data-select-item-name="id[]" data-id-field="id"
+	<table data-toggle="table" data-toolbar="#toolbar" data-pagination="true" data-pagination-parts="['pageInfoShort']" data-page-size="500" data-search="true" data-select-item-name="id[]" data-id-field="id"
 		   data-show-columns="true" data-cookie="true" data-cookie-id-table="userTable" data-cookie-storage="localStorage" n:class="table, table-striped, table-hover, $user->identity->theme ? table-dark">
 		<thead>
 		<tr>
