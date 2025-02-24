@@ -178,7 +178,7 @@ class UserPresenter extends LayerPresenter {
 	*/
 	public function actionDeleteInvoice(int $id)
 	{
-		$this->invoiceService->getInvoicesByUserId($id)->delete();
+		$this->invoiceService->getInvoiceById($id)->delete();
 
 		$this->flashMessage('Faktura byla smanáza');
 		$this->redirect('invoices');

@@ -6,14 +6,14 @@
     <link rel="stylesheet" href="{$baseUrl}/css/user-table.mobile.css" type="text/css" media="screen and (orientation: portrait)">
     <script src="{$baseUrl}/js/bootstrap.bundle.min.js"></script>
     <script src="{$baseUrl}/js/bootstrap-table.min.js"></script>
-    <script src="{$baseUrl}/js/confirm.js"></script>
+    <script src="{$baseUrl}/js/bootstrap-table-cookie.min.js"></script>
 {/block}
 
 <h1 n:block="title">Faktury</h1>
 
 {block content}
 
-<table data-toggle="table" data-pagination="true" data-page-size="100" data-search="true" n:class="table, table-striped, table-hover, $user->identity->theme ? table-dark">
+<table data-toggle="table" data-pagination="true" data-page-size="100" data-search="true" data-cookie="true" data-cookie-id-table="invoices" data-cookie-storage="localStorage" n:class="table, table-striped, table-hover, $user->identity->theme ? table-dark">
     <thead>
     <tr>
         <th data-field="id" data-sortable="true">ID</th>
@@ -59,10 +59,3 @@
     </tr>
     </tbody>
 </table>
-
-
-<script n:nonce>
-	function userLink(id) {
-		return '<a target="_blank" href="/user/view/'+ id +'">' + id + '</a>'
-	}
-</script>
