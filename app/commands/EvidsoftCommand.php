@@ -48,8 +48,8 @@ final class EvidsoftCommand extends BaseCommand
 		foreach ($persons->items as $person) {
 			$this->writeln($output, $person->FullName);
 			if (array_key_exists($person->ID, $members)) {
-				$this->writeln($output,'', 'Update', $members[$person->ID], $person->ID);
 				$member = $this->userService->getUserById($members[$person->ID], UserService::DELETED_LEVEL);
+				$this->writeln($output,'', 'Update', $member->id, $person->ID);
 				$person = EvidsoftService::updatePersonFromMember($person, $member);
 				$this->evidsoftService->updatePerson($person);
 			} else {
@@ -66,6 +66,7 @@ final class EvidsoftCommand extends BaseCommand
 			$response = $this->evidsoftService->createPerson($person);
 			$id = $response->items[0]->ID;
 
+			$this->writeln($output,'', 'Create', $member->id, $id);
 			$member->update(['evidsoft_id' => $id]);
 
 			$members[$id] = $member->id;

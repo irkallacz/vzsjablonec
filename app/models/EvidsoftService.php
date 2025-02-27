@@ -113,17 +113,17 @@ class EvidsoftService
 		return Json::decode($response);
 	}
 
-	public function updatePerson(array $person): object
+	public function updatePerson(object $person): object
 	{
-		$response = $this->client->request('POST', 'person-list/data-update', ['form_params' => ['data' => $person]]);
+		$response = $this->client->request('POST', 'person-list/data-update', ['form_params' => ['data' => Json::encode($person)]]);
 		$response = $response->getBody()->getContents();
 
 		return Json::decode($response);
 	}
 
-	public function createPerson(array $person): object
+	public function createPerson(object $person): object
 	{
-		$response = $this->client->request('POST', 'person-list/data-create', ['form_params' => ['data' => $person]]);
+		$response = $this->client->request('POST', 'person-list/data-create', ['form_params' => ['data' => Json::encode($person)]]);
 		$response = $response->getBody()->getContents();
 
 		return Json::decode($response);
@@ -157,48 +157,48 @@ class EvidsoftService
 	}
 
 
-	public static function updatePersonFromMember(array $person, ActiveRow $member): array
+	public static function updatePersonFromMember(object $person, ActiveRow $member): object
 	{
-		if ($member->evidsoft_id) {
-			$person['ID'] = $member->evidsoft_id;
+		if ((!$person->ID) && ($member->evidsoft_id)) {
+			$person->ID = $member->evidsoft_id;
 		}
 
-		$person['FirstName'] = $member->name;
-		$person['LastName'] = $member->surname;
-		$person['BirthDate'] = $member->date_born->format(self::DATE_FORMAT);
+		$person->FirstName = $member->name;
+		$person->LastName = $member->surname;
+		$person->BirthDate = $member->date_born->format(self::DATE_FORMAT);
 
 		if ($member->rc) {
-			$person['PersonalNumber'] = str_replace('/', '', $member->rc);
-			$person['Gender'] = (substr($member->rc, 2, 1) >= 5) ? 'female' : 'male';
+			$person->PersonalNumber = str_replace('/', '', $member->rc);
+			$person->Gender = (substr($member->rc, 2, 1) >= 5) ? 'female' : 'male';
 		}
 
-		$person['RegistrationNumber'] = $member->id;
+		$person->RegistrationNumber = $member->id;
 
 		if ($member->vzs_id) {
-			$person['VZSNumber'] = $member->vzs_id;
+			$person->VZSNumber = $member->vzs_id;
 		}
 
 		if ($member->proper_from) {
-			$person['MembershipType'] = 'regular';
+			$person->MembershipType = 'regular';
 		}
 
 		if (Strings::endsWith($member->mail, '@vzs-jablonec.cz')) {
-			$person['Email'] = $member->mail;
+			$person->Email = $member->mail;
 		}
 
 		//$person['Phone'] = $user->telefon;
 
-		$person['address']['Street'] = $member->street;
-		$person['address']['DescriptionNumber'] = $member->street_number;
-		$person['address']['City'] = $member->city;
-		$person['address']['ZipCode'] = $member->postal_code;
+		$person->address->Street = $member->street;
+		$person->address->DescriptionNumber = $member->street_number;
+		$person->address->City = $member->city;
+		$person->address->ZipCode = $member->postal_code;
 
 		return $person;
 	}
 
-	public static function createPersonData(ActiveRow $member = null): array
+	public static function createPersonData(ActiveRow $member = null): object
 	{
-		$person = [
+		$person = (object) [
 			'ID' => '',
 			'FirstName' => '',
 			'LastName' => '',
