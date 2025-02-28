@@ -174,6 +174,15 @@ class UserPresenter extends LayerPresenter {
 	}
 
 	/*
+	* @allow(editor)
+	*/
+	public function renderPhotoEdit(int $id)
+	{
+		$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
+		$this->template->image = $user->photo;
+	}
+
+	/*
 	* @allow(admin)
 	*/
 	public function actionDeleteInvoice(int $id)
@@ -249,6 +258,79 @@ class UserPresenter extends LayerPresenter {
 		return $form;
 	}
 
+	/**
+	 * @allow(admin)
+	 * @return Form
+	 */
+	protected function createComponentPhotoEditForm(): Form
+	{
+		$form = new Form();
+		$form->addText('x', 'X', 5, 5)
+			->setHtmlId('photo-x')
+			->setDefaultValue(0)
+			->setRequired()
+			->setHtmlType('number')
+			->addRule(Form::MIN, 'Minimální hodnota je %d', 0)
+			->addRule(Form::MAX, 'Maximální hodnota je %d', 5000);
+
+		$form->addText('y', 'Y', 5, 5)
+			->setHtmlId('photo-y')
+			->setDefaultValue(0)
+			->setRequired()
+			->setHtmlType('number')
+			->addRule(Form::MIN, 'Minimální hodnota je %d', 0)
+			->addRule(Form::MAX, 'Maximální hodnota je %d', 5000);
+
+		$form->addText('width', 'Šířka', 5, 5)
+			->setHtmlId('photo-width')
+			->setDefaultValue(0)
+			->setRequired()
+			->setHtmlType('number')
+			->addRule(Form::MIN, 'Minimální hodnota je %d', 0)
+			->addRule(Form::MAX, 'Maximální hodnota je %d', 5000);
+
+		$form->addText('height', 'Výška', 5, 5)
+			->setHtmlId('photo-height')
+			->setDefaultValue(0)
+			->setRequired()
+			->setHtmlType('number')
+			->addRule(Form::MIN, 'Minimální hodnota je %d', 0)
+			->addRule(Form::MAX, 'Maximální hodnota je %d', 5000);
+
+		$form->addSubmit('save', 'Uložit');
+
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['controls']['container'] = null;
+		$renderer->wrappers['pair']['container'] = null;
+		$renderer->wrappers['label']['container'] = null;
+		$renderer->wrappers['control']['container'] = null;
+
+		$form->onSuccess[] = [$this, 'processPhotoEdit'];
+
+		return $form;
+	}
+
+	/**
+	 * @allow(admin)
+	 */
+	public function processPhotoEdit(Form $form, ArrayHash $values)
+	{
+		$id = (int) $this->getParameter('id');
+		$user = $this->userService->getUserById($id, UserService::DELETED_LEVEL);
+
+		$filename = WWW_DIR . '/img/photos/' . $user->photo;
+		$image = Image::fromFile($filename);
+		$image->resize(800, null, Image::SHRINK_ONLY);
+		$image->crop($values->x, $values->y, $values->width, $values->height);
+
+		$filename = WWW_DIR . self::getUserImageName($user);
+		$image->save($filename, 90, Image::JPEG);
+
+		$user->update(['photo' => basename($filename)]);
+
+		$this->flashMessage('Forografie byla upravena');
+		$this->redirect('view', $id);
+	}
 
 	/**
 	 * @return AchievementsControl

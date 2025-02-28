@@ -1,0 +1,34 @@
+<h1 n:block="#title">Úprava fotografie</h1>
+
+{block head}
+	<link  href="{$baseUrl}/css/cropper.min.css" rel="stylesheet">
+	<script src="{$baseUrl}/js/cropper.min.js"></script>
+{/block}
+
+{block content}
+    <p>
+		{control photoEditForm}
+	</p>
+
+	<div>
+		<img alt="photo" id="photo" src="{$baseUrl}/img/photos/{$image}">
+	</div>
+
+	<style type="text/css">
+        #text { min-width: 800px; }
+		img#photo { display: block; max-width: 100%; }
+	</style>
+
+	<script type="application/javascript" n:nonce>
+		const image = document.getElementById('photo');
+		const cropper = new Cropper(image, {
+			viewMode: 1,
+			crop(event) {
+				document.getElementById('photo-x').value = Math.round(event.detail.x);
+				document.getElementById('photo-y').value = Math.round(event.detail.y);
+				document.getElementById('photo-width').value = Math.round(event.detail.width);
+				document.getElementById('photo-height').value = Math.round(event.detail.height);
+			},
+		});
+	</script>
+{/block}
