@@ -186,7 +186,7 @@ class EvidsoftService
 			$person->Email = $member->mail;
 		}
 
-		//$person['Phone'] = $user->telefon;
+		$person->Phone = $member->phone;
 
 		$person->address->Street = $member->street;
 		$person->address->DescriptionNumber = $member->street_number;
