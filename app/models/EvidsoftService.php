@@ -3,7 +3,6 @@
 namespace App\Model;
 
 use GuzzleHttp\Client;
-use Nette\Database\Table\ActiveRow;
 use Nette\Security\AuthenticationException;
 use Nette\Utils\Json;
 use Nette\Utils\Strings;
@@ -157,7 +156,7 @@ class EvidsoftService
 	}
 
 
-	public static function updatePersonFromMember(object $person, ActiveRow $member): object
+	public static function updatePersonFromMember(object $person, object $member): object
 	{
 		if ((!$person->ID) && ($member->evidsoft_id)) {
 			$person->ID = $member->evidsoft_id;
@@ -196,7 +195,7 @@ class EvidsoftService
 		return $person;
 	}
 
-	public static function createPersonData(ActiveRow $member = null): object
+	public static function createPersonData(object $member = null): object
 	{
 		$person = (object) [
 			'ID' => '',
